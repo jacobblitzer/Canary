@@ -1,0 +1,11 @@
+{
+  "name": "penumbra",
+  "displayName": "Penumbra",
+  "appPath": "",
+  "appArgs": "",
+  "agentType": "penumbra",
+  "pipeName": "canary-penumbra",
+  "startupTimeoutMs": 10000,
+  "windowTitle": "Penumbra",
+  "viewportClass": ""
+}

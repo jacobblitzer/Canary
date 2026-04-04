@@ -1,0 +1,11 @@
+{
+  "name": "qualia",
+  "displayName": "Qualia",
+  "appPath": "C:\\Path\\To\\Qualia.exe",
+  "appArgs": "",
+  "agentType": "qualia",
+  "pipeName": "canary-qualia",
+  "startupTimeoutMs": 15000,
+  "windowTitle": "Qualia",
+  "viewportClass": ""
+}

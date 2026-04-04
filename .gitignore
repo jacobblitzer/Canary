@@ -1,0 +1,8 @@
+bin/
+obj/
+results/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+TestResults/

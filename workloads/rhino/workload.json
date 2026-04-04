@@ -1,0 +1,11 @@
+{
+  "name": "rhino",
+  "displayName": "Rhino 8",
+  "appPath": "C:\\Program Files\\Rhino 8\\System\\Rhino.exe",
+  "appArgs": "/nosplash",
+  "agentType": "rhino",
+  "pipeName": "canary-rhino",
+  "startupTimeoutMs": 30000,
+  "windowTitle": "Rhinoceros",
+  "viewportClass": "Eto.Wpf.Forms.Controls.WpfViewportHandler"
+}
