@@ -43,19 +43,20 @@ public static class RunCommand
         {
             Program.Verbose = verbose;
             Program.Quiet = quiet;
-            await RunAsync(workload, test, Program.CancellationToken).ConfigureAwait(false);
+            var logger = new ConsoleTestLogger(verbose, quiet);
+            await RunAsync(workload, test, logger, Program.CancellationToken).ConfigureAwait(false);
         }, workloadOption, testOption, verboseOption, quietOption);
 
         return command;
     }
 
-    private static async Task RunAsync(string? workloadName, string? testName, CancellationToken ct)
+    private static async Task RunAsync(string? workloadName, string? testName, ConsoleTestLogger logger, CancellationToken ct)
     {
         var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
 
         if (workloadName == null)
         {
-            Program.Log("Error: --workload is required.  Press Ctrl+C to abort");
+            logger.Log("Error: --workload is required.  Press Ctrl+C to abort");
             return;
         }
 
@@ -63,7 +64,7 @@ public static class RunCommand
         var configPath = Path.Combine(workloadsDir, workloadName, "workload.json");
         if (!File.Exists(configPath))
         {
-            Program.Log($"Error: Workload config not found: {configPath}");
+            logger.Log($"Error: Workload config not found: {configPath}");
             return;
         }
 
@@ -75,7 +76,7 @@ public static class RunCommand
 
         try
         {
-            var runner = new TestRunner(pm, workloadsDir);
+            var runner = new TestRunner(pm, workloadsDir, logger);
 
             List<TestDefinition> tests;
             if (testName != null)
@@ -84,23 +85,23 @@ public static class RunCommand
                 var testPath = Path.Combine(workloadsDir, workloadName, "tests", $"{testName}.json");
                 if (!File.Exists(testPath))
                 {
-                    Program.Log($"Error: Test definition not found: {testPath}");
+                    logger.Log($"Error: Test definition not found: {testPath}");
                     return;
                 }
                 tests = new List<TestDefinition> { await TestDefinition.LoadAsync(testPath).ConfigureAwait(false) };
             }
             else
             {
-                tests = await TestRunner.DiscoverTestsAsync(workloadsDir, workloadName).ConfigureAwait(false);
+                tests = await TestDiscovery.DiscoverTestsAsync(workloadsDir, workloadName, logger).ConfigureAwait(false);
             }
 
             if (tests.Count == 0)
             {
-                Program.Log("No tests found.");
+                logger.Log("No tests found.");
                 return;
             }
 
-            Program.Log($"Running {tests.Count} test(s) for workload '{workloadName}'  Press Ctrl+C to abort");
+            logger.Log($"Running {tests.Count} test(s) for workload '{workloadName}'  Press Ctrl+C to abort");
             var suite = await runner.RunSuiteAsync(workload, tests, ct).ConfigureAwait(false);
 
             // Generate reports
@@ -114,7 +115,7 @@ public static class RunCommand
             await JUnitReportGenerator.SaveAsync(suite, workloadName, junitPath).ConfigureAwait(false);
 
             if (!Program.Quiet)
-                Program.Log($"Reports saved: {htmlPath}");
+                logger.Log($"Reports saved: {htmlPath}");
         }
         finally
         {

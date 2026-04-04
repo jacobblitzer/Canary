@@ -377,3 +377,268 @@
 - [x] Regression check: all unit tests pass (52/52 total)
 - [x] `dotnet build` — 0 errors, 0 warnings
 - [x] Documentation review: all guides accurate against current codebase
+
+## Phase 8: Rhino .rhp Fix + Canary.Core Extraction
+
+### Checkpoint 8.1: Rhino Plugin .rhp Fix
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Added `<TargetExt>.rhp</TargetExt>`, `<UseWindowsForms>true</UseWindowsForms>`, `<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>`, `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` to `Canary.Agent.Rhino.csproj`. Created `Properties/AssemblyInfo.cs` with `[assembly: Guid]` and `[assembly: PlugInDescription]` attributes. Build produces `Canary.Agent.Rhino.rhp`.
+- **Issues Found**: GUID "CANARY00A001" contains non-hex characters — `[assembly: Guid]` requires valid hex.
+- **Resolution**: Changed to "CA0A4700A001" (valid hex).
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 8.2: Create Canary.Core Project
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Created `src/Canary.Core/Canary.Core.csproj` (net8.0-windows, `<RootNamespace>Canary</RootNamespace>`). NuGet: SixLabors.ImageSharp 3.1.12, SixLabors.ImageSharp.Drawing 2.1.6. ProjectReference: Canary.Agent. `<InternalsVisibleTo Include="Canary.Tests" />`. Added to Canary.sln.
+- **Issues Found**: None
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 8.3: Move Comparison Engine to Core
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Moved `PixelDiffComparer`, `SsimComparer`, `ComparisonResult`, `CheckpointComparison`, `CompositeBuilder` from Harness to Core. Namespace remains `Canary.Comparison` (no change needed thanks to matching RootNamespace). Removed ImageSharp NuGets from Harness (come transitively from Core).
+- **Issues Found**: None
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 8.4: Move Config, Models, Reporting, Input to Core
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Moved all shared types:
+  - `Config/`: TestDefinition, WorkloadConfig
+  - `Orchestration/`: TestResult, ProcessManager, AppLauncher, Watchdog, TestRunner
+  - `Reporting/`: HtmlReportGenerator, JUnitReportGenerator
+  - `Input/`: InputEvent, InputRecording, InputRecorder, InputReplayer, ViewportLocator
+  Harness retains only: Program.cs, ConsoleTestLogger.cs, Cli/*.cs commands. Updated Tests.csproj to reference both Core and Harness.
+- **Issues Found**: TestRunner.cs references `Program.Log`/`Program.LogStatus`/`Program.Verbose` which don't exist in Core — 11 compile errors.
+- **Resolution**: Resolved in checkpoint 8.5 (ITestLogger abstraction).
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 8.5: Decouple TestRunner via ITestLogger
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Tests Run**: ConsoleTestLogger_Log_WritesTimestampedOutput, ConsoleTestLogger_Quiet_SuppressesLog, ConsoleTestLogger_LogSummary_AlwaysWrites
+- **Tests Passed**: 3 new (55 total)
+- **Tests Failed**: 0
+- **Details**: Created `ITestLogger` interface in Core with `Log`, `LogStatus`, `LogSummary`, `Verbose` members plus `TestStatusLevel` enum. Refactored `TestRunner` constructor to accept `ITestLogger`. Extracted `DiscoverTestsAsync` → `TestDiscovery` and `ApproveTest` → `BaselineManager` (both in Core). `BaselineManager` also includes `ApproveCheckpoint`/`RejectCheckpoint` for future GUI use. Created `ConsoleTestLogger` in Harness implementing `ITestLogger`. Updated `RunCommand` and `ApproveCommand` to wire new types. Added `InternalsVisibleTo` to Harness for test access to `BuildRootCommand`.
+- **Issues Found**: Tests couldn't see `Program.BuildRootCommand` (internal) after `InternalsVisibleTo` moved from Harness to Core.
+- **Resolution**: Added `<InternalsVisibleTo Include="Canary.Tests" />` to Harness csproj as well.
+- **SUPERVISOR_FLAGS**: None
+
+### Phase 8 Gate Verification
+- [x] `Canary.Agent.Rhino` builds as `.rhp` (verified in bin/Debug/net48/)
+- [x] `Properties/AssemblyInfo.cs` with valid GUID and PlugInDescription attributes
+- [x] `Canary.Core` project exists with all shared logic
+- [x] Harness is a thin CLI shell (Program.cs, ConsoleTestLogger.cs, Cli/ commands)
+- [x] `ITestLogger` interface decouples logging from Console statics
+- [x] `TestRunner` accepts `ITestLogger` via constructor injection
+- [x] `BaselineManager` extracted with `ApproveTest`, `ApproveCheckpoint`, `RejectCheckpoint`
+- [x] `TestDiscovery` extracted with `DiscoverTestsAsync`
+- [x] `ConsoleTestLogger` in Harness implements `ITestLogger` with quiet/verbose support
+- [x] Both CLI commands (`run`, `approve`) wired to new Core types
+- [x] Regression check: all tests pass (55/55 total)
+- [x] `dotnet build` — 0 errors, 0 warnings
+
+## Phase 9: WinForms Application Shell
+
+### Checkpoint 9.1: Create Canary.UI Project
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Created `src/Canary.UI/Canary.UI.csproj` (WinExe, net8.0-windows, UseWindowsForms). References Canary.Core and Canary.Agent. `Program.cs` with `ApplicationConfiguration.Initialize()` and `Application.Run(new MainForm())`. Added to Canary.sln.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 9.2: Main Window Layout
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `MainForm` with dark theme (VS Code-inspired colors). `ToolStrip` with 5 buttons: Open Folder, Run Tests, Record, Approve, View Report. `SplitContainer` (vertical) with `TreeView` (250px left panel) and content `Panel`. `StatusStrip` with status label and test count. Minimum size 1024x768, default 1280x900. Custom `DarkToolStripRenderer` for consistent theming.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 9.3: Workload Discovery and Tree Population
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `WorkloadExplorer` service scans workloads directory, loads `WorkloadConfig` + `TestDefinition` per subdirectory. Tree populated with workload -> test hierarchy. Auto-detects `workloads/` relative to exe or CWD. "Open Folder" button shows `FolderBrowserDialog`. `WelcomePanel` with branding and instructions shown when no test is selected.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 9.4: UI Tests
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Tests Run**: LoadWorkloads_ValidDirectory_DiscoversWorkloads, LoadWorkloads_EmptyDirectory_ReturnsEmpty, LoadWorkloads_MissingTestsDir_ReturnsWorkloadWithNoTests
+- **Tests Passed**: 3 new (58 total)
+- **Tests Failed**: 0
+- **Issues Found**: Test JSON for test definitions was missing required `workload` field.
+- **Resolution**: Added `workload` field to test fixture JSON.
+- **SUPERVISOR_FLAGS**: None
+
+### Phase 9 Gate Verification
+- [x] `Canary.UI.exe` builds as WinExe with WinForms
+- [x] `MainForm` has ToolStrip, SplitContainer (TreeView + content Panel), StatusStrip
+- [x] Dark theme with consistent colors across all controls
+- [x] `WorkloadExplorer` discovers workloads and test definitions
+- [x] TreeView populated with workload -> test hierarchy
+- [x] Auto-detection of `workloads/` directory on startup
+- [x] `WelcomePanel` shown when no test is selected
+- [x] Regression check: all tests pass (58/58 total)
+- [x] `dotnet build` — 0 errors, 0 warnings
+
+## Phase 10: Results Viewer + Baseline Management
+
+### Checkpoint 10.1: Results Viewer Control
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `ResultsViewerControl` (UserControl) displays test results. Header with test name, status badge, duration, "Approve All" button. Per-checkpoint rows with stats (diff%, tolerance, SSIM), three `PictureBox` controls (baseline/candidate/diff, SizeMode=Zoom), approve/reject buttons. Events: `ApproveCheckpointRequested`, `RejectCheckpointRequested`, `ApproveAllRequested`, `ImageClicked`.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 10.2: Full-Size Image Viewer
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `ImageViewerForm` (modal Form) shows full-resolution images. Toolbar to toggle baseline/candidate/diff. Mouse wheel zoom (0.1x-10x), click-drag pan via `ScrollableControl.AutoScrollPosition`. Keyboard: Escape closes, Left/Right switch images, +/- zoom. Non-locking file load via `FileStream`.
+- **Issues Found**: `AutoScrollPosition` is on `ScrollableControl`, not `Control` — cast needed for `_pictureBox.Parent`.
+- **Resolution**: Cast parent to `ScrollableControl` with pattern matching.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 10.3: Approve/Reject from GUI
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `BaselineManager` (already created in Phase 8.5) provides `ApproveCheckpoint` and `RejectCheckpoint` methods. `ResultsViewerControl` exposes per-checkpoint and per-test approve/reject buttons wired to events. GUI consumers connect events to `BaselineManager` calls.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 10.4: Test Result Serialization + History
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `TestResultSerializer` saves/loads `TestResult` as JSON with `JsonStringEnumConverter` and custom `TimeSpanConverter`. `ResultsHistory` service scans `results/` directories for `result.json` files, returns sorted by timestamp descending.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 10.5: Tests
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Tests Run**: ApproveCheckpoint_CopiesCandidateToBaseline, RejectCheckpoint_DeletesCandidate, RoundTrip_PreservesAllFields, Scan_FindsSavedResults, Scan_EmptyDirectory_ReturnsEmpty
+- **Tests Passed**: 5 new (63 total)
+- **Tests Failed**: 0
+- **SUPERVISOR_FLAGS**: None
+
+### Phase 10 Gate Verification
+- [x] `ResultsViewerControl` shows per-checkpoint baseline/candidate/diff images with stats
+- [x] `ImageViewerForm` provides full-resolution viewing with zoom and pan
+- [x] Approve/reject buttons per-checkpoint and per-test
+- [x] `BaselineManager.ApproveCheckpoint` copies candidate to baseline
+- [x] `BaselineManager.RejectCheckpoint` deletes candidate
+- [x] `TestResultSerializer` round-trips TestResult to/from JSON
+- [x] `ResultsHistory` scans results directories for saved results
+- [x] Regression check: all tests pass (63/63 total)
+- [x] `dotnet build` — 0 errors, 0 warnings
+
+## Phase 11: Test Manager — Create, Edit, Run
+
+### Checkpoint 11.1: Test Definition Editor
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `TestEditorControl` (UserControl) with fields for name, workload, description, setup (file browser, viewport W/H/projection/display, commands list), checkpoints `DataGridView`. `ErrorProvider` validation (name required, workload required, tolerance numeric). Save serializes to JSON. `LoadDefinition` populates form from existing `TestDefinition`.
+- **Issues Found**: `Validate()` hides inherited `ContainerControl.Validate()` — TreatWarningsAsErrors.
+- **Resolution**: Added `new` keyword.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 11.2: Workload Configuration Editor
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `WorkloadEditorControl` (UserControl) with fields for all `WorkloadConfig` properties. Browse for executable, agent type combo (rhino/wpf/electron/custom), pipe name, startup timeout, window title. Save serializes to JSON. `LoadConfig` populates form from existing config.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 11.3: Test Runner with Live Progress
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `TestRunnerPanel` (UserControl) with status label, stop button, progress bar, and `ListBox` log. `GuiTestLogger : ITestLogger` fires events (`MessageLogged`, `StatusLogged`, `SummaryLogged`) marshalled to UI thread via `Control.BeginInvoke`. Tests run on background thread via `Task.Run`. Stop button cancels via `CancellationTokenSource`.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 11.4: Recording UI
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `RecordingPanel` (UserControl) with workload combo, window title field, start/stop buttons. Wires to `InputRecorder.StartRecording()`/`StopRecording()` from Core. `SaveFileDialog` writes `.input.json`. Uses `ViewportLocator.FindWindowByTitle` to find target.
+- **Issues Found**: `InputRecorder` constructor requires `(IntPtr, string, string)`, methods are `StartRecording`/`StopRecording` (not `Start`/`Stop`/`GetRecording`), no `EventCaptured` event.
+- **Resolution**: Matched actual API signatures.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 11.5: Tests
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Tests Run**: TestDefinition_SerializeDeserialize_RoundTrips, TestDefinition_MissingName_ThrowsJsonException, TestDefinition_MissingWorkload_ThrowsJsonException, WorkloadConfig_SerializeDeserialize_RoundTrips, GuiTestLogger_Log_FiresMessageLoggedEvent, GuiTestLogger_LogStatus_FiresStatusLoggedEvent
+- **Tests Passed**: 6 new (69 total)
+- **Tests Failed**: 0
+- **Issues Found**: Test project needed `<UseWindowsForms>true</UseWindowsForms>` to reference `System.Windows.Forms.Form`.
+- **Resolution**: Added to test csproj.
+- **SUPERVISOR_FLAGS**: None
+
+### Phase 11 Gate Verification
+- [x] `TestEditorControl` creates/edits test definitions with validation
+- [x] `WorkloadEditorControl` creates/edits workload configs with browse for exe
+- [x] `TestRunnerPanel` runs tests with live progress, stop button, log display
+- [x] `GuiTestLogger` fires events marshalled to UI thread
+- [x] `RecordingPanel` wires to `InputRecorder` with start/stop and save dialog
+- [x] Regression check: all tests pass (69/69 total)
+- [x] `dotnet build` — 0 errors, 0 warnings
+
+## Phase 12: Polish + Integration
+
+### Checkpoint 12.1: Keyboard Shortcuts
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `MainForm.KeyPreview = true` with `KeyDown` handler. Ctrl+O (open folder), Ctrl+R / F5 (run tests), Ctrl+Shift+R (record), Ctrl+A (approve), Delete (delete test with confirmation dialog), Escape (close modals via ImageViewerForm).
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 12.2: Drag-and-Drop
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: `TreeView.AllowDrop = true`. `DragEnter` accepts `DataFormats.FileDrop`. `DragDrop` handles `.json` (import test) and `.3dm` (create test with model) files. Status bar shows feedback.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 12.3: Context Menus
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Right-click workload: Run All Tests, Edit Config, Open in Explorer. Right-click test: Run, Edit, Approve, Delete, Open in Explorer. `ContextMenuStrip` dynamically shown by node type via `NodeMouseClick`. `Process.Start(UseShellExecute: true)` for Open in Explorer.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 12.4: Update Spec Documents
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Details**: Updated `CLAUDE.md` with new projects (Core, UI), new spec files (PHASES_UI.md, TESTS_UI.md), corrected framework targets, current phase set to 12. `spec/PHASES_UI.md` and `spec/TESTS_UI.md` already written in Phase 8.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 12.5: Final Regression
+- **Date**: 2026-04-04
+- **Status**: PASS
+- **Tests Run**: Cli_Help_StillWorks_AfterCoreExtraction, TestRunner_UsesCore_WithITestLogger, MainForm_CanBeConstructed
+- **Tests Passed**: 3 new (72 total)
+- **Tests Failed**: 0
+- **Details**: CLI still functional after Core extraction (--help prints all 4 commands). TestRunner accepts ITestLogger from Core. MainForm constructs without errors, title contains "Canary", min size >= 1024x768.
+- **SUPERVISOR_FLAGS**: None
+
+### Phase 12 Gate Verification
+- [x] Keyboard shortcuts: Ctrl+O, Ctrl+R, F5, Ctrl+Shift+R, Ctrl+A, Delete, Escape
+- [x] Drag-and-drop: .json and .3dm files accepted on tree view
+- [x] Context menus: workload (Run/Edit/Open) and test (Run/Edit/Approve/Delete/Open)
+- [x] All toolbar buttons wired to actions
+- [x] Spec documents updated (CLAUDE.md, PHASES_UI.md, TESTS_UI.md)
+- [x] CLI still works after Core extraction
+- [x] GUI MainForm launches without errors
+- [x] Full regression: 72 tests pass, 0 warnings
+- [x] `dotnet build` — 0 errors, 0 warnings
+
+---
+
+## Summary
+
+| Phase | Description | Tests Added | Cumulative |
+|-------|-------------|-------------|------------|
+| 0 | Solution Scaffold + CLI Shell | 3 | 3 |
+| 1 | Named Pipe IPC + Agent Protocol | 11 | 14 |
+| 2 | Input Recorder + Replayer | 10 | 24 |
+| 3 | Screenshot Comparison Engine | 16 | 40 |
+| 4 | Test Runner + Orchestrator | 9 | 49 |
+| 5 | HTML Report + Polish | 3 | 52 |
+| 6 | Rhino Workload Agent | 0 | 52 |
+| 7 | Future Workloads (Stub) | 0 | 52 |
+| 8 | .rhp Fix + Canary.Core Extraction | 3 | 55 |
+| 9 | WinForms Application Shell | 3 | 58 |
+| 10 | Results Viewer + Baseline Management | 5 | 63 |
+| 11 | Test Manager — Create, Edit, Run | 6 | 69 |
+| 12 | Polish + Integration | 3 | 72 |

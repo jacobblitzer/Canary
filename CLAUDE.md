@@ -8,12 +8,15 @@ Read `spec/SUPERVISOR.md` — it is the single source of truth for all build dec
 ### Spec Files (read in order)
 1. `spec/SUPERVISOR.md` — Orchestration, constraints, gate checklists, dependency matrix
 2. `spec/ARCHITECTURE.md` — System design, IPC protocol, comparison engine, two-process model
-3. `spec/PHASES.md` — Build phases with checkpoints
-4. `spec/TESTS.md` — Unit and integration test specifications
+3. `spec/PHASES.md` — Build phases with checkpoints (0–7)
+4. `spec/PHASES_UI.md` — Build phases with checkpoints (8–12: Core extraction + WinForms GUI)
+5. `spec/TESTS.md` — Unit and integration test specifications (0–7)
+6. `spec/TESTS_UI.md` — Test specifications (8–12)
 
 ### Key Rules
-- **Namespace**: `Canary` (harness), `Canary.Agent` (shared agent interface), `Canary.Agent.Rhino` (Rhino-specific agent)
-- **Framework**: `net8.0` for the harness and agent library; `net48` for Rhino agent plugin
+- **Namespace**: `Canary` (core + harness), `Canary.Agent` (shared agent interface), `Canary.Agent.Rhino` (Rhino-specific agent)
+- **Projects**: `Canary.Core` (shared library), `Canary.Harness` (CLI), `Canary.UI` (WinForms GUI, Phase 9+)
+- **Framework**: `net8.0-windows` for Core, Harness, UI; `net8.0;net48` for Agent; `net48` for Rhino agent plugin
 - **Solution**: `Canary.sln` contains all projects
 - **IPC**: Named pipes with JSON-RPC messages — no HTTP, no sockets
 - **Input replay**: Win32 `SendInput` via the WindowsInput NuGet — mouse/keyboard events injected at the OS level
@@ -31,4 +34,4 @@ Read `spec/SUPERVISOR.md` — it is the single source of truth for all build dec
 6. Log results in BUILD_LOG.md
 7. Advance to next checkpoint
 
-### Current Phase: 7 (complete — all phases done)
+### Current Phase: 12 (Phases 0–12 complete — 72+ tests passing)

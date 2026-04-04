@@ -33,7 +33,8 @@ public static class ApproveCommand
 
             try
             {
-                TestRunner.ApproveTest(workloadsDir, workload, test);
+                var count = BaselineManager.ApproveTest(workloadsDir, workload, test);
+                Program.Log($"Approved {count} baseline(s) for test '{test}'.");
             }
             catch (Exception ex)
             {

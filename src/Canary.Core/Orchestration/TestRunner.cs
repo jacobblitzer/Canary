@@ -8,19 +8,21 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace Canary.Orchestration;
 
 /// <summary>
-/// Orchestrates the full test lifecycle: launch app → connect → setup → replay → capture → compare.
+/// Orchestrates the full test lifecycle: launch app -> connect -> setup -> replay -> capture -> compare.
 /// </summary>
 public sealed class TestRunner
 {
     private readonly ProcessManager _processManager;
     private readonly string _workloadsDir;
+    private readonly ITestLogger _logger;
     private readonly PixelDiffComparer _pixelDiff = new();
     private readonly SsimComparer _ssim = new();
 
-    public TestRunner(ProcessManager processManager, string workloadsDir)
+    public TestRunner(ProcessManager processManager, string workloadsDir, ITestLogger logger)
     {
         _processManager = processManager;
         _workloadsDir = workloadsDir;
+        _logger = logger;
     }
 
     /// <summary>
@@ -48,14 +50,14 @@ public sealed class TestRunner
         try
         {
             // 1. Launch application
-            Program.Log($"Launching {workload.DisplayName}...");
+            _logger.Log($"Launching {workload.DisplayName}...");
             appProcess = AppLauncher.Launch(workload);
             _processManager.Track(appProcess);
 
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
 
             // 2. Wait for agent
-            Program.Log($"Waiting for agent on pipe '{pipeName}'...");
+            _logger.Log($"Waiting for agent on pipe '{pipeName}'...");
             var agentReady = await AppLauncher.WaitForAgentAsync(
                 pipeName,
                 TimeSpan.FromMilliseconds(workload.StartupTimeoutMs),
@@ -129,7 +131,7 @@ public sealed class TestRunner
                 }
                 catch (Exception ex)
                 {
-                    Program.Log($"Warning: Failed to build composite image: {ex.Message}");
+                    _logger.Log($"Warning: Failed to build composite image: {ex.Message}");
                 }
             }
         }
@@ -176,44 +178,44 @@ public sealed class TestRunner
             var result = await RunTestAsync(test, workload, cancellationToken).ConfigureAwait(false);
             suite.TestResults.Add(result);
 
-            var (symbol, color) = result.Status switch
+            var (symbol, level) = result.Status switch
             {
-                TestStatus.Passed => ("PASS", ConsoleColor.Green),
-                TestStatus.Failed => ("FAIL", ConsoleColor.Red),
-                TestStatus.Crashed => ("CRASH", ConsoleColor.Magenta),
-                TestStatus.New => ("NEW", ConsoleColor.Yellow),
-                _ => ("???", ConsoleColor.Gray)
+                TestStatus.Passed => ("PASS", TestStatusLevel.Pass),
+                TestStatus.Failed => ("FAIL", TestStatusLevel.Fail),
+                TestStatus.Crashed => ("CRASH", TestStatusLevel.Crash),
+                TestStatus.New => ("NEW", TestStatusLevel.New),
+                _ => ("???", TestStatusLevel.Info)
             };
 
             var maxDiff = result.CheckpointResults.Count > 0
                 ? result.CheckpointResults.Max(c => c.DiffPercentage)
                 : 0;
 
-            Program.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", color);
+            _logger.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", level);
 
             // Verbose: show per-checkpoint details
-            if (Program.Verbose)
+            if (_logger.Verbose)
             {
                 foreach (var cp in result.CheckpointResults)
                 {
                     var cpSymbol = cp.Status == TestStatus.Passed ? "  +" : "  -";
-                    Program.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
+                    _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
                 }
             }
         }
 
         // Summary always prints (even in quiet mode)
-        Console.WriteLine($"Results: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new");
+        _logger.LogSummary($"Results: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new");
         return suite;
     }
 
-    private static async Task SendSetupCommandsAsync(
+    private async Task SendSetupCommandsAsync(
         HarnessClient client, TestSetup setup, WorkloadConfig workload, CancellationToken ct)
     {
         // Open file if specified
         if (!string.IsNullOrWhiteSpace(setup.File))
         {
-            Program.Log($"Opening file: {setup.File}");
+            _logger.Log($"Opening file: {setup.File}");
             await client.ExecuteAsync("OpenFile", new Dictionary<string, string>
             {
                 ["path"] = setup.File
@@ -235,7 +237,7 @@ public sealed class TestRunner
         // Run setup commands
         foreach (var cmd in setup.Commands)
         {
-            Program.Log($"Running: {cmd}");
+            _logger.Log($"Running: {cmd}");
             await client.ExecuteAsync("RunCommand", new Dictionary<string, string>
             {
                 ["command"] = cmd
@@ -262,7 +264,7 @@ public sealed class TestRunner
             var candidatePath = Path.Combine(testDir, "candidates", $"{checkpoint.Name}.png");
             Directory.CreateDirectory(Path.GetDirectoryName(candidatePath)!);
 
-            Program.Log($"Capturing checkpoint: {checkpoint.Name}");
+            _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
             var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
             {
                 Width = 800,
@@ -371,54 +373,5 @@ public sealed class TestRunner
     private string GetTestDirectory(string workloadName, string testName)
     {
         return Path.Combine(_workloadsDir, workloadName, "results", testName);
-    }
-
-    /// <summary>
-    /// Discover all test definitions for a workload.
-    /// </summary>
-    public static async Task<List<TestDefinition>> DiscoverTestsAsync(string workloadsDir, string workloadName)
-    {
-        var testsDir = Path.Combine(workloadsDir, workloadName, "tests");
-        if (!Directory.Exists(testsDir))
-            return new List<TestDefinition>();
-
-        var tests = new List<TestDefinition>();
-        foreach (var file in Directory.GetFiles(testsDir, "*.json"))
-        {
-            try
-            {
-                tests.Add(await TestDefinition.LoadAsync(file).ConfigureAwait(false));
-            }
-            catch (Exception ex)
-            {
-                Program.Log($"Warning: Failed to parse test '{file}': {ex.Message}");
-            }
-        }
-        return tests;
-    }
-
-    /// <summary>
-    /// Approve a test by copying candidates to baselines.
-    /// </summary>
-    public static void ApproveTest(string workloadsDir, string workloadName, string testName)
-    {
-        var testDir = Path.Combine(workloadsDir, workloadName, "results", testName);
-        var candidatesDir = Path.Combine(testDir, "candidates");
-        var baselinesDir = Path.Combine(testDir, "baselines");
-
-        if (!Directory.Exists(candidatesDir))
-            throw new DirectoryNotFoundException($"No candidates found for test '{testName}'. Run the test first.");
-
-        Directory.CreateDirectory(baselinesDir);
-
-        int count = 0;
-        foreach (var file in Directory.GetFiles(candidatesDir, "*.png"))
-        {
-            var dest = Path.Combine(baselinesDir, Path.GetFileName(file));
-            File.Copy(file, dest, overwrite: true);
-            count++;
-        }
-
-        Program.Log($"Approved {count} baseline(s) for test '{testName}'.");
     }
 }
