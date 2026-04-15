@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Canary.Core\Canary.Core.csproj" />
     <ProjectReference Include="..\Canary.Agent\Canary.Agent.csproj" />
+    <ProjectReference Include="..\Canary.Agent.Penumbra\Canary.Agent.Penumbra.csproj" />
   </ItemGroup>
 
 </Project>

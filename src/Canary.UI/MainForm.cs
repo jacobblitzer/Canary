@@ -609,6 +609,28 @@ public sealed class MainForm : Form
         {
             var editor = new WorkloadEditorControl();
             editor.LoadConfig(entry.Config);
+
+            // Load Penumbra-specific config if applicable
+            var configPath = Path.Combine(entry.Directory, "workload.json");
+            if (entry.Config.AgentType == "penumbra-cdp" && File.Exists(configPath))
+                editor.LoadPenumbraConfig(configPath);
+
+            // Wire save to write JSON and refresh tree
+            editor.SaveRequested += json =>
+            {
+                try
+                {
+                    File.WriteAllText(configPath, json);
+                    _statusLabel.Text = $"Saved workload config: {configPath}";
+                    if (_workloadsDir != null)
+                        _ = LoadWorkloadsDirAsync(_workloadsDir);
+                }
+                catch (Exception ex)
+                {
+                    _statusLabel.Text = $"Save failed: {ex.Message}";
+                }
+            };
+
             _contentPanel.Controls.Clear();
             _contentPanel.Controls.Add(editor);
         }

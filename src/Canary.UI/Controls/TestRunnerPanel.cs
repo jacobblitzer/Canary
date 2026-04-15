@@ -1,4 +1,5 @@
 using Canary;
+using Canary.Agent.Penumbra;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.Reporting;
@@ -104,7 +105,8 @@ internal sealed class TestRunnerPanel : UserControl
     public async Task RunAsync(
         WorkloadConfig workload,
         IReadOnlyList<TestDefinition> tests,
-        string workloadsDir)
+        string workloadsDir,
+        string? workloadJsonPath = null)
     {
         _logBox.Clear();
         _progressBar.Value = 0;
@@ -175,9 +177,15 @@ internal sealed class TestRunnerPanel : UserControl
 
             AddLog("Starting test suite...");
 
-            var suite = await Task.Run(
-                () => runner.RunSuiteAsync(workload, tests, _cts.Token),
-                _cts.Token).ConfigureAwait(true);
+            SuiteResult suite;
+            if (workload.AgentType == "penumbra-cdp")
+                suite = await Task.Run(
+                    () => RunPenumbraSuiteAsync(workload, tests, runner, workloadsDir, logger, _cts.Token),
+                    _cts.Token).ConfigureAwait(true);
+            else
+                suite = await Task.Run(
+                    () => runner.RunSuiteAsync(workload, tests, _cts.Token),
+                    _cts.Token).ConfigureAwait(true);
 
             _statusLabel.Text = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed";
             _progressBar.Value = _progressBar.Maximum;
@@ -225,6 +233,47 @@ internal sealed class TestRunnerPanel : UserControl
             _stopButton.Enabled = false;
             _cts.Dispose();
             _cts = null;
+        }
+    }
+
+    private async Task<SuiteResult> RunPenumbraSuiteAsync(
+        WorkloadConfig workload,
+        IReadOnlyList<TestDefinition> tests,
+        TestRunner runner,
+        string workloadsDir,
+        ITestLogger logger,
+        CancellationToken ct)
+    {
+        // Load the Penumbra-specific config from workload.json
+        var configPath = Path.Combine(workloadsDir, workload.Name, "workload.json");
+        var penConfig = await PenumbraWorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
+
+        // Probe for an already-running instance
+        logger.Log("Probing for existing Penumbra instance...");
+        var probe = await PenumbraInstanceProbe.ProbeAsync(
+            penConfig.PenumbraConfig.VitePort,
+            penConfig.PenumbraConfig.CdpPort).ConfigureAwait(false);
+
+        var agent = new PenumbraBridgeAgent(penConfig.PenumbraConfig);
+        try
+        {
+            if (probe.PenumbraReady && probe.PageWebSocketUrl != null && probe.ViteUrl != null)
+            {
+                logger.Log($"Reusing existing instance (Vite={probe.ViteUrl}, backend={probe.RendererBackend})");
+                await agent.InitializeFromExistingAsync(probe.PageWebSocketUrl, probe.ViteUrl, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                logger.Log("No existing instance found — launching fresh Vite + Chrome...");
+                await agent.InitializeAsync(ct).ConfigureAwait(false);
+            }
+
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            logger.Log("Shutting down Penumbra bridge agent...");
+            agent.Dispose();
         }
     }
 }

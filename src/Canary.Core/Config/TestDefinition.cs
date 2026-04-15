@@ -66,6 +66,24 @@ public sealed class TestSetup
 
     [JsonPropertyName("commands")]
     public List<string> Commands { get; set; } = new();
+
+    /// <summary>
+    /// Scene to load (Penumbra). Contains "index" for the scene number.
+    /// </summary>
+    [JsonPropertyName("scene")]
+    public SceneSetup? Scene { get; set; }
+
+    /// <summary>
+    /// Rendering backend (Penumbra): "webgpu" or "webgl2".
+    /// </summary>
+    [JsonPropertyName("backend")]
+    public string Backend { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Canvas dimensions for deterministic captures (Penumbra).
+    /// </summary>
+    [JsonPropertyName("canvas")]
+    public CanvasSetup? Canvas { get; set; }
 }
 
 /// <summary>
@@ -102,4 +120,53 @@ public sealed class TestCheckpoint
 
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Camera position for scripted captures (Penumbra). If set, the test runner
+    /// uses SetCamera instead of input replay timing.
+    /// </summary>
+    [JsonPropertyName("camera")]
+    public CameraPosition? Camera { get; set; }
+
+    /// <summary>
+    /// Milliseconds to wait for render stabilization after camera change (Penumbra).
+    /// </summary>
+    [JsonPropertyName("stabilizeMs")]
+    public int? StabilizeMs { get; set; }
+}
+
+/// <summary>
+/// Scene selection for Penumbra test setup.
+/// </summary>
+public sealed class SceneSetup
+{
+    [JsonPropertyName("index")]
+    public int Index { get; set; }
+}
+
+/// <summary>
+/// Canvas dimensions for deterministic Penumbra captures.
+/// </summary>
+public sealed class CanvasSetup
+{
+    [JsonPropertyName("width")]
+    public int Width { get; set; } = 960;
+
+    [JsonPropertyName("height")]
+    public int Height { get; set; } = 540;
+}
+
+/// <summary>
+/// Scripted camera position in spherical coordinates (Penumbra).
+/// </summary>
+public sealed class CameraPosition
+{
+    [JsonPropertyName("azimuth")]
+    public double Azimuth { get; set; }
+
+    [JsonPropertyName("elevation")]
+    public double Elevation { get; set; }
+
+    [JsonPropertyName("distance")]
+    public double Distance { get; set; }
 }

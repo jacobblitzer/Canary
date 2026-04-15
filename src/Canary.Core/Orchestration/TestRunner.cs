@@ -321,6 +321,286 @@ public sealed class TestRunner
         return suite;
     }
 
+    /// <summary>
+    /// Run a test using an in-process ICanaryAgent (e.g., PenumbraBridgeAgent).
+    /// The agent must already be initialized. The caller is responsible for disposal.
+    /// Used for CDP-based agents that manage their own app lifecycle.
+    /// </summary>
+    public async Task<TestResult> RunAgentTestAsync(
+        TestDefinition testDef,
+        WorkloadConfig workload,
+        ICanaryAgent agent,
+        CancellationToken cancellationToken)
+    {
+        var sw = Stopwatch.StartNew();
+        var result = new TestResult
+        {
+            TestName = testDef.Name,
+            Workload = workload.Name,
+            Status = TestStatus.Passed
+        };
+
+        try
+        {
+            // 1. Verify heartbeat
+            _logger.Log("Sending heartbeat...");
+            var hb = await agent.HeartbeatAsync().ConfigureAwait(false);
+            _logger.Log($"Heartbeat: ok={hb.Ok}");
+            if (!hb.Ok)
+            {
+                result.Status = TestStatus.Crashed;
+                result.ErrorMessage = "Agent heartbeat returned ok=false.";
+                result.Duration = sw.Elapsed;
+                return result;
+            }
+
+            // 2. Send setup commands via agent
+            if (testDef.Setup != null)
+            {
+                _logger.Log("Sending setup commands...");
+                await SendAgentSetupAsync(agent, testDef.Setup, cancellationToken).ConfigureAwait(false);
+                _logger.Log("Setup commands complete.");
+            }
+
+            // 3. Process checkpoints with camera positioning
+            var testDir = GetTestDirectory(workload.Name, testDef.Name);
+            Directory.CreateDirectory(testDir);
+
+            var captureWidth = testDef.Setup?.Canvas?.Width ?? 960;
+            var captureHeight = testDef.Setup?.Canvas?.Height ?? 540;
+
+            foreach (var checkpoint in testDef.Checkpoints)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Set camera if checkpoint specifies one
+                if (checkpoint.Camera != null)
+                {
+                    _logger.Log($"Setting camera: az={checkpoint.Camera.Azimuth}, el={checkpoint.Camera.Elevation}, dist={checkpoint.Camera.Distance}");
+                    await agent.ExecuteAsync("SetCamera", new Dictionary<string, string>
+                    {
+                        ["azimuth"] = checkpoint.Camera.Azimuth.ToString(),
+                        ["elevation"] = checkpoint.Camera.Elevation.ToString(),
+                        ["distance"] = checkpoint.Camera.Distance.ToString(),
+                        ["stabilizeMs"] = (checkpoint.StabilizeMs ?? 500).ToString()
+                    }).ConfigureAwait(false);
+                }
+
+                var cpResult = await ProcessAgentCheckpointAsync(
+                    agent, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
+
+                result.CheckpointResults.Add(cpResult);
+
+                if (cpResult.Status == TestStatus.Failed)
+                    result.Status = TestStatus.Failed;
+                else if (cpResult.Status == TestStatus.Crashed)
+                    result.Status = TestStatus.Crashed;
+                else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
+                    result.Status = TestStatus.New;
+            }
+
+            // 4. Build composite image
+            if (result.CheckpointResults.Count > 0)
+            {
+                try
+                {
+                    result.CompositeImagePath = await BuildCompositeAsync(result, testDir).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Warning: Failed to build composite image: {ex.Message}");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            result.Status = TestStatus.Crashed;
+            result.ErrorMessage = "Test cancelled by user.";
+        }
+        catch (Exception ex)
+        {
+            result.Status = TestStatus.Crashed;
+            result.ErrorMessage = ex.Message;
+        }
+
+        result.Duration = sw.Elapsed;
+        return result;
+    }
+
+    /// <summary>
+    /// Run all tests for a workload using an in-process agent.
+    /// The agent must already be initialized. Caller is responsible for disposal.
+    /// </summary>
+    public async Task<SuiteResult> RunAgentSuiteAsync(
+        WorkloadConfig workload,
+        IReadOnlyList<TestDefinition> tests,
+        ICanaryAgent agent,
+        CancellationToken cancellationToken)
+    {
+        var suite = new SuiteResult();
+
+        foreach (var test in tests)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var result = await RunAgentTestAsync(test, workload, agent, cancellationToken).ConfigureAwait(false);
+            suite.TestResults.Add(result);
+
+            var (symbol, level) = result.Status switch
+            {
+                TestStatus.Passed => ("PASS", TestStatusLevel.Pass),
+                TestStatus.Failed => ("FAIL", TestStatusLevel.Fail),
+                TestStatus.Crashed => ("CRASH", TestStatusLevel.Crash),
+                TestStatus.New => ("NEW", TestStatusLevel.New),
+                _ => ("???", TestStatusLevel.Info)
+            };
+
+            var maxDiff = result.CheckpointResults.Count > 0
+                ? result.CheckpointResults.Max(c => c.DiffPercentage)
+                : 0;
+
+            _logger.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", level);
+
+            if (_logger.Verbose)
+            {
+                foreach (var cp in result.CheckpointResults)
+                {
+                    var cpSymbol = cp.Status == TestStatus.Passed ? "  +" : "  -";
+                    _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
+                    if (!string.IsNullOrEmpty(cp.ErrorMessage))
+                        _logger.Log($"    Error: {cp.ErrorMessage}");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                _logger.Log($"  Error: {result.ErrorMessage}");
+        }
+
+        _logger.LogSummary($"Results: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new");
+        return suite;
+    }
+
+    private async Task SendAgentSetupAsync(ICanaryAgent agent, TestSetup setup, CancellationToken ct)
+    {
+        // Set canvas size if specified
+        if (setup.Canvas != null)
+        {
+            await agent.ExecuteAsync("SetCanvasSize", new Dictionary<string, string>
+            {
+                ["width"] = setup.Canvas.Width.ToString(),
+                ["height"] = setup.Canvas.Height.ToString()
+            }).ConfigureAwait(false);
+        }
+
+        // Set backend if specified
+        if (!string.IsNullOrWhiteSpace(setup.Backend))
+        {
+            await agent.ExecuteAsync("SetBackend", new Dictionary<string, string>
+            {
+                ["backend"] = setup.Backend
+            }).ConfigureAwait(false);
+        }
+
+        // Load scene if specified
+        if (setup.Scene != null)
+        {
+            await agent.ExecuteAsync("LoadScene", new Dictionary<string, string>
+            {
+                ["index"] = setup.Scene.Index.ToString()
+            }).ConfigureAwait(false);
+        }
+
+        // Run setup commands
+        foreach (var cmd in setup.Commands)
+        {
+            _logger.Log($"Running: {cmd}");
+            await agent.ExecuteAsync("RunCommand", new Dictionary<string, string>
+            {
+                ["command"] = cmd
+            }).ConfigureAwait(false);
+        }
+
+        // Let the app settle after setup
+        await Task.Delay(1000, ct).ConfigureAwait(false);
+    }
+
+    private async Task<CheckpointResult> ProcessAgentCheckpointAsync(
+        ICanaryAgent agent,
+        TestCheckpoint checkpoint,
+        string testDir,
+        int captureWidth,
+        int captureHeight,
+        CancellationToken ct)
+    {
+        var cpResult = new CheckpointResult
+        {
+            Name = checkpoint.Name,
+            Tolerance = checkpoint.Tolerance
+        };
+
+        try
+        {
+            // Capture screenshot
+            var candidatePath = Path.Combine(testDir, "candidates", $"{checkpoint.Name}.png");
+            Directory.CreateDirectory(Path.GetDirectoryName(candidatePath)!);
+
+            _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+            var captureResult = await agent.CaptureScreenshotAsync(new CaptureSettings
+            {
+                Width = captureWidth,
+                Height = captureHeight,
+                OutputPath = candidatePath
+            }).ConfigureAwait(false);
+
+            cpResult.CandidatePath = captureResult.FilePath;
+
+            // Check for baseline
+            var baselinePath = Path.Combine(testDir, "baselines", $"{checkpoint.Name}.png");
+            cpResult.BaselinePath = baselinePath;
+
+            if (!File.Exists(baselinePath))
+            {
+                cpResult.Status = TestStatus.New;
+                cpResult.ErrorMessage = "No baseline exists. Run 'canary approve' to establish.";
+                return cpResult;
+            }
+
+            // Compare
+            using var baseline = await Image.LoadAsync<Rgba32>(baselinePath, ct).ConfigureAwait(false);
+            using var candidate = await Image.LoadAsync<Rgba32>(cpResult.CandidatePath, ct).ConfigureAwait(false);
+
+            if (baseline.Width != candidate.Width || baseline.Height != candidate.Height)
+            {
+                cpResult.Status = TestStatus.Failed;
+                cpResult.ErrorMessage = $"Viewport size mismatch: baseline {baseline.Width}x{baseline.Height}, candidate {candidate.Width}x{candidate.Height}";
+                return cpResult;
+            }
+
+            using var compResult = _pixelDiff.Compare(baseline, candidate, colorThreshold: 3, tolerance: checkpoint.Tolerance);
+            cpResult.DiffPercentage = compResult.DiffPercentage;
+            cpResult.Status = compResult.Passed ? TestStatus.Passed : TestStatus.Failed;
+
+            // Save diff image
+            if (compResult.DiffImage != null)
+            {
+                var diffPath = Path.Combine(testDir, "diffs", $"{checkpoint.Name}.png");
+                Directory.CreateDirectory(Path.GetDirectoryName(diffPath)!);
+                await compResult.DiffImage.SaveAsPngAsync(diffPath, ct).ConfigureAwait(false);
+                cpResult.DiffImagePath = diffPath;
+            }
+
+            // Compute SSIM (secondary, logged but not gating)
+            cpResult.SsimScore = _ssim.ComputeSsim(baseline, candidate);
+        }
+        catch (Exception ex)
+        {
+            cpResult.Status = TestStatus.Crashed;
+            cpResult.ErrorMessage = ex.Message;
+        }
+
+        return cpResult;
+    }
+
     private async Task SendSetupCommandsAsync(
         HarnessClient client, TestSetup setup, WorkloadConfig workload, CancellationToken ct)
     {

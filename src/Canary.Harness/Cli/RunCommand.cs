@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Canary.Agent.Penumbra;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.Reporting;
@@ -48,6 +49,41 @@ public static class RunCommand
         }, workloadOption, testOption, verboseOption, quietOption);
 
         return command;
+    }
+
+    /// <summary>
+    /// Run the Penumbra CDP suite: create the bridge agent once, run all tests through it, then clean up.
+    /// </summary>
+    private static async Task<SuiteResult> RunPenumbraSuiteAsync(
+        TestRunner runner,
+        WorkloadConfig workload,
+        List<TestDefinition> tests,
+        string configPath,
+        ConsoleTestLogger logger,
+        CancellationToken ct)
+    {
+        logger.Log("Initializing Penumbra CDP bridge agent...");
+
+        var penumbraConfig = await PenumbraWorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
+        using var agent = new PenumbraBridgeAgent(penumbraConfig.PenumbraConfig);
+
+        // Register Ctrl+C abort
+        ct.Register(() =>
+        {
+            try { agent.AbortAsync().Wait(3000); } catch { }
+        });
+
+        await agent.InitializeAsync(ct).ConfigureAwait(false);
+        logger.Log("Penumbra bridge agent ready.  Press Ctrl+C to abort");
+
+        try
+        {
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            logger.Log("Shutting down Penumbra bridge agent...");
+        }
     }
 
     private static async Task RunAsync(string? workloadName, string? testName, ConsoleTestLogger logger, CancellationToken ct)
@@ -102,7 +138,16 @@ public static class RunCommand
             }
 
             logger.Log($"Running {tests.Count} test(s) for workload '{workloadName}'  Press Ctrl+C to abort");
-            var suite = await runner.RunSuiteAsync(workload, tests, ct).ConfigureAwait(false);
+
+            SuiteResult suite;
+            if (workload.AgentType == "penumbra-cdp")
+            {
+                suite = await RunPenumbraSuiteAsync(runner, workload, tests, configPath, logger, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                suite = await runner.RunSuiteAsync(workload, tests, ct).ConfigureAwait(false);
+            }
 
             // Generate reports
             var resultsDir = Path.Combine(workloadsDir, workloadName, "results");
