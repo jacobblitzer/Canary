@@ -15,6 +15,7 @@ public sealed class WorkloadExplorer
     {
         public required WorkloadConfig Config { get; init; }
         public required List<TestDefinition> Tests { get; init; }
+        public required List<string> Recordings { get; init; }
         public required string Directory { get; init; }
     }
 
@@ -41,11 +42,21 @@ public sealed class WorkloadExplorer
                 var workloadName = Path.GetFileName(dir);
                 var tests = await TestDiscovery.DiscoverTestsAsync(workloadsDir, workloadName).ConfigureAwait(false);
 
+                // Discover recordings
+                var recordings = new List<string>();
+                var recordingsDir = Path.Combine(dir, "recordings");
+                if (Directory.Exists(recordingsDir))
+                {
+                    foreach (var file in Directory.GetFiles(recordingsDir, "*.input.json"))
+                        recordings.Add(file);
+                }
+
                 entries.Add(new WorkloadEntry
                 {
                     Config = config,
                     Directory = dir,
-                    Tests = tests
+                    Tests = tests,
+                    Recordings = recordings
                 });
             }
             catch (Exception ex)

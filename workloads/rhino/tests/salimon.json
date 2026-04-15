@@ -1,0 +1,24 @@
+{
+  "name": "salimon",
+  "workload": "rhino",
+  "description": "Test created from recording \u0027salimon.input.json\u0027",
+  "setup": {
+    "file": "",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": []
+  },
+  "recording": "recordings/salimon.input.json",
+  "checkpoints": [
+    {
+      "name": "final",
+      "atTimeMs": 37578,
+      "tolerance": 0.02,
+      "description": "Screenshot after replaying the full recording"
+    }
+  ]
+}

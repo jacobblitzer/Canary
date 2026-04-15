@@ -13,6 +13,7 @@ public sealed class HarnessClient : IDisposable
 {
     private readonly string _pipeName;
     private readonly TimeSpan _timeout;
+    private readonly SemaphoreSlim _pipeLock = new(1, 1);
     private NamedPipeClientStream? _pipeClient;
     private StreamReader? _reader;
     private StreamWriter? _writer;
@@ -33,9 +34,19 @@ public sealed class HarnessClient : IDisposable
     /// Connects to the agent's named pipe server.
     /// </summary>
     public async Task ConnectAsync(CancellationToken cancellationToken = default)
+        => await ConnectAsync((int)_timeout.TotalMilliseconds, cancellationToken).ConfigureAwait(false);
+
+    /// <summary>
+    /// Connects to the agent's named pipe server with a custom connect timeout.
+    /// </summary>
+    /// <param name="connectTimeoutMs">
+    /// Max time to wait for the pipe to appear (e.g. app startup timeout).
+    /// </param>
+    public async Task ConnectAsync(int connectTimeoutMs, CancellationToken cancellationToken = default)
     {
+        var connectTimeout = connectTimeoutMs;
         _pipeClient = new NamedPipeClientStream(".", _pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-        await _pipeClient.ConnectAsync((int)_timeout.TotalMilliseconds, cancellationToken).ConfigureAwait(false);
+        await _pipeClient.ConnectAsync(connectTimeout, cancellationToken).ConfigureAwait(false);
 
         var utf8NoBom = new UTF8Encoding(false);
         _reader = new StreamReader(_pipeClient, utf8NoBom, false, 1024, leaveOpen: true);
@@ -99,6 +110,22 @@ public sealed class HarnessClient : IDisposable
     public bool IsConnected => _pipeClient?.IsConnected ?? false;
 
     private async Task<RpcResponse> SendRequestAsync(
+        string method,
+        Dictionary<string, JsonElement>? parameters,
+        CancellationToken cancellationToken)
+    {
+        await _pipeLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return await SendRequestCoreAsync(method, parameters, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _pipeLock.Release();
+        }
+    }
+
+    private async Task<RpcResponse> SendRequestCoreAsync(
         string method,
         Dictionary<string, JsonElement>? parameters,
         CancellationToken cancellationToken)
@@ -173,5 +200,6 @@ public sealed class HarnessClient : IDisposable
         _reader?.Dispose();
         try { _writer?.Dispose(); } catch (IOException) { }
         _pipeClient?.Dispose();
+        _pipeLock.Dispose();
     }
 }

@@ -2,10 +2,11 @@
   "name": "rhino",
   "displayName": "Rhino 8",
   "appPath": "C:\\Program Files\\Rhino 8\\System\\Rhino.exe",
-  "appArgs": "/nosplash",
+  "appArgs": "/nosplash /runscript=\"_-SetView _World _Perspective _Enter _-MaxViewport\"",
   "agentType": "rhino",
   "pipeName": "canary-rhino",
   "startupTimeoutMs": 30000,
   "windowTitle": "Rhinoceros",
-  "viewportClass": "Eto.Wpf.Forms.Controls.WpfViewportHandler"
+  "viewportClass": "Eto.Wpf.Forms.Controls.WpfViewportHandler",
+  "setupCommands": []
 }

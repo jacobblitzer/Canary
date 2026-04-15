@@ -20,6 +20,7 @@ public sealed class InputReplayer
     private readonly double _speedMultiplier;
     private readonly SortedSet<long> _checkpointTimesMs;
     private readonly CheckpointCallback? _onCheckpoint;
+    private readonly IntPtr _targetWindow;
 
     /// <summary>
     /// Creates a replayer for the given recording.
@@ -29,18 +30,21 @@ public sealed class InputReplayer
     /// <param name="speedMultiplier">Speed multiplier (1.0 = original, 2.0 = double speed).</param>
     /// <param name="checkpointTimesMs">Timestamps at which to pause and call the checkpoint callback.</param>
     /// <param name="onCheckpoint">Callback invoked at each checkpoint timestamp.</param>
+    /// <param name="targetWindow">Window handle to bring to foreground before replay.</param>
     public InputReplayer(
         InputRecording recording,
         ViewportBounds replayBounds,
         double speedMultiplier = 1.0,
         IEnumerable<long>? checkpointTimesMs = null,
-        CheckpointCallback? onCheckpoint = null)
+        CheckpointCallback? onCheckpoint = null,
+        IntPtr targetWindow = default)
     {
         _recording = recording;
         _replayBounds = replayBounds;
         _speedMultiplier = speedMultiplier > 0 ? speedMultiplier : 1.0;
         _checkpointTimesMs = checkpointTimesMs != null ? new SortedSet<long>(checkpointTimesMs) : new SortedSet<long>();
         _onCheckpoint = onCheckpoint;
+        _targetWindow = targetWindow;
     }
 
     /// <summary>
@@ -50,6 +54,13 @@ public sealed class InputReplayer
     {
         if (_recording.Events.Count == 0)
             return;
+
+        // Bring target window to foreground so SendInput events reach it
+        if (_targetWindow != IntPtr.Zero)
+        {
+            SetForegroundWindow(_targetWindow);
+            await Task.Delay(500, cancellationToken).ConfigureAwait(false);
+        }
 
         var stopwatch = Stopwatch.StartNew();
         var processedCheckpoints = new HashSet<long>();
@@ -111,7 +122,10 @@ public sealed class InputReplayer
                 InjectMouseButton(evt, isDown: false);
                 break;
             case InputEventType.MouseWheel:
-                InjectMouseWheel(evt);
+                InjectMouseWheel(evt, horizontal: false);
+                break;
+            case InputEventType.MouseHWheel:
+                InjectMouseWheel(evt, horizontal: true);
                 break;
             case InputEventType.KeyDown:
                 InjectKey(evt, isDown: true);
@@ -180,12 +194,13 @@ public sealed class InputReplayer
         SendInput(1, new[] { input }, Marshal.SizeOf<INPUT>());
     }
 
-    private void InjectMouseWheel(InputEvent evt)
+    private void InjectMouseWheel(InputEvent evt, bool horizontal)
     {
         if (evt.ViewportX == null || evt.ViewportY == null) return;
         var (screenX, screenY) = ViewportLocator.DenormalizeCoord(evt.ViewportX.Value, evt.ViewportY.Value, _replayBounds);
         var (absX, absY) = ViewportLocator.ScreenToAbsolute(screenX, screenY);
 
+        var wheelFlag = horizontal ? MOUSEEVENTF_HWHEEL : MOUSEEVENTF_WHEEL;
         var input = new INPUT
         {
             type = INPUT_MOUSE,
@@ -196,7 +211,7 @@ public sealed class InputReplayer
                     dx = absX,
                     dy = absY,
                     mouseData = (uint)(evt.WheelDelta ?? 0),
-                    dwFlags = MOUSEEVENTF_WHEEL | MOUSEEVENTF_ABSOLUTE
+                    dwFlags = wheelFlag | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE
                 }
             }
         };
@@ -238,6 +253,7 @@ public sealed class InputReplayer
     private const uint MOUSEEVENTF_MIDDLEUP = 0x0040;
     private const uint MOUSEEVENTF_ABSOLUTE = 0x8000;
     private const uint MOUSEEVENTF_WHEEL = 0x0800;
+    private const uint MOUSEEVENTF_HWHEEL = 0x1000;
     private const uint KEYEVENTF_KEYUP = 0x0002;
 
     private enum VirtualKey : ushort
@@ -299,6 +315,10 @@ public sealed class InputReplayer
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
 
     #endregion
 }

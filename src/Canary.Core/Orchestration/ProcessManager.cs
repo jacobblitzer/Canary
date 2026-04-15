@@ -45,6 +45,31 @@ public sealed class ProcessManager
                 }
             }
 
+            // Wait for all processes to fully exit before clearing
+            foreach (var proc in _tracked)
+            {
+                try
+                {
+                    if (!proc.HasExited)
+                        proc.WaitForExit(5000);
+                }
+                catch { }
+            }
+
+            // Retry kill on any stubborn processes
+            foreach (var proc in _tracked)
+            {
+                try
+                {
+                    if (!proc.HasExited)
+                    {
+                        proc.Kill(entireProcessTree: true);
+                        proc.WaitForExit(3000);
+                    }
+                }
+                catch { }
+            }
+
             _tracked.Clear();
         }
     }

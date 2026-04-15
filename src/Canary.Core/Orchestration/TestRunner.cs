@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Canary.Agent;
 using Canary.Comparison;
 using Canary.Config;
+using Canary.Input;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -17,6 +18,12 @@ public sealed class TestRunner
     private readonly ITestLogger _logger;
     private readonly PixelDiffComparer _pixelDiff = new();
     private readonly SsimComparer _ssim = new();
+
+    /// <summary>
+    /// Callback invoked when the target window handle is found.
+    /// Called from the test thread — callers must marshal to UI thread if needed.
+    /// </summary>
+    public Action<IntPtr>? OnTargetWindowFound { get; set; }
 
     public TestRunner(ProcessManager processManager, string workloadsDir, ITestLogger logger)
     {
@@ -56,27 +63,16 @@ public sealed class TestRunner
 
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
 
-            // 2. Wait for agent
-            _logger.Log($"Waiting for agent on pipe '{pipeName}'...");
-            var agentReady = await AppLauncher.WaitForAgentAsync(
-                pipeName,
-                TimeSpan.FromMilliseconds(workload.StartupTimeoutMs),
-                cancellationToken).ConfigureAwait(false);
-
-            if (!agentReady)
-            {
-                result.Status = TestStatus.Crashed;
-                result.ErrorMessage = "Agent did not become available within startup timeout.";
-                result.Duration = sw.Elapsed;
-                return result;
-            }
-
-            // 3. Connect client
+            // 2. Connect to agent (waits for pipe to appear during app startup)
+            _logger.Log($"Connecting to agent on pipe '{pipeName}' (timeout: {workload.StartupTimeoutMs}ms)...");
             client = new HarnessClient(pipeName);
-            await client.ConnectAsync(cancellationToken).ConfigureAwait(false);
+            await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
+            _logger.Log("Agent connected.");
 
-            // Verify heartbeat
+            // 3. Verify heartbeat
+            _logger.Log("Sending heartbeat...");
             var hb = await client.HeartbeatAsync(cancellationToken).ConfigureAwait(false);
+            _logger.Log($"Heartbeat: ok={hb.Ok}");
             if (!hb.Ok)
             {
                 result.Status = TestStatus.Crashed;
@@ -90,36 +86,147 @@ public sealed class TestRunner
             watchdog.OnAppDead += () => appDead = true;
             watchdogTask = watchdog.RunAsync(watchdogCts.Token);
 
-            // 5. Send setup commands
+            // 5. Send setup commands if test defines them
             if (testDef.Setup != null)
+            {
+                _logger.Log("Sending setup commands...");
                 await SendSetupCommandsAsync(client, testDef.Setup, workload, cancellationToken).ConfigureAwait(false);
+                _logger.Log("Setup commands complete.");
+            }
 
             // 6. Process checkpoints (capture + compare)
             var testDir = GetTestDirectory(workload.Name, testDef.Name);
             Directory.CreateDirectory(testDir);
 
-            foreach (var checkpoint in testDef.Checkpoints)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+            // Default capture size from WindowPositioner; updated after positioning
+            var captureWidth = WindowPositioner.TargetWidth;
+            var captureHeight = WindowPositioner.TargetHeight;
 
-                if (appDead)
+            if (!string.IsNullOrWhiteSpace(testDef.Recording))
+            {
+                // Path A: Replay recording with timed checkpoints
+                var recordingPath = ResolveRecordingPath(workload.Name, testDef.Recording);
+                if (!File.Exists(recordingPath))
                 {
                     result.Status = TestStatus.Crashed;
-                    result.ErrorMessage = "Application crashed during test.";
-                    break;
+                    result.ErrorMessage = $"Recording not found: {recordingPath}";
+                    result.Duration = sw.Elapsed;
+                    return result;
                 }
 
-                var cpResult = await ProcessCheckpointAsync(
-                    client, checkpoint, testDir, workload, cancellationToken).ConfigureAwait(false);
+                _logger.Log($"Loading recording: {recordingPath}");
+                var recording = await InputRecording.LoadAsync(recordingPath).ConfigureAwait(false);
+                _logger.Log($"Recording: {recording.Events.Count} events, {recording.Metadata.DurationMs}ms");
 
-                result.CheckpointResults.Add(cpResult);
-
-                if (cpResult.Status == TestStatus.Failed)
-                    result.Status = TestStatus.Failed;
-                else if (cpResult.Status == TestStatus.Crashed)
+                // Find the target window for input injection — use the launched process's own window
+                appProcess!.Refresh();
+                var targetHwnd = appProcess.MainWindowHandle;
+                if (!ViewportLocator.IsValidTarget(targetHwnd))
+                {
+                    // Fallback: search by title
+                    targetHwnd = ViewportLocator.FindWindowByTitle(workload.WindowTitle);
+                }
+                if (!ViewportLocator.IsValidTarget(targetHwnd))
+                {
                     result.Status = TestStatus.Crashed;
-                else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
-                    result.Status = TestStatus.New;
+                    result.ErrorMessage = $"Target window not found for process {appProcess.Id}";
+                    result.Duration = sw.Elapsed;
+                    return result;
+                }
+
+                // Position target window deterministically
+                WindowPositioner.PositionTargetWindow(targetHwnd);
+                await Task.Delay(500, cancellationToken).ConfigureAwait(false);
+                OnTargetWindowFound?.Invoke(targetHwnd);
+
+                var replayBounds = ViewportLocator.GetViewportBounds(targetHwnd);
+                captureWidth = replayBounds.Width;
+                captureHeight = replayBounds.Height;
+                _logger.Log($"Replay target: 0x{targetHwnd:X} ({replayBounds.Width}x{replayBounds.Height})");
+
+                // Build checkpoint time → checkpoint list mapping
+                var checkpointsByTime = new Dictionary<long, List<TestCheckpoint>>();
+                foreach (var cp in testDef.Checkpoints)
+                {
+                    if (!checkpointsByTime.TryGetValue(cp.AtTimeMs, out var list))
+                    {
+                        list = new List<TestCheckpoint>();
+                        checkpointsByTime[cp.AtTimeMs] = list;
+                    }
+                    list.Add(cp);
+                }
+
+                var checkpointTimes = checkpointsByTime.Keys;
+
+                // Checkpoint callback: capture + compare at each timed checkpoint
+                async Task OnCheckpointReached(long timeMs)
+                {
+                    if (appDead) return;
+                    if (!checkpointsByTime.TryGetValue(timeMs, out var checkpoints)) return;
+
+                    foreach (var checkpoint in checkpoints)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        _logger.Log($"Checkpoint '{checkpoint.Name}' at {timeMs}ms");
+
+                        var cpResult = await ProcessCheckpointAsync(
+                            client!, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
+
+                        result.CheckpointResults.Add(cpResult);
+
+                        if (cpResult.Status == TestStatus.Failed)
+                            result.Status = TestStatus.Failed;
+                        else if (cpResult.Status == TestStatus.Crashed)
+                            result.Status = TestStatus.Crashed;
+                        else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
+                            result.Status = TestStatus.New;
+                    }
+                }
+
+                // Move cursor to center of viewport so replay starts from the same spot as recording
+                WindowPositioner.MoveCursorToHome(replayBounds);
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+
+                var replayer = new InputReplayer(recording, replayBounds, 1.0, checkpointTimes, OnCheckpointReached, targetHwnd);
+                _logger.Log("Replaying recorded input...");
+                await replayer.ReplayAsync(cancellationToken).ConfigureAwait(false);
+                _logger.Log("Replay complete.");
+            }
+            else
+            {
+                // Path B: No recording — position window and capture checkpoints immediately
+                appProcess!.Refresh();
+                var targetHwnd = appProcess.MainWindowHandle;
+                if (ViewportLocator.IsValidTarget(targetHwnd))
+                {
+                    WindowPositioner.PositionTargetWindow(targetHwnd);
+                    await Task.Delay(500, cancellationToken).ConfigureAwait(false);
+                    OnTargetWindowFound?.Invoke(targetHwnd);
+                }
+
+                foreach (var checkpoint in testDef.Checkpoints)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (appDead)
+                    {
+                        result.Status = TestStatus.Crashed;
+                        result.ErrorMessage = "Application crashed during test.";
+                        break;
+                    }
+
+                    var cpResult = await ProcessCheckpointAsync(
+                        client!, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
+
+                    result.CheckpointResults.Add(cpResult);
+
+                    if (cpResult.Status == TestStatus.Failed)
+                        result.Status = TestStatus.Failed;
+                    else if (cpResult.Status == TestStatus.Crashed)
+                        result.Status = TestStatus.Crashed;
+                    else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
+                        result.Status = TestStatus.New;
+                }
             }
 
             // 7. Build composite image if there are checkpoint results
@@ -200,8 +307,13 @@ public sealed class TestRunner
                 {
                     var cpSymbol = cp.Status == TestStatus.Passed ? "  +" : "  -";
                     _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
+                    if (!string.IsNullOrEmpty(cp.ErrorMessage))
+                        _logger.Log($"    Error: {cp.ErrorMessage}");
                 }
             }
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                _logger.Log($"  Error: {result.ErrorMessage}");
         }
 
         // Summary always prints (even in quiet mode)
@@ -222,16 +334,20 @@ public sealed class TestRunner
             }, ct).ConfigureAwait(false);
         }
 
-        // Set viewport if specified
+        // Set viewport projection/display mode if specified (size is handled by WindowPositioner)
         if (setup.Viewport != null)
         {
-            await client.ExecuteAsync("SetViewport", new Dictionary<string, string>
+            var vparams = new Dictionary<string, string>
             {
-                ["width"] = setup.Viewport.Width.ToString(),
-                ["height"] = setup.Viewport.Height.ToString(),
                 ["projection"] = setup.Viewport.Projection,
                 ["displayMode"] = setup.Viewport.DisplayMode
-            }, ct).ConfigureAwait(false);
+            };
+            // Only send explicit size if the test definition specifies non-zero values
+            if (setup.Viewport.Width > 0)
+                vparams["width"] = setup.Viewport.Width.ToString();
+            if (setup.Viewport.Height > 0)
+                vparams["height"] = setup.Viewport.Height.ToString();
+            await client.ExecuteAsync("SetViewport", vparams, ct).ConfigureAwait(false);
         }
 
         // Run setup commands
@@ -243,13 +359,17 @@ public sealed class TestRunner
                 ["command"] = cmd
             }, ct).ConfigureAwait(false);
         }
+
+        // Let the app settle after setup (render, redraw, etc.)
+        await Task.Delay(2000, ct).ConfigureAwait(false);
     }
 
     private async Task<CheckpointResult> ProcessCheckpointAsync(
         HarnessClient client,
         TestCheckpoint checkpoint,
         string testDir,
-        WorkloadConfig workload,
+        int captureWidth,
+        int captureHeight,
         CancellationToken ct)
     {
         var cpResult = new CheckpointResult
@@ -267,8 +387,8 @@ public sealed class TestRunner
             _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
             var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
             {
-                Width = 800,
-                Height = 600,
+                Width = captureWidth,
+                Height = captureHeight,
                 OutputPath = candidatePath
             }, ct).ConfigureAwait(false);
 
@@ -368,6 +488,22 @@ public sealed class TestRunner
                 comp.DiffImage.Dispose();
             }
         }
+    }
+
+    private string ResolveRecordingPath(string workloadName, string recordingRef)
+    {
+        // Try as-is relative to workload directory
+        var direct = Path.Combine(_workloadsDir, workloadName, recordingRef);
+        if (File.Exists(direct))
+            return direct;
+
+        // Try under recordings/ subdirectory
+        var inRecordings = Path.Combine(_workloadsDir, workloadName, "recordings", recordingRef);
+        if (File.Exists(inRecordings))
+            return inRecordings;
+
+        // Return the direct path (caller will report "not found")
+        return direct;
     }
 
     private string GetTestDirectory(string workloadName, string testName)

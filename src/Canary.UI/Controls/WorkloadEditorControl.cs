@@ -58,7 +58,7 @@ internal sealed class WorkloadEditorControl : UserControl
         var browseBtn = new Button
         {
             Text = "...",
-            Size = new Size(30, 23),
+            AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
             FlatStyle = FlatStyle.Flat,
             BackColor = Color.FromArgb(60, 60, 60),
             ForeColor = Color.White
@@ -120,7 +120,8 @@ internal sealed class WorkloadEditorControl : UserControl
             FlatStyle = FlatStyle.Flat,
             BackColor = Color.FromArgb(0, 122, 204),
             ForeColor = Color.White,
-            Size = new Size(180, 35),
+            AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Padding = new Padding(12, 4, 12, 4),
             Font = new Font("Segoe UI", 10f)
         };
         saveButton.Click += OnSave;

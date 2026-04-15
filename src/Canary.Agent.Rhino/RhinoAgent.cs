@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Rhino;
 using Rhino.Display;
@@ -9,6 +10,7 @@ namespace Canary.Agent.Rhino;
 /// <summary>
 /// Canary agent implementation for Rhino. Handles commands from the harness
 /// including opening files, running commands, configuring viewports, and capturing screenshots.
+/// All Rhino SDK calls are marshalled to the UI thread via <see cref="RhinoApp.InvokeOnUiThread"/>.
 /// </summary>
 public sealed class RhinoAgent : ICanaryAgent
 {
@@ -17,68 +19,111 @@ public sealed class RhinoAgent : ICanaryAgent
     /// <inheritdoc/>
     public Task<AgentResponse> ExecuteAsync(string action, Dictionary<string, string> parameters)
     {
-        AgentResponse response;
-
-        try
+        return Task.FromResult(InvokeOnUi(() =>
         {
-            response = action switch
+            try
             {
-                "OpenFile" => HandleOpenFile(parameters),
-                "RunCommand" => HandleRunCommand(parameters),
-                "SetViewport" => HandleSetViewport(parameters),
-                "SetView" => HandleSetView(parameters),
-                _ => new AgentResponse
+                return action switch
+                {
+                    "OpenFile" => HandleOpenFile(parameters),
+                    "RunCommand" => HandleRunCommand(parameters),
+                    "SetViewport" => HandleSetViewport(parameters),
+                    "SetView" => HandleSetView(parameters),
+                    _ => new AgentResponse
+                    {
+                        Success = false,
+                        Message = $"Unknown action: {action}"
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new AgentResponse
                 {
                     Success = false,
-                    Message = $"Unknown action: {action}"
-                }
-            };
-        }
-        catch (Exception ex)
-        {
-            response = new AgentResponse
-            {
-                Success = false,
-                Message = $"Error executing '{action}': {ex.Message}"
-            };
-        }
-
-        return Task.FromResult(response);
+                    Message = $"Error executing '{action}': {ex.Message}"
+                };
+            }
+        }));
     }
 
     /// <inheritdoc/>
     public Task<ScreenshotResult> CaptureScreenshotAsync(CaptureSettings settings)
     {
-        return Task.FromResult(_screenCapture.Capture(settings));
+        return Task.FromResult(InvokeOnUi(() => _screenCapture.Capture(settings)));
     }
 
     /// <inheritdoc/>
     public Task<HeartbeatResult> HeartbeatAsync()
     {
-        var doc = RhinoDoc.ActiveDoc;
-        var state = new Dictionary<string, string>
+        return Task.FromResult(InvokeOnUi(() =>
         {
-            ["rhinoVersion"] = RhinoApp.Version.ToString()
-        };
+            var doc = RhinoDoc.ActiveDoc;
+            var state = new Dictionary<string, string>
+            {
+                ["rhinoVersion"] = RhinoApp.Version.ToString()
+            };
 
-        if (doc != null)
-        {
-            state["documentName"] = doc.Name ?? "(untitled)";
-            state["objectCount"] = doc.Objects.Count.ToString();
-        }
+            if (doc != null)
+            {
+                state["documentName"] = doc.Name ?? "(untitled)";
+                state["objectCount"] = doc.Objects.Count.ToString();
+            }
 
-        return Task.FromResult(new HeartbeatResult
-        {
-            Ok = true,
-            State = state
-        });
+            return new HeartbeatResult
+            {
+                Ok = true,
+                State = state
+            };
+        }));
     }
 
     /// <inheritdoc/>
     public Task AbortAsync()
     {
-        RhinoApp.SendKeystrokes("_Cancel ", true);
+        InvokeOnUi(() => RhinoApp.SendKeystrokes("_Cancel ", true));
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Marshals a function to Rhino's UI thread and waits for the result.
+    /// </summary>
+    private static T InvokeOnUi<T>(Func<T> func)
+    {
+        T result = default!;
+        Exception? caught = null;
+        using var done = new ManualResetEventSlim(false);
+
+        RhinoApp.InvokeOnUiThread(new Action(() =>
+        {
+            try
+            {
+                result = func();
+            }
+            catch (Exception ex)
+            {
+                caught = ex;
+            }
+            finally
+            {
+                done.Set();
+            }
+        }));
+
+        done.Wait(TimeSpan.FromSeconds(30));
+
+        if (caught != null)
+            throw caught;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Marshals an action to Rhino's UI thread and waits for completion.
+    /// </summary>
+    private static void InvokeOnUi(Action action)
+    {
+        InvokeOnUi<object?>(() => { action(); return null; });
     }
 
     private static AgentResponse HandleOpenFile(Dictionary<string, string> parameters)
@@ -185,7 +230,6 @@ public sealed class RhinoAgent : ICanaryAgent
             int.TryParse(widthStr, out var width) &&
             int.TryParse(heightStr, out var height))
         {
-            var screenRect = view.ScreenRectangle;
             view.Size = new System.Drawing.Size(width, height);
         }
 

@@ -143,6 +143,21 @@ public static class ViewportLocator
         return hWnd != IntPtr.Zero && IsWindowVisible(hWnd);
     }
 
+    /// <summary>
+    /// Move and resize a window to the specified position and outer size.
+    /// </summary>
+    public static bool PositionWindow(IntPtr hWnd, int x, int y, int width, int height)
+    {
+        if (hWnd == IntPtr.Zero) return false;
+        return MoveWindow(hWnd, x, y, width, height, bRepaint: true);
+    }
+
+    /// <summary>Get the width of the primary screen in pixels.</summary>
+    public static int GetPrimaryScreenWidth() => GetSystemMetrics(SM_CXSCREEN);
+
+    /// <summary>Get the height of the primary screen in pixels.</summary>
+    public static int GetPrimaryScreenHeight() => GetSystemMetrics(SM_CYSCREEN);
+
     #region P/Invoke
 
     private const int SM_CXSCREEN = 0;
@@ -173,6 +188,10 @@ public static class ViewportLocator
 
     [DllImport("user32.dll")]
     private static extern int GetSystemMetrics(int nIndex);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, [MarshalAs(UnmanagedType.Bool)] bool bRepaint);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct RECT

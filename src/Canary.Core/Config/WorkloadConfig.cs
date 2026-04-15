@@ -36,6 +36,13 @@ public sealed class WorkloadConfig
     public string ViewportClass { get; set; } = string.Empty;
 
     /// <summary>
+    /// Commands to run via the agent after every app launch (before test-specific setup).
+    /// Used to set a consistent viewport state (e.g. maximize perspective view).
+    /// </summary>
+    [JsonPropertyName("setupCommands")]
+    public List<string> SetupCommands { get; set; } = new();
+
+    /// <summary>
     /// Parse a workload config from a JSON string.
     /// </summary>
     public static WorkloadConfig Parse(string json)

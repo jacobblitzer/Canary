@@ -15,7 +15,11 @@ public sealed class InputRecorder : IDisposable
     private readonly string _windowTitle;
     private readonly List<InputEvent> _events = new();
     private readonly Stopwatch _stopwatch = new();
+
+    /// <summary>Current number of recorded events (thread-safe).</summary>
+    public int EventCount { get { lock (_events) { return _events.Count; } } }
     private Thread? _hookThread;
+    private uint _hookThreadId;
     private IntPtr _mouseHook;
     private IntPtr _keyboardHook;
     private volatile bool _recording;
@@ -69,10 +73,10 @@ public sealed class InputRecorder : IDisposable
         _stopping = true;
         _stopwatch.Stop();
 
-        // Post WM_QUIT to the hook thread's message loop
-        if (_hookThread != null)
+        // Post WM_QUIT to the hook thread's message loop using the stored native thread ID
+        if (_hookThread != null && _hookThreadId != 0)
         {
-            PostThreadMessage(GetThreadId(_hookThread), WM_QUIT, IntPtr.Zero, IntPtr.Zero);
+            PostThreadMessage(_hookThreadId, WM_QUIT, IntPtr.Zero, IntPtr.Zero);
             _hookThread.Join(TimeSpan.FromSeconds(3));
         }
 
@@ -95,6 +99,7 @@ public sealed class InputRecorder : IDisposable
 
     private void HookThreadProc()
     {
+        _hookThreadId = GetCurrentThreadId();
         _mouseProc = MouseHookCallback;
         _keyboardProc = KeyboardHookCallback;
 
@@ -197,6 +202,14 @@ public sealed class InputRecorder : IDisposable
                         ViewportY = Math.Round(vy, 4),
                         WheelDelta = (short)(hookData.mouseData >> 16)
                     },
+                    WM_MOUSEHWHEEL => new InputEvent
+                    {
+                        TimestampMs = _stopwatch.ElapsedMilliseconds,
+                        Type = InputEventType.MouseHWheel,
+                        ViewportX = Math.Round(vx, 4),
+                        ViewportY = Math.Round(vy, 4),
+                        WheelDelta = (short)(hookData.mouseData >> 16)
+                    },
                     _ => null
                 };
 
@@ -218,6 +231,8 @@ public sealed class InputRecorder : IDisposable
         if (nCode >= 0 && _recording && !_stopping)
         {
             var hookData = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
+            if (hookData.vkCode == 0x13) // VK_PAUSE — abort key, never record
+                return CallNextHookEx(_keyboardHook, nCode, wParam, lParam);
             var msg = (int)wParam;
 
             if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN)
@@ -257,13 +272,6 @@ public sealed class InputRecorder : IDisposable
             && screenY < _viewportBounds.Y + _viewportBounds.Height;
     }
 
-    private static uint GetThreadId(Thread thread)
-    {
-        // Use the ManagedThreadId is not sufficient — we need the native thread ID.
-        // We'll use a workaround: store the native thread ID when the hook thread starts.
-        // For simplicity, use the deprecated but functional approach.
-        return 0; // Will be handled via _stopping flag + timeout on Join
-    }
 
     /// <inheritdoc/>
     public void Dispose()
@@ -289,6 +297,7 @@ public sealed class InputRecorder : IDisposable
     private const int WM_MBUTTONDOWN = 0x0207;
     private const int WM_MBUTTONUP = 0x0208;
     private const int WM_MOUSEWHEEL = 0x020A;
+    private const int WM_MOUSEHWHEEL = 0x020E;
     private const int WM_KEYDOWN = 0x0100;
     private const int WM_KEYUP = 0x0101;
     private const int WM_SYSKEYDOWN = 0x0104;
@@ -384,6 +393,9 @@ public sealed class InputRecorder : IDisposable
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool PostThreadMessage(uint idThread, uint Msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("kernel32.dll")]
+    private static extern uint GetCurrentThreadId();
 
     #endregion
 }

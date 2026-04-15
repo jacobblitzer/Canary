@@ -1,0 +1,7978 @@
+{
+  "metadata": {
+    "workload": "rhino",
+    "recordedAt": "2026-04-05T11:34:04.4846106Z",
+    "viewportWidth": 1894,
+    "viewportHeight": 1090,
+    "windowTitle": "Rhinoceros",
+    "durationMs": 37578
+  },
+  "events": [
+    {
+      "t": 2212,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "S"
+    },
+    {
+      "t": 2284,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "P"
+    },
+    {
+      "t": 2378,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "S"
+    },
+    {
+      "t": 2410,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "P"
+    },
+    {
+      "t": 2439,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "H"
+    },
+    {
+      "t": 2532,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "E"
+    },
+    {
+      "t": 2570,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "H"
+    },
+    {
+      "t": 2600,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "R"
+    },
+    {
+      "t": 2669,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "E"
+    },
+    {
+      "t": 2711,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "E"
+    },
+    {
+      "t": 2777,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "R"
+    },
+    {
+      "t": 2817,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 2834,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "E"
+    },
+    {
+      "t": 2930,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 3981,
+      "type": "MouseMove",
+      "vx": 0.4995,
+      "vy": 0.5
+    },
+    {
+      "t": 3984,
+      "type": "MouseMove",
+      "vx": 0.4984,
+      "vy": 0.5028
+    },
+    {
+      "t": 3991,
+      "type": "MouseMove",
+      "vx": 0.4974,
+      "vy": 0.5037
+    },
+    {
+      "t": 3998,
+      "type": "MouseMove",
+      "vx": 0.4958,
+      "vy": 0.5055
+    },
+    {
+      "t": 4005,
+      "type": "MouseMove",
+      "vx": 0.4952,
+      "vy": 0.5064
+    },
+    {
+      "t": 4011,
+      "type": "MouseMove",
+      "vx": 0.4937,
+      "vy": 0.5073
+    },
+    {
+      "t": 4018,
+      "type": "MouseMove",
+      "vx": 0.4926,
+      "vy": 0.5083
+    },
+    {
+      "t": 4024,
+      "type": "MouseMove",
+      "vx": 0.4916,
+      "vy": 0.5092
+    },
+    {
+      "t": 4031,
+      "type": "MouseMove",
+      "vx": 0.49,
+      "vy": 0.5119
+    },
+    {
+      "t": 4038,
+      "type": "MouseMove",
+      "vx": 0.4889,
+      "vy": 0.5156
+    },
+    {
+      "t": 4045,
+      "type": "MouseMove",
+      "vx": 0.4868,
+      "vy": 0.5183
+    },
+    {
+      "t": 4052,
+      "type": "MouseMove",
+      "vx": 0.4842,
+      "vy": 0.5211
+    },
+    {
+      "t": 4059,
+      "type": "MouseMove",
+      "vx": 0.4826,
+      "vy": 0.5239
+    },
+    {
+      "t": 4065,
+      "type": "MouseMove",
+      "vx": 0.4805,
+      "vy": 0.5284
+    },
+    {
+      "t": 4072,
+      "type": "MouseMove",
+      "vx": 0.4778,
+      "vy": 0.5294
+    },
+    {
+      "t": 4079,
+      "type": "MouseMove",
+      "vx": 0.4757,
+      "vy": 0.5321
+    },
+    {
+      "t": 4086,
+      "type": "MouseMove",
+      "vx": 0.4731,
+      "vy": 0.5349
+    },
+    {
+      "t": 4093,
+      "type": "MouseMove",
+      "vx": 0.471,
+      "vy": 0.5376
+    },
+    {
+      "t": 4099,
+      "type": "MouseMove",
+      "vx": 0.4683,
+      "vy": 0.5404
+    },
+    {
+      "t": 4106,
+      "type": "MouseMove",
+      "vx": 0.4652,
+      "vy": 0.5422
+    },
+    {
+      "t": 4113,
+      "type": "MouseMove",
+      "vx": 0.462,
+      "vy": 0.545
+    },
+    {
+      "t": 4120,
+      "type": "MouseMove",
+      "vx": 0.4593,
+      "vy": 0.5477
+    },
+    {
+      "t": 4127,
+      "type": "MouseMove",
+      "vx": 0.4572,
+      "vy": 0.5505
+    },
+    {
+      "t": 4134,
+      "type": "MouseMove",
+      "vx": 0.4546,
+      "vy": 0.5523
+    },
+    {
+      "t": 4140,
+      "type": "MouseMove",
+      "vx": 0.453,
+      "vy": 0.5541
+    },
+    {
+      "t": 4147,
+      "type": "MouseMove",
+      "vx": 0.4509,
+      "vy": 0.5569
+    },
+    {
+      "t": 4154,
+      "type": "MouseMove",
+      "vx": 0.4493,
+      "vy": 0.5587
+    },
+    {
+      "t": 4161,
+      "type": "MouseMove",
+      "vx": 0.4477,
+      "vy": 0.5596
+    },
+    {
+      "t": 4168,
+      "type": "MouseMove",
+      "vx": 0.4467,
+      "vy": 0.5615
+    },
+    {
+      "t": 4175,
+      "type": "MouseMove",
+      "vx": 0.4451,
+      "vy": 0.5624
+    },
+    {
+      "t": 4182,
+      "type": "MouseMove",
+      "vx": 0.4446,
+      "vy": 0.5633
+    },
+    {
+      "t": 4188,
+      "type": "MouseMove",
+      "vx": 0.444,
+      "vy": 0.5642
+    },
+    {
+      "t": 4195,
+      "type": "MouseMove",
+      "vx": 0.4424,
+      "vy": 0.5642
+    },
+    {
+      "t": 4202,
+      "type": "MouseMove",
+      "vx": 0.4419,
+      "vy": 0.5651
+    },
+    {
+      "t": 4216,
+      "type": "MouseMove",
+      "vx": 0.4414,
+      "vy": 0.5661
+    },
+    {
+      "t": 4222,
+      "type": "MouseMove",
+      "vx": 0.4409,
+      "vy": 0.5661
+    },
+    {
+      "t": 4230,
+      "type": "MouseMove",
+      "vx": 0.4403,
+      "vy": 0.5679
+    },
+    {
+      "t": 4236,
+      "type": "MouseMove",
+      "vx": 0.4398,
+      "vy": 0.5679
+    },
+    {
+      "t": 4243,
+      "type": "MouseMove",
+      "vx": 0.4398,
+      "vy": 0.5688
+    },
+    {
+      "t": 4250,
+      "type": "MouseMove",
+      "vx": 0.4388,
+      "vy": 0.5697
+    },
+    {
+      "t": 4278,
+      "type": "MouseMove",
+      "vx": 0.4382,
+      "vy": 0.5697
+    },
+    {
+      "t": 4380,
+      "type": "MouseMove",
+      "vx": 0.4377,
+      "vy": 0.5697
+    },
+    {
+      "t": 4421,
+      "type": "MouseMove",
+      "vx": 0.4366,
+      "vy": 0.5697
+    },
+    {
+      "t": 4428,
+      "type": "MouseMove",
+      "vx": 0.4351,
+      "vy": 0.5706
+    },
+    {
+      "t": 4571,
+      "type": "MouseDown",
+      "vx": 0.4351,
+      "vy": 0.5706,
+      "button": "Left"
+    },
+    {
+      "t": 4634,
+      "type": "MouseUp",
+      "vx": 0.4351,
+      "vy": 0.5706,
+      "button": "Left"
+    },
+    {
+      "t": 4946,
+      "type": "MouseMove",
+      "vx": 0.4393,
+      "vy": 0.567
+    },
+    {
+      "t": 4951,
+      "type": "MouseMove",
+      "vx": 0.444,
+      "vy": 0.5615
+    },
+    {
+      "t": 4958,
+      "type": "MouseMove",
+      "vx": 0.4498,
+      "vy": 0.5587
+    },
+    {
+      "t": 4964,
+      "type": "MouseMove",
+      "vx": 0.4562,
+      "vy": 0.5532
+    },
+    {
+      "t": 4970,
+      "type": "MouseMove",
+      "vx": 0.4609,
+      "vy": 0.5514
+    },
+    {
+      "t": 4979,
+      "type": "MouseMove",
+      "vx": 0.4657,
+      "vy": 0.5459
+    },
+    {
+      "t": 4984,
+      "type": "MouseMove",
+      "vx": 0.4694,
+      "vy": 0.5431
+    },
+    {
+      "t": 4996,
+      "type": "MouseMove",
+      "vx": 0.4725,
+      "vy": 0.5404
+    },
+    {
+      "t": 4998,
+      "type": "MouseMove",
+      "vx": 0.4762,
+      "vy": 0.5367
+    },
+    {
+      "t": 5005,
+      "type": "MouseMove",
+      "vx": 0.4794,
+      "vy": 0.5358
+    },
+    {
+      "t": 5012,
+      "type": "MouseMove",
+      "vx": 0.4831,
+      "vy": 0.5312
+    },
+    {
+      "t": 5019,
+      "type": "MouseMove",
+      "vx": 0.4857,
+      "vy": 0.5284
+    },
+    {
+      "t": 5026,
+      "type": "MouseMove",
+      "vx": 0.4889,
+      "vy": 0.5266
+    },
+    {
+      "t": 5032,
+      "type": "MouseMove",
+      "vx": 0.491,
+      "vy": 0.5257
+    },
+    {
+      "t": 5039,
+      "type": "MouseMove",
+      "vx": 0.4937,
+      "vy": 0.5239
+    },
+    {
+      "t": 5046,
+      "type": "MouseMove",
+      "vx": 0.4958,
+      "vy": 0.5211
+    },
+    {
+      "t": 5052,
+      "type": "MouseMove",
+      "vx": 0.4979,
+      "vy": 0.5202
+    },
+    {
+      "t": 5059,
+      "type": "MouseMove",
+      "vx": 0.5005,
+      "vy": 0.5183
+    },
+    {
+      "t": 5066,
+      "type": "MouseMove",
+      "vx": 0.5021,
+      "vy": 0.5165
+    },
+    {
+      "t": 5073,
+      "type": "MouseMove",
+      "vx": 0.5026,
+      "vy": 0.5147
+    },
+    {
+      "t": 5080,
+      "type": "MouseMove",
+      "vx": 0.5037,
+      "vy": 0.5138
+    },
+    {
+      "t": 5086,
+      "type": "MouseMove",
+      "vx": 0.5053,
+      "vy": 0.5138
+    },
+    {
+      "t": 5093,
+      "type": "MouseMove",
+      "vx": 0.5058,
+      "vy": 0.5128
+    },
+    {
+      "t": 5100,
+      "type": "MouseMove",
+      "vx": 0.5074,
+      "vy": 0.5119
+    },
+    {
+      "t": 5107,
+      "type": "MouseMove",
+      "vx": 0.5095,
+      "vy": 0.5101
+    },
+    {
+      "t": 5114,
+      "type": "MouseMove",
+      "vx": 0.5111,
+      "vy": 0.5073
+    },
+    {
+      "t": 5121,
+      "type": "MouseMove",
+      "vx": 0.5143,
+      "vy": 0.5046
+    },
+    {
+      "t": 5128,
+      "type": "MouseMove",
+      "vx": 0.5158,
+      "vy": 0.5037
+    },
+    {
+      "t": 5135,
+      "type": "MouseMove",
+      "vx": 0.518,
+      "vy": 0.5009
+    },
+    {
+      "t": 5141,
+      "type": "MouseMove",
+      "vx": 0.5195,
+      "vy": 0.4982
+    },
+    {
+      "t": 5148,
+      "type": "MouseMove",
+      "vx": 0.5222,
+      "vy": 0.4972
+    },
+    {
+      "t": 5155,
+      "type": "MouseMove",
+      "vx": 0.5232,
+      "vy": 0.4954
+    },
+    {
+      "t": 5162,
+      "type": "MouseMove",
+      "vx": 0.5248,
+      "vy": 0.4945
+    },
+    {
+      "t": 5168,
+      "type": "MouseMove",
+      "vx": 0.5275,
+      "vy": 0.4927
+    },
+    {
+      "t": 5175,
+      "type": "MouseMove",
+      "vx": 0.5275,
+      "vy": 0.4917
+    },
+    {
+      "t": 5182,
+      "type": "MouseMove",
+      "vx": 0.5285,
+      "vy": 0.4917
+    },
+    {
+      "t": 5189,
+      "type": "MouseMove",
+      "vx": 0.529,
+      "vy": 0.4917
+    },
+    {
+      "t": 5196,
+      "type": "MouseMove",
+      "vx": 0.5296,
+      "vy": 0.4917
+    },
+    {
+      "t": 5203,
+      "type": "MouseMove",
+      "vx": 0.5296,
+      "vy": 0.4917
+    },
+    {
+      "t": 5209,
+      "type": "MouseMove",
+      "vx": 0.5285,
+      "vy": 0.4917
+    },
+    {
+      "t": 5335,
+      "type": "MouseDown",
+      "vx": 0.5285,
+      "vy": 0.4917,
+      "button": "Left"
+    },
+    {
+      "t": 5408,
+      "type": "MouseUp",
+      "vx": 0.5285,
+      "vy": 0.4917,
+      "button": "Left"
+    },
+    {
+      "t": 6044,
+      "type": "MouseDown",
+      "vx": 0.5285,
+      "vy": 0.4917,
+      "button": "Right"
+    },
+    {
+      "t": 6262,
+      "type": "MouseMove",
+      "vx": 0.528,
+      "vy": 0.4917
+    },
+    {
+      "t": 6269,
+      "type": "MouseMove",
+      "vx": 0.5259,
+      "vy": 0.4917
+    },
+    {
+      "t": 6276,
+      "type": "MouseMove",
+      "vx": 0.5232,
+      "vy": 0.4917
+    },
+    {
+      "t": 6282,
+      "type": "MouseMove",
+      "vx": 0.5222,
+      "vy": 0.4917
+    },
+    {
+      "t": 6290,
+      "type": "MouseMove",
+      "vx": 0.5206,
+      "vy": 0.4927
+    },
+    {
+      "t": 6296,
+      "type": "MouseMove",
+      "vx": 0.5185,
+      "vy": 0.4927
+    },
+    {
+      "t": 6303,
+      "type": "MouseMove",
+      "vx": 0.5169,
+      "vy": 0.4927
+    },
+    {
+      "t": 6310,
+      "type": "MouseMove",
+      "vx": 0.5158,
+      "vy": 0.4936
+    },
+    {
+      "t": 6316,
+      "type": "MouseMove",
+      "vx": 0.5132,
+      "vy": 0.4936
+    },
+    {
+      "t": 6323,
+      "type": "MouseMove",
+      "vx": 0.5121,
+      "vy": 0.4936
+    },
+    {
+      "t": 6330,
+      "type": "MouseMove",
+      "vx": 0.509,
+      "vy": 0.4936
+    },
+    {
+      "t": 6337,
+      "type": "MouseMove",
+      "vx": 0.5074,
+      "vy": 0.4936
+    },
+    {
+      "t": 6344,
+      "type": "MouseMove",
+      "vx": 0.5053,
+      "vy": 0.4945
+    },
+    {
+      "t": 6351,
+      "type": "MouseMove",
+      "vx": 0.5037,
+      "vy": 0.4945
+    },
+    {
+      "t": 6357,
+      "type": "MouseMove",
+      "vx": 0.5005,
+      "vy": 0.4945
+    },
+    {
+      "t": 6364,
+      "type": "MouseMove",
+      "vx": 0.4995,
+      "vy": 0.4963
+    },
+    {
+      "t": 6371,
+      "type": "MouseMove",
+      "vx": 0.4963,
+      "vy": 0.4963
+    },
+    {
+      "t": 6378,
+      "type": "MouseMove",
+      "vx": 0.4937,
+      "vy": 0.4963
+    },
+    {
+      "t": 6385,
+      "type": "MouseMove",
+      "vx": 0.4926,
+      "vy": 0.4963
+    },
+    {
+      "t": 6391,
+      "type": "MouseMove",
+      "vx": 0.4894,
+      "vy": 0.4963
+    },
+    {
+      "t": 6398,
+      "type": "MouseMove",
+      "vx": 0.4868,
+      "vy": 0.4963
+    },
+    {
+      "t": 6405,
+      "type": "MouseMove",
+      "vx": 0.4836,
+      "vy": 0.4963
+    },
+    {
+      "t": 6412,
+      "type": "MouseMove",
+      "vx": 0.4794,
+      "vy": 0.4963
+    },
+    {
+      "t": 6419,
+      "type": "MouseMove",
+      "vx": 0.4773,
+      "vy": 0.4963
+    },
+    {
+      "t": 6429,
+      "type": "MouseMove",
+      "vx": 0.4741,
+      "vy": 0.4954
+    },
+    {
+      "t": 6432,
+      "type": "MouseMove",
+      "vx": 0.4699,
+      "vy": 0.4954
+    },
+    {
+      "t": 6439,
+      "type": "MouseMove",
+      "vx": 0.4652,
+      "vy": 0.4945
+    },
+    {
+      "t": 6446,
+      "type": "MouseMove",
+      "vx": 0.462,
+      "vy": 0.4945
+    },
+    {
+      "t": 6453,
+      "type": "MouseMove",
+      "vx": 0.4588,
+      "vy": 0.4945
+    },
+    {
+      "t": 6460,
+      "type": "MouseMove",
+      "vx": 0.4556,
+      "vy": 0.4927
+    },
+    {
+      "t": 6466,
+      "type": "MouseMove",
+      "vx": 0.4525,
+      "vy": 0.4908
+    },
+    {
+      "t": 6473,
+      "type": "MouseMove",
+      "vx": 0.4493,
+      "vy": 0.4908
+    },
+    {
+      "t": 6480,
+      "type": "MouseMove",
+      "vx": 0.4461,
+      "vy": 0.4908
+    },
+    {
+      "t": 6487,
+      "type": "MouseMove",
+      "vx": 0.443,
+      "vy": 0.4899
+    },
+    {
+      "t": 6494,
+      "type": "MouseMove",
+      "vx": 0.4398,
+      "vy": 0.4881
+    },
+    {
+      "t": 6501,
+      "type": "MouseMove",
+      "vx": 0.4372,
+      "vy": 0.4881
+    },
+    {
+      "t": 6507,
+      "type": "MouseMove",
+      "vx": 0.434,
+      "vy": 0.4872
+    },
+    {
+      "t": 6514,
+      "type": "MouseMove",
+      "vx": 0.4319,
+      "vy": 0.4872
+    },
+    {
+      "t": 6521,
+      "type": "MouseMove",
+      "vx": 0.4298,
+      "vy": 0.4853
+    },
+    {
+      "t": 6528,
+      "type": "MouseMove",
+      "vx": 0.4261,
+      "vy": 0.4844
+    },
+    {
+      "t": 6535,
+      "type": "MouseMove",
+      "vx": 0.424,
+      "vy": 0.4844
+    },
+    {
+      "t": 6543,
+      "type": "MouseMove",
+      "vx": 0.4208,
+      "vy": 0.4844
+    },
+    {
+      "t": 6549,
+      "type": "MouseMove",
+      "vx": 0.4176,
+      "vy": 0.4826
+    },
+    {
+      "t": 6556,
+      "type": "MouseMove",
+      "vx": 0.4155,
+      "vy": 0.4826
+    },
+    {
+      "t": 6563,
+      "type": "MouseMove",
+      "vx": 0.4129,
+      "vy": 0.4817
+    },
+    {
+      "t": 6570,
+      "type": "MouseMove",
+      "vx": 0.4097,
+      "vy": 0.4817
+    },
+    {
+      "t": 6577,
+      "type": "MouseMove",
+      "vx": 0.4076,
+      "vy": 0.4798
+    },
+    {
+      "t": 6583,
+      "type": "MouseMove",
+      "vx": 0.4034,
+      "vy": 0.4798
+    },
+    {
+      "t": 6590,
+      "type": "MouseMove",
+      "vx": 0.4013,
+      "vy": 0.4789
+    },
+    {
+      "t": 6596,
+      "type": "MouseMove",
+      "vx": 0.3986,
+      "vy": 0.4789
+    },
+    {
+      "t": 6603,
+      "type": "MouseMove",
+      "vx": 0.3955,
+      "vy": 0.4789
+    },
+    {
+      "t": 6610,
+      "type": "MouseMove",
+      "vx": 0.3944,
+      "vy": 0.4789
+    },
+    {
+      "t": 6617,
+      "type": "MouseMove",
+      "vx": 0.3918,
+      "vy": 0.4789
+    },
+    {
+      "t": 6624,
+      "type": "MouseMove",
+      "vx": 0.3907,
+      "vy": 0.4789
+    },
+    {
+      "t": 6630,
+      "type": "MouseMove",
+      "vx": 0.3875,
+      "vy": 0.4789
+    },
+    {
+      "t": 6638,
+      "type": "MouseMove",
+      "vx": 0.386,
+      "vy": 0.4789
+    },
+    {
+      "t": 6644,
+      "type": "MouseMove",
+      "vx": 0.3849,
+      "vy": 0.4789
+    },
+    {
+      "t": 6651,
+      "type": "MouseMove",
+      "vx": 0.3833,
+      "vy": 0.4807
+    },
+    {
+      "t": 6658,
+      "type": "MouseMove",
+      "vx": 0.3828,
+      "vy": 0.4807
+    },
+    {
+      "t": 6665,
+      "type": "MouseMove",
+      "vx": 0.3812,
+      "vy": 0.4807
+    },
+    {
+      "t": 6671,
+      "type": "MouseMove",
+      "vx": 0.3801,
+      "vy": 0.4817
+    },
+    {
+      "t": 6678,
+      "type": "MouseMove",
+      "vx": 0.3786,
+      "vy": 0.4817
+    },
+    {
+      "t": 6685,
+      "type": "MouseMove",
+      "vx": 0.377,
+      "vy": 0.4826
+    },
+    {
+      "t": 6692,
+      "type": "MouseMove",
+      "vx": 0.3759,
+      "vy": 0.4826
+    },
+    {
+      "t": 6699,
+      "type": "MouseMove",
+      "vx": 0.3743,
+      "vy": 0.4853
+    },
+    {
+      "t": 6706,
+      "type": "MouseMove",
+      "vx": 0.3712,
+      "vy": 0.4872
+    },
+    {
+      "t": 6713,
+      "type": "MouseMove",
+      "vx": 0.3696,
+      "vy": 0.4881
+    },
+    {
+      "t": 6720,
+      "type": "MouseMove",
+      "vx": 0.3675,
+      "vy": 0.4881
+    },
+    {
+      "t": 6726,
+      "type": "MouseMove",
+      "vx": 0.3654,
+      "vy": 0.4899
+    },
+    {
+      "t": 6733,
+      "type": "MouseMove",
+      "vx": 0.3638,
+      "vy": 0.4899
+    },
+    {
+      "t": 6740,
+      "type": "MouseMove",
+      "vx": 0.3617,
+      "vy": 0.4899
+    },
+    {
+      "t": 6746,
+      "type": "MouseMove",
+      "vx": 0.359,
+      "vy": 0.4908
+    },
+    {
+      "t": 6753,
+      "type": "MouseMove",
+      "vx": 0.3569,
+      "vy": 0.4927
+    },
+    {
+      "t": 6760,
+      "type": "MouseMove",
+      "vx": 0.3543,
+      "vy": 0.4936
+    },
+    {
+      "t": 6767,
+      "type": "MouseMove",
+      "vx": 0.3532,
+      "vy": 0.4945
+    },
+    {
+      "t": 6774,
+      "type": "MouseMove",
+      "vx": 0.3506,
+      "vy": 0.4963
+    },
+    {
+      "t": 6781,
+      "type": "MouseMove",
+      "vx": 0.3495,
+      "vy": 0.4972
+    },
+    {
+      "t": 6788,
+      "type": "MouseMove",
+      "vx": 0.3469,
+      "vy": 0.4991
+    },
+    {
+      "t": 6794,
+      "type": "MouseMove",
+      "vx": 0.3458,
+      "vy": 0.4991
+    },
+    {
+      "t": 6801,
+      "type": "MouseMove",
+      "vx": 0.3432,
+      "vy": 0.5
+    },
+    {
+      "t": 6808,
+      "type": "MouseMove",
+      "vx": 0.3427,
+      "vy": 0.5
+    },
+    {
+      "t": 6815,
+      "type": "MouseMove",
+      "vx": 0.3405,
+      "vy": 0.5018
+    },
+    {
+      "t": 6822,
+      "type": "MouseMove",
+      "vx": 0.3384,
+      "vy": 0.5018
+    },
+    {
+      "t": 6828,
+      "type": "MouseMove",
+      "vx": 0.3384,
+      "vy": 0.5028
+    },
+    {
+      "t": 6835,
+      "type": "MouseMove",
+      "vx": 0.3374,
+      "vy": 0.5028
+    },
+    {
+      "t": 6843,
+      "type": "MouseMove",
+      "vx": 0.3363,
+      "vy": 0.5037
+    },
+    {
+      "t": 6849,
+      "type": "MouseMove",
+      "vx": 0.3358,
+      "vy": 0.5037
+    },
+    {
+      "t": 6856,
+      "type": "MouseMove",
+      "vx": 0.3353,
+      "vy": 0.5037
+    },
+    {
+      "t": 6870,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.5037
+    },
+    {
+      "t": 6877,
+      "type": "MouseMove",
+      "vx": 0.3342,
+      "vy": 0.5046
+    },
+    {
+      "t": 6891,
+      "type": "MouseMove",
+      "vx": 0.3337,
+      "vy": 0.5055
+    },
+    {
+      "t": 6904,
+      "type": "MouseMove",
+      "vx": 0.3332,
+      "vy": 0.5055
+    },
+    {
+      "t": 6911,
+      "type": "MouseMove",
+      "vx": 0.3321,
+      "vy": 0.5064
+    },
+    {
+      "t": 6944,
+      "type": "MouseUp",
+      "vx": 0.3321,
+      "vy": 0.5064,
+      "button": "Right"
+    },
+    {
+      "t": 8343,
+      "type": "MouseDown",
+      "vx": 0.3321,
+      "vy": 0.5064,
+      "button": "Left"
+    },
+    {
+      "t": 8427,
+      "type": "MouseUp",
+      "vx": 0.3321,
+      "vy": 0.5064,
+      "button": "Left"
+    },
+    {
+      "t": 8751,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "R"
+    },
+    {
+      "t": 8869,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "E"
+    },
+    {
+      "t": 8928,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "R"
+    },
+    {
+      "t": 9020,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "E"
+    },
+    {
+      "t": 9100,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "B"
+    },
+    {
+      "t": 9186,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "U"
+    },
+    {
+      "t": 9242,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "B"
+    },
+    {
+      "t": 9243,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "I"
+    },
+    {
+      "t": 9297,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "U"
+    },
+    {
+      "t": 9302,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "L"
+    },
+    {
+      "t": 9380,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "I"
+    },
+    {
+      "t": 9393,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "D"
+    },
+    {
+      "t": 9464,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "L"
+    },
+    {
+      "t": 9538,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "D"
+    },
+    {
+      "t": 9614,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 9750,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 10393,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "Space"
+    },
+    {
+      "t": 10528,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "Space"
+    },
+    {
+      "t": 12295,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "P"
+    },
+    {
+      "t": 12416,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "O"
+    },
+    {
+      "t": 12470,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "P"
+    },
+    {
+      "t": 12538,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "O"
+    },
+    {
+      "t": 12602,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "I"
+    },
+    {
+      "t": 12680,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "N"
+    },
+    {
+      "t": 12707,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "I"
+    },
+    {
+      "t": 12728,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "T"
+    },
+    {
+      "t": 12814,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "N"
+    },
+    {
+      "t": 12848,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "T"
+    },
+    {
+      "t": 12895,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "S"
+    },
+    {
+      "t": 13018,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "O"
+    },
+    {
+      "t": 13030,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "S"
+    },
+    {
+      "t": 13155,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "O"
+    },
+    {
+      "t": 13212,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "N"
+    },
+    {
+      "t": 13334,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "N"
+    },
+    {
+      "t": 13812,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 13891,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 13895,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 13962,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "Return"
+    },
+    {
+      "t": 14678,
+      "type": "MouseMove",
+      "vx": 0.3316,
+      "vy": 0.5037
+    },
+    {
+      "t": 14679,
+      "type": "MouseMove",
+      "vx": 0.33,
+      "vy": 0.5009
+    },
+    {
+      "t": 14686,
+      "type": "MouseMove",
+      "vx": 0.3284,
+      "vy": 0.4936
+    },
+    {
+      "t": 14693,
+      "type": "MouseMove",
+      "vx": 0.3268,
+      "vy": 0.4899
+    },
+    {
+      "t": 14700,
+      "type": "MouseMove",
+      "vx": 0.3252,
+      "vy": 0.4853
+    },
+    {
+      "t": 14708,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.478
+    },
+    {
+      "t": 14714,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.4697
+    },
+    {
+      "t": 14722,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.4587
+    },
+    {
+      "t": 14730,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.4505
+    },
+    {
+      "t": 14734,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.4422
+    },
+    {
+      "t": 14742,
+      "type": "MouseMove",
+      "vx": 0.3147,
+      "vy": 0.4339
+    },
+    {
+      "t": 14748,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.4239
+    },
+    {
+      "t": 14754,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.4165
+    },
+    {
+      "t": 14761,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.4055
+    },
+    {
+      "t": 14767,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3982
+    },
+    {
+      "t": 14774,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3872
+    },
+    {
+      "t": 14781,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3798
+    },
+    {
+      "t": 14788,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3716
+    },
+    {
+      "t": 14795,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3661
+    },
+    {
+      "t": 14801,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3587
+    },
+    {
+      "t": 14808,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3514
+    },
+    {
+      "t": 14815,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3477
+    },
+    {
+      "t": 14822,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3431
+    },
+    {
+      "t": 14830,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3358
+    },
+    {
+      "t": 14836,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3339
+    },
+    {
+      "t": 14845,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3294
+    },
+    {
+      "t": 14851,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3257
+    },
+    {
+      "t": 14859,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.322
+    },
+    {
+      "t": 14864,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3193
+    },
+    {
+      "t": 14872,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3156
+    },
+    {
+      "t": 14879,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3101
+    },
+    {
+      "t": 14885,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3083
+    },
+    {
+      "t": 14891,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3055
+    },
+    {
+      "t": 14897,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3028
+    },
+    {
+      "t": 14906,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3018
+    },
+    {
+      "t": 14913,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3
+    },
+    {
+      "t": 14919,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2972
+    },
+    {
+      "t": 14927,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2963
+    },
+    {
+      "t": 14932,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2954
+    },
+    {
+      "t": 14939,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2945
+    },
+    {
+      "t": 14946,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2936
+    },
+    {
+      "t": 14954,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2927
+    },
+    {
+      "t": 14963,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2908
+    },
+    {
+      "t": 14967,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2899
+    },
+    {
+      "t": 14984,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.289
+    },
+    {
+      "t": 14996,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2881
+    },
+    {
+      "t": 15007,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2872
+    },
+    {
+      "t": 15014,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2862
+    },
+    {
+      "t": 15143,
+      "type": "MouseDown",
+      "vx": 0.3078,
+      "vy": 0.2862,
+      "button": "Left"
+    },
+    {
+      "t": 15270,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.2862
+    },
+    {
+      "t": 15275,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.2881
+    },
+    {
+      "t": 15282,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.2899
+    },
+    {
+      "t": 15289,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.2927
+    },
+    {
+      "t": 15295,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2972
+    },
+    {
+      "t": 15303,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3
+    },
+    {
+      "t": 15313,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.3037
+    },
+    {
+      "t": 15315,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.3064
+    },
+    {
+      "t": 15323,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.3128
+    },
+    {
+      "t": 15329,
+      "type": "MouseMove",
+      "vx": 0.3242,
+      "vy": 0.3147
+    },
+    {
+      "t": 15337,
+      "type": "MouseMove",
+      "vx": 0.3258,
+      "vy": 0.3193
+    },
+    {
+      "t": 15344,
+      "type": "MouseMove",
+      "vx": 0.3273,
+      "vy": 0.322
+    },
+    {
+      "t": 15350,
+      "type": "MouseMove",
+      "vx": 0.3289,
+      "vy": 0.3257
+    },
+    {
+      "t": 15361,
+      "type": "MouseMove",
+      "vx": 0.3305,
+      "vy": 0.3284
+    },
+    {
+      "t": 15363,
+      "type": "MouseMove",
+      "vx": 0.3332,
+      "vy": 0.333
+    },
+    {
+      "t": 15372,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3367
+    },
+    {
+      "t": 15379,
+      "type": "MouseMove",
+      "vx": 0.3369,
+      "vy": 0.3394
+    },
+    {
+      "t": 15384,
+      "type": "MouseMove",
+      "vx": 0.3384,
+      "vy": 0.3459
+    },
+    {
+      "t": 15395,
+      "type": "MouseMove",
+      "vx": 0.34,
+      "vy": 0.3477
+    },
+    {
+      "t": 15397,
+      "type": "MouseMove",
+      "vx": 0.3416,
+      "vy": 0.3523
+    },
+    {
+      "t": 15407,
+      "type": "MouseMove",
+      "vx": 0.3421,
+      "vy": 0.3532
+    },
+    {
+      "t": 15412,
+      "type": "MouseMove",
+      "vx": 0.3437,
+      "vy": 0.3569
+    },
+    {
+      "t": 15418,
+      "type": "MouseMove",
+      "vx": 0.3442,
+      "vy": 0.3578
+    },
+    {
+      "t": 15426,
+      "type": "MouseMove",
+      "vx": 0.3458,
+      "vy": 0.3615
+    },
+    {
+      "t": 15432,
+      "type": "MouseMove",
+      "vx": 0.3458,
+      "vy": 0.3642
+    },
+    {
+      "t": 15444,
+      "type": "MouseMove",
+      "vx": 0.3469,
+      "vy": 0.3651
+    },
+    {
+      "t": 15445,
+      "type": "MouseMove",
+      "vx": 0.3479,
+      "vy": 0.3688
+    },
+    {
+      "t": 15452,
+      "type": "MouseMove",
+      "vx": 0.3485,
+      "vy": 0.3716
+    },
+    {
+      "t": 15462,
+      "type": "MouseMove",
+      "vx": 0.349,
+      "vy": 0.3725
+    },
+    {
+      "t": 15466,
+      "type": "MouseMove",
+      "vx": 0.349,
+      "vy": 0.3734
+    },
+    {
+      "t": 15475,
+      "type": "MouseMove",
+      "vx": 0.349,
+      "vy": 0.3752
+    },
+    {
+      "t": 15480,
+      "type": "MouseMove",
+      "vx": 0.3501,
+      "vy": 0.3761
+    },
+    {
+      "t": 15486,
+      "type": "MouseMove",
+      "vx": 0.3501,
+      "vy": 0.3771
+    },
+    {
+      "t": 15494,
+      "type": "MouseMove",
+      "vx": 0.3506,
+      "vy": 0.378
+    },
+    {
+      "t": 15500,
+      "type": "MouseMove",
+      "vx": 0.3511,
+      "vy": 0.378
+    },
+    {
+      "t": 15510,
+      "type": "MouseMove",
+      "vx": 0.3511,
+      "vy": 0.3789
+    },
+    {
+      "t": 15513,
+      "type": "MouseMove",
+      "vx": 0.3511,
+      "vy": 0.3798
+    },
+    {
+      "t": 15521,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3807
+    },
+    {
+      "t": 15529,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3826
+    },
+    {
+      "t": 15535,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3835
+    },
+    {
+      "t": 15572,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3844
+    },
+    {
+      "t": 15583,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3853
+    },
+    {
+      "t": 15589,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3862
+    },
+    {
+      "t": 15604,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3872
+    },
+    {
+      "t": 15671,
+      "type": "MouseMove",
+      "vx": 0.3516,
+      "vy": 0.3899
+    },
+    {
+      "t": 15678,
+      "type": "MouseUp",
+      "vx": 0.3516,
+      "vy": 0.3899,
+      "button": "Left"
+    },
+    {
+      "t": 16174,
+      "type": "MouseMove",
+      "vx": 0.3501,
+      "vy": 0.389
+    },
+    {
+      "t": 16180,
+      "type": "MouseMove",
+      "vx": 0.3474,
+      "vy": 0.3862
+    },
+    {
+      "t": 16188,
+      "type": "MouseMove",
+      "vx": 0.3464,
+      "vy": 0.3844
+    },
+    {
+      "t": 16196,
+      "type": "MouseMove",
+      "vx": 0.3437,
+      "vy": 0.3826
+    },
+    {
+      "t": 16202,
+      "type": "MouseMove",
+      "vx": 0.3421,
+      "vy": 0.3789
+    },
+    {
+      "t": 16212,
+      "type": "MouseMove",
+      "vx": 0.3405,
+      "vy": 0.3761
+    },
+    {
+      "t": 16214,
+      "type": "MouseMove",
+      "vx": 0.3395,
+      "vy": 0.3734
+    },
+    {
+      "t": 16224,
+      "type": "MouseMove",
+      "vx": 0.3369,
+      "vy": 0.3688
+    },
+    {
+      "t": 16228,
+      "type": "MouseMove",
+      "vx": 0.3353,
+      "vy": 0.3679
+    },
+    {
+      "t": 16235,
+      "type": "MouseMove",
+      "vx": 0.3337,
+      "vy": 0.3633
+    },
+    {
+      "t": 16243,
+      "type": "MouseMove",
+      "vx": 0.3321,
+      "vy": 0.3615
+    },
+    {
+      "t": 16249,
+      "type": "MouseMove",
+      "vx": 0.331,
+      "vy": 0.3587
+    },
+    {
+      "t": 16257,
+      "type": "MouseMove",
+      "vx": 0.33,
+      "vy": 0.3541
+    },
+    {
+      "t": 16263,
+      "type": "MouseMove",
+      "vx": 0.3279,
+      "vy": 0.3532
+    },
+    {
+      "t": 16270,
+      "type": "MouseMove",
+      "vx": 0.3263,
+      "vy": 0.3505
+    },
+    {
+      "t": 16280,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3477
+    },
+    {
+      "t": 16282,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.3468
+    },
+    {
+      "t": 16291,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.344
+    },
+    {
+      "t": 16296,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.3431
+    },
+    {
+      "t": 16304,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.3404
+    },
+    {
+      "t": 16313,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3404
+    },
+    {
+      "t": 16316,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.3376
+    },
+    {
+      "t": 16323,
+      "type": "MouseMove",
+      "vx": 0.3136,
+      "vy": 0.3339
+    },
+    {
+      "t": 16330,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3321
+    },
+    {
+      "t": 16337,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3312
+    },
+    {
+      "t": 16345,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3303
+    },
+    {
+      "t": 16351,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3284
+    },
+    {
+      "t": 16358,
+      "type": "MouseMove",
+      "vx": 0.3073,
+      "vy": 0.3275
+    },
+    {
+      "t": 16365,
+      "type": "MouseMove",
+      "vx": 0.3068,
+      "vy": 0.3266
+    },
+    {
+      "t": 16379,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.3266
+    },
+    {
+      "t": 16385,
+      "type": "MouseMove",
+      "vx": 0.3057,
+      "vy": 0.3257
+    },
+    {
+      "t": 16392,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.3257
+    },
+    {
+      "t": 16399,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.3248
+    },
+    {
+      "t": 16412,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.3248
+    },
+    {
+      "t": 16426,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.3248
+    },
+    {
+      "t": 16442,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.3248
+    },
+    {
+      "t": 16455,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.3257
+    },
+    {
+      "t": 16475,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.3266
+    },
+    {
+      "t": 16488,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.3275
+    },
+    {
+      "t": 16496,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.3284
+    },
+    {
+      "t": 16503,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.3303
+    },
+    {
+      "t": 16512,
+      "type": "MouseMove",
+      "vx": 0.3057,
+      "vy": 0.3312
+    },
+    {
+      "t": 16514,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.3312
+    },
+    {
+      "t": 16521,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.3321
+    },
+    {
+      "t": 16528,
+      "type": "MouseMove",
+      "vx": 0.3068,
+      "vy": 0.3321
+    },
+    {
+      "t": 16536,
+      "type": "MouseMove",
+      "vx": 0.3073,
+      "vy": 0.333
+    },
+    {
+      "t": 16544,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3339
+    },
+    {
+      "t": 16549,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3349
+    },
+    {
+      "t": 16557,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3349
+    },
+    {
+      "t": 16562,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3367
+    },
+    {
+      "t": 16579,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3376
+    },
+    {
+      "t": 16583,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3376
+    },
+    {
+      "t": 16590,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.3376
+    },
+    {
+      "t": 16597,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3376
+    },
+    {
+      "t": 16605,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.3385
+    },
+    {
+      "t": 16613,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.3385
+    },
+    {
+      "t": 16618,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.3394
+    },
+    {
+      "t": 16631,
+      "type": "MouseMove",
+      "vx": 0.3136,
+      "vy": 0.3404
+    },
+    {
+      "t": 16639,
+      "type": "MouseMove",
+      "vx": 0.3141,
+      "vy": 0.3404
+    },
+    {
+      "t": 16646,
+      "type": "MouseMove",
+      "vx": 0.3147,
+      "vy": 0.3413
+    },
+    {
+      "t": 16652,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.3413
+    },
+    {
+      "t": 16660,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.3422
+    },
+    {
+      "t": 16673,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.344
+    },
+    {
+      "t": 16686,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.344
+    },
+    {
+      "t": 16700,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.344
+    },
+    {
+      "t": 16713,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.344
+    },
+    {
+      "t": 16721,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.344
+    },
+    {
+      "t": 16726,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.345
+    },
+    {
+      "t": 16733,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.345
+    },
+    {
+      "t": 16747,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.3459
+    },
+    {
+      "t": 16755,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.3468
+    },
+    {
+      "t": 16803,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.3468
+    },
+    {
+      "t": 16808,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.3468
+    },
+    {
+      "t": 16815,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.3468
+    },
+    {
+      "t": 17063,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.3468
+    },
+    {
+      "t": 17069,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.345
+    },
+    {
+      "t": 17080,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.344
+    },
+    {
+      "t": 17082,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3431
+    },
+    {
+      "t": 17090,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3422
+    },
+    {
+      "t": 17096,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3422
+    },
+    {
+      "t": 17103,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.3404
+    },
+    {
+      "t": 17112,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.3376
+    },
+    {
+      "t": 17117,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.3367
+    },
+    {
+      "t": 17125,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.3358
+    },
+    {
+      "t": 17131,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.3358
+    },
+    {
+      "t": 17139,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.3349
+    },
+    {
+      "t": 17144,
+      "type": "MouseMove",
+      "vx": 0.3025,
+      "vy": 0.3349
+    },
+    {
+      "t": 17151,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.3349
+    },
+    {
+      "t": 17159,
+      "type": "MouseMove",
+      "vx": 0.301,
+      "vy": 0.3349
+    },
+    {
+      "t": 17164,
+      "type": "MouseMove",
+      "vx": 0.301,
+      "vy": 0.3339
+    },
+    {
+      "t": 17171,
+      "type": "MouseMove",
+      "vx": 0.3004,
+      "vy": 0.3339
+    },
+    {
+      "t": 17179,
+      "type": "MouseMove",
+      "vx": 0.3004,
+      "vy": 0.333
+    },
+    {
+      "t": 17185,
+      "type": "MouseMove",
+      "vx": 0.2999,
+      "vy": 0.333
+    },
+    {
+      "t": 17200,
+      "type": "MouseMove",
+      "vx": 0.2994,
+      "vy": 0.333
+    },
+    {
+      "t": 17206,
+      "type": "MouseMove",
+      "vx": 0.2988,
+      "vy": 0.333
+    },
+    {
+      "t": 17220,
+      "type": "MouseMove",
+      "vx": 0.2983,
+      "vy": 0.333
+    },
+    {
+      "t": 17263,
+      "type": "MouseMove",
+      "vx": 0.2983,
+      "vy": 0.3312
+    },
+    {
+      "t": 17385,
+      "type": "MouseDown",
+      "vx": 0.2983,
+      "vy": 0.3312,
+      "button": "Left"
+    },
+    {
+      "t": 17516,
+      "type": "MouseMove",
+      "vx": 0.2983,
+      "vy": 0.3321
+    },
+    {
+      "t": 17524,
+      "type": "MouseMove",
+      "vx": 0.2983,
+      "vy": 0.3339
+    },
+    {
+      "t": 17529,
+      "type": "MouseMove",
+      "vx": 0.2999,
+      "vy": 0.3367
+    },
+    {
+      "t": 17535,
+      "type": "MouseMove",
+      "vx": 0.3004,
+      "vy": 0.3394
+    },
+    {
+      "t": 17542,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.3431
+    },
+    {
+      "t": 17549,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.3468
+    },
+    {
+      "t": 17555,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.3514
+    },
+    {
+      "t": 17562,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.355
+    },
+    {
+      "t": 17569,
+      "type": "MouseMove",
+      "vx": 0.3068,
+      "vy": 0.3596
+    },
+    {
+      "t": 17576,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3661
+    },
+    {
+      "t": 17582,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3697
+    },
+    {
+      "t": 17589,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.3761
+    },
+    {
+      "t": 17596,
+      "type": "MouseMove",
+      "vx": 0.3141,
+      "vy": 0.3798
+    },
+    {
+      "t": 17603,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.3835
+    },
+    {
+      "t": 17610,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.3881
+    },
+    {
+      "t": 17616,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.3908
+    },
+    {
+      "t": 17625,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.3945
+    },
+    {
+      "t": 17631,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.3972
+    },
+    {
+      "t": 17637,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.3982
+    },
+    {
+      "t": 17645,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.4028
+    },
+    {
+      "t": 17651,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.4037
+    },
+    {
+      "t": 17662,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.4073
+    },
+    {
+      "t": 17665,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.4083
+    },
+    {
+      "t": 17675,
+      "type": "MouseMove",
+      "vx": 0.3258,
+      "vy": 0.411
+    },
+    {
+      "t": 17679,
+      "type": "MouseMove",
+      "vx": 0.3268,
+      "vy": 0.411
+    },
+    {
+      "t": 17685,
+      "type": "MouseMove",
+      "vx": 0.3268,
+      "vy": 0.4119
+    },
+    {
+      "t": 17692,
+      "type": "MouseMove",
+      "vx": 0.3273,
+      "vy": 0.4128
+    },
+    {
+      "t": 17700,
+      "type": "MouseMove",
+      "vx": 0.3289,
+      "vy": 0.4138
+    },
+    {
+      "t": 17712,
+      "type": "MouseMove",
+      "vx": 0.3295,
+      "vy": 0.4147
+    },
+    {
+      "t": 17715,
+      "type": "MouseMove",
+      "vx": 0.33,
+      "vy": 0.4165
+    },
+    {
+      "t": 17720,
+      "type": "MouseMove",
+      "vx": 0.3305,
+      "vy": 0.4174
+    },
+    {
+      "t": 17734,
+      "type": "MouseMove",
+      "vx": 0.3321,
+      "vy": 0.4183
+    },
+    {
+      "t": 17741,
+      "type": "MouseMove",
+      "vx": 0.3326,
+      "vy": 0.4193
+    },
+    {
+      "t": 17747,
+      "type": "MouseMove",
+      "vx": 0.3326,
+      "vy": 0.4202
+    },
+    {
+      "t": 17762,
+      "type": "MouseMove",
+      "vx": 0.3332,
+      "vy": 0.4211
+    },
+    {
+      "t": 17775,
+      "type": "MouseMove",
+      "vx": 0.3337,
+      "vy": 0.422
+    },
+    {
+      "t": 17792,
+      "type": "MouseMove",
+      "vx": 0.3342,
+      "vy": 0.422
+    },
+    {
+      "t": 17817,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.422
+    },
+    {
+      "t": 17830,
+      "type": "MouseMove",
+      "vx": 0.3353,
+      "vy": 0.422
+    },
+    {
+      "t": 17843,
+      "type": "MouseMove",
+      "vx": 0.3363,
+      "vy": 0.422
+    },
+    {
+      "t": 17859,
+      "type": "MouseMove",
+      "vx": 0.3369,
+      "vy": 0.422
+    },
+    {
+      "t": 17872,
+      "type": "MouseMove",
+      "vx": 0.3374,
+      "vy": 0.422
+    },
+    {
+      "t": 17943,
+      "type": "MouseMove",
+      "vx": 0.3379,
+      "vy": 0.422
+    },
+    {
+      "t": 18033,
+      "type": "MouseUp",
+      "vx": 0.3379,
+      "vy": 0.422,
+      "button": "Left"
+    },
+    {
+      "t": 18554,
+      "type": "MouseMove",
+      "vx": 0.3379,
+      "vy": 0.4211
+    },
+    {
+      "t": 18557,
+      "type": "MouseMove",
+      "vx": 0.3379,
+      "vy": 0.4174
+    },
+    {
+      "t": 18564,
+      "type": "MouseMove",
+      "vx": 0.3369,
+      "vy": 0.4119
+    },
+    {
+      "t": 18571,
+      "type": "MouseMove",
+      "vx": 0.3369,
+      "vy": 0.4092
+    },
+    {
+      "t": 18578,
+      "type": "MouseMove",
+      "vx": 0.3363,
+      "vy": 0.4055
+    },
+    {
+      "t": 18584,
+      "type": "MouseMove",
+      "vx": 0.3363,
+      "vy": 0.4009
+    },
+    {
+      "t": 18591,
+      "type": "MouseMove",
+      "vx": 0.3353,
+      "vy": 0.3991
+    },
+    {
+      "t": 18598,
+      "type": "MouseMove",
+      "vx": 0.3353,
+      "vy": 0.3945
+    },
+    {
+      "t": 18605,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3936
+    },
+    {
+      "t": 18612,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3917
+    },
+    {
+      "t": 18618,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3908
+    },
+    {
+      "t": 18625,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.389
+    },
+    {
+      "t": 18632,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3872
+    },
+    {
+      "t": 18639,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3862
+    },
+    {
+      "t": 18645,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3835
+    },
+    {
+      "t": 18662,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3826
+    },
+    {
+      "t": 18667,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3817
+    },
+    {
+      "t": 18675,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3807
+    },
+    {
+      "t": 18680,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3798
+    },
+    {
+      "t": 18688,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3789
+    },
+    {
+      "t": 18696,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.378
+    },
+    {
+      "t": 18712,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3771
+    },
+    {
+      "t": 18714,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3752
+    },
+    {
+      "t": 18728,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.3743
+    },
+    {
+      "t": 18743,
+      "type": "MouseMove",
+      "vx": 0.3342,
+      "vy": 0.3734
+    },
+    {
+      "t": 18750,
+      "type": "MouseMove",
+      "vx": 0.3342,
+      "vy": 0.3725
+    },
+    {
+      "t": 18757,
+      "type": "MouseMove",
+      "vx": 0.3337,
+      "vy": 0.3716
+    },
+    {
+      "t": 18770,
+      "type": "MouseMove",
+      "vx": 0.3332,
+      "vy": 0.3706
+    },
+    {
+      "t": 18776,
+      "type": "MouseMove",
+      "vx": 0.3332,
+      "vy": 0.3697
+    },
+    {
+      "t": 18784,
+      "type": "MouseMove",
+      "vx": 0.3326,
+      "vy": 0.3679
+    },
+    {
+      "t": 18793,
+      "type": "MouseMove",
+      "vx": 0.3326,
+      "vy": 0.367
+    },
+    {
+      "t": 18796,
+      "type": "MouseMove",
+      "vx": 0.3316,
+      "vy": 0.3661
+    },
+    {
+      "t": 18804,
+      "type": "MouseMove",
+      "vx": 0.3316,
+      "vy": 0.3651
+    },
+    {
+      "t": 18810,
+      "type": "MouseMove",
+      "vx": 0.331,
+      "vy": 0.3642
+    },
+    {
+      "t": 18824,
+      "type": "MouseMove",
+      "vx": 0.3305,
+      "vy": 0.3633
+    },
+    {
+      "t": 18838,
+      "type": "MouseMove",
+      "vx": 0.33,
+      "vy": 0.3624
+    },
+    {
+      "t": 18852,
+      "type": "MouseMove",
+      "vx": 0.3295,
+      "vy": 0.3624
+    },
+    {
+      "t": 18860,
+      "type": "MouseMove",
+      "vx": 0.3295,
+      "vy": 0.3606
+    },
+    {
+      "t": 18865,
+      "type": "MouseMove",
+      "vx": 0.3289,
+      "vy": 0.3606
+    },
+    {
+      "t": 18880,
+      "type": "MouseMove",
+      "vx": 0.3284,
+      "vy": 0.3606
+    },
+    {
+      "t": 18994,
+      "type": "MouseMove",
+      "vx": 0.3268,
+      "vy": 0.3606
+    },
+    {
+      "t": 19091,
+      "type": "MouseDown",
+      "vx": 0.3268,
+      "vy": 0.3606,
+      "button": "Left"
+    },
+    {
+      "t": 19182,
+      "type": "MouseUp",
+      "vx": 0.3268,
+      "vy": 0.3606,
+      "button": "Left"
+    },
+    {
+      "t": 19643,
+      "type": "MouseMove",
+      "vx": 0.3263,
+      "vy": 0.3606
+    },
+    {
+      "t": 19647,
+      "type": "MouseMove",
+      "vx": 0.3258,
+      "vy": 0.3596
+    },
+    {
+      "t": 19663,
+      "type": "MouseMove",
+      "vx": 0.3252,
+      "vy": 0.3587
+    },
+    {
+      "t": 19669,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3587
+    },
+    {
+      "t": 19676,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.3587
+    },
+    {
+      "t": 19682,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.3578
+    },
+    {
+      "t": 19691,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.3578
+    },
+    {
+      "t": 19695,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.3578
+    },
+    {
+      "t": 19704,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.3578
+    },
+    {
+      "t": 19713,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.3587
+    },
+    {
+      "t": 19715,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.3596
+    },
+    {
+      "t": 19724,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.3596
+    },
+    {
+      "t": 19754,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.3596
+    },
+    {
+      "t": 19763,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.3596
+    },
+    {
+      "t": 19779,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.3596
+    },
+    {
+      "t": 19790,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.3596
+    },
+    {
+      "t": 19805,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.3596
+    },
+    {
+      "t": 19818,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3587
+    },
+    {
+      "t": 19831,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3578
+    },
+    {
+      "t": 19865,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3569
+    },
+    {
+      "t": 19879,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.356
+    },
+    {
+      "t": 19912,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.355
+    },
+    {
+      "t": 19977,
+      "type": "MouseDown",
+      "vx": 0.3168,
+      "vy": 0.355,
+      "button": "Left"
+    },
+    {
+      "t": 20060,
+      "type": "MouseUp",
+      "vx": 0.3168,
+      "vy": 0.355,
+      "button": "Left"
+    },
+    {
+      "t": 20504,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.355
+    },
+    {
+      "t": 20511,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.355
+    },
+    {
+      "t": 20518,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.355
+    },
+    {
+      "t": 20525,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.355
+    },
+    {
+      "t": 20532,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.356
+    },
+    {
+      "t": 20546,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.3569
+    },
+    {
+      "t": 20553,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.3569
+    },
+    {
+      "t": 20562,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.3578
+    },
+    {
+      "t": 20565,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.3578
+    },
+    {
+      "t": 20574,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.3587
+    },
+    {
+      "t": 20579,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.3587
+    },
+    {
+      "t": 20596,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.3596
+    },
+    {
+      "t": 20606,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.3596
+    },
+    {
+      "t": 20622,
+      "type": "MouseMove",
+      "vx": 0.3242,
+      "vy": 0.3596
+    },
+    {
+      "t": 20634,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3596
+    },
+    {
+      "t": 20678,
+      "type": "MouseMove",
+      "vx": 0.3252,
+      "vy": 0.3596
+    },
+    {
+      "t": 20741,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3596
+    },
+    {
+      "t": 20879,
+      "type": "MouseDown",
+      "vx": 0.3247,
+      "vy": 0.3596,
+      "button": "Left"
+    },
+    {
+      "t": 20973,
+      "type": "MouseUp",
+      "vx": 0.3247,
+      "vy": 0.3596,
+      "button": "Left"
+    },
+    {
+      "t": 21624,
+      "type": "KeyDown",
+      "vx": null,
+      "vy": null,
+      "key": "Escape"
+    },
+    {
+      "t": 21736,
+      "type": "KeyUp",
+      "vx": null,
+      "vy": null,
+      "key": "Escape"
+    },
+    {
+      "t": 22198,
+      "type": "MouseDown",
+      "vx": 0.3247,
+      "vy": 0.3596,
+      "button": "Left"
+    },
+    {
+      "t": 22615,
+      "type": "MouseUp",
+      "vx": 0.3247,
+      "vy": 0.3596,
+      "button": "Left"
+    },
+    {
+      "t": 22945,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3569
+    },
+    {
+      "t": 22950,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3532
+    },
+    {
+      "t": 22957,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3495
+    },
+    {
+      "t": 22964,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.345
+    },
+    {
+      "t": 22972,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3413
+    },
+    {
+      "t": 22978,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3376
+    },
+    {
+      "t": 22985,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3321
+    },
+    {
+      "t": 22995,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3284
+    },
+    {
+      "t": 22998,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3239
+    },
+    {
+      "t": 23007,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3202
+    },
+    {
+      "t": 23012,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3174
+    },
+    {
+      "t": 23019,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3138
+    },
+    {
+      "t": 23028,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3119
+    },
+    {
+      "t": 23032,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3092
+    },
+    {
+      "t": 23039,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3037
+    },
+    {
+      "t": 23045,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.3018
+    },
+    {
+      "t": 23052,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.2972
+    },
+    {
+      "t": 23060,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.2963
+    },
+    {
+      "t": 23067,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.2927
+    },
+    {
+      "t": 23144,
+      "type": "MouseDown",
+      "vx": 0.3247,
+      "vy": 0.2927,
+      "button": "Left"
+    },
+    {
+      "t": 23217,
+      "type": "MouseUp",
+      "vx": 0.3247,
+      "vy": 0.2927,
+      "button": "Left"
+    },
+    {
+      "t": 23860,
+      "type": "MouseDown",
+      "vx": 0.3247,
+      "vy": 0.2927,
+      "button": "Left"
+    },
+    {
+      "t": 24046,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.2927
+    },
+    {
+      "t": 24055,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.2954
+    },
+    {
+      "t": 24058,
+      "type": "MouseMove",
+      "vx": 0.3247,
+      "vy": 0.2991
+    },
+    {
+      "t": 24064,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.3
+    },
+    {
+      "t": 24072,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.3028
+    },
+    {
+      "t": 24078,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.3055
+    },
+    {
+      "t": 24085,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.3073
+    },
+    {
+      "t": 24091,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.311
+    },
+    {
+      "t": 24098,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.3128
+    },
+    {
+      "t": 24105,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.3165
+    },
+    {
+      "t": 24112,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.3183
+    },
+    {
+      "t": 24119,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.3211
+    },
+    {
+      "t": 24125,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3248
+    },
+    {
+      "t": 24132,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.3275
+    },
+    {
+      "t": 24140,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.3312
+    },
+    {
+      "t": 24146,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.333
+    },
+    {
+      "t": 24153,
+      "type": "MouseMove",
+      "vx": 0.3147,
+      "vy": 0.3349
+    },
+    {
+      "t": 24160,
+      "type": "MouseMove",
+      "vx": 0.3141,
+      "vy": 0.3376
+    },
+    {
+      "t": 24167,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.3404
+    },
+    {
+      "t": 24173,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.3413
+    },
+    {
+      "t": 24180,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.3431
+    },
+    {
+      "t": 24187,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.344
+    },
+    {
+      "t": 24194,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.345
+    },
+    {
+      "t": 24201,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.345
+    },
+    {
+      "t": 24208,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.3468
+    },
+    {
+      "t": 24214,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.3477
+    },
+    {
+      "t": 24221,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.3486
+    },
+    {
+      "t": 24228,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3495
+    },
+    {
+      "t": 24235,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3505
+    },
+    {
+      "t": 24242,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.3514
+    },
+    {
+      "t": 24256,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3523
+    },
+    {
+      "t": 24263,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3541
+    },
+    {
+      "t": 24277,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.355
+    },
+    {
+      "t": 24290,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.356
+    },
+    {
+      "t": 24303,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3569
+    },
+    {
+      "t": 24331,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.3578
+    },
+    {
+      "t": 24345,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3578
+    },
+    {
+      "t": 24436,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3587
+    },
+    {
+      "t": 24441,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3596
+    },
+    {
+      "t": 24454,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3615
+    },
+    {
+      "t": 24467,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3624
+    },
+    {
+      "t": 24506,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3624
+    },
+    {
+      "t": 24513,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3633
+    },
+    {
+      "t": 24531,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.3642
+    },
+    {
+      "t": 24538,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3642
+    },
+    {
+      "t": 24545,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3651
+    },
+    {
+      "t": 24566,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3661
+    },
+    {
+      "t": 24573,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.367
+    },
+    {
+      "t": 24579,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3688
+    },
+    {
+      "t": 24594,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.3688
+    },
+    {
+      "t": 24611,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3688
+    },
+    {
+      "t": 24613,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3697
+    },
+    {
+      "t": 24628,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.3706
+    },
+    {
+      "t": 24634,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.3716
+    },
+    {
+      "t": 24656,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.3725
+    },
+    {
+      "t": 24662,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.3725
+    },
+    {
+      "t": 24668,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.3734
+    },
+    {
+      "t": 24674,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.3743
+    },
+    {
+      "t": 24730,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.3752
+    },
+    {
+      "t": 24751,
+      "type": "MouseUp",
+      "vx": 0.3126,
+      "vy": 0.3752,
+      "button": "Left"
+    },
+    {
+      "t": 25488,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.3752
+    },
+    {
+      "t": 25496,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.3716
+    },
+    {
+      "t": 25501,
+      "type": "MouseMove",
+      "vx": 0.3136,
+      "vy": 0.3697
+    },
+    {
+      "t": 25507,
+      "type": "MouseMove",
+      "vx": 0.3136,
+      "vy": 0.3651
+    },
+    {
+      "t": 25514,
+      "type": "MouseMove",
+      "vx": 0.3141,
+      "vy": 0.3615
+    },
+    {
+      "t": 25521,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.356
+    },
+    {
+      "t": 25528,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.3523
+    },
+    {
+      "t": 25535,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.3459
+    },
+    {
+      "t": 25541,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.3404
+    },
+    {
+      "t": 25550,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.3367
+    },
+    {
+      "t": 25562,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.333
+    },
+    {
+      "t": 25565,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.3275
+    },
+    {
+      "t": 25570,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.3229
+    },
+    {
+      "t": 25579,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.3174
+    },
+    {
+      "t": 25584,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.3119
+    },
+    {
+      "t": 25596,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.3083
+    },
+    {
+      "t": 25598,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.3028
+    },
+    {
+      "t": 25604,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.3
+    },
+    {
+      "t": 25611,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.2963
+    },
+    {
+      "t": 25618,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.2908
+    },
+    {
+      "t": 25624,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.2881
+    },
+    {
+      "t": 25631,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.2826
+    },
+    {
+      "t": 25643,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.2807
+    },
+    {
+      "t": 25645,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.2761
+    },
+    {
+      "t": 25652,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.2725
+    },
+    {
+      "t": 25658,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.2688
+    },
+    {
+      "t": 25666,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.2661
+    },
+    {
+      "t": 25677,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.2624
+    },
+    {
+      "t": 25679,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.2596
+    },
+    {
+      "t": 25687,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.2578
+    },
+    {
+      "t": 25693,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.256
+    },
+    {
+      "t": 25699,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.2541
+    },
+    {
+      "t": 25707,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.2532
+    },
+    {
+      "t": 25713,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2532
+    },
+    {
+      "t": 25722,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2523
+    },
+    {
+      "t": 25727,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2514
+    },
+    {
+      "t": 25734,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2495
+    },
+    {
+      "t": 25740,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2486
+    },
+    {
+      "t": 25747,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2477
+    },
+    {
+      "t": 25768,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2468
+    },
+    {
+      "t": 25795,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2459
+    },
+    {
+      "t": 25904,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.2459
+    },
+    {
+      "t": 25911,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.2459
+    },
+    {
+      "t": 25918,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.2459
+    },
+    {
+      "t": 25925,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.2459
+    },
+    {
+      "t": 25932,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.2459
+    },
+    {
+      "t": 25945,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.2459
+    },
+    {
+      "t": 25952,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.2459
+    },
+    {
+      "t": 25959,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.2459
+    },
+    {
+      "t": 25978,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.2459
+    },
+    {
+      "t": 25989,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.2459
+    },
+    {
+      "t": 26014,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.2459
+    },
+    {
+      "t": 26023,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.2459
+    },
+    {
+      "t": 26069,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.2459
+    },
+    {
+      "t": 26075,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2459
+    },
+    {
+      "t": 26082,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.2459
+    },
+    {
+      "t": 26297,
+      "type": "MouseDown",
+      "vx": 0.3152,
+      "vy": 0.2459,
+      "button": "Left"
+    },
+    {
+      "t": 26519,
+      "type": "MouseUp",
+      "vx": 0.3152,
+      "vy": 0.2459,
+      "button": "Left"
+    },
+    {
+      "t": 27105,
+      "type": "MouseDown",
+      "vx": 0.3152,
+      "vy": 0.2459,
+      "button": "Left"
+    },
+    {
+      "t": 27279,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.245
+    },
+    {
+      "t": 27284,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.2422
+    },
+    {
+      "t": 27290,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2413
+    },
+    {
+      "t": 27296,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2394
+    },
+    {
+      "t": 27303,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2385
+    },
+    {
+      "t": 27310,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2376
+    },
+    {
+      "t": 27316,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2349
+    },
+    {
+      "t": 27323,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2339
+    },
+    {
+      "t": 27330,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.233
+    },
+    {
+      "t": 27337,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2303
+    },
+    {
+      "t": 27344,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2294
+    },
+    {
+      "t": 27351,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2284
+    },
+    {
+      "t": 27357,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2266
+    },
+    {
+      "t": 27364,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2257
+    },
+    {
+      "t": 27371,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2229
+    },
+    {
+      "t": 27378,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.222
+    },
+    {
+      "t": 27385,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2211
+    },
+    {
+      "t": 27391,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2202
+    },
+    {
+      "t": 27398,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2193
+    },
+    {
+      "t": 27405,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2174
+    },
+    {
+      "t": 27412,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.2165
+    },
+    {
+      "t": 27419,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.2156
+    },
+    {
+      "t": 27426,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.2147
+    },
+    {
+      "t": 27439,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.2138
+    },
+    {
+      "t": 27446,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.2128
+    },
+    {
+      "t": 27453,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.2119
+    },
+    {
+      "t": 27460,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.211
+    },
+    {
+      "t": 27481,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.211
+    },
+    {
+      "t": 27487,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.2092
+    },
+    {
+      "t": 27494,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.2092
+    },
+    {
+      "t": 27501,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.2083
+    },
+    {
+      "t": 27514,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.2073
+    },
+    {
+      "t": 27569,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.2064
+    },
+    {
+      "t": 27583,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.2055
+    },
+    {
+      "t": 27589,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.2055
+    },
+    {
+      "t": 27597,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.2046
+    },
+    {
+      "t": 27603,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.2037
+    },
+    {
+      "t": 27610,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.2009
+    },
+    {
+      "t": 27617,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.1982
+    },
+    {
+      "t": 27624,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.1963
+    },
+    {
+      "t": 27630,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.1936
+    },
+    {
+      "t": 27637,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.1917
+    },
+    {
+      "t": 27645,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.189
+    },
+    {
+      "t": 27651,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1862
+    },
+    {
+      "t": 27658,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1853
+    },
+    {
+      "t": 27665,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1835
+    },
+    {
+      "t": 27672,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1807
+    },
+    {
+      "t": 27679,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1798
+    },
+    {
+      "t": 27686,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1789
+    },
+    {
+      "t": 27693,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1761
+    },
+    {
+      "t": 27699,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1752
+    },
+    {
+      "t": 27706,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1743
+    },
+    {
+      "t": 27713,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1734
+    },
+    {
+      "t": 27719,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1725
+    },
+    {
+      "t": 27726,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1697
+    },
+    {
+      "t": 27733,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1688
+    },
+    {
+      "t": 27740,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.167
+    },
+    {
+      "t": 27747,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1661
+    },
+    {
+      "t": 27754,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1651
+    },
+    {
+      "t": 27761,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1642
+    },
+    {
+      "t": 27767,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1624
+    },
+    {
+      "t": 27774,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1615
+    },
+    {
+      "t": 27788,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1606
+    },
+    {
+      "t": 27795,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1596
+    },
+    {
+      "t": 27801,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1587
+    },
+    {
+      "t": 27812,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1578
+    },
+    {
+      "t": 27815,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1569
+    },
+    {
+      "t": 27824,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.155
+    },
+    {
+      "t": 27837,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1541
+    },
+    {
+      "t": 27904,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1532
+    },
+    {
+      "t": 27961,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.1532
+    },
+    {
+      "t": 27993,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.1541
+    },
+    {
+      "t": 28006,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.156
+    },
+    {
+      "t": 28021,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.1569
+    },
+    {
+      "t": 28028,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.1578
+    },
+    {
+      "t": 28034,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.1596
+    },
+    {
+      "t": 28041,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.1606
+    },
+    {
+      "t": 28048,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.1633
+    },
+    {
+      "t": 28055,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.167
+    },
+    {
+      "t": 28061,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.1725
+    },
+    {
+      "t": 28069,
+      "type": "MouseMove",
+      "vx": 0.3147,
+      "vy": 0.1771
+    },
+    {
+      "t": 28075,
+      "type": "MouseMove",
+      "vx": 0.3147,
+      "vy": 0.1862
+    },
+    {
+      "t": 28083,
+      "type": "MouseMove",
+      "vx": 0.3141,
+      "vy": 0.1945
+    },
+    {
+      "t": 28088,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.2028
+    },
+    {
+      "t": 28095,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.2128
+    },
+    {
+      "t": 28102,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.2211
+    },
+    {
+      "t": 28109,
+      "type": "MouseMove",
+      "vx": 0.3083,
+      "vy": 0.2294
+    },
+    {
+      "t": 28116,
+      "type": "MouseMove",
+      "vx": 0.3073,
+      "vy": 0.2367
+    },
+    {
+      "t": 28123,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.245
+    },
+    {
+      "t": 28129,
+      "type": "MouseMove",
+      "vx": 0.3057,
+      "vy": 0.2486
+    },
+    {
+      "t": 28136,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.255
+    },
+    {
+      "t": 28143,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.2606
+    },
+    {
+      "t": 28150,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2624
+    },
+    {
+      "t": 28157,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.267
+    },
+    {
+      "t": 28163,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.2706
+    },
+    {
+      "t": 28170,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.2743
+    },
+    {
+      "t": 28178,
+      "type": "MouseMove",
+      "vx": 0.3025,
+      "vy": 0.2752
+    },
+    {
+      "t": 28184,
+      "type": "MouseMove",
+      "vx": 0.3025,
+      "vy": 0.2761
+    },
+    {
+      "t": 28191,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2789
+    },
+    {
+      "t": 28198,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2798
+    },
+    {
+      "t": 28204,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2807
+    },
+    {
+      "t": 28211,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2817
+    },
+    {
+      "t": 28219,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2835
+    },
+    {
+      "t": 28232,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2844
+    },
+    {
+      "t": 28239,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2853
+    },
+    {
+      "t": 28245,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2862
+    },
+    {
+      "t": 28321,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2862
+    },
+    {
+      "t": 28328,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2862
+    },
+    {
+      "t": 28335,
+      "type": "MouseMove",
+      "vx": 0.3025,
+      "vy": 0.2862
+    },
+    {
+      "t": 28361,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.2872
+    },
+    {
+      "t": 28368,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.2872
+    },
+    {
+      "t": 28382,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2872
+    },
+    {
+      "t": 28389,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2862
+    },
+    {
+      "t": 28395,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2853
+    },
+    {
+      "t": 28402,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2826
+    },
+    {
+      "t": 28409,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2817
+    },
+    {
+      "t": 28416,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2807
+    },
+    {
+      "t": 28423,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2789
+    },
+    {
+      "t": 28430,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2761
+    },
+    {
+      "t": 28437,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2752
+    },
+    {
+      "t": 28443,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2716
+    },
+    {
+      "t": 28450,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2679
+    },
+    {
+      "t": 28457,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2651
+    },
+    {
+      "t": 28464,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2633
+    },
+    {
+      "t": 28471,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2606
+    },
+    {
+      "t": 28478,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2569
+    },
+    {
+      "t": 28485,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2541
+    },
+    {
+      "t": 28491,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.2514
+    },
+    {
+      "t": 28498,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.2495
+    },
+    {
+      "t": 28505,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.2459
+    },
+    {
+      "t": 28512,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.2404
+    },
+    {
+      "t": 28518,
+      "type": "MouseMove",
+      "vx": 0.3057,
+      "vy": 0.2349
+    },
+    {
+      "t": 28525,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.2303
+    },
+    {
+      "t": 28532,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.2266
+    },
+    {
+      "t": 28539,
+      "type": "MouseMove",
+      "vx": 0.3073,
+      "vy": 0.2211
+    },
+    {
+      "t": 28546,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2156
+    },
+    {
+      "t": 28553,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.211
+    },
+    {
+      "t": 28559,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.2055
+    },
+    {
+      "t": 28566,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.2018
+    },
+    {
+      "t": 28573,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.1963
+    },
+    {
+      "t": 28580,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.1917
+    },
+    {
+      "t": 28587,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.1881
+    },
+    {
+      "t": 28594,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.1835
+    },
+    {
+      "t": 28601,
+      "type": "MouseMove",
+      "vx": 0.3126,
+      "vy": 0.1817
+    },
+    {
+      "t": 28608,
+      "type": "MouseMove",
+      "vx": 0.3131,
+      "vy": 0.178
+    },
+    {
+      "t": 28614,
+      "type": "MouseMove",
+      "vx": 0.3141,
+      "vy": 0.1752
+    },
+    {
+      "t": 28624,
+      "type": "MouseMove",
+      "vx": 0.3147,
+      "vy": 0.1706
+    },
+    {
+      "t": 28628,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.167
+    },
+    {
+      "t": 28635,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.1633
+    },
+    {
+      "t": 28642,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.1606
+    },
+    {
+      "t": 28649,
+      "type": "MouseMove",
+      "vx": 0.3178,
+      "vy": 0.1596
+    },
+    {
+      "t": 28656,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.1569
+    },
+    {
+      "t": 28663,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.156
+    },
+    {
+      "t": 28669,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.155
+    },
+    {
+      "t": 28676,
+      "type": "MouseMove",
+      "vx": 0.3194,
+      "vy": 0.1541
+    },
+    {
+      "t": 28683,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1541
+    },
+    {
+      "t": 28690,
+      "type": "MouseMove",
+      "vx": 0.32,
+      "vy": 0.1532
+    },
+    {
+      "t": 28697,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.1532
+    },
+    {
+      "t": 28704,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.1514
+    },
+    {
+      "t": 28725,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.1505
+    },
+    {
+      "t": 28740,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.1495
+    },
+    {
+      "t": 28752,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.1495
+    },
+    {
+      "t": 28758,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.1495
+    },
+    {
+      "t": 28765,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.1495
+    },
+    {
+      "t": 28773,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.1495
+    },
+    {
+      "t": 28825,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.1495
+    },
+    {
+      "t": 28835,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.1495
+    },
+    {
+      "t": 28848,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.1505
+    },
+    {
+      "t": 28855,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.1523
+    },
+    {
+      "t": 28861,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.1532
+    },
+    {
+      "t": 28879,
+      "type": "MouseMove",
+      "vx": 0.3237,
+      "vy": 0.155
+    },
+    {
+      "t": 28882,
+      "type": "MouseMove",
+      "vx": 0.3231,
+      "vy": 0.156
+    },
+    {
+      "t": 28889,
+      "type": "MouseMove",
+      "vx": 0.3226,
+      "vy": 0.1587
+    },
+    {
+      "t": 28895,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.1596
+    },
+    {
+      "t": 28903,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.1615
+    },
+    {
+      "t": 28909,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.1661
+    },
+    {
+      "t": 28916,
+      "type": "MouseMove",
+      "vx": 0.3205,
+      "vy": 0.1679
+    },
+    {
+      "t": 28924,
+      "type": "MouseMove",
+      "vx": 0.3189,
+      "vy": 0.1743
+    },
+    {
+      "t": 28929,
+      "type": "MouseMove",
+      "vx": 0.3173,
+      "vy": 0.1771
+    },
+    {
+      "t": 28936,
+      "type": "MouseMove",
+      "vx": 0.3168,
+      "vy": 0.1807
+    },
+    {
+      "t": 28944,
+      "type": "MouseMove",
+      "vx": 0.3157,
+      "vy": 0.1862
+    },
+    {
+      "t": 28951,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.189
+    },
+    {
+      "t": 28958,
+      "type": "MouseMove",
+      "vx": 0.3136,
+      "vy": 0.1945
+    },
+    {
+      "t": 28964,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.1991
+    },
+    {
+      "t": 28971,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.2028
+    },
+    {
+      "t": 28977,
+      "type": "MouseMove",
+      "vx": 0.312,
+      "vy": 0.2055
+    },
+    {
+      "t": 28984,
+      "type": "MouseMove",
+      "vx": 0.311,
+      "vy": 0.2092
+    },
+    {
+      "t": 28991,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.2119
+    },
+    {
+      "t": 28998,
+      "type": "MouseMove",
+      "vx": 0.3094,
+      "vy": 0.2156
+    },
+    {
+      "t": 29005,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.2183
+    },
+    {
+      "t": 29011,
+      "type": "MouseMove",
+      "vx": 0.3089,
+      "vy": 0.2202
+    },
+    {
+      "t": 29018,
+      "type": "MouseMove",
+      "vx": 0.3083,
+      "vy": 0.2229
+    },
+    {
+      "t": 29025,
+      "type": "MouseMove",
+      "vx": 0.3078,
+      "vy": 0.2239
+    },
+    {
+      "t": 29032,
+      "type": "MouseMove",
+      "vx": 0.3068,
+      "vy": 0.2248
+    },
+    {
+      "t": 29039,
+      "type": "MouseMove",
+      "vx": 0.3068,
+      "vy": 0.2275
+    },
+    {
+      "t": 29046,
+      "type": "MouseMove",
+      "vx": 0.3062,
+      "vy": 0.2284
+    },
+    {
+      "t": 29052,
+      "type": "MouseMove",
+      "vx": 0.3057,
+      "vy": 0.2294
+    },
+    {
+      "t": 29059,
+      "type": "MouseMove",
+      "vx": 0.3057,
+      "vy": 0.2303
+    },
+    {
+      "t": 29066,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.2303
+    },
+    {
+      "t": 29073,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.2312
+    },
+    {
+      "t": 29087,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.233
+    },
+    {
+      "t": 29093,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.233
+    },
+    {
+      "t": 29100,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.2339
+    },
+    {
+      "t": 29107,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2339
+    },
+    {
+      "t": 29114,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2349
+    },
+    {
+      "t": 29128,
+      "type": "MouseMove",
+      "vx": 0.3041,
+      "vy": 0.2358
+    },
+    {
+      "t": 29231,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.2358
+    },
+    {
+      "t": 29279,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.2358
+    },
+    {
+      "t": 29294,
+      "type": "MouseMove",
+      "vx": 0.3031,
+      "vy": 0.2367
+    },
+    {
+      "t": 29307,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2367
+    },
+    {
+      "t": 29334,
+      "type": "MouseMove",
+      "vx": 0.302,
+      "vy": 0.2376
+    },
+    {
+      "t": 29341,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2376
+    },
+    {
+      "t": 29355,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.2385
+    },
+    {
+      "t": 29369,
+      "type": "MouseMove",
+      "vx": 0.301,
+      "vy": 0.2394
+    },
+    {
+      "t": 29383,
+      "type": "MouseMove",
+      "vx": 0.3004,
+      "vy": 0.2413
+    },
+    {
+      "t": 29389,
+      "type": "MouseMove",
+      "vx": 0.2999,
+      "vy": 0.2422
+    },
+    {
+      "t": 29396,
+      "type": "MouseMove",
+      "vx": 0.2994,
+      "vy": 0.2422
+    },
+    {
+      "t": 29403,
+      "type": "MouseMove",
+      "vx": 0.2988,
+      "vy": 0.2422
+    },
+    {
+      "t": 29410,
+      "type": "MouseMove",
+      "vx": 0.2988,
+      "vy": 0.2431
+    },
+    {
+      "t": 29416,
+      "type": "MouseMove",
+      "vx": 0.2988,
+      "vy": 0.244
+    },
+    {
+      "t": 29423,
+      "type": "MouseMove",
+      "vx": 0.2978,
+      "vy": 0.245
+    },
+    {
+      "t": 29430,
+      "type": "MouseMove",
+      "vx": 0.2973,
+      "vy": 0.245
+    },
+    {
+      "t": 29437,
+      "type": "MouseMove",
+      "vx": 0.2967,
+      "vy": 0.2459
+    },
+    {
+      "t": 29444,
+      "type": "MouseMove",
+      "vx": 0.2962,
+      "vy": 0.2468
+    },
+    {
+      "t": 29451,
+      "type": "MouseMove",
+      "vx": 0.2957,
+      "vy": 0.2486
+    },
+    {
+      "t": 29457,
+      "type": "MouseMove",
+      "vx": 0.2957,
+      "vy": 0.2495
+    },
+    {
+      "t": 29464,
+      "type": "MouseMove",
+      "vx": 0.2951,
+      "vy": 0.2495
+    },
+    {
+      "t": 29471,
+      "type": "MouseMove",
+      "vx": 0.2951,
+      "vy": 0.2505
+    },
+    {
+      "t": 29478,
+      "type": "MouseMove",
+      "vx": 0.2946,
+      "vy": 0.2514
+    },
+    {
+      "t": 29485,
+      "type": "MouseMove",
+      "vx": 0.2936,
+      "vy": 0.2523
+    },
+    {
+      "t": 29491,
+      "type": "MouseMove",
+      "vx": 0.293,
+      "vy": 0.2532
+    },
+    {
+      "t": 29499,
+      "type": "MouseMove",
+      "vx": 0.2925,
+      "vy": 0.2532
+    },
+    {
+      "t": 29505,
+      "type": "MouseMove",
+      "vx": 0.292,
+      "vy": 0.2532
+    },
+    {
+      "t": 29512,
+      "type": "MouseMove",
+      "vx": 0.292,
+      "vy": 0.2541
+    },
+    {
+      "t": 29519,
+      "type": "MouseMove",
+      "vx": 0.292,
+      "vy": 0.256
+    },
+    {
+      "t": 29526,
+      "type": "MouseMove",
+      "vx": 0.2914,
+      "vy": 0.2569
+    },
+    {
+      "t": 29539,
+      "type": "MouseMove",
+      "vx": 0.2909,
+      "vy": 0.2578
+    },
+    {
+      "t": 29546,
+      "type": "MouseMove",
+      "vx": 0.2904,
+      "vy": 0.2587
+    },
+    {
+      "t": 29553,
+      "type": "MouseMove",
+      "vx": 0.2893,
+      "vy": 0.2596
+    },
+    {
+      "t": 29560,
+      "type": "MouseMove",
+      "vx": 0.2893,
+      "vy": 0.2606
+    },
+    {
+      "t": 29567,
+      "type": "MouseMove",
+      "vx": 0.2888,
+      "vy": 0.2615
+    },
+    {
+      "t": 29574,
+      "type": "MouseMove",
+      "vx": 0.2883,
+      "vy": 0.2633
+    },
+    {
+      "t": 29580,
+      "type": "MouseMove",
+      "vx": 0.2883,
+      "vy": 0.2642
+    },
+    {
+      "t": 29588,
+      "type": "MouseMove",
+      "vx": 0.2883,
+      "vy": 0.2651
+    },
+    {
+      "t": 29594,
+      "type": "MouseMove",
+      "vx": 0.2878,
+      "vy": 0.2651
+    },
+    {
+      "t": 29601,
+      "type": "MouseMove",
+      "vx": 0.2872,
+      "vy": 0.2651
+    },
+    {
+      "t": 29608,
+      "type": "MouseMove",
+      "vx": 0.2872,
+      "vy": 0.2661
+    },
+    {
+      "t": 29615,
+      "type": "MouseMove",
+      "vx": 0.2856,
+      "vy": 0.267
+    },
+    {
+      "t": 29622,
+      "type": "MouseMove",
+      "vx": 0.2856,
+      "vy": 0.2679
+    },
+    {
+      "t": 29628,
+      "type": "MouseMove",
+      "vx": 0.2851,
+      "vy": 0.2688
+    },
+    {
+      "t": 29635,
+      "type": "MouseMove",
+      "vx": 0.2851,
+      "vy": 0.2706
+    },
+    {
+      "t": 29642,
+      "type": "MouseMove",
+      "vx": 0.2846,
+      "vy": 0.2716
+    },
+    {
+      "t": 29649,
+      "type": "MouseMove",
+      "vx": 0.2841,
+      "vy": 0.2725
+    },
+    {
+      "t": 29656,
+      "type": "MouseMove",
+      "vx": 0.2841,
+      "vy": 0.2734
+    },
+    {
+      "t": 29662,
+      "type": "MouseMove",
+      "vx": 0.2835,
+      "vy": 0.2743
+    },
+    {
+      "t": 29669,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.2752
+    },
+    {
+      "t": 29683,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.2761
+    },
+    {
+      "t": 29690,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.278
+    },
+    {
+      "t": 29697,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.2789
+    },
+    {
+      "t": 29703,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.2798
+    },
+    {
+      "t": 29710,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.2807
+    },
+    {
+      "t": 29717,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.2817
+    },
+    {
+      "t": 29724,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.2826
+    },
+    {
+      "t": 29731,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.2835
+    },
+    {
+      "t": 29738,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.2853
+    },
+    {
+      "t": 29744,
+      "type": "MouseMove",
+      "vx": 0.2798,
+      "vy": 0.2853
+    },
+    {
+      "t": 29751,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.2872
+    },
+    {
+      "t": 29758,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.2881
+    },
+    {
+      "t": 29765,
+      "type": "MouseMove",
+      "vx": 0.2788,
+      "vy": 0.2881
+    },
+    {
+      "t": 29779,
+      "type": "MouseMove",
+      "vx": 0.2788,
+      "vy": 0.289
+    },
+    {
+      "t": 29792,
+      "type": "MouseMove",
+      "vx": 0.2782,
+      "vy": 0.2899
+    },
+    {
+      "t": 29799,
+      "type": "MouseMove",
+      "vx": 0.2782,
+      "vy": 0.2917
+    },
+    {
+      "t": 29841,
+      "type": "MouseMove",
+      "vx": 0.2767,
+      "vy": 0.2936
+    },
+    {
+      "t": 29862,
+      "type": "MouseMove",
+      "vx": 0.2761,
+      "vy": 0.2945
+    },
+    {
+      "t": 29875,
+      "type": "MouseMove",
+      "vx": 0.2761,
+      "vy": 0.2954
+    },
+    {
+      "t": 29881,
+      "type": "MouseMove",
+      "vx": 0.2756,
+      "vy": 0.2954
+    },
+    {
+      "t": 29895,
+      "type": "MouseMove",
+      "vx": 0.2756,
+      "vy": 0.2972
+    },
+    {
+      "t": 29902,
+      "type": "MouseMove",
+      "vx": 0.2751,
+      "vy": 0.2972
+    },
+    {
+      "t": 29945,
+      "type": "MouseMove",
+      "vx": 0.2751,
+      "vy": 0.2963
+    },
+    {
+      "t": 29957,
+      "type": "MouseMove",
+      "vx": 0.2751,
+      "vy": 0.2954
+    },
+    {
+      "t": 29963,
+      "type": "MouseMove",
+      "vx": 0.274,
+      "vy": 0.2945
+    },
+    {
+      "t": 29970,
+      "type": "MouseMove",
+      "vx": 0.274,
+      "vy": 0.2936
+    },
+    {
+      "t": 29977,
+      "type": "MouseMove",
+      "vx": 0.274,
+      "vy": 0.2899
+    },
+    {
+      "t": 29984,
+      "type": "MouseMove",
+      "vx": 0.274,
+      "vy": 0.289
+    },
+    {
+      "t": 29990,
+      "type": "MouseMove",
+      "vx": 0.274,
+      "vy": 0.2844
+    },
+    {
+      "t": 29997,
+      "type": "MouseMove",
+      "vx": 0.2746,
+      "vy": 0.2789
+    },
+    {
+      "t": 30004,
+      "type": "MouseMove",
+      "vx": 0.2746,
+      "vy": 0.2688
+    },
+    {
+      "t": 30011,
+      "type": "MouseMove",
+      "vx": 0.2746,
+      "vy": 0.2541
+    },
+    {
+      "t": 30018,
+      "type": "MouseMove",
+      "vx": 0.2756,
+      "vy": 0.244
+    },
+    {
+      "t": 30024,
+      "type": "MouseMove",
+      "vx": 0.2756,
+      "vy": 0.2284
+    },
+    {
+      "t": 30031,
+      "type": "MouseMove",
+      "vx": 0.2767,
+      "vy": 0.2165
+    },
+    {
+      "t": 30038,
+      "type": "MouseMove",
+      "vx": 0.2767,
+      "vy": 0.2037
+    },
+    {
+      "t": 30045,
+      "type": "MouseMove",
+      "vx": 0.2777,
+      "vy": 0.1963
+    },
+    {
+      "t": 30052,
+      "type": "MouseMove",
+      "vx": 0.2777,
+      "vy": 0.1835
+    },
+    {
+      "t": 30059,
+      "type": "MouseMove",
+      "vx": 0.2782,
+      "vy": 0.1734
+    },
+    {
+      "t": 30066,
+      "type": "MouseMove",
+      "vx": 0.2782,
+      "vy": 0.1661
+    },
+    {
+      "t": 30072,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.1578
+    },
+    {
+      "t": 30079,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.1523
+    },
+    {
+      "t": 30086,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.145
+    },
+    {
+      "t": 30093,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1394
+    },
+    {
+      "t": 30100,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1339
+    },
+    {
+      "t": 30107,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1284
+    },
+    {
+      "t": 30114,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1248
+    },
+    {
+      "t": 30120,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1202
+    },
+    {
+      "t": 30130,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1147
+    },
+    {
+      "t": 30134,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1128
+    },
+    {
+      "t": 30141,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1092
+    },
+    {
+      "t": 30148,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1064
+    },
+    {
+      "t": 30154,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1037
+    },
+    {
+      "t": 30162,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1018
+    },
+    {
+      "t": 30168,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.1009
+    },
+    {
+      "t": 30175,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.0982
+    },
+    {
+      "t": 30182,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.0972
+    },
+    {
+      "t": 30189,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.0954
+    },
+    {
+      "t": 30205,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.0945
+    },
+    {
+      "t": 30211,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.0917
+    },
+    {
+      "t": 30217,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.0908
+    },
+    {
+      "t": 30224,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.0899
+    },
+    {
+      "t": 30237,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.089
+    },
+    {
+      "t": 30264,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.0881
+    },
+    {
+      "t": 30271,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.0862
+    },
+    {
+      "t": 30291,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.0872
+    },
+    {
+      "t": 30306,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.0881
+    },
+    {
+      "t": 30353,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.089
+    },
+    {
+      "t": 30367,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.0899
+    },
+    {
+      "t": 30380,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.0908
+    },
+    {
+      "t": 30395,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.0917
+    },
+    {
+      "t": 30407,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0927
+    },
+    {
+      "t": 30414,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0945
+    },
+    {
+      "t": 30423,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0954
+    },
+    {
+      "t": 30429,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0963
+    },
+    {
+      "t": 30435,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0972
+    },
+    {
+      "t": 30441,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0982
+    },
+    {
+      "t": 30448,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.0991
+    },
+    {
+      "t": 30462,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.1018
+    },
+    {
+      "t": 30469,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.1028
+    },
+    {
+      "t": 30475,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.1046
+    },
+    {
+      "t": 30482,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.1055
+    },
+    {
+      "t": 30494,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1073
+    },
+    {
+      "t": 30496,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1092
+    },
+    {
+      "t": 30504,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1101
+    },
+    {
+      "t": 30511,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.111
+    },
+    {
+      "t": 30517,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1119
+    },
+    {
+      "t": 30525,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1156
+    },
+    {
+      "t": 30531,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1183
+    },
+    {
+      "t": 30539,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.122
+    },
+    {
+      "t": 30545,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1248
+    },
+    {
+      "t": 30552,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1266
+    },
+    {
+      "t": 30558,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1303
+    },
+    {
+      "t": 30564,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.133
+    },
+    {
+      "t": 30572,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1367
+    },
+    {
+      "t": 30579,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1394
+    },
+    {
+      "t": 30586,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1431
+    },
+    {
+      "t": 30592,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1468
+    },
+    {
+      "t": 30599,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.1523
+    },
+    {
+      "t": 30606,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.155
+    },
+    {
+      "t": 30612,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.1587
+    },
+    {
+      "t": 30620,
+      "type": "MouseMove",
+      "vx": 0.2819,
+      "vy": 0.1642
+    },
+    {
+      "t": 30629,
+      "type": "MouseMove",
+      "vx": 0.2814,
+      "vy": 0.1688
+    },
+    {
+      "t": 30633,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1725
+    },
+    {
+      "t": 30644,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.1752
+    },
+    {
+      "t": 30646,
+      "type": "MouseMove",
+      "vx": 0.2798,
+      "vy": 0.1789
+    },
+    {
+      "t": 30655,
+      "type": "MouseMove",
+      "vx": 0.2798,
+      "vy": 0.1817
+    },
+    {
+      "t": 30663,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.1835
+    },
+    {
+      "t": 30667,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.1881
+    },
+    {
+      "t": 30679,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.1899
+    },
+    {
+      "t": 30681,
+      "type": "MouseMove",
+      "vx": 0.2782,
+      "vy": 0.1927
+    },
+    {
+      "t": 30688,
+      "type": "MouseMove",
+      "vx": 0.2777,
+      "vy": 0.1954
+    },
+    {
+      "t": 30694,
+      "type": "MouseMove",
+      "vx": 0.2767,
+      "vy": 0.1991
+    },
+    {
+      "t": 30701,
+      "type": "MouseMove",
+      "vx": 0.2761,
+      "vy": 0.2037
+    },
+    {
+      "t": 30708,
+      "type": "MouseMove",
+      "vx": 0.2751,
+      "vy": 0.2073
+    },
+    {
+      "t": 30715,
+      "type": "MouseMove",
+      "vx": 0.2751,
+      "vy": 0.2092
+    },
+    {
+      "t": 30722,
+      "type": "MouseMove",
+      "vx": 0.2746,
+      "vy": 0.2119
+    },
+    {
+      "t": 30728,
+      "type": "MouseMove",
+      "vx": 0.274,
+      "vy": 0.2147
+    },
+    {
+      "t": 30735,
+      "type": "MouseMove",
+      "vx": 0.273,
+      "vy": 0.2174
+    },
+    {
+      "t": 30742,
+      "type": "MouseMove",
+      "vx": 0.2724,
+      "vy": 0.2193
+    },
+    {
+      "t": 30749,
+      "type": "MouseMove",
+      "vx": 0.2719,
+      "vy": 0.222
+    },
+    {
+      "t": 30756,
+      "type": "MouseMove",
+      "vx": 0.2719,
+      "vy": 0.2229
+    },
+    {
+      "t": 30763,
+      "type": "MouseMove",
+      "vx": 0.2709,
+      "vy": 0.2229
+    },
+    {
+      "t": 30770,
+      "type": "MouseMove",
+      "vx": 0.2703,
+      "vy": 0.2257
+    },
+    {
+      "t": 30776,
+      "type": "MouseMove",
+      "vx": 0.2698,
+      "vy": 0.2266
+    },
+    {
+      "t": 30783,
+      "type": "MouseMove",
+      "vx": 0.2693,
+      "vy": 0.2284
+    },
+    {
+      "t": 30790,
+      "type": "MouseMove",
+      "vx": 0.2687,
+      "vy": 0.2303
+    },
+    {
+      "t": 30797,
+      "type": "MouseMove",
+      "vx": 0.2687,
+      "vy": 0.2321
+    },
+    {
+      "t": 30804,
+      "type": "MouseMove",
+      "vx": 0.2682,
+      "vy": 0.233
+    },
+    {
+      "t": 30810,
+      "type": "MouseMove",
+      "vx": 0.2672,
+      "vy": 0.2339
+    },
+    {
+      "t": 30817,
+      "type": "MouseMove",
+      "vx": 0.2666,
+      "vy": 0.2367
+    },
+    {
+      "t": 30824,
+      "type": "MouseMove",
+      "vx": 0.265,
+      "vy": 0.2376
+    },
+    {
+      "t": 30831,
+      "type": "MouseMove",
+      "vx": 0.2645,
+      "vy": 0.2385
+    },
+    {
+      "t": 30838,
+      "type": "MouseMove",
+      "vx": 0.2645,
+      "vy": 0.2394
+    },
+    {
+      "t": 30845,
+      "type": "MouseMove",
+      "vx": 0.2645,
+      "vy": 0.2413
+    },
+    {
+      "t": 30851,
+      "type": "MouseMove",
+      "vx": 0.264,
+      "vy": 0.2422
+    },
+    {
+      "t": 30858,
+      "type": "MouseMove",
+      "vx": 0.264,
+      "vy": 0.2431
+    },
+    {
+      "t": 30865,
+      "type": "MouseMove",
+      "vx": 0.2635,
+      "vy": 0.2431
+    },
+    {
+      "t": 30872,
+      "type": "MouseMove",
+      "vx": 0.2635,
+      "vy": 0.244
+    },
+    {
+      "t": 30879,
+      "type": "MouseMove",
+      "vx": 0.2629,
+      "vy": 0.244
+    },
+    {
+      "t": 30886,
+      "type": "MouseMove",
+      "vx": 0.2629,
+      "vy": 0.245
+    },
+    {
+      "t": 30892,
+      "type": "MouseMove",
+      "vx": 0.2624,
+      "vy": 0.2459
+    },
+    {
+      "t": 30899,
+      "type": "MouseMove",
+      "vx": 0.2624,
+      "vy": 0.2468
+    },
+    {
+      "t": 30913,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.2468
+    },
+    {
+      "t": 30920,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.2486
+    },
+    {
+      "t": 30942,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.2495
+    },
+    {
+      "t": 30975,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.2505
+    },
+    {
+      "t": 30988,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.2514
+    },
+    {
+      "t": 31232,
+      "type": "MouseUp",
+      "vx": 0.2619,
+      "vy": 0.2514,
+      "button": "Left"
+    },
+    {
+      "t": 31567,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.255
+    },
+    {
+      "t": 31572,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.2606
+    },
+    {
+      "t": 31579,
+      "type": "MouseMove",
+      "vx": 0.2635,
+      "vy": 0.267
+    },
+    {
+      "t": 31586,
+      "type": "MouseMove",
+      "vx": 0.2645,
+      "vy": 0.2725
+    },
+    {
+      "t": 31592,
+      "type": "MouseMove",
+      "vx": 0.265,
+      "vy": 0.2761
+    },
+    {
+      "t": 31599,
+      "type": "MouseMove",
+      "vx": 0.2672,
+      "vy": 0.2817
+    },
+    {
+      "t": 31606,
+      "type": "MouseMove",
+      "vx": 0.2687,
+      "vy": 0.2844
+    },
+    {
+      "t": 31613,
+      "type": "MouseMove",
+      "vx": 0.2693,
+      "vy": 0.289
+    },
+    {
+      "t": 31621,
+      "type": "MouseMove",
+      "vx": 0.2709,
+      "vy": 0.2927
+    },
+    {
+      "t": 31629,
+      "type": "MouseMove",
+      "vx": 0.273,
+      "vy": 0.2954
+    },
+    {
+      "t": 31633,
+      "type": "MouseMove",
+      "vx": 0.2746,
+      "vy": 0.2982
+    },
+    {
+      "t": 31642,
+      "type": "MouseMove",
+      "vx": 0.2782,
+      "vy": 0.3009
+    },
+    {
+      "t": 31647,
+      "type": "MouseMove",
+      "vx": 0.2804,
+      "vy": 0.3037
+    },
+    {
+      "t": 31654,
+      "type": "MouseMove",
+      "vx": 0.283,
+      "vy": 0.3055
+    },
+    {
+      "t": 31661,
+      "type": "MouseMove",
+      "vx": 0.2872,
+      "vy": 0.3083
+    },
+    {
+      "t": 31668,
+      "type": "MouseMove",
+      "vx": 0.292,
+      "vy": 0.3119
+    },
+    {
+      "t": 31675,
+      "type": "MouseMove",
+      "vx": 0.2951,
+      "vy": 0.3128
+    },
+    {
+      "t": 31681,
+      "type": "MouseMove",
+      "vx": 0.301,
+      "vy": 0.3147
+    },
+    {
+      "t": 31688,
+      "type": "MouseMove",
+      "vx": 0.3046,
+      "vy": 0.3165
+    },
+    {
+      "t": 31695,
+      "type": "MouseMove",
+      "vx": 0.3105,
+      "vy": 0.3193
+    },
+    {
+      "t": 31702,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.3211
+    },
+    {
+      "t": 31712,
+      "type": "MouseMove",
+      "vx": 0.321,
+      "vy": 0.3229
+    },
+    {
+      "t": 31716,
+      "type": "MouseMove",
+      "vx": 0.3258,
+      "vy": 0.3266
+    },
+    {
+      "t": 31722,
+      "type": "MouseMove",
+      "vx": 0.3305,
+      "vy": 0.3294
+    },
+    {
+      "t": 31729,
+      "type": "MouseMove",
+      "vx": 0.3353,
+      "vy": 0.3312
+    },
+    {
+      "t": 31737,
+      "type": "MouseMove",
+      "vx": 0.34,
+      "vy": 0.3349
+    },
+    {
+      "t": 31743,
+      "type": "MouseMove",
+      "vx": 0.3432,
+      "vy": 0.3376
+    },
+    {
+      "t": 31750,
+      "type": "MouseMove",
+      "vx": 0.3469,
+      "vy": 0.3422
+    },
+    {
+      "t": 31762,
+      "type": "MouseMove",
+      "vx": 0.3495,
+      "vy": 0.3468
+    },
+    {
+      "t": 31765,
+      "type": "MouseMove",
+      "vx": 0.3532,
+      "vy": 0.3495
+    },
+    {
+      "t": 31770,
+      "type": "MouseMove",
+      "vx": 0.3543,
+      "vy": 0.3523
+    },
+    {
+      "t": 31779,
+      "type": "MouseMove",
+      "vx": 0.3569,
+      "vy": 0.3569
+    },
+    {
+      "t": 31784,
+      "type": "MouseMove",
+      "vx": 0.3585,
+      "vy": 0.3578
+    },
+    {
+      "t": 31790,
+      "type": "MouseMove",
+      "vx": 0.3601,
+      "vy": 0.3606
+    },
+    {
+      "t": 31798,
+      "type": "MouseMove",
+      "vx": 0.3611,
+      "vy": 0.3633
+    },
+    {
+      "t": 31806,
+      "type": "MouseMove",
+      "vx": 0.3622,
+      "vy": 0.3642
+    },
+    {
+      "t": 31811,
+      "type": "MouseMove",
+      "vx": 0.3633,
+      "vy": 0.3651
+    },
+    {
+      "t": 31818,
+      "type": "MouseMove",
+      "vx": 0.3648,
+      "vy": 0.3679
+    },
+    {
+      "t": 31825,
+      "type": "MouseMove",
+      "vx": 0.3654,
+      "vy": 0.3688
+    },
+    {
+      "t": 31831,
+      "type": "MouseMove",
+      "vx": 0.3659,
+      "vy": 0.3688
+    },
+    {
+      "t": 31840,
+      "type": "MouseMove",
+      "vx": 0.3669,
+      "vy": 0.3706
+    },
+    {
+      "t": 31845,
+      "type": "MouseMove",
+      "vx": 0.368,
+      "vy": 0.3706
+    },
+    {
+      "t": 31853,
+      "type": "MouseMove",
+      "vx": 0.3685,
+      "vy": 0.3725
+    },
+    {
+      "t": 31866,
+      "type": "MouseMove",
+      "vx": 0.3691,
+      "vy": 0.3734
+    },
+    {
+      "t": 31879,
+      "type": "MouseMove",
+      "vx": 0.3691,
+      "vy": 0.3743
+    },
+    {
+      "t": 31893,
+      "type": "MouseMove",
+      "vx": 0.3691,
+      "vy": 0.3752
+    },
+    {
+      "t": 31900,
+      "type": "MouseMove",
+      "vx": 0.3691,
+      "vy": 0.3752
+    },
+    {
+      "t": 31914,
+      "type": "MouseMove",
+      "vx": 0.3685,
+      "vy": 0.3761
+    },
+    {
+      "t": 31921,
+      "type": "MouseMove",
+      "vx": 0.3685,
+      "vy": 0.3771
+    },
+    {
+      "t": 31927,
+      "type": "MouseMove",
+      "vx": 0.3675,
+      "vy": 0.3789
+    },
+    {
+      "t": 31934,
+      "type": "MouseMove",
+      "vx": 0.3664,
+      "vy": 0.3789
+    },
+    {
+      "t": 31940,
+      "type": "MouseMove",
+      "vx": 0.3659,
+      "vy": 0.3798
+    },
+    {
+      "t": 31948,
+      "type": "MouseMove",
+      "vx": 0.3659,
+      "vy": 0.3807
+    },
+    {
+      "t": 31955,
+      "type": "MouseMove",
+      "vx": 0.3659,
+      "vy": 0.3817
+    },
+    {
+      "t": 31962,
+      "type": "MouseMove",
+      "vx": 0.3654,
+      "vy": 0.3817
+    },
+    {
+      "t": 31979,
+      "type": "MouseMove",
+      "vx": 0.3648,
+      "vy": 0.3826
+    },
+    {
+      "t": 31988,
+      "type": "MouseMove",
+      "vx": 0.3643,
+      "vy": 0.3835
+    },
+    {
+      "t": 31996,
+      "type": "MouseMove",
+      "vx": 0.3638,
+      "vy": 0.3844
+    },
+    {
+      "t": 32003,
+      "type": "MouseMove",
+      "vx": 0.3633,
+      "vy": 0.3862
+    },
+    {
+      "t": 32012,
+      "type": "MouseMove",
+      "vx": 0.3633,
+      "vy": 0.3872
+    },
+    {
+      "t": 32025,
+      "type": "MouseMove",
+      "vx": 0.3622,
+      "vy": 0.3881
+    },
+    {
+      "t": 32030,
+      "type": "MouseMove",
+      "vx": 0.3622,
+      "vy": 0.389
+    },
+    {
+      "t": 32036,
+      "type": "MouseMove",
+      "vx": 0.3617,
+      "vy": 0.3899
+    },
+    {
+      "t": 32052,
+      "type": "MouseMove",
+      "vx": 0.3611,
+      "vy": 0.3908
+    },
+    {
+      "t": 32057,
+      "type": "MouseMove",
+      "vx": 0.3606,
+      "vy": 0.3908
+    },
+    {
+      "t": 32064,
+      "type": "MouseMove",
+      "vx": 0.3601,
+      "vy": 0.3917
+    },
+    {
+      "t": 32092,
+      "type": "MouseMove",
+      "vx": 0.3601,
+      "vy": 0.3927
+    },
+    {
+      "t": 32098,
+      "type": "MouseMove",
+      "vx": 0.3601,
+      "vy": 0.3945
+    },
+    {
+      "t": 32112,
+      "type": "MouseMove",
+      "vx": 0.3601,
+      "vy": 0.3954
+    },
+    {
+      "t": 32132,
+      "type": "MouseMove",
+      "vx": 0.3601,
+      "vy": 0.3963
+    },
+    {
+      "t": 32446,
+      "type": "MouseDown",
+      "vx": 0.3601,
+      "vy": 0.3963,
+      "button": "Left"
+    },
+    {
+      "t": 32713,
+      "type": "MouseMove",
+      "vx": 0.358,
+      "vy": 0.3963
+    },
+    {
+      "t": 32719,
+      "type": "MouseMove",
+      "vx": 0.3564,
+      "vy": 0.3963
+    },
+    {
+      "t": 32726,
+      "type": "MouseMove",
+      "vx": 0.3553,
+      "vy": 0.3945
+    },
+    {
+      "t": 32733,
+      "type": "MouseMove",
+      "vx": 0.3527,
+      "vy": 0.3917
+    },
+    {
+      "t": 32740,
+      "type": "MouseMove",
+      "vx": 0.3511,
+      "vy": 0.3908
+    },
+    {
+      "t": 32747,
+      "type": "MouseMove",
+      "vx": 0.3479,
+      "vy": 0.389
+    },
+    {
+      "t": 32753,
+      "type": "MouseMove",
+      "vx": 0.3448,
+      "vy": 0.3862
+    },
+    {
+      "t": 32760,
+      "type": "MouseMove",
+      "vx": 0.3432,
+      "vy": 0.3853
+    },
+    {
+      "t": 32767,
+      "type": "MouseMove",
+      "vx": 0.34,
+      "vy": 0.3835
+    },
+    {
+      "t": 32774,
+      "type": "MouseMove",
+      "vx": 0.3384,
+      "vy": 0.3826
+    },
+    {
+      "t": 32781,
+      "type": "MouseMove",
+      "vx": 0.3363,
+      "vy": 0.3798
+    },
+    {
+      "t": 32787,
+      "type": "MouseMove",
+      "vx": 0.3347,
+      "vy": 0.378
+    },
+    {
+      "t": 32794,
+      "type": "MouseMove",
+      "vx": 0.331,
+      "vy": 0.3752
+    },
+    {
+      "t": 32801,
+      "type": "MouseMove",
+      "vx": 0.3305,
+      "vy": 0.3743
+    },
+    {
+      "t": 32808,
+      "type": "MouseMove",
+      "vx": 0.3284,
+      "vy": 0.3716
+    },
+    {
+      "t": 32815,
+      "type": "MouseMove",
+      "vx": 0.3273,
+      "vy": 0.3706
+    },
+    {
+      "t": 32822,
+      "type": "MouseMove",
+      "vx": 0.3258,
+      "vy": 0.3679
+    },
+    {
+      "t": 32829,
+      "type": "MouseMove",
+      "vx": 0.3242,
+      "vy": 0.3679
+    },
+    {
+      "t": 32835,
+      "type": "MouseMove",
+      "vx": 0.3221,
+      "vy": 0.3651
+    },
+    {
+      "t": 32842,
+      "type": "MouseMove",
+      "vx": 0.3215,
+      "vy": 0.3642
+    },
+    {
+      "t": 32849,
+      "type": "MouseMove",
+      "vx": 0.3184,
+      "vy": 0.3615
+    },
+    {
+      "t": 32856,
+      "type": "MouseMove",
+      "vx": 0.3163,
+      "vy": 0.3587
+    },
+    {
+      "t": 32863,
+      "type": "MouseMove",
+      "vx": 0.3136,
+      "vy": 0.356
+    },
+    {
+      "t": 32869,
+      "type": "MouseMove",
+      "vx": 0.3115,
+      "vy": 0.355
+    },
+    {
+      "t": 32876,
+      "type": "MouseMove",
+      "vx": 0.3099,
+      "vy": 0.3523
+    },
+    {
+      "t": 32884,
+      "type": "MouseMove",
+      "vx": 0.3073,
+      "vy": 0.3495
+    },
+    {
+      "t": 32890,
+      "type": "MouseMove",
+      "vx": 0.3052,
+      "vy": 0.3468
+    },
+    {
+      "t": 32897,
+      "type": "MouseMove",
+      "vx": 0.3036,
+      "vy": 0.3468
+    },
+    {
+      "t": 32904,
+      "type": "MouseMove",
+      "vx": 0.3015,
+      "vy": 0.344
+    },
+    {
+      "t": 32911,
+      "type": "MouseMove",
+      "vx": 0.301,
+      "vy": 0.3431
+    },
+    {
+      "t": 32917,
+      "type": "MouseMove",
+      "vx": 0.2978,
+      "vy": 0.3422
+    },
+    {
+      "t": 32924,
+      "type": "MouseMove",
+      "vx": 0.2973,
+      "vy": 0.3394
+    },
+    {
+      "t": 32931,
+      "type": "MouseMove",
+      "vx": 0.2951,
+      "vy": 0.3394
+    },
+    {
+      "t": 32938,
+      "type": "MouseMove",
+      "vx": 0.2936,
+      "vy": 0.3376
+    },
+    {
+      "t": 32945,
+      "type": "MouseMove",
+      "vx": 0.2904,
+      "vy": 0.3367
+    },
+    {
+      "t": 32952,
+      "type": "MouseMove",
+      "vx": 0.2888,
+      "vy": 0.3358
+    },
+    {
+      "t": 32959,
+      "type": "MouseMove",
+      "vx": 0.2872,
+      "vy": 0.3339
+    },
+    {
+      "t": 32966,
+      "type": "MouseMove",
+      "vx": 0.2862,
+      "vy": 0.333
+    },
+    {
+      "t": 32973,
+      "type": "MouseMove",
+      "vx": 0.2851,
+      "vy": 0.3321
+    },
+    {
+      "t": 32979,
+      "type": "MouseMove",
+      "vx": 0.2841,
+      "vy": 0.3294
+    },
+    {
+      "t": 32986,
+      "type": "MouseMove",
+      "vx": 0.2825,
+      "vy": 0.3284
+    },
+    {
+      "t": 32993,
+      "type": "MouseMove",
+      "vx": 0.2809,
+      "vy": 0.3266
+    },
+    {
+      "t": 33000,
+      "type": "MouseMove",
+      "vx": 0.2798,
+      "vy": 0.3266
+    },
+    {
+      "t": 33007,
+      "type": "MouseMove",
+      "vx": 0.2793,
+      "vy": 0.3257
+    },
+    {
+      "t": 33013,
+      "type": "MouseMove",
+      "vx": 0.2777,
+      "vy": 0.3248
+    },
+    {
+      "t": 33020,
+      "type": "MouseMove",
+      "vx": 0.2772,
+      "vy": 0.3248
+    },
+    {
+      "t": 33027,
+      "type": "MouseMove",
+      "vx": 0.2751,
+      "vy": 0.3239
+    },
+    {
+      "t": 33034,
+      "type": "MouseMove",
+      "vx": 0.2735,
+      "vy": 0.322
+    },
+    {
+      "t": 33041,
+      "type": "MouseMove",
+      "vx": 0.2714,
+      "vy": 0.3211
+    },
+    {
+      "t": 33048,
+      "type": "MouseMove",
+      "vx": 0.2698,
+      "vy": 0.3193
+    },
+    {
+      "t": 33054,
+      "type": "MouseMove",
+      "vx": 0.2687,
+      "vy": 0.3183
+    },
+    {
+      "t": 33061,
+      "type": "MouseMove",
+      "vx": 0.2661,
+      "vy": 0.3174
+    },
+    {
+      "t": 33068,
+      "type": "MouseMove",
+      "vx": 0.2656,
+      "vy": 0.3156
+    },
+    {
+      "t": 33075,
+      "type": "MouseMove",
+      "vx": 0.2635,
+      "vy": 0.3156
+    },
+    {
+      "t": 33082,
+      "type": "MouseMove",
+      "vx": 0.2624,
+      "vy": 0.3156
+    },
+    {
+      "t": 33089,
+      "type": "MouseMove",
+      "vx": 0.2619,
+      "vy": 0.3156
+    },
+    {
+      "t": 33095,
+      "type": "MouseMove",
+      "vx": 0.2603,
+      "vy": 0.3147
+    },
+    {
+      "t": 33102,
+      "type": "MouseMove",
+      "vx": 0.2587,
+      "vy": 0.3147
+    },
+    {
+      "t": 33109,
+      "type": "MouseMove",
+      "vx": 0.2582,
+      "vy": 0.3147
+    },
+    {
+      "t": 33116,
+      "type": "MouseMove",
+      "vx": 0.2582,
+      "vy": 0.3138
+    },
+    {
+      "t": 33123,
+      "type": "MouseMove",
+      "vx": 0.2577,
+      "vy": 0.3138
+    },
+    {
+      "t": 33129,
+      "type": "MouseMove",
+      "vx": 0.2571,
+      "vy": 0.3138
+    },
+    {
+      "t": 33136,
+      "type": "MouseMove",
+      "vx": 0.2566,
+      "vy": 0.3138
+    },
+    {
+      "t": 33150,
+      "type": "MouseMove",
+      "vx": 0.2561,
+      "vy": 0.3138
+    },
+    {
+      "t": 33163,
+      "type": "MouseMove",
+      "vx": 0.2555,
+      "vy": 0.3138
+    },
+    {
+      "t": 33177,
+      "type": "MouseMove",
+      "vx": 0.255,
+      "vy": 0.3138
+    },
+    {
+      "t": 33205,
+      "type": "MouseMove",
+      "vx": 0.254,
+      "vy": 0.3138
+    },
+    {
+      "t": 33287,
+      "type": "MouseMove",
+      "vx": 0.254,
+      "vy": 0.3138
+    },
+    {
+      "t": 33368,
+      "type": "MouseMove",
+      "vx": 0.254,
+      "vy": 0.3138
+    },
+    {
+      "t": 33402,
+      "type": "MouseUp",
+      "vx": 0.254,
+      "vy": 0.3138,
+      "button": "Left"
+    },
+    {
+      "t": 33729,
+      "type": "MouseMove",
+      "vx": 0.2529,
+      "vy": 0.3193
+    },
+    {
+      "t": 33732,
+      "type": "MouseMove",
+      "vx": 0.2508,
+      "vy": 0.3248
+    },
+    {
+      "t": 33739,
+      "type": "MouseMove",
+      "vx": 0.2492,
+      "vy": 0.3312
+    },
+    {
+      "t": 33746,
+      "type": "MouseMove",
+      "vx": 0.2482,
+      "vy": 0.3367
+    },
+    {
+      "t": 33753,
+      "type": "MouseMove",
+      "vx": 0.2476,
+      "vy": 0.3468
+    },
+    {
+      "t": 33762,
+      "type": "MouseMove",
+      "vx": 0.2455,
+      "vy": 0.3532
+    },
+    {
+      "t": 33766,
+      "type": "MouseMove",
+      "vx": 0.245,
+      "vy": 0.3615
+    },
+    {
+      "t": 33773,
+      "type": "MouseMove",
+      "vx": 0.2439,
+      "vy": 0.367
+    },
+    {
+      "t": 33780,
+      "type": "MouseMove",
+      "vx": 0.2418,
+      "vy": 0.3752
+    },
+    {
+      "t": 33787,
+      "type": "MouseMove",
+      "vx": 0.2402,
+      "vy": 0.3817
+    },
+    {
+      "t": 33795,
+      "type": "MouseMove",
+      "vx": 0.2402,
+      "vy": 0.389
+    },
+    {
+      "t": 33801,
+      "type": "MouseMove",
+      "vx": 0.2381,
+      "vy": 0.3972
+    },
+    {
+      "t": 33812,
+      "type": "MouseMove",
+      "vx": 0.2365,
+      "vy": 0.4009
+    },
+    {
+      "t": 33815,
+      "type": "MouseMove",
+      "vx": 0.235,
+      "vy": 0.4073
+    },
+    {
+      "t": 33821,
+      "type": "MouseMove",
+      "vx": 0.2323,
+      "vy": 0.4156
+    },
+    {
+      "t": 33828,
+      "type": "MouseMove",
+      "vx": 0.2307,
+      "vy": 0.4202
+    },
+    {
+      "t": 33835,
+      "type": "MouseMove",
+      "vx": 0.2286,
+      "vy": 0.4257
+    },
+    {
+      "t": 33842,
+      "type": "MouseMove",
+      "vx": 0.226,
+      "vy": 0.4321
+    },
+    {
+      "t": 33848,
+      "type": "MouseMove",
+      "vx": 0.2233,
+      "vy": 0.4404
+    },
+    {
+      "t": 33856,
+      "type": "MouseMove",
+      "vx": 0.2202,
+      "vy": 0.4468
+    },
+    {
+      "t": 33862,
+      "type": "MouseMove",
+      "vx": 0.2154,
+      "vy": 0.4523
+    },
+    {
+      "t": 34130,
+      "type": "MouseDown",
+      "vx": 0.2154,
+      "vy": 0.4523,
+      "button": "Left"
+    },
+    {
+      "t": 34341,
+      "type": "MouseUp",
+      "vx": 0.2154,
+      "vy": 0.4523,
+      "button": "Left"
+    },
+    {
+      "t": 35166,
+      "type": "MouseDown",
+      "vx": 0.2154,
+      "vy": 0.4523,
+      "button": "Left"
+    },
+    {
+      "t": 35245,
+      "type": "MouseUp",
+      "vx": 0.2154,
+      "vy": 0.4523,
+      "button": "Left"
+    },
+    {
+      "t": 36160,
+      "type": "MouseMove",
+      "vx": 0.2154,
+      "vy": 0.4532
+    },
+    {
+      "t": 36178,
+      "type": "MouseMove",
+      "vx": 0.2154,
+      "vy": 0.4541
+    },
+    {
+      "t": 36180,
+      "type": "MouseMove",
+      "vx": 0.2154,
+      "vy": 0.455
+    },
+    {
+      "t": 36185,
+      "type": "MouseMove",
+      "vx": 0.2154,
+      "vy": 0.4578
+    },
+    {
+      "t": 36192,
+      "type": "MouseMove",
+      "vx": 0.2154,
+      "vy": 0.4587
+    },
+    {
+      "t": 36199,
+      "type": "MouseMove",
+      "vx": 0.2165,
+      "vy": 0.4624
+    },
+    {
+      "t": 36206,
+      "type": "MouseMove",
+      "vx": 0.2165,
+      "vy": 0.4661
+    },
+    {
+      "t": 36213,
+      "type": "MouseMove",
+      "vx": 0.217,
+      "vy": 0.4716
+    },
+    {
+      "t": 36220,
+      "type": "MouseMove",
+      "vx": 0.217,
+      "vy": 0.4752
+    },
+    {
+      "t": 36226,
+      "type": "MouseMove",
+      "vx": 0.2181,
+      "vy": 0.4807
+    },
+    {
+      "t": 36233,
+      "type": "MouseMove",
+      "vx": 0.2186,
+      "vy": 0.4872
+    },
+    {
+      "t": 36240,
+      "type": "MouseMove",
+      "vx": 0.2196,
+      "vy": 0.4927
+    },
+    {
+      "t": 36246,
+      "type": "MouseMove",
+      "vx": 0.2212,
+      "vy": 0.4982
+    },
+    {
+      "t": 36254,
+      "type": "MouseMove",
+      "vx": 0.2239,
+      "vy": 0.5028
+    },
+    {
+      "t": 36262,
+      "type": "MouseMove",
+      "vx": 0.2254,
+      "vy": 0.511
+    },
+    {
+      "t": 36267,
+      "type": "MouseMove",
+      "vx": 0.2281,
+      "vy": 0.5174
+    },
+    {
+      "t": 36274,
+      "type": "MouseMove",
+      "vx": 0.2334,
+      "vy": 0.5248
+    },
+    {
+      "t": 36281,
+      "type": "MouseMove",
+      "vx": 0.2371,
+      "vy": 0.5312
+    },
+    {
+      "t": 36289,
+      "type": "MouseMove",
+      "vx": 0.2423,
+      "vy": 0.5385
+    },
+    {
+      "t": 36295,
+      "type": "MouseMove",
+      "vx": 0.2497,
+      "vy": 0.544
+    },
+    {
+      "t": 36301,
+      "type": "MouseMove",
+      "vx": 0.2577,
+      "vy": 0.5514
+    },
+    {
+      "t": 36310,
+      "type": "MouseMove",
+      "vx": 0.265,
+      "vy": 0.5569
+    },
+    {
+      "t": 36315,
+      "type": "MouseMove",
+      "vx": 0.2767,
+      "vy": 0.5606
+    },
+    {
+      "t": 36322,
+      "type": "MouseMove",
+      "vx": 0.2941,
+      "vy": 0.5633
+    },
+    {
+      "t": 36329,
+      "type": "MouseMove",
+      "vx": 0.3152,
+      "vy": 0.5651
+    },
+    {
+      "t": 36336,
+      "type": "MouseMove",
+      "vx": 0.339,
+      "vy": 0.5679
+    },
+    {
+      "t": 36342,
+      "type": "MouseMove",
+      "vx": 0.3849,
+      "vy": 0.5661
+    },
+    {
+      "t": 36350,
+      "type": "MouseMove",
+      "vx": 0.4314,
+      "vy": 0.5624
+    },
+    {
+      "t": 36356,
+      "type": "MouseMove",
+      "vx": 0.4947,
+      "vy": 0.555
+    },
+    {
+      "t": 36362,
+      "type": "MouseMove",
+      "vx": 0.5586,
+      "vy": 0.544
+    },
+    {
+      "t": 36370,
+      "type": "MouseMove",
+      "vx": 0.6199,
+      "vy": 0.533
+    },
+    {
+      "t": 36379,
+      "type": "MouseMove",
+      "vx": 0.6837,
+      "vy": 0.5183
+    },
+    {
+      "t": 36383,
+      "type": "MouseMove",
+      "vx": 0.7423,
+      "vy": 0.5037
+    },
+    {
+      "t": 36395,
+      "type": "MouseMove",
+      "vx": 0.801,
+      "vy": 0.489
+    },
+    {
+      "t": 36398,
+      "type": "MouseMove",
+      "vx": 0.8543,
+      "vy": 0.4743
+    },
+    {
+      "t": 36404,
+      "type": "MouseMove",
+      "vx": 0.9071,
+      "vy": 0.4606
+    },
+    {
+      "t": 36412,
+      "type": "MouseMove",
+      "vx": 0.9609,
+      "vy": 0.4431
+    }
+  ]
+}

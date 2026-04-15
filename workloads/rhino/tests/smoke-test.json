@@ -4,14 +4,16 @@
   "description": "Minimal smoke test — opens a file, captures a single screenshot to verify the pipeline works end-to-end.",
   "setup": {
     "viewport": {
-      "width": 800,
-      "height": 600,
       "projection": "Perspective",
       "displayMode": "Shaded"
     },
     "commands": [
-      "_-Sphere _Center 0,0,0 _Radius 10 _Enter",
-      "_ZoomExtents"
+      "_-4View _Enter",
+      "_-SetView _World _Perspective _Enter",
+      "_-MaxViewport",
+      "_-Sphere 0,0,0 10",
+      "_-Zoom _All _Extents _Enter",
+      "_SetDisplayMode _Mode=Shaded _Enter"
     ]
   },
   "checkpoints": [

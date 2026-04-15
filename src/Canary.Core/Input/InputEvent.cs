@@ -17,8 +17,11 @@ public enum InputEventType
     /// <summary>Mouse button released.</summary>
     MouseUp,
 
-    /// <summary>Mouse wheel scrolled.</summary>
+    /// <summary>Mouse wheel scrolled (vertical).</summary>
     MouseWheel,
+
+    /// <summary>Mouse wheel scrolled (horizontal / touchpad pan).</summary>
+    MouseHWheel,
 
     /// <summary>Keyboard key pressed.</summary>
     KeyDown,

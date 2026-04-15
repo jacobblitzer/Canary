@@ -27,61 +27,71 @@ public sealed class AgentServer : IDisposable
     }
 
     /// <summary>
-    /// Starts listening for a single client connection and processes requests until
-    /// cancellation or disconnection.
+    /// Starts listening for client connections and processes requests.
+    /// Loops to accept new connections after a client disconnects (e.g. from a probe).
     /// </summary>
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        _pipeServer = new NamedPipeServerStream(
-            _pipeName,
-            PipeDirection.InOut,
-            1,
-            PipeTransmissionMode.Byte,
-            PipeOptions.Asynchronous);
-
-        await _pipeServer.WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
-
-        var utf8NoBom = new UTF8Encoding(false);
-        using var reader = new StreamReader(_pipeServer, utf8NoBom, false, 1024, leaveOpen: true);
-        using var writer = new StreamWriter(_pipeServer, utf8NoBom, 1024, leaveOpen: true) { AutoFlush = true };
-
-        while (!cancellationToken.IsCancellationRequested && _pipeServer.IsConnected)
+        while (!cancellationToken.IsCancellationRequested)
         {
+            _pipeServer?.Dispose();
+            _pipeServer = new NamedPipeServerStream(
+                _pipeName,
+                PipeDirection.InOut,
+                1,
+                PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous);
+
+            await _pipeServer.WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
+
+            var utf8NoBom = new UTF8Encoding(false);
+            using var reader = new StreamReader(_pipeServer, utf8NoBom, false, 1024, leaveOpen: true);
+            using var writer = new StreamWriter(_pipeServer, utf8NoBom, 1024, leaveOpen: true) { AutoFlush = true };
+
+            // Read first line to distinguish a probe (immediate disconnect) from a real client
             string? line;
             try
             {
                 var readTask = reader.ReadLineAsync();
-                var completed = await Task.WhenAny(readTask, Task.Delay(Timeout.Infinite, cancellationToken)).ConfigureAwait(false);
+                var completed = await Task.WhenAny(readTask, Task.Delay(2000, cancellationToken)).ConfigureAwait(false);
                 if (completed != readTask)
-                    break;
+                {
+                    // Client connected but sent nothing for 2s — likely a probe. Re-listen.
+                    continue;
+                }
                 line = await readTask.ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
-            catch (IOException)
-            {
-                break;
-            }
+            catch (OperationCanceledException) { break; }
+            catch (IOException) { continue; }
 
             if (line == null)
-                break;
+                continue; // Client disconnected without sending data — re-listen
 
+            // Process the first request, then enter normal request loop
             var response = await DispatchAsync(line).ConfigureAwait(false);
-            var responseLine = RpcSerializer.Serialize(response);
+            try { await writer.WriteLineAsync(RpcSerializer.Serialize(response)).ConfigureAwait(false); }
+            catch (IOException) { continue; }
 
-            try
+            while (!cancellationToken.IsCancellationRequested && _pipeServer.IsConnected)
             {
-                await writer.WriteLineAsync(responseLine).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
-            catch (IOException)
-            {
-                break;
+                try
+                {
+                    var readTask = reader.ReadLineAsync();
+                    var completed = await Task.WhenAny(readTask, Task.Delay(Timeout.Infinite, cancellationToken)).ConfigureAwait(false);
+                    if (completed != readTask)
+                        break;
+                    line = await readTask.ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) { break; }
+                catch (IOException) { break; }
+
+                if (line == null)
+                    break;
+
+                response = await DispatchAsync(line).ConfigureAwait(false);
+                try { await writer.WriteLineAsync(RpcSerializer.Serialize(response)).ConfigureAwait(false); }
+                catch (OperationCanceledException) { break; }
+                catch (IOException) { break; }
             }
         }
     }

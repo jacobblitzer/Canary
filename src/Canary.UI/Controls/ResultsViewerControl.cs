@@ -4,164 +4,221 @@ namespace Canary.UI.Controls;
 
 /// <summary>
 /// Displays test results with per-checkpoint baseline/candidate/diff images and stats.
+/// Scrollable, resizable layout using TableLayoutPanel.
 /// </summary>
 internal sealed class ResultsViewerControl : UserControl
 {
-    private readonly FlowLayoutPanel _checkpointsPanel;
-    private TestResult? _testResult;
+    private readonly Panel _scrollPanel;
 
     public event Action<string>? ApproveCheckpointRequested;
     public event Action<string>? RejectCheckpointRequested;
     public event Action? ApproveAllRequested;
-    public event Action<string, string[]>? ImageClicked;
 
     public ResultsViewerControl()
     {
         Dock = DockStyle.Fill;
         BackColor = Color.FromArgb(30, 30, 30);
-        AutoScroll = true;
 
-        _checkpointsPanel = new FlowLayoutPanel
+        _scrollPanel = new Panel
         {
             Dock = DockStyle.Fill,
-            FlowDirection = FlowDirection.TopDown,
-            WrapContents = false,
             AutoScroll = true,
-            AutoSize = false,
             Padding = new Padding(10)
         };
 
-        Controls.Add(_checkpointsPanel);
+        Controls.Add(_scrollPanel);
     }
 
     public void LoadResult(TestResult result)
     {
-        _testResult = result;
-        _checkpointsPanel.Controls.Clear();
+        _scrollPanel.Controls.Clear();
 
-        // Test header
-        var header = CreateHeader(result);
-        _checkpointsPanel.Controls.Add(header);
+        var layout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            ColumnCount = 1,
+            Padding = new Padding(0),
+            CellBorderStyle = TableLayoutPanelCellBorderStyle.None
+        };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-        // Per-checkpoint rows
+        layout.Controls.Add(CreateHeader(result));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+        if (!string.IsNullOrEmpty(result.ErrorMessage))
+        {
+            layout.Controls.Add(CreateErrorPanel(result.ErrorMessage));
+            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        }
+
         foreach (var cp in result.CheckpointResults)
         {
-            var row = CreateCheckpointRow(cp);
-            _checkpointsPanel.Controls.Add(row);
+            layout.Controls.Add(CreateCheckpointRow(cp));
+            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         }
+
+        _scrollPanel.Controls.Add(layout);
+    }
+
+    private static Button MakeButton(string text, Color backColor)
+    {
+        return new Button
+        {
+            Text = text,
+            FlatStyle = FlatStyle.Flat,
+            BackColor = backColor,
+            ForeColor = Color.White,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Padding = new Padding(8, 2, 8, 2)
+        };
     }
 
     private Panel CreateHeader(TestResult result)
     {
         var panel = new Panel
         {
-            Width = _checkpointsPanel.ClientSize.Width - 30,
-            Height = 60,
+            Dock = DockStyle.Top,
+            Height = 80,
             BackColor = Color.FromArgb(37, 37, 38),
-            Padding = new Padding(10)
+            Padding = new Padding(12)
         };
 
-        var statusColor = result.Status switch
-        {
-            TestStatus.Passed => Color.FromArgb(80, 200, 80),
-            TestStatus.Failed => Color.FromArgb(220, 60, 60),
-            TestStatus.Crashed => Color.FromArgb(180, 80, 220),
-            TestStatus.New => Color.FromArgb(220, 180, 50),
-            _ => Color.Gray
-        };
+        var statusColor = StatusColor(result.Status);
 
         var nameLabel = new Label
         {
-            Text = result.TestName,
-            Font = new Font("Segoe UI", 16f, FontStyle.Bold),
-            ForeColor = Color.FromArgb(220, 220, 220),
-            AutoSize = true,
-            Location = new Point(10, 10)
-        };
-
-        var statusLabel = new Label
-        {
-            Text = result.Status.ToString().ToUpperInvariant(),
-            Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+            Text = $"{result.TestName}  —  {result.Status.ToString().ToUpperInvariant()}",
+            Font = new Font("Segoe UI", 14f, FontStyle.Bold),
             ForeColor = statusColor,
             AutoSize = true,
-            Location = new Point(10, 38)
+            Location = new Point(12, 12)
         };
 
-        var durationLabel = new Label
+        var infoLabel = new Label
         {
-            Text = $"Duration: {result.Duration.TotalSeconds:F1}s",
+            Text = $"Workload: {result.Workload}  |  Duration: {result.Duration.TotalSeconds:F1}s  |  Checkpoints: {result.CheckpointResults.Count}",
             Font = new Font("Segoe UI", 9f),
-            ForeColor = Color.FromArgb(140, 140, 140),
+            ForeColor = Color.FromArgb(160, 160, 160),
             AutoSize = true,
-            Location = new Point(200, 40)
+            Location = new Point(12, 46)
         };
 
-        var approveAllBtn = new Button
-        {
-            Text = "Approve All",
-            FlatStyle = FlatStyle.Flat,
-            BackColor = Color.FromArgb(0, 122, 204),
-            ForeColor = Color.White,
-            Size = new Size(100, 30),
-            Anchor = AnchorStyles.Right,
-            Location = new Point(panel.Width - 120, 15)
-        };
+        var approveAllBtn = MakeButton("Approve All", Color.FromArgb(0, 122, 204));
         approveAllBtn.Click += (_, _) => ApproveAllRequested?.Invoke();
 
         panel.Controls.Add(nameLabel);
-        panel.Controls.Add(statusLabel);
-        panel.Controls.Add(durationLabel);
+        panel.Controls.Add(infoLabel);
         panel.Controls.Add(approveAllBtn);
+        panel.Resize += (_, _) => approveAllBtn.Location = new Point(panel.Width - approveAllBtn.Width - 16, 20);
 
+        return panel;
+    }
+
+    private static Panel CreateErrorPanel(string message)
+    {
+        var panel = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 40,
+            BackColor = Color.FromArgb(80, 30, 30),
+            Padding = new Padding(12, 8, 12, 8)
+        };
+        panel.Controls.Add(new Label
+        {
+            Text = message,
+            Font = new Font("Segoe UI", 9f),
+            ForeColor = Color.FromArgb(255, 180, 180),
+            Dock = DockStyle.Fill,
+            AutoSize = false
+        });
         return panel;
     }
 
     private Panel CreateCheckpointRow(CheckpointResult cp)
     {
+        bool hasError = !string.IsNullOrEmpty(cp.ErrorMessage);
+        int imageTop = hasError ? 96 : 66;
+        int panelHeight = imageTop + 220;
+
         var panel = new Panel
         {
-            Width = _checkpointsPanel.ClientSize.Width - 30,
-            Height = 240,
+            Dock = DockStyle.Top,
+            Height = panelHeight,
             BackColor = Color.FromArgb(37, 37, 38),
-            Margin = new Padding(0, 5, 0, 5),
-            Padding = new Padding(10)
+            Margin = new Padding(0, 6, 0, 0),
+            Padding = new Padding(12)
         };
 
-        // Stats header
-        var statusColor = cp.Status switch
-        {
-            TestStatus.Passed => Color.FromArgb(80, 200, 80),
-            TestStatus.Failed => Color.FromArgb(220, 60, 60),
-            TestStatus.Crashed => Color.FromArgb(180, 80, 220),
-            TestStatus.New => Color.FromArgb(220, 180, 50),
-            _ => Color.Gray
-        };
+        var statusColor = StatusColor(cp.Status);
 
+        // Checkpoint name
         var nameLabel = new Label
         {
             Text = cp.Name,
             Font = new Font("Segoe UI", 11f, FontStyle.Bold),
             ForeColor = statusColor,
             AutoSize = true,
-            Location = new Point(10, 5)
+            Location = new Point(12, 10)
         };
-        panel.Controls.Add(nameLabel);
+
+        // Stats line
+        var statusText = cp.Status == TestStatus.New
+            ? "NEW — no baseline yet"
+            : $"Diff: {cp.DiffPercentage:P2}  |  Tolerance: {cp.Tolerance:P2}  |  SSIM: {cp.SsimScore:F4}";
 
         var statsLabel = new Label
         {
-            Text = $"Diff: {cp.DiffPercentage:P2}  |  Tolerance: {cp.Tolerance:P2}  |  SSIM: {cp.SsimScore:F4}",
+            Text = statusText,
             Font = new Font("Segoe UI", 9f),
             ForeColor = Color.FromArgb(160, 160, 160),
             AutoSize = true,
-            Location = new Point(10, 28)
+            Location = new Point(12, 36)
         };
+
+        // Approve / Reject buttons — AutoSize so they never clip text
+        var approveBtn = MakeButton("Approve", Color.FromArgb(40, 120, 40));
+        approveBtn.Click += (_, _) => ApproveCheckpointRequested?.Invoke(cp.Name);
+
+        var rejectBtn = MakeButton("Reject", Color.FromArgb(150, 40, 40));
+        rejectBtn.Click += (_, _) => RejectCheckpointRequested?.Invoke(cp.Name);
+
+        panel.Controls.Add(nameLabel);
         panel.Controls.Add(statsLabel);
 
-        // Image row: baseline | candidate | diff
-        int imgTop = 50;
-        int imgWidth = (panel.Width - 50) / 3;
-        int imgHeight = 150;
+        // Error label (if present)
+        if (hasError)
+        {
+            var errorLabel = new Label
+            {
+                Text = cp.ErrorMessage,
+                Font = new Font("Segoe UI", 8.5f),
+                ForeColor = Color.FromArgb(255, 180, 180),
+                AutoSize = true,
+                Location = new Point(12, 60)
+            };
+            panel.Controls.Add(errorLabel);
+        }
+
+        panel.Controls.Add(approveBtn);
+        panel.Controls.Add(rejectBtn);
+
+        // Image row using TableLayoutPanel for even distribution
+        var imageTable = new TableLayoutPanel
+        {
+            Location = new Point(12, imageTop),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            Height = 210,
+            ColumnCount = 3,
+            RowCount = 2,
+            CellBorderStyle = TableLayoutPanelCellBorderStyle.None
+        };
+        imageTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3f));
+        imageTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3f));
+        imageTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3f));
+        imageTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
+        imageTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var images = new (string label, string? path)[]
         {
@@ -170,81 +227,60 @@ internal sealed class ResultsViewerControl : UserControl
             ("Diff", cp.DiffImagePath)
         };
 
-        var allPaths = images.Where(i => i.path != null).Select(i => i.path!).ToArray();
-
         for (int i = 0; i < images.Length; i++)
         {
             var (label, path) = images[i];
-            int x = 10 + i * (imgWidth + 5);
 
-            var imgLabel = new Label
+            imageTable.Controls.Add(new Label
             {
                 Text = label,
                 Font = new Font("Segoe UI", 8f),
                 ForeColor = Color.FromArgb(120, 120, 120),
-                Location = new Point(x, imgTop),
-                AutoSize = true
-            };
-            panel.Controls.Add(imgLabel);
+                Dock = DockStyle.Fill
+            }, i, 0);
 
             var pb = new PictureBox
             {
-                Location = new Point(x, imgTop + 18),
-                Size = new Size(imgWidth, imgHeight),
+                Dock = DockStyle.Fill,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BackColor = Color.FromArgb(20, 20, 20),
                 BorderStyle = BorderStyle.FixedSingle,
-                Cursor = Cursors.Hand
+                Margin = new Padding(2)
             };
 
             if (path != null && File.Exists(path))
             {
                 try
                 {
-                    pb.Image = Image.FromFile(path);
+                    // Load into memory copy to avoid holding a file lock
+                    using var original = Image.FromFile(path);
+                    pb.Image = new Bitmap(original);
                 }
-                catch
-                {
-                    // Image load failed — leave blank
-                }
+                catch { /* Image load failed */ }
             }
 
-            var capturedPath = path ?? "";
-            pb.Click += (_, _) =>
-            {
-                if (!string.IsNullOrEmpty(capturedPath))
-                    ImageClicked?.Invoke(capturedPath, allPaths);
-            };
-
-            panel.Controls.Add(pb);
+            imageTable.Controls.Add(pb, i, 1);
         }
 
-        // Approve/Reject buttons
-        var approveBtn = new Button
-        {
-            Text = "Approve",
-            FlatStyle = FlatStyle.Flat,
-            BackColor = Color.FromArgb(40, 120, 40),
-            ForeColor = Color.White,
-            Size = new Size(80, 26),
-            Location = new Point(panel.Width - 190, 5)
-        };
-        approveBtn.Click += (_, _) => ApproveCheckpointRequested?.Invoke(cp.Name);
+        panel.Controls.Add(imageTable);
 
-        var rejectBtn = new Button
+        // Position buttons on resize — use actual rendered widths
+        panel.Resize += (_, _) =>
         {
-            Text = "Reject",
-            FlatStyle = FlatStyle.Flat,
-            BackColor = Color.FromArgb(150, 40, 40),
-            ForeColor = Color.White,
-            Size = new Size(80, 26),
-            Location = new Point(panel.Width - 100, 5)
+            rejectBtn.Location = new Point(panel.Width - rejectBtn.Width - 14, 10);
+            approveBtn.Location = new Point(rejectBtn.Left - approveBtn.Width - 8, 10);
+            imageTable.Width = panel.Width - 24;
         };
-        rejectBtn.Click += (_, _) => RejectCheckpointRequested?.Invoke(cp.Name);
-
-        panel.Controls.Add(approveBtn);
-        panel.Controls.Add(rejectBtn);
 
         return panel;
     }
+
+    private static Color StatusColor(TestStatus status) => status switch
+    {
+        TestStatus.Passed => Color.FromArgb(80, 200, 80),
+        TestStatus.Failed => Color.FromArgb(220, 60, 60),
+        TestStatus.Crashed => Color.FromArgb(180, 80, 220),
+        TestStatus.New => Color.FromArgb(220, 180, 50),
+        _ => Color.Gray
+    };
 }

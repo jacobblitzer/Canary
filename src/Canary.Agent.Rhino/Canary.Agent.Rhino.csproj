@@ -22,4 +22,18 @@
     <ProjectReference Include="..\Canary.Agent\Canary.Agent.csproj" />
   </ItemGroup>
 
+  <!-- Auto-deploy to Rhino 8 user plugin directory after build -->
+  <PropertyGroup>
+    <RhinoPluginDir>$(APPDATA)\McNeel\Rhinoceros\8.0\Plug-ins\Canary (B4E7C920-3A1F-4D00-B800-CA0A4700A001)</RhinoPluginDir>
+  </PropertyGroup>
+
+  <Target Name="DeployToRhino" AfterTargets="Build" Condition="Exists('$(APPDATA)\McNeel\Rhinoceros\8.0\Plug-ins')">
+    <MakeDir Directories="$(RhinoPluginDir)" />
+    <ItemGroup>
+      <DeployFiles Include="$(OutputPath)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(RhinoPluginDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Deployed Canary agent to $(RhinoPluginDir)" />
+  </Target>
+
 </Project>
