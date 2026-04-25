@@ -1,0 +1,12 @@
+{
+  "name": "columns-diag",
+  "description": "Column scene diagnostic — 3/4 view across display modes and overlays",
+  "tests": [
+    "columns-diag-default",
+    "columns-diag-tape",
+    "columns-diag-normal",
+    "columns-diag-field-id",
+    "columns-diag-fieldAABBs",
+    "columns-diag-atomAABBs"
+  ]
+}

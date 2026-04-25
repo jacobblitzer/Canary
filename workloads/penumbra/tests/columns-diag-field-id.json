@@ -1,0 +1,23 @@
+{
+  "name": "columns-diag-field-id",
+  "workload": "penumbra",
+  "description": "Repeated Columns diagnostic — field ID false-color from 3/4 view",
+  "setup": {
+    "scene": { "index": 9, "sceneName": "Repeated Columns" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "new Promise(r => setTimeout(r, 5000))",
+      "window.dispatchEvent(new KeyboardEvent('keydown', {key: 'q'}))",
+      "window.__canarySetDisplayMode('viz-field-id')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 35, "elevation": 25, "distance": 18 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.02
+    }
+  ]
+}
