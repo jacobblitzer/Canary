@@ -9,7 +9,8 @@ namespace Canary.Agent.Rhino;
 
 /// <summary>
 /// Canary agent implementation for Rhino. Handles commands from the harness
-/// including opening files, running commands, configuring viewports, and capturing screenshots.
+/// including opening files, running commands, configuring viewports, capturing screenshots,
+/// and Grasshopper-specific actions (loading definitions, waiting for solutions).
 /// All Rhino SDK calls are marshalled to the UI thread via <see cref="RhinoApp.InvokeOnUiThread"/>.
 /// </summary>
 public sealed class RhinoAgent : ICanaryAgent
@@ -29,6 +30,12 @@ public sealed class RhinoAgent : ICanaryAgent
                     "RunCommand" => HandleRunCommand(parameters),
                     "SetViewport" => HandleSetViewport(parameters),
                     "SetView" => HandleSetView(parameters),
+                    "OpenGrasshopperDefinition" => HandleOpenGrasshopperDefinition(parameters),
+                    "WaitForGrasshopperSolution" => HandleWaitForGrasshopperSolution(parameters),
+                    "GrasshopperSetSlider" => HandleGrasshopperSetSlider(parameters),
+                    "GrasshopperSetToggle" => HandleGrasshopperSetToggle(parameters),
+                    "GrasshopperSetPanelText" => HandleGrasshopperSetPanelText(parameters),
+                    "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
                     _ => new AgentResponse
                     {
                         Success = false,
@@ -87,6 +94,12 @@ public sealed class RhinoAgent : ICanaryAgent
 
     /// <summary>
     /// Marshals a function to Rhino's UI thread and waits for the result.
+    /// 180s timeout is intentional — the original 30s was too short for cold
+    /// GH first-load (plugin discovery happens on the UI thread and can
+    /// exceed 60s when several heavy plugins like fTetWild/CGAL are
+    /// installed). Throws TimeoutException on expiry rather than returning
+    /// default(T), so AgentServer surfaces it as an ErrorResponse instead
+    /// of producing the "Response result was null" mystery on the client.
     /// </summary>
     private static T InvokeOnUi<T>(Func<T> func)
     {
@@ -110,7 +123,10 @@ public sealed class RhinoAgent : ICanaryAgent
             }
         }));
 
-        done.Wait(TimeSpan.FromSeconds(30));
+        bool completed = done.Wait(TimeSpan.FromSeconds(180));
+        if (!completed)
+            throw new TimeoutException("Rhino UI thread did not run the agent action within 180s. " +
+                                       "Likely a modal dialog or solver hang on the UI thread.");
 
         if (caught != null)
             throw caught;
@@ -287,5 +303,556 @@ public sealed class RhinoAgent : ICanaryAgent
             Success = result,
             Message = result ? $"Set view: {viewName}" : $"View not found: {viewName}"
         };
+    }
+
+    // ── Grasshopper Actions ─────────────────────────────────────────────
+
+    private static AgentResponse HandleOpenGrasshopperDefinition(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("path", out var path) || string.IsNullOrWhiteSpace(path))
+        {
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'path'." };
+        }
+        if (!System.IO.File.Exists(path))
+        {
+            return new AgentResponse { Success = false, Message = $"File not found: {path}" };
+        }
+
+        // Background popup-dismisser. While we're loading GH and running its
+        // first solution, GH or Rhino may throw modal dialogs (plugin
+        // compatibility warnings, missing-component prompts, "old file
+        // format" alerts). They block the UI thread, which means the open
+        // call hangs and the harness times out. The dismisser polls
+        // top-level windows on a worker thread and posts Enter to anything
+        // that looks like a #32770 warning dialog.
+        using var dismissCts = new System.Threading.CancellationTokenSource();
+        var dismissTask = System.Threading.Tasks.Task.Run(() => PopupDismisser(dismissCts.Token));
+
+        try
+        {
+            if (Grasshopper.Instances.ActiveCanvas == null)
+            {
+                RhinoApp.RunScript("_-Grasshopper _W _T ENTER", echo: false);
+                var ghSw = System.Diagnostics.Stopwatch.StartNew();
+                while (Grasshopper.Instances.ActiveCanvas == null && ghSw.ElapsedMilliseconds < 30000)
+                    System.Threading.Thread.Sleep(500);
+            }
+
+            var editor = Grasshopper.Instances.ActiveCanvas;
+            if (editor == null)
+            {
+                return new AgentResponse { Success = false, Message = "Grasshopper canvas not available after 30s timeout." };
+            }
+
+            var io = new Grasshopper.Kernel.GH_DocumentIO();
+            if (!io.Open(path))
+            {
+                return new AgentResponse { Success = false, Message = $"Failed to open Grasshopper definition: {path}" };
+            }
+
+            var doc = io.Document;
+            if (doc == null)
+            {
+                return new AgentResponse { Success = false, Message = $"Grasshopper definition loaded but document is null: {path}" };
+            }
+
+            doc.Enabled = true;
+            Grasshopper.Instances.DocumentServer.AddDocument(doc);
+            editor.Document = doc;
+            doc.NewSolution(true);
+
+            return new AgentResponse
+            {
+                Success = true,
+                Message = $"Opened Grasshopper definition: {path}",
+                Data = new Dictionary<string, string>
+                {
+                    ["objectCount"] = doc.ObjectCount.ToString(),
+                    ["filePath"] = path
+                }
+            };
+        }
+        finally
+        {
+            dismissCts.Cancel();
+            try { dismissTask.Wait(1000); } catch { /* never throw from cleanup */ }
+        }
+    }
+
+    // ── Win32 popup dismisser (auto-OKs modal warning dialogs) ──
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+    private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+    private static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+    private static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder lpClassName, int nMaxCount);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool IsWindowVisible(IntPtr hWnd);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+    private const uint WM_KEYDOWN = 0x0100;
+    private const uint WM_KEYUP   = 0x0101;
+    private const int  VK_RETURN  = 0x0D;
+
+    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+    /// <summary>
+    /// Public entry for the popup dismisser. Called from CanaryRhinoPlugin's
+    /// OnLoad so it runs for the lifetime of the Rhino process — catching
+    /// startup popups (Rhino plugin load failures, GH Component Loader
+    /// Errors) that appear BEFORE any agent action arrives. Internal scope
+    /// because Canary.Agent.Rhino is the only caller.
+    /// </summary>
+    internal static void PopupDismisserPublic(System.Threading.CancellationToken token)
+        => PopupDismisser(token);
+
+    /// <summary>
+    /// Background thread that scans every 250ms for top-level dialog windows
+    /// owned by this process and posts Enter to dismiss them. Matches on
+    /// title keyword alone — class name is too fragile because GH's custom
+    /// dialogs (e.g. "Component Loader Errors", which surfaced as a
+    /// non-#32770 window from a Ghowl/GL shader plugin failing to load
+    /// System.ObjectModel) don't use the standard #32770 class. Title-only
+    /// matching is safer if the keyword list is specific. Stops on token.
+    /// </summary>
+    private static void PopupDismisser(System.Threading.CancellationToken token)
+    {
+        uint ourPid = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
+        var dismissed = new HashSet<IntPtr>();
+
+        // Title keywords that strongly imply a dismissable warning/error.
+        // Order: most specific first. Avoid generic words like "Rhino" or
+        // "Grasshopper" that would also match the main app windows.
+        var keywords = new[]
+        {
+            "loading errors",    // GH "Grasshopper loading errors" — confirmed live
+            "Component Loader",  // GH plugin load errors
+            "Loader Errors",     // GH plugin load errors (variant)
+            "Old file format",   // GH version mismatch
+            "Compatibility",     // GH compatibility warnings
+            "Plug-in Error",     // Rhino plugin load failures
+            "Plugin Error",      // (variant)
+            "Plug-in Warning",
+            "Missing",           // missing components dialog
+            "Could not load",    // plugin load assertions
+            "FileNotFoundException", // .NET assembly missing — bubbles up to dialogs
+            "Rhino Error",       // generic Rhino error dialog
+            "Rhinoceros Error",  // (variant)
+        };
+
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                EnumWindows((hWnd, _) =>
+                {
+                    if (token.IsCancellationRequested) return false;
+                    if (!IsWindowVisible(hWnd)) return true;
+
+                    GetWindowThreadProcessId(hWnd, out uint pid);
+                    if (pid != ourPid) return true;
+
+                    if (dismissed.Contains(hWnd)) return true;
+
+                    var titleSb = new System.Text.StringBuilder(256);
+                    GetWindowText(hWnd, titleSb, titleSb.Capacity);
+                    var title = titleSb.ToString();
+                    if (string.IsNullOrEmpty(title)) return true;
+
+                    bool match = false;
+                    foreach (var kw in keywords)
+                    {
+                        if (title.IndexOf(kw, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+                    if (!match) return true;
+
+                    // Skip the main Rhino window (its title contains the doc path).
+                    // The match heuristic above shouldn't pick it up, but belt-and-braces.
+                    if (title.EndsWith("Rhinoceros 8", StringComparison.OrdinalIgnoreCase)) return true;
+                    if (title.EndsWith("Grasshopper", StringComparison.OrdinalIgnoreCase)) return true;
+
+                    dismissed.Add(hWnd);
+                    PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_RETURN, IntPtr.Zero);
+                    PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_RETURN, IntPtr.Zero);
+                    return true;
+                }, IntPtr.Zero);
+            }
+            catch { /* never throw from the watchdog */ }
+
+            try { System.Threading.Thread.Sleep(250); }
+            catch { return; }
+        }
+    }
+
+    private static AgentResponse HandleWaitForGrasshopperSolution(Dictionary<string, string> parameters)
+    {
+        int timeoutMs = 30000;
+        if (parameters.TryGetValue("timeoutMs", out var timeoutStr) && int.TryParse(timeoutStr, out var parsed))
+            timeoutMs = parsed;
+
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null)
+        {
+            return new AgentResponse
+            {
+                Success = false,
+                Message = "No active Grasshopper document."
+            };
+        }
+
+        // Wait for the canvas to QUIESCE: not just the first PostProcess, but
+        // a stable run of consecutive PostProcess polls. Slop's BUILD callback
+        // runs via doc.ScheduleSolution(10ms, ...), which means after the
+        // toggle pulse fires solution N, Slop schedules solution N+1; the
+        // first PostProcess we see is for solution N (canvas-level toggle
+        // expiration), not the build itself. By requiring 600ms of
+        // contiguous quiescence we let Slop's deferred work finish before
+        // we report the canvas as settled.
+        const int quiesceMs = 600;
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var quiesceSw = new System.Diagnostics.Stopwatch();
+
+        while (sw.ElapsedMilliseconds < timeoutMs)
+        {
+            if (doc.SolutionState == Grasshopper.Kernel.GH_ProcessStep.PostProcess)
+            {
+                if (!quiesceSw.IsRunning)
+                    quiesceSw.Start();
+
+                if (quiesceSw.ElapsedMilliseconds >= quiesceMs)
+                {
+                    // Canvas has been at PostProcess continuously for
+                    // quiesceMs — Slop's deferred build (if any) should
+                    // have completed.
+                    RhinoApp.Wait();
+                    System.Threading.Thread.Sleep(200);
+
+                    // Zoom-extents on every viewport so the screenshot frames
+                    // the resulting geometry tightly. Grasshopper preview meshes
+                    // (Custom Preview, default component previews) live in the
+                    // GH preview pipeline — not in the Rhino doc — so a plain
+                    // RhinoDoc-only ZoomExtents misses them. Compute the union
+                    // of GH preview bboxes plus doc geometry and zoom to that.
+                    string zoomDiagOut = "(unset)";
+                    try
+                    {
+                        var rhDoc = RhinoDoc.ActiveDoc;
+                        if (rhDoc != null)
+                        {
+                            // Force a redraw so GH preview pipeline computes its
+                            // ClippingBoxes — some components compute lazily on
+                            // first draw, so a second pass after a short wait
+                            // catches anything the first pass scheduled instead
+                            // of computing inline.
+                            rhDoc.Views.Redraw();
+                            RhinoApp.Wait();
+                            System.Threading.Thread.Sleep(150);
+                            rhDoc.Views.Redraw();
+                            RhinoApp.Wait();
+                            System.Threading.Thread.Sleep(150);
+
+                            var bbox = global::Rhino.Geometry.BoundingBox.Empty;
+                            int countDoc = 0, countGh = 0;
+
+                            foreach (var ro in rhDoc.Objects)
+                            {
+                                try
+                                {
+                                    var b = ro.Geometry.GetBoundingBox(true);
+                                    if (b.IsValid) { bbox.Union(b); countDoc++; }
+                                }
+                                catch { }
+                            }
+
+                            try
+                            {
+                                var ghDoc = Grasshopper.Instances.ActiveCanvas?.Document;
+                                if (ghDoc != null)
+                                {
+                                    foreach (var obj in ghDoc.Objects)
+                                    {
+                                        if (obj is Grasshopper.Kernel.IGH_PreviewObject prev && !prev.Hidden)
+                                        {
+                                            try
+                                            {
+                                                var pb = prev.ClippingBox;
+                                                if (pb.IsValid && pb.Diagonal.Length > 1e-9)
+                                                {
+                                                    bbox.Union(pb);
+                                                    countGh++;
+                                                }
+                                            }
+                                            catch { }
+                                        }
+                                    }
+                                }
+                            }
+                            catch { }
+
+                            zoomDiagOut = $"doc={countDoc} gh={countGh} diag={(bbox.IsValid ? bbox.Diagonal.Length : 0):F1}";
+
+                            foreach (var view in rhDoc.Views)
+                            {
+                                if (bbox.IsValid && bbox.Diagonal.Length > 1e-6)
+                                    view.ActiveViewport.ZoomBoundingBox(bbox);
+                                else
+                                    view.ActiveViewport.ZoomExtents();
+                            }
+                        }
+                    }
+                    catch (Exception zex)
+                    {
+                        zoomDiagOut = $"ERROR: {zex.Message}";
+                    }
+
+                    RhinoDoc.ActiveDoc?.Views.Redraw();
+                    RhinoApp.Wait();
+
+                    return new AgentResponse
+                    {
+                        Success = true,
+                        Message = $"Solution completed in {sw.ElapsedMilliseconds}ms (quiesced for {quiesceSw.ElapsedMilliseconds}ms). zoom: {zoomDiagOut}",
+                        Data = new Dictionary<string, string>
+                        {
+                            ["elapsedMs"]   = sw.ElapsedMilliseconds.ToString(),
+                            ["quiesceMs"]   = quiesceSw.ElapsedMilliseconds.ToString(),
+                            ["objectCount"] = doc.ObjectCount.ToString(),
+                            ["zoomDiag"]    = zoomDiagOut
+                        }
+                    };
+                }
+            }
+            else
+            {
+                // Solver re-entered a non-PostProcess state — Slop's deferred
+                // solution has fired. Reset the quiesce timer and keep waiting.
+                quiesceSw.Reset();
+            }
+
+            System.Threading.Thread.Sleep(100);
+        }
+
+        return new AgentResponse
+        {
+            Success = false,
+            Message = $"Solution did not complete within {timeoutMs}ms. State: {doc.SolutionState}"
+        };
+    }
+
+    private static AgentResponse HandleGrasshopperSetSlider(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
+        {
+            return new AgentResponse
+            {
+                Success = false,
+                Message = "Missing required parameter 'nickname'."
+            };
+        }
+
+        if (!parameters.TryGetValue("value", out var valueStr) || !double.TryParse(valueStr, out var value))
+        {
+            return new AgentResponse
+            {
+                Success = false,
+                Message = "Missing or invalid parameter 'value'."
+            };
+        }
+
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null)
+        {
+            return new AgentResponse
+            {
+                Success = false,
+                Message = "No active Grasshopper document."
+            };
+        }
+
+        // Find slider by nickname
+        foreach (var obj in doc.Objects)
+        {
+            if (obj is Grasshopper.Kernel.Special.GH_NumberSlider slider &&
+                string.Equals(slider.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+            {
+                slider.SetSliderValue((decimal)value);
+                slider.ExpireSolution(true);
+
+                return new AgentResponse
+                {
+                    Success = true,
+                    Message = $"Set slider '{nickname}' to {value}.",
+                    Data = new Dictionary<string, string>
+                    {
+                        ["actualValue"] = slider.CurrentValue.ToString()
+                    }
+                };
+            }
+        }
+
+        return new AgentResponse
+        {
+            Success = false,
+            Message = $"Slider with nickname '{nickname}' not found."
+        };
+    }
+
+    /// <summary>
+    /// Set a Boolean Toggle's value. Used by the CPig regression workload to
+    /// pulse Slop's Build trigger via Canary.
+    /// </summary>
+    private static AgentResponse HandleGrasshopperSetToggle(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
+        {
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'nickname'." };
+        }
+        if (!parameters.TryGetValue("value", out var valueStr) || !bool.TryParse(valueStr, out var value))
+        {
+            return new AgentResponse { Success = false, Message = "Missing or invalid parameter 'value' (expected true/false)." };
+        }
+
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active Grasshopper document." };
+        }
+
+        foreach (var obj in doc.Objects)
+        {
+            if (obj is Grasshopper.Kernel.Special.GH_BooleanToggle toggle &&
+                string.Equals(toggle.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+            {
+                toggle.Value = value;
+                toggle.ExpireSolution(true);
+                return new AgentResponse
+                {
+                    Success = true,
+                    Message = $"Set toggle '{nickname}' to {value}.",
+                    Data = new Dictionary<string, string> { ["actualValue"] = toggle.Value.ToString() }
+                };
+            }
+        }
+        return new AgentResponse { Success = false, Message = $"Toggle with nickname '{nickname}' not found." };
+    }
+
+    /// <summary>
+    /// Set a Panel's text content. Useful for driving Slop's `Files` input port
+    /// (a wired panel containing a JSON path) and any other text-driven CPig input.
+    /// </summary>
+    private static AgentResponse HandleGrasshopperSetPanelText(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
+        {
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'nickname'." };
+        }
+        if (!parameters.TryGetValue("text", out var text))
+        {
+            text = string.Empty;
+        }
+
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active Grasshopper document." };
+        }
+
+        foreach (var obj in doc.Objects)
+        {
+            if (obj is Grasshopper.Kernel.Special.GH_Panel panel &&
+                string.Equals(panel.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+            {
+                panel.UserText = text;
+                panel.ExpireSolution(true);
+                return new AgentResponse
+                {
+                    Success = true,
+                    Message = $"Set panel '{nickname}' text ({text.Length} chars).",
+                    Data = new Dictionary<string, string> { ["length"] = text.Length.ToString() }
+                };
+            }
+        }
+        return new AgentResponse { Success = false, Message = $"Panel with nickname '{nickname}' not found." };
+    }
+
+    /// <summary>
+    /// Read a Panel's content. For panels with incoming wires, GH stores the
+    /// displayed text in VolatileData, NOT UserText (UserText is only what
+    /// the user manually typed). We prefer VolatileData when present so the
+    /// caller sees the *live* value flowing through the panel — exactly what
+    /// CPig regression tests need to assert on Slop's Success/Log outputs.
+    /// </summary>
+    private static AgentResponse HandleGrasshopperGetPanelText(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
+        {
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'nickname'." };
+        }
+
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active Grasshopper document." };
+        }
+
+        foreach (var obj in doc.Objects)
+        {
+            if (obj is Grasshopper.Kernel.Special.GH_Panel panel &&
+                string.Equals(panel.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+            {
+                // Try VolatileData first (live data from incoming wires).
+                string text = string.Empty;
+                string source = "UserText";
+                try
+                {
+                    if (panel.VolatileDataCount > 0)
+                    {
+                        var sb = new System.Text.StringBuilder();
+                        bool first = true;
+                        foreach (var goo in panel.VolatileData.AllData(true))
+                        {
+                            if (!first) sb.Append('\n');
+                            first = false;
+                            sb.Append(goo?.ToString() ?? string.Empty);
+                        }
+                        text = sb.ToString();
+                        source = "VolatileData";
+                    }
+                }
+                catch { /* fall through to UserText */ }
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    text = panel.UserText ?? string.Empty;
+                    source = "UserText";
+                }
+
+                return new AgentResponse
+                {
+                    Success = true,
+                    Message = $"Read panel '{nickname}' ({text.Length} chars from {source}).",
+                    Data = new Dictionary<string, string>
+                    {
+                        ["text"] = text,
+                        ["length"] = text.Length.ToString(),
+                        ["source"] = source
+                    }
+                };
+            }
+        }
+        return new AgentResponse { Success = false, Message = $"Panel with nickname '{nickname}' not found." };
     }
 }

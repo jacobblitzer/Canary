@@ -20,11 +20,42 @@ public sealed class TestDefinition
     [JsonPropertyName("setup")]
     public TestSetup? Setup { get; set; }
 
+    /// <summary>
+    /// "fresh" (default) launches a new app instance per test. "shared" allows
+    /// consecutive tests sharing the same workload + setup.file to run inside
+    /// one app instance — only the first test launches and opens the fixture;
+    /// subsequent tests reuse the running app and only run their actions.
+    /// Tests in "shared" mode should start their actions list with a cleanup
+    /// step (e.g. Slop Cleanup toggle pulse) so prior test state is wiped.
+    /// </summary>
+    [JsonPropertyName("runMode")]
+    public string RunMode { get; set; } = "fresh";
+
     [JsonPropertyName("recording")]
     public string Recording { get; set; } = string.Empty;
 
     [JsonPropertyName("checkpoints")]
     public List<TestCheckpoint> Checkpoints { get; set; } = new();
+
+    /// <summary>
+    /// Pre-checkpoint actions dispatched directly to the agent. Each action's
+    /// <c>type</c> is the agent action name (e.g. "GrasshopperSetPanelText");
+    /// remaining JSON fields become the parameter dictionary. Used by the CPig
+    /// regression workload to set Slop's JsonPath panel + Build toggle before
+    /// the first checkpoint. Run sequentially; failure of any action aborts
+    /// the test with status=Crashed.
+    /// </summary>
+    [JsonPropertyName("actions")]
+    public List<TestAction> Actions { get; set; } = new();
+
+    /// <summary>
+    /// Per-checkpoint assertions evaluated after the screenshot capture/diff.
+    /// Asserts are evaluated even if pixel diff passes — they catch errors
+    /// that don't visually surface (e.g. CPig's Slop component reports
+    /// Success=False without changing the canvas geometry).
+    /// </summary>
+    [JsonPropertyName("asserts")]
+    public List<TestAssert> Asserts { get; set; } = new();
 
     /// <summary>
     /// Parse a test definition from a JSON string.
@@ -169,4 +200,66 @@ public sealed class CameraPosition
 
     [JsonPropertyName("distance")]
     public double Distance { get; set; }
+}
+
+/// <summary>
+/// A pre-checkpoint action dispatched directly to the agent's <c>ExecuteAsync</c>.
+/// <c>Type</c> is the agent action name; all other JSON fields are flattened
+/// into the parameter dictionary via <see cref="AsParameters"/>.
+/// </summary>
+public sealed class TestAction
+{
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Captures every JSON field other than <c>type</c>. Stored as JsonElement
+    /// so booleans, numbers, and strings all round-trip; <see cref="AsParameters"/>
+    /// flattens them into the string-string dictionary the agent expects.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> Extra { get; set; } = new();
+
+    public Dictionary<string, string> AsParameters()
+    {
+        var dict = new Dictionary<string, string>();
+        foreach (var kvp in Extra)
+        {
+            dict[kvp.Key] = kvp.Value.ValueKind switch
+            {
+                JsonValueKind.String => kvp.Value.GetString() ?? string.Empty,
+                JsonValueKind.True => "true",
+                JsonValueKind.False => "false",
+                JsonValueKind.Null => string.Empty,
+                _ => kvp.Value.GetRawText()
+            };
+        }
+        return dict;
+    }
+}
+
+/// <summary>
+/// A post-checkpoint assertion against an agent-readable property. Today the
+/// supported types are <c>PanelEquals</c>, <c>PanelContains</c>, and
+/// <c>PanelDoesNotContain</c>; each calls <c>GrasshopperGetPanelText</c> and
+/// string-compares the result. Unknown types are reported as failed asserts
+/// rather than ignored, so typos surface.
+/// </summary>
+public sealed class TestAssert
+{
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = string.Empty;
+
+    [JsonPropertyName("nickname")]
+    public string Nickname { get; set; } = string.Empty;
+
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional friendly label shown in the result. Defaults to a description
+    /// derived from <see cref="Type"/> + <see cref="Nickname"/>.
+    /// </summary>
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
 }

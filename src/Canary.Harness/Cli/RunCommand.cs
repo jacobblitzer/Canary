@@ -144,6 +144,11 @@ public static class RunCommand
             {
                 suite = await RunPenumbraSuiteAsync(runner, workload, tests, configPath, logger, ct).ConfigureAwait(false);
             }
+            else if (tests.Count > 1 && tests.All(t => string.Equals(t.RunMode, "shared", StringComparison.OrdinalIgnoreCase)))
+            {
+                logger.Log($"All {tests.Count} test(s) declare runMode=shared — using single-launch session.");
+                suite = await runner.RunSharedSuiteAsync(workload, tests, ct).ConfigureAwait(false);
+            }
             else
             {
                 suite = await runner.RunSuiteAsync(workload, tests, ct).ConfigureAwait(false);

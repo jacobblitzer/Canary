@@ -1,0 +1,82 @@
+﻿{
+    "name":  "cpig-03-field-combine",
+    "workload":  "rhino",
+    "description":  "03 Field Combine (auto-generated from 03_field_combine.json)",
+    "runMode":  "shared",
+    "setup":  {
+                  "file":  "fixtures/cpig_slop_loader.gh",
+                  "viewport":  {
+                                   "projection":  "Perspective",
+                                   "displayMode":  "Shaded",
+                                   "width":  800,
+                                   "height":  600
+                               }
+              },
+    "actions":  [
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  5000
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Build",
+                        "value":  false
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Cleanup",
+                        "value":  true
+                    },
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  5000
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Cleanup",
+                        "value":  false
+                    },
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  2000
+                    },
+                    {
+                        "type":  "GrasshopperSetPanelText",
+                        "nickname":  "JsonPath",
+                        "text":  "C:/Repos/CPig/research/slop_tests/03_field_combine.json"
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Build",
+                        "value":  true
+                    },
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  30000
+                    }
+                ],
+    "checkpoints":  [
+                        {
+                            "name":  "post-build",
+                            "atTimeMs":  5000,
+                            "tolerance":  0.02
+                        }
+                    ],
+    "asserts":  [
+                    {
+                        "type":  "PanelEquals",
+                        "nickname":  "SlopSuccess",
+                        "text":  "True"
+                    },
+                    {
+                        "type":  "PanelDoesNotContain",
+                        "nickname":  "SlopLog",
+                        "text":  "FATAL"
+                    },
+                    {
+                        "type":  "PanelDoesNotContain",
+                        "nickname":  "SlopLog",
+                        "text":  "!!!"
+                    }
+                ]
+}

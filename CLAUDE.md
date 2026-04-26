@@ -9,9 +9,10 @@ Read `spec/SUPERVISOR.md` — it is the single source of truth for all build dec
 1. `spec/SUPERVISOR.md` — Orchestration, constraints, gate checklists, dependency matrix
 2. `spec/ARCHITECTURE.md` — System design, IPC protocol, comparison engine, two-process model
 3. `spec/PHASES.md` — Build phases with checkpoints (0–7)
-4. `spec/PHASES_UI.md` — Build phases with checkpoints (8–12: Core extraction + WinForms GUI)
+4. `spec/PHASES_UI.md` — Build phases with checkpoints (8–13: Core extraction + WinForms GUI + CPig workload)
 5. `spec/TESTS.md` — Unit and integration test specifications (0–7)
 6. `spec/TESTS_UI.md` — Test specifications (8–12)
+7. `spec/CPIG_WORKLOAD.md` — Conventions for the CPig regression workload (Phase 13). Peer doc: `C:\Repos\CPig\spec\CANARY.md`.
 
 ### Key Rules
 - **Namespace**: `Canary` (core + harness), `Canary.Agent` (shared agent interface), `Canary.Agent.Rhino` (Rhino-specific agent)
