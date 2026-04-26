@@ -1,0 +1,58 @@
+﻿{
+    "name":  "cpig-13-grid",
+    "workload":  "rhino",
+    "description":  "13 Grid (auto-generated from 13_grid.json)",
+    "setup":  {
+                  "file":  "fixtures/cpig_slop_loader.gh",
+                  "viewport":  {
+                                   "projection":  "Perspective",
+                                   "displayMode":  "Shaded",
+                                   "width":  800,
+                                   "height":  600
+                               }
+              },
+    "actions":  [
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  5000
+                    },
+                    {
+                        "type":  "GrasshopperSetPanelText",
+                        "nickname":  "JsonPath",
+                        "text":  "C:/Repos/CPig/research/slop_tests/13_grid.json"
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Build",
+                        "value":  true
+                    },
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  30000
+                    }
+                ],
+    "checkpoints":  [
+                        {
+                            "name":  "post-build",
+                            "atTimeMs":  5000,
+                            "tolerance":  0.02
+                        }
+                    ],
+    "asserts":  [
+                    {
+                        "type":  "PanelEquals",
+                        "nickname":  "SlopSuccess",
+                        "text":  "True"
+                    },
+                    {
+                        "type":  "PanelDoesNotContain",
+                        "nickname":  "SlopLog",
+                        "text":  "FATAL"
+                    },
+                    {
+                        "type":  "PanelDoesNotContain",
+                        "nickname":  "SlopLog",
+                        "text":  "!!!"
+                    }
+                ]
+}

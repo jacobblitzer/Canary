@@ -188,3 +188,39 @@
 - Full regression: 72+ tests, 0 warnings
 
 **Phase 12 Exit Criteria:** Shortcuts, context menus, drag-drop all work. Specs updated. Both CLI and GUI functional. 72+ tests pass. 0 errors, 0 warnings.
+
+---
+
+## Phase 13: CPig Regression Workload
+**Goal:** Drive CPig's Slop JSON test definitions through the existing `rhino` workload, with crash-tolerant assertion + visual regression. See `spec/CPIG_WORKLOAD.md` for fixture layout and conventions.
+
+### Checkpoint 13.1: New agent actions
+- Add to `Canary.Agent.Rhino/RhinoAgent.cs`: `GrasshopperSetToggle`, `GrasshopperSetPanelText`, `GrasshopperGetPanelText`. Each mirrors `GrasshopperSetSlider`: case-insensitive nickname lookup, mutate, `ExpireSolution(true)`, marshal via `InvokeOnUi`.
+- Unit tests in `tests/Canary.Tests/` (Category="Unit"): verify each action finds the right object and updates state.
+- **Status:** Landed 2026-04-26. Build clean, 0 warnings.
+
+### Checkpoint 13.2: Test runner extensions
+- Extend test JSON schema: `actions[]` and `asserts[]` arrays (see `spec/CPIG_WORKLOAD.md` for shape).
+- `actions[]` runs sequentially before checkpoint capture.
+- `asserts[]` runs after each checkpoint.
+- Implement in `Canary.Harness/TestRunner.cs`. New deserialization classes in `Canary.Core/Models/`.
+- 3 new assert kinds: `PanelEquals`, `PanelContains`, `PanelDoesNotContain`. Each calls `GrasshopperGetPanelText` then string-compares.
+
+### Checkpoint 13.3: Loader fixture
+- Build `workloads/rhino/fixtures/cpig_slop_loader.gh` with a Slop component, `JsonPath` panel, `Build` toggle, Crash Guard, Log Hub, three output panels (`SlopLog`, `SlopSuccess`, `SlopCount`).
+- Set deterministic viewport projection + display mode at the document level.
+- Save with both Rhino and Grasshopper closed cleanly.
+- Verify it loads + builds the smoke test (`16_field_evaluate.json`) end-to-end manually.
+
+### Checkpoint 13.4: Bulk-generate test JSONs
+- Helper script `scripts/cpig-test-from-slop.ps1`: reads a Slop JSON file path, emits a matching `cpig-NN-slug.json` test definition under `workloads/rhino/tests/`.
+- Run for all 17 Slop tests in `CPig/research/slop_tests/`.
+- First run records candidates only (no baselines); review, approve manually.
+
+### Checkpoint 13.5: Initial baselines
+- Run `canary run --workload rhino --filter "cpig-*"` end-to-end.
+- Inspect every candidate PNG. Approve those that match expected geometry.
+- Commit baselines to `workloads/rhino/results/<test>/baselines/`.
+- Update `CHANGELOG.md` and `spec/CPIG_WORKLOAD.md`.
+
+**Phase 13 Exit Criteria:** All 17 cpig-* tests run end-to-end. At least the smoke test (`cpig-00-smoke-ping`) passes pixel diff. The three crash-related tests (`cpig-07-alpha-wrap`, `cpig-09-implicit-advanced`, `cpig-16-field-evaluate`) confirm the Phase A+B CPig mitigations hold — either a pixel-diff pass or a clean error report (Watchdog does NOT fire). 0 errors, 0 warnings.

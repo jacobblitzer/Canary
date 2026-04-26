@@ -362,6 +362,29 @@ public sealed class TestRunner
                 _logger.Log("Setup commands complete.");
             }
 
+            // 2b. Run pre-checkpoint actions (Phase 13.2 — CPig workload).
+            // Each action's `type` is dispatched directly to the agent;
+            // failures abort the test.
+            if (testDef.Actions.Count > 0)
+            {
+                _logger.Log($"Running {testDef.Actions.Count} pre-checkpoint action(s)...");
+                foreach (var action in testDef.Actions)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var parameters = action.AsParameters();
+                    _logger.Log($"  action: {action.Type}");
+                    var resp = await agent.ExecuteAsync(action.Type, parameters).ConfigureAwait(false);
+                    if (!resp.Success)
+                    {
+                        result.Status = TestStatus.Crashed;
+                        result.ErrorMessage = $"Action '{action.Type}' failed: {resp.Message}";
+                        result.Duration = sw.Elapsed;
+                        return result;
+                    }
+                }
+                _logger.Log("Actions complete.");
+            }
+
             // 3. Process checkpoints with camera positioning
             var testDir = GetTestDirectory(workload.Name, testDef.Name);
             Directory.CreateDirectory(testDir);
@@ -397,6 +420,31 @@ public sealed class TestRunner
                     result.Status = TestStatus.Crashed;
                 else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
                     result.Status = TestStatus.New;
+            }
+
+            // 3b. Evaluate asserts after the last checkpoint (Phase 13.2).
+            // Even if pixel diff passed, an assert failure flips the test to Failed.
+            if (testDef.Asserts.Count > 0)
+            {
+                _logger.Log($"Evaluating {testDef.Asserts.Count} assert(s)...");
+                foreach (var assert in testDef.Asserts)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var (ok, message) = await EvaluateAssertAsync(agent, assert, cancellationToken).ConfigureAwait(false);
+                    if (ok)
+                    {
+                        _logger.Log($"  + {assert.Type} {assert.Nickname}");
+                    }
+                    else
+                    {
+                        _logger.Log($"  - {assert.Type} {assert.Nickname}: {message}");
+                        if (result.Status == TestStatus.Passed || result.Status == TestStatus.New)
+                            result.Status = TestStatus.Failed;
+                        result.ErrorMessage = string.IsNullOrEmpty(result.ErrorMessage)
+                            ? $"Assert failed: {message}"
+                            : result.ErrorMessage + $"; {message}";
+                    }
+                }
             }
 
             // 4. Build composite image
@@ -790,4 +838,45 @@ public sealed class TestRunner
     {
         return Path.Combine(_workloadsDir, workloadName, "results", testName);
     }
+
+    /// <summary>
+    /// Evaluate a <see cref="TestAssert"/> by querying the agent and string-comparing.
+    /// Returns (success, message). Unknown assert types fail with a typo-pinpointing
+    /// message rather than silently passing.
+    /// </summary>
+    private static async Task<(bool ok, string message)> EvaluateAssertAsync(
+        ICanaryAgent agent, TestAssert assert, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(assert.Nickname))
+            return (false, $"{assert.Type}: missing 'nickname'");
+
+        // All current assert types read a panel; keep the read in one place.
+        var resp = await agent.ExecuteAsync("GrasshopperGetPanelText",
+            new Dictionary<string, string> { ["nickname"] = assert.Nickname }).ConfigureAwait(false);
+
+        if (!resp.Success)
+            return (false, $"GetPanelText('{assert.Nickname}') failed: {resp.Message}");
+
+        string text = resp.Data != null && resp.Data.TryGetValue("text", out var t) ? t : string.Empty;
+
+        return assert.Type switch
+        {
+            "PanelEquals" => string.Equals(text.Trim(), assert.Text.Trim(), StringComparison.Ordinal)
+                ? (true, string.Empty)
+                : (false, $"PanelEquals '{assert.Nickname}': expected \"{assert.Text}\", got \"{Truncate(text)}\""),
+
+            "PanelContains" => text.Contains(assert.Text, StringComparison.Ordinal)
+                ? (true, string.Empty)
+                : (false, $"PanelContains '{assert.Nickname}': \"{assert.Text}\" not found in \"{Truncate(text)}\""),
+
+            "PanelDoesNotContain" => !text.Contains(assert.Text, StringComparison.Ordinal)
+                ? (true, string.Empty)
+                : (false, $"PanelDoesNotContain '{assert.Nickname}': \"{assert.Text}\" found in panel"),
+
+            _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain)")
+        };
+    }
+
+    private static string Truncate(string s, int max = 120)
+        => s.Length <= max ? s : s.Substring(0, max - 3) + "...";
 }
