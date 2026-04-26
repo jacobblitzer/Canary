@@ -42,6 +42,8 @@ declare global {
         __canaryGetSceneList?: () => Array<{ index: number; name: string }>;
         /** Force a synchronous frame render. Returns when the frame is complete. */
         __canaryForceRedraw?: () => Promise<void>;
+        /** Diagnostic: return brick overlay data pipeline state for debugging. */
+        __canaryDiagnoseBricks?: () => Record<string, unknown>;
     }
 }
 
@@ -195,6 +197,38 @@ window.__canaryForceRedraw = async (): Promise<void> => {
     renderer.renderFrame();
     // Wait one rAF to ensure the GPU has flushed
     await new Promise(r => requestAnimationFrame(r));
+};
+
+window.__canaryDiagnoseBricks = (): Record<string, unknown> => {
+    const overlayData = renderer.debugOverlay.getSceneData();
+    const overlayConfig = renderer.debugOverlay.getConfig();
+    const bricks = overlayData.bricks ?? [];
+    const cascades = overlayData.cascades ?? [];
+    const info = renderer.getRendererInfo?.() ?? {};
+    return {
+        atlasBuildComplete: (renderer as any).atlasBuildComplete ?? false,
+        overlayConfig: { ...overlayConfig },
+        brickCount: bricks.length,
+        cascadeCount: cascades.length,
+        cascades: cascades.map((c: any) => ({
+            center: c.center,
+            extent: c.extent,
+            coarseRes: c.coarseRes,
+        })),
+        first5Bricks: bricks.slice(0, 5).map((b: any) => ({
+            min: b.min,
+            max: b.max,
+            cascadeIndex: b.cascadeIndex,
+            halfSize: b.min && b.max ? [
+                ((b.max[0] - b.min[0]) / 2).toFixed(4),
+                ((b.max[1] - b.min[1]) / 2).toFixed(4),
+                ((b.max[2] - b.min[2]) / 2).toFixed(4),
+            ] : 'N/A',
+            hasNaN: b.min ? (isNaN(b.min[0]) || isNaN(b.min[1]) || isNaN(b.min[2]) ||
+                             isNaN(b.max[0]) || isNaN(b.max[1]) || isNaN(b.max[2])) : true,
+        })),
+        rendererInfo: info,
+    };
 };
 
 

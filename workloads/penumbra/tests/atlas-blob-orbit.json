@@ -3,7 +3,7 @@
   "workload": "penumbra",
   "description": "12-sphere smooth blob — baked atlas evaluation from 4 standard angles",
   "setup": {
-    "scene": { "index": 1 },
+    "scene": { "index": 1, "sceneName": "12-Sphere Blob" },
     "backend": "webgpu",
     "canvas": { "width": 960, "height": 540 },
     "commands": []

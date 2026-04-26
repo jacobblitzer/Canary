@@ -21,26 +21,32 @@ public static class ApproveCommand
             "--test",
             "Name of the test whose candidates to approve as baselines") { IsRequired = true };
 
+        var suiteOption = new Option<string?>(
+            "--suite",
+            "Suite name to scope baselines (e.g., smoke, scenes)");
+
         var command = new Command("approve", "Approve candidate screenshots as new baselines")
         {
             workloadOption,
-            testOption
+            testOption,
+            suiteOption
         };
 
-        command.SetHandler((workload, test) =>
+        command.SetHandler((workload, test, suite) =>
         {
             var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
 
             try
             {
-                var count = BaselineManager.ApproveTest(workloadsDir, workload, test);
-                Program.Log($"Approved {count} baseline(s) for test '{test}'.");
+                var count = BaselineManager.ApproveTest(workloadsDir, workload, test, suite);
+                var label = suite != null ? $"test '{test}' (suite '{suite}')" : $"test '{test}'";
+                Program.Log($"Approved {count} baseline(s) for {label}.");
             }
             catch (Exception ex)
             {
                 Program.Log($"Error: {ex.Message}");
             }
-        }, workloadOption, testOption);
+        }, workloadOption, testOption, suiteOption);
 
         return command;
     }

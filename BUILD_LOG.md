@@ -625,6 +625,20 @@
 
 ---
 
+## Post-Phase: Penumbra Bug Fix Verification (2026-04-25)
+
+### Canary Run — 4 Suites After 9 Bug Fixes
+- **Date**: 2026-04-25
+- **Requested by**: Claude Code
+- **Command**: `canary run --workload penumbra --suite <effects|materials|display-modes|overlays>`
+- **Status**: PASS (all diffs intentional)
+- **Results**:
+  - `effects`: 6 pass, 2 fail (fresnel + contours — intentional shader changes)
+  - `materials`: 2 pass, 3 fail (wood/zebra/damascus — intentional noise + stripe fixes)
+  - `display-modes`: 8 NEW (no baselines yet)
+  - `overlays`: 7 NEW (no baselines yet)
+- **Notes**: 0 unexpected failures, 0 crashes. 15 NEW tests awaiting `canary approve`.
+
 ## Summary
 
 | Phase | Description | Tests Added | Cumulative |

@@ -16,6 +16,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Atlas cell boundary rectangular artifact in Penumbra — face-neighbor expansion in cascade manager ([bug 0005](docs/bugs/0005-atlas-cell-boundary-artifact.md))
 
 ### Added
+- Phase 9 material preset tests: 5 new Canary tests (metal, wood, marble, zebra, damascus on SDF Teapot)
+- Phase 9 environment preset tests: 4 atlas-blob env tests (outdoor, sunset, night, neutral) + 2 custom lighting/bg tests
+- `materials.json` + `environment.json` suite definitions
+- Full suite updated to 44 tests (was 33)
+- Phase 7+8 effects regression suite: 8 new Canary tests (fog, ACES, exposure, emissive, Fresnel, contours, onion, noise) exercising Penumbra shader effects via CDP hooks
+- `effects.json` suite definition for the 8 Phase 7+8 effect tests
+- Full suite updated to 33 tests (was 25)
 - Named test suites: `--suite` CLI option for running grouped subsets of tests (e.g., `canary run --workload penumbra --suite smoke`)
 - `SuiteDefinition` model class for suite JSON files (`workloads/{workload}/suites/*.json`)
 - Suite discovery and test resolution in `TestDiscovery` (`DiscoverSuitesAsync`, `DiscoverTestsForSuiteAsync`)

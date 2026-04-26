@@ -6,3 +6,9 @@ results/
 .vs/
 *.DotSettings.user
 TestResults/
+
+# Obsidian
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/plugins/*/data.json
+.trash/

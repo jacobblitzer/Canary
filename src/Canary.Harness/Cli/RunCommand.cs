@@ -24,6 +24,10 @@ public static class RunCommand
             "--test",
             "Run a single test by name");
 
+        var suiteOption = new Option<string?>(
+            "--suite",
+            "Run a named test suite (e.g., smoke, scenes)");
+
         var verboseOption = new Option<bool>(
             "--verbose",
             "Show detailed per-checkpoint output");
@@ -36,17 +40,18 @@ public static class RunCommand
         {
             workloadOption,
             testOption,
+            suiteOption,
             verboseOption,
             quietOption
         };
 
-        command.SetHandler(async (workload, test, verbose, quiet) =>
+        command.SetHandler(async (workload, test, suite, verbose, quiet) =>
         {
             Program.Verbose = verbose;
             Program.Quiet = quiet;
             var logger = new ConsoleTestLogger(verbose, quiet);
-            await RunAsync(workload, test, logger, Program.CancellationToken).ConfigureAwait(false);
-        }, workloadOption, testOption, verboseOption, quietOption);
+            await RunAsync(workload, test, suite, logger, Program.CancellationToken).ConfigureAwait(false);
+        }, workloadOption, testOption, suiteOption, verboseOption, quietOption);
 
         return command;
     }
@@ -60,7 +65,8 @@ public static class RunCommand
         List<TestDefinition> tests,
         string configPath,
         ConsoleTestLogger logger,
-        CancellationToken ct)
+        CancellationToken ct,
+        string? suiteName = null)
     {
         logger.Log("Initializing Penumbra CDP bridge agent...");
 
@@ -78,7 +84,7 @@ public static class RunCommand
 
         try
         {
-            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct).ConfigureAwait(false);
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct, suiteName).ConfigureAwait(false);
         }
         finally
         {
@@ -86,13 +92,20 @@ public static class RunCommand
         }
     }
 
-    private static async Task RunAsync(string? workloadName, string? testName, ConsoleTestLogger logger, CancellationToken ct)
+    private static async Task RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct)
     {
         var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
 
         if (workloadName == null)
         {
             logger.Log("Error: --workload is required.  Press Ctrl+C to abort");
+            return;
+        }
+
+        // Validate mutual exclusion of --test and --suite
+        if (testName != null && suiteName != null)
+        {
+            logger.Log("Error: --test and --suite are mutually exclusive. Use one or the other.");
             return;
         }
 
@@ -126,6 +139,22 @@ public static class RunCommand
                 }
                 tests = new List<TestDefinition> { await TestDefinition.LoadAsync(testPath).ConfigureAwait(false) };
             }
+            else if (suiteName != null)
+            {
+                // Run named suite
+                try
+                {
+                    var (suite, suiteTests) = await TestDiscovery.DiscoverTestsForSuiteAsync(
+                        workloadsDir, workloadName, suiteName, logger).ConfigureAwait(false);
+                    tests = suiteTests;
+                    logger.Log($"Suite '{suiteName}': {suite.Description}");
+                }
+                catch (FileNotFoundException ex)
+                {
+                    logger.Log($"Error: {ex.Message}");
+                    return;
+                }
+            }
             else
             {
                 tests = await TestDiscovery.DiscoverTestsAsync(workloadsDir, workloadName, logger).ConfigureAwait(false);
@@ -137,12 +166,15 @@ public static class RunCommand
                 return;
             }
 
-            logger.Log($"Running {tests.Count} test(s) for workload '{workloadName}'  Press Ctrl+C to abort");
+            var runLabel = suiteName != null
+                ? $"Running {tests.Count} test(s) for suite '{suiteName}' in workload '{workloadName}'"
+                : $"Running {tests.Count} test(s) for workload '{workloadName}'";
+            logger.Log($"{runLabel}  Press Ctrl+C to abort");
 
-            SuiteResult suite;
+            SuiteResult suiteResult;
             if (workload.AgentType == "penumbra-cdp")
             {
-                suite = await RunPenumbraSuiteAsync(runner, workload, tests, configPath, logger, ct).ConfigureAwait(false);
+                suiteResult = await RunPenumbraSuiteAsync(runner, workload, tests, configPath, logger, ct, suiteName).ConfigureAwait(false);
             }
             else if (tests.Count > 1 && tests.All(t => string.Equals(t.RunMode, "shared", StringComparison.OrdinalIgnoreCase)))
             {
@@ -151,18 +183,20 @@ public static class RunCommand
             }
             else
             {
-                suite = await runner.RunSuiteAsync(workload, tests, ct).ConfigureAwait(false);
+                suiteResult = await runner.RunSuiteAsync(workload, tests, ct, suiteName).ConfigureAwait(false);
             }
 
-            // Generate reports
-            var resultsDir = Path.Combine(workloadsDir, workloadName, "results");
+            // Generate reports — scoped under suite name when running a suite
+            var resultsDir = suiteName != null
+                ? Path.Combine(workloadsDir, workloadName, "results", suiteName)
+                : Path.Combine(workloadsDir, workloadName, "results");
             Directory.CreateDirectory(resultsDir);
 
             var htmlPath = Path.Combine(resultsDir, "report.html");
-            await HtmlReportGenerator.SaveAsync(suite, workloadName, htmlPath).ConfigureAwait(false);
+            await HtmlReportGenerator.SaveAsync(suiteResult, workloadName, htmlPath).ConfigureAwait(false);
 
             var junitPath = Path.Combine(resultsDir, "junit.xml");
-            await JUnitReportGenerator.SaveAsync(suite, workloadName, junitPath).ConfigureAwait(false);
+            await JUnitReportGenerator.SaveAsync(suiteResult, workloadName, junitPath).ConfigureAwait(false);
 
             if (!Program.Quiet)
                 logger.Log($"Reports saved: {htmlPath}");

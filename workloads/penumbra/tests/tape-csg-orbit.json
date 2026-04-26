@@ -3,7 +3,7 @@
   "workload": "penumbra",
   "description": "Box-minus-sphere CSG — analytical ray marching from 4 standard angles",
   "setup": {
-    "scene": { "index": 0 },
+    "scene": { "index": 0, "sceneName": "Box - Sphere" },
     "backend": "webgpu",
     "canvas": { "width": 960, "height": 540 },
     "commands": []

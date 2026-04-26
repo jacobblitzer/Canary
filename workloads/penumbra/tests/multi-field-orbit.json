@@ -3,7 +3,7 @@
   "workload": "penumbra",
   "description": "3 independent fields — multi-tape composition from 4 standard angles (animation paused)",
   "setup": {
-    "scene": { "index": 2 },
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
     "backend": "webgpu",
     "canvas": { "width": 960, "height": 540 },
     "commands": []

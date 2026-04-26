@@ -7,10 +7,11 @@ public static class BaselineManager
 {
     /// <summary>
     /// Approve a test by copying candidates to baselines.
+    /// When suiteName is provided, paths are scoped to results/{suiteName}/{testName}/.
     /// </summary>
-    public static int ApproveTest(string workloadsDir, string workloadName, string testName)
+    public static int ApproveTest(string workloadsDir, string workloadName, string testName, string? suiteName = null)
     {
-        var testDir = Path.Combine(workloadsDir, workloadName, "results", testName);
+        var testDir = GetTestDirectory(workloadsDir, workloadName, testName, suiteName);
         var candidatesDir = Path.Combine(testDir, "candidates");
         var baselinesDir = Path.Combine(testDir, "baselines");
 
@@ -33,9 +34,9 @@ public static class BaselineManager
     /// <summary>
     /// Approve a single checkpoint by copying its candidate to baseline.
     /// </summary>
-    public static void ApproveCheckpoint(string workloadsDir, string workloadName, string testName, string checkpointName)
+    public static void ApproveCheckpoint(string workloadsDir, string workloadName, string testName, string checkpointName, string? suiteName = null)
     {
-        var testDir = Path.Combine(workloadsDir, workloadName, "results", testName);
+        var testDir = GetTestDirectory(workloadsDir, workloadName, testName, suiteName);
         var candidatePath = Path.Combine(testDir, "candidates", $"{checkpointName}.png");
         var baselinePath = Path.Combine(testDir, "baselines", $"{checkpointName}.png");
 
@@ -49,12 +50,19 @@ public static class BaselineManager
     /// <summary>
     /// Reject a checkpoint by deleting its candidate.
     /// </summary>
-    public static void RejectCheckpoint(string workloadsDir, string workloadName, string testName, string checkpointName)
+    public static void RejectCheckpoint(string workloadsDir, string workloadName, string testName, string checkpointName, string? suiteName = null)
     {
-        var testDir = Path.Combine(workloadsDir, workloadName, "results", testName);
+        var testDir = GetTestDirectory(workloadsDir, workloadName, testName, suiteName);
         var candidatePath = Path.Combine(testDir, "candidates", $"{checkpointName}.png");
 
         if (File.Exists(candidatePath))
             File.Delete(candidatePath);
+    }
+
+    private static string GetTestDirectory(string workloadsDir, string workloadName, string testName, string? suiteName)
+    {
+        if (suiteName != null)
+            return Path.Combine(workloadsDir, workloadName, "results", suiteName, testName);
+        return Path.Combine(workloadsDir, workloadName, "results", testName);
     }
 }

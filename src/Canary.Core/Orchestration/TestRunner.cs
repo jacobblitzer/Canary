@@ -38,7 +38,8 @@ public sealed class TestRunner
     public async Task<TestResult> RunTestAsync(
         TestDefinition testDef,
         WorkloadConfig workload,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? suiteName = null)
     {
         var sw = Stopwatch.StartNew();
         var result = new TestResult
@@ -121,7 +122,7 @@ public sealed class TestRunner
             }
 
             // 6. Process checkpoints (capture + compare)
-            var testDir = GetTestDirectory(workload.Name, testDef.Name);
+            var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
             Directory.CreateDirectory(testDir);
 
             // Default capture size from WindowPositioner; updated after positioning
@@ -328,7 +329,8 @@ public sealed class TestRunner
     public async Task<SuiteResult> RunSuiteAsync(
         WorkloadConfig workload,
         IReadOnlyList<TestDefinition> tests,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? suiteName = null)
     {
         var suite = new SuiteResult();
 
@@ -336,7 +338,7 @@ public sealed class TestRunner
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await RunTestAsync(test, workload, cancellationToken).ConfigureAwait(false);
+            var result = await RunTestAsync(test, workload, cancellationToken, suiteName).ConfigureAwait(false);
             suite.TestResults.Add(result);
 
             var (symbol, level) = result.Status switch
@@ -605,7 +607,8 @@ public sealed class TestRunner
         TestDefinition testDef,
         WorkloadConfig workload,
         ICanaryAgent agent,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? suiteName = null)
     {
         var sw = Stopwatch.StartNew();
         var result = new TestResult
@@ -661,7 +664,7 @@ public sealed class TestRunner
             }
 
             // 3. Process checkpoints with camera positioning
-            var testDir = GetTestDirectory(workload.Name, testDef.Name);
+            var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
             Directory.CreateDirectory(testDir);
 
             var captureWidth = testDef.Setup?.Canvas?.Width ?? 960;
@@ -758,7 +761,8 @@ public sealed class TestRunner
         WorkloadConfig workload,
         IReadOnlyList<TestDefinition> tests,
         ICanaryAgent agent,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? suiteName = null)
     {
         var suite = new SuiteResult();
 
@@ -766,7 +770,7 @@ public sealed class TestRunner
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await RunAgentTestAsync(test, workload, agent, cancellationToken).ConfigureAwait(false);
+            var result = await RunAgentTestAsync(test, workload, agent, cancellationToken, suiteName).ConfigureAwait(false);
             suite.TestResults.Add(result);
 
             var (symbol, level) = result.Status switch
@@ -824,23 +828,35 @@ public sealed class TestRunner
             }).ConfigureAwait(false);
         }
 
-        // Load scene if specified
+        // Load scene if specified — prefer SceneName (backend-independent)
+        // over Index because the scene array differs between WebGL2 and WebGPU.
         if (setup.Scene != null)
         {
-            await agent.ExecuteAsync("LoadScene", new Dictionary<string, string>
+            if (!string.IsNullOrWhiteSpace(setup.Scene.SceneName))
             {
-                ["index"] = setup.Scene.Index.ToString()
-            }).ConfigureAwait(false);
+                await agent.ExecuteAsync("LoadSceneByName", new Dictionary<string, string>
+                {
+                    ["name"] = setup.Scene.SceneName
+                }).ConfigureAwait(false);
+            }
+            else
+            {
+                await agent.ExecuteAsync("LoadScene", new Dictionary<string, string>
+                {
+                    ["index"] = setup.Scene.Index.ToString()
+                }).ConfigureAwait(false);
+            }
         }
 
         // Run setup commands
         foreach (var cmd in setup.Commands)
         {
             _logger.Log($"Running: {cmd}");
-            await agent.ExecuteAsync("RunCommand", new Dictionary<string, string>
+            var cmdResult = await agent.ExecuteAsync("RunCommand", new Dictionary<string, string>
             {
                 ["command"] = cmd
             }).ConfigureAwait(false);
+            _logger.Log($"  → {cmdResult.Message}");
         }
 
         // Let the app settle after setup
@@ -1128,8 +1144,10 @@ public sealed class TestRunner
         return direct;
     }
 
-    private string GetTestDirectory(string workloadName, string testName)
+    private string GetTestDirectory(string workloadName, string testName, string? suiteName = null)
     {
+        if (suiteName != null)
+            return Path.Combine(_workloadsDir, workloadName, "results", suiteName, testName);
         return Path.Combine(_workloadsDir, workloadName, "results", testName);
     }
 

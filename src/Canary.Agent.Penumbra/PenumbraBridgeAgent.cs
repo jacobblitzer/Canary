@@ -162,6 +162,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         return action switch
         {
             "LoadScene" => await LoadSceneAsync(parameters).ConfigureAwait(false),
+            "LoadSceneByName" => await LoadSceneByNameAsync(parameters).ConfigureAwait(false),
             "SetCamera" => await SetCameraAsync(parameters).ConfigureAwait(false),
             "SetCanvasSize" => await SetCanvasSizeAsync(parameters).ConfigureAwait(false),
             "WaitForStable" => await WaitForStableAsync(parameters).ConfigureAwait(false),
@@ -170,7 +171,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
             _ => new AgentResponse
             {
                 Success = false,
-                Message = $"Unknown action: {action}. Supported: LoadScene, SetCamera, SetCanvasSize, WaitForStable, SetBackend, RunCommand"
+                Message = $"Unknown action: {action}. Supported: LoadScene, LoadSceneByName, SetCamera, SetCanvasSize, WaitForStable, SetBackend, RunCommand"
             }
         };
     }
@@ -227,6 +228,21 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         await WaitForAtlasIfNeededAsync().ConfigureAwait(false);
 
         return Ok($"Scene {index} loaded.");
+    }
+
+    private async Task<AgentResponse> LoadSceneByNameAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("name", out var name) || string.IsNullOrWhiteSpace(name))
+            return Fail("LoadSceneByName requires 'name' parameter (non-empty string).");
+
+        // JSON-encode the name so any quotes/backslashes in it don't break the JS expression.
+        var jsLiteral = JsonSerializer.Serialize(name);
+        await _cdp!.EvaluateAsync($"window.__canarySetSceneByName({jsLiteral})").ConfigureAwait(false);
+
+        // Wait for atlas build to complete if applicable
+        await WaitForAtlasIfNeededAsync().ConfigureAwait(false);
+
+        return Ok($"Scene matching \"{name}\" loaded.");
     }
 
     private async Task<AgentResponse> SetCameraAsync(Dictionary<string, string> parameters)

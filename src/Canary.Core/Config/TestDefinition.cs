@@ -167,12 +167,20 @@ public sealed class TestCheckpoint
 }
 
 /// <summary>
-/// Scene selection for Penumbra test setup.
+/// Scene selection for Penumbra test setup. If SceneName is set, it is preferred
+/// over Index (the runner calls LoadSceneByName and falls back to LoadScene).
 /// </summary>
 public sealed class SceneSetup
 {
     [JsonPropertyName("index")]
     public int Index { get; set; }
+
+    /// <summary>
+    /// Case-insensitive substring match against the scene name. Preferred over
+    /// Index because scene indices differ between WebGL2 and WebGPU backends.
+    /// </summary>
+    [JsonPropertyName("sceneName")]
+    public string SceneName { get; set; } = string.Empty;
 }
 
 /// <summary>
