@@ -20,6 +20,17 @@ public sealed class TestDefinition
     [JsonPropertyName("setup")]
     public TestSetup? Setup { get; set; }
 
+    /// <summary>
+    /// "fresh" (default) launches a new app instance per test. "shared" allows
+    /// consecutive tests sharing the same workload + setup.file to run inside
+    /// one app instance — only the first test launches and opens the fixture;
+    /// subsequent tests reuse the running app and only run their actions.
+    /// Tests in "shared" mode should start their actions list with a cleanup
+    /// step (e.g. Slop Cleanup toggle pulse) so prior test state is wiped.
+    /// </summary>
+    [JsonPropertyName("runMode")]
+    public string RunMode { get; set; } = "fresh";
+
     [JsonPropertyName("recording")]
     public string Recording { get; set; } = string.Empty;
 

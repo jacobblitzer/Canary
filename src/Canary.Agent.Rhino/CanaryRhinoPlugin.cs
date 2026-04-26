@@ -16,6 +16,8 @@ public sealed class CanaryRhinoPlugin : PlugIn
     private AgentServer? _server;
     private CancellationTokenSource? _cts;
     private Task? _serverTask;
+    private CancellationTokenSource? _popupCts;
+    private Task? _popupTask;
 
     /// <summary>
     /// Gets the singleton plugin instance.
@@ -60,12 +62,23 @@ public sealed class CanaryRhinoPlugin : PlugIn
         });
 
         RhinoApp.WriteLine($"[Canary] Agent listening on pipe '{pipeName}'.");
+
+        // Start the popup-dismisser at plugin load time so that Rhino startup
+        // popups (Plug-in Load Errors, Component Loader Errors, missing-
+        // assembly warnings from third-party plugins) get auto-OK'd before
+        // the harness's first action even arrives. This also covers popups
+        // that appear DURING test runs (e.g. a CPig native crash that
+        // triggers a Rhino crash dialog).
+        _popupCts = new CancellationTokenSource();
+        _popupTask = Task.Run(() => RhinoAgent.PopupDismisserPublic(_popupCts.Token));
+
         return LoadReturnCode.Success;
     }
 
     /// <inheritdoc/>
     protected override void OnShutdown()
     {
+        _popupCts?.Cancel();
         _cts?.Cancel();
 
         if (_serverTask != null)
@@ -73,9 +86,15 @@ public sealed class CanaryRhinoPlugin : PlugIn
             try { _serverTask.Wait(TimeSpan.FromSeconds(3)); }
             catch (AggregateException) { }
         }
+        if (_popupTask != null)
+        {
+            try { _popupTask.Wait(TimeSpan.FromSeconds(1)); }
+            catch (AggregateException) { }
+        }
 
         _server?.Dispose();
         _cts?.Dispose();
+        _popupCts?.Dispose();
         base.OnShutdown();
     }
 }

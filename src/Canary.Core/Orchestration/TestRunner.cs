@@ -63,9 +63,12 @@ public sealed class TestRunner
 
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
 
-            // 2. Connect to agent (waits for pipe to appear during app startup)
+            // 2. Connect to agent (waits for pipe to appear during app startup).
+            // 120s per-call timeout is generous for cold-start ops like
+            // OpenGrasshopperDefinition (first GH load discovers all plugins
+            // on the UI thread; can take 30-60s before reply gets sent).
             _logger.Log($"Connecting to agent on pipe '{pipeName}' (timeout: {workload.StartupTimeoutMs}ms)...");
-            client = new HarnessClient(pipeName);
+            client = new HarnessClient(pipeName, TimeSpan.FromSeconds(120));
             await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
             _logger.Log("Agent connected.");
 
@@ -92,6 +95,29 @@ public sealed class TestRunner
                 _logger.Log("Sending setup commands...");
                 await SendSetupCommandsAsync(client, testDef.Setup, workload, cancellationToken).ConfigureAwait(false);
                 _logger.Log("Setup commands complete.");
+            }
+
+            // 5b. Run pre-checkpoint actions (Phase 13.2 — CPig workload).
+            // Each action's `type` is dispatched directly to the agent over
+            // the named pipe. Failures abort the test with status=Crashed.
+            if (testDef.Actions.Count > 0)
+            {
+                _logger.Log($"Running {testDef.Actions.Count} pre-checkpoint action(s)...");
+                foreach (var action in testDef.Actions)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var parameters = action.AsParameters();
+                    _logger.Log($"  action: {action.Type}");
+                    var resp = await client!.ExecuteAsync(action.Type, parameters, cancellationToken).ConfigureAwait(false);
+                    if (!resp.Success)
+                    {
+                        result.Status = TestStatus.Crashed;
+                        result.ErrorMessage = $"Action '{action.Type}' failed: {resp.Message}";
+                        result.Duration = sw.Elapsed;
+                        return result;
+                    }
+                }
+                _logger.Log("Actions complete.");
             }
 
             // 6. Process checkpoints (capture + compare)
@@ -229,6 +255,34 @@ public sealed class TestRunner
                 }
             }
 
+            // 6b. Evaluate asserts after checkpoints (Phase 13.2). Asserts
+            // surface logic failures that don't visually change the canvas
+            // (e.g. CPig's Slop component reports SlopSuccess=False without
+            // changing any rendered geometry). Failed asserts flip a
+            // pixel-diff-passed test to Failed.
+            if (testDef.Asserts.Count > 0 && !appDead)
+            {
+                _logger.Log($"Evaluating {testDef.Asserts.Count} assert(s)...");
+                foreach (var assert in testDef.Asserts)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var (ok, message) = await EvaluateClientAssertAsync(client!, assert, cancellationToken).ConfigureAwait(false);
+                    if (ok)
+                    {
+                        _logger.Log($"  + {assert.Type} {assert.Nickname}");
+                    }
+                    else
+                    {
+                        _logger.Log($"  - {assert.Type} {assert.Nickname}: {message}");
+                        if (result.Status == TestStatus.Passed || result.Status == TestStatus.New)
+                            result.Status = TestStatus.Failed;
+                        result.ErrorMessage = string.IsNullOrEmpty(result.ErrorMessage)
+                            ? $"Assert failed: {message}"
+                            : result.ErrorMessage + $"; {message}";
+                    }
+                }
+            }
+
             // 7. Build composite image if there are checkpoint results
             if (result.CheckpointResults.Count > 0)
             {
@@ -319,6 +373,227 @@ public sealed class TestRunner
         // Summary always prints (even in quiet mode)
         _logger.LogSummary($"Results: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new");
         return suite;
+    }
+
+    /// <summary>
+    /// Run a list of tests sharing one app instance. Launches the workload app once,
+    /// runs the first test's setup commands (e.g. open fixture), then for each test
+    /// executes only its actions + checkpoints + asserts. Tests in this path should
+    /// have <c>runMode = "shared"</c> and start their actions with a cleanup step.
+    /// </summary>
+    public async Task<SuiteResult> RunSharedSuiteAsync(
+        WorkloadConfig workload,
+        IReadOnlyList<TestDefinition> tests,
+        CancellationToken cancellationToken)
+    {
+        var suite = new SuiteResult();
+        if (tests.Count == 0) return suite;
+
+        Process? appProcess = null;
+        HarnessClient? client = null;
+        Task? watchdogTask = null;
+        var watchdogCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        bool appDead = false;
+
+        try
+        {
+            _logger.Log($"Launching {workload.DisplayName} (shared session for {tests.Count} test(s))...");
+            appProcess = AppLauncher.Launch(workload);
+            _processManager.Track(appProcess);
+
+            var pipeName = $"{workload.PipeName}-{appProcess.Id}";
+            _logger.Log($"Connecting to agent on pipe '{pipeName}' (timeout: {workload.StartupTimeoutMs}ms)...");
+            client = new HarnessClient(pipeName, TimeSpan.FromSeconds(120));
+            await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
+            _logger.Log("Agent connected.");
+
+            var hb = await client.HeartbeatAsync(cancellationToken).ConfigureAwait(false);
+            _logger.Log($"Heartbeat: ok={hb.Ok}");
+            if (!hb.Ok)
+            {
+                _logger.Log("Agent heartbeat failed; aborting shared suite.");
+                foreach (var t in tests)
+                    suite.TestResults.Add(new TestResult { TestName = t.Name, Workload = workload.Name, Status = TestStatus.Crashed, ErrorMessage = "Agent heartbeat returned ok=false." });
+                return suite;
+            }
+
+            var watchdog = new Watchdog(new HarnessClientHeartbeatSource(client));
+            watchdog.OnAppDead += () => appDead = true;
+            watchdogTask = watchdog.RunAsync(watchdogCts.Token);
+
+            // One-time fixture open from the first test's setup.
+            var firstSetup = tests[0].Setup;
+            if (firstSetup != null)
+            {
+                _logger.Log("Sending setup commands (one-time)...");
+                await SendSetupCommandsAsync(client, firstSetup, workload, cancellationToken).ConfigureAwait(false);
+                _logger.Log("Setup commands complete.");
+            }
+
+            appProcess.Refresh();
+            var hwnd = appProcess.MainWindowHandle;
+            if (ViewportLocator.IsValidTarget(hwnd))
+            {
+                WindowPositioner.PositionTargetWindow(hwnd);
+                await Task.Delay(500, cancellationToken).ConfigureAwait(false);
+                OnTargetWindowFound?.Invoke(hwnd);
+            }
+
+            var captureWidth = WindowPositioner.TargetWidth;
+            var captureHeight = WindowPositioner.TargetHeight;
+
+            // Per-test loop — actions, checkpoints, asserts.
+            foreach (var test in tests)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var sw = Stopwatch.StartNew();
+                var result = new TestResult
+                {
+                    TestName = test.Name,
+                    Workload = workload.Name,
+                    Status = TestStatus.Passed
+                };
+
+                if (appDead)
+                {
+                    result.Status = TestStatus.Crashed;
+                    result.ErrorMessage = "Application died earlier in shared session.";
+                    suite.TestResults.Add(result);
+                    LogTestStatus(result);
+                    continue;
+                }
+
+                try
+                {
+                    if (test.Actions.Count > 0)
+                    {
+                        _logger.Log($"[{test.Name}] running {test.Actions.Count} action(s)...");
+                        foreach (var action in test.Actions)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            var parameters = action.AsParameters();
+                            _logger.Log($"  action: {action.Type}");
+                            var resp = await client!.ExecuteAsync(action.Type, parameters, cancellationToken).ConfigureAwait(false);
+                            if (!string.IsNullOrEmpty(resp.Message) && action.Type == "WaitForGrasshopperSolution")
+                                _logger.Log($"    {resp.Message}");
+                            if (!resp.Success)
+                            {
+                                result.Status = TestStatus.Crashed;
+                                result.ErrorMessage = $"Action '{action.Type}' failed: {resp.Message}";
+                                break;
+                            }
+                        }
+                    }
+
+                    if (result.Status != TestStatus.Crashed)
+                    {
+                        var testDir = GetTestDirectory(workload.Name, test.Name);
+                        Directory.CreateDirectory(testDir);
+
+                        foreach (var checkpoint in test.Checkpoints)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            if (appDead)
+                            {
+                                result.Status = TestStatus.Crashed;
+                                result.ErrorMessage = "Application crashed during test.";
+                                break;
+                            }
+
+                            var cpResult = await ProcessCheckpointAsync(
+                                client!, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
+
+                            result.CheckpointResults.Add(cpResult);
+
+                            if (cpResult.Status == TestStatus.Failed) result.Status = TestStatus.Failed;
+                            else if (cpResult.Status == TestStatus.Crashed) result.Status = TestStatus.Crashed;
+                            else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed) result.Status = TestStatus.New;
+                        }
+
+                        if (test.Asserts.Count > 0 && !appDead)
+                        {
+                            _logger.Log($"[{test.Name}] evaluating {test.Asserts.Count} assert(s)...");
+                            foreach (var assert in test.Asserts)
+                            {
+                                cancellationToken.ThrowIfCancellationRequested();
+                                var (ok, message) = await EvaluateClientAssertAsync(client!, assert, cancellationToken).ConfigureAwait(false);
+                                if (ok)
+                                {
+                                    _logger.Log($"  + {assert.Type} {assert.Nickname}");
+                                }
+                                else
+                                {
+                                    _logger.Log($"  - {assert.Type} {assert.Nickname}: {message}");
+                                    if (result.Status == TestStatus.Passed || result.Status == TestStatus.New)
+                                        result.Status = TestStatus.Failed;
+                                    result.ErrorMessage = string.IsNullOrEmpty(result.ErrorMessage)
+                                        ? $"Assert failed: {message}"
+                                        : result.ErrorMessage + $"; {message}";
+                                }
+                            }
+                        }
+
+                        if (result.CheckpointResults.Count > 0)
+                        {
+                            try
+                            {
+                                result.CompositeImagePath = await BuildCompositeAsync(result, testDir).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Log($"Warning: composite build failed: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.Status = TestStatus.Crashed;
+                    result.ErrorMessage = ex.Message;
+                }
+
+                result.Duration = sw.Elapsed;
+                suite.TestResults.Add(result);
+                LogTestStatus(result);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Pending tests were never started — record them as Crashed.
+        }
+        finally
+        {
+            watchdogCts.Cancel();
+            if (watchdogTask != null)
+            {
+                try { await watchdogTask.ConfigureAwait(false); }
+                catch (OperationCanceledException) { }
+            }
+            watchdogCts.Dispose();
+            client?.Dispose();
+        }
+
+        _logger.LogSummary($"Results: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new");
+        return suite;
+    }
+
+    private void LogTestStatus(TestResult result)
+    {
+        var (symbol, level) = result.Status switch
+        {
+            TestStatus.Passed => ("PASS", TestStatusLevel.Pass),
+            TestStatus.Failed => ("FAIL", TestStatusLevel.Fail),
+            TestStatus.Crashed => ("CRASH", TestStatusLevel.Crash),
+            TestStatus.New => ("NEW", TestStatusLevel.New),
+            _ => ("???", TestStatusLevel.Info)
+        };
+        var maxDiff = result.CheckpointResults.Count > 0
+            ? result.CheckpointResults.Max(c => c.DiffPercentage)
+            : 0;
+        _logger.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", level);
+        if (!string.IsNullOrEmpty(result.ErrorMessage))
+            _logger.Log($"  Error: {result.ErrorMessage}");
     }
 
     /// <summary>
@@ -652,14 +927,33 @@ public sealed class TestRunner
     private async Task SendSetupCommandsAsync(
         HarnessClient client, TestSetup setup, WorkloadConfig workload, CancellationToken ct)
     {
-        // Open file if specified
+        // Open file if specified. Dispatch by extension: .3dm and friends go
+        // through OpenFile (Rhino doc), .gh through OpenGrasshopperDefinition.
         if (!string.IsNullOrWhiteSpace(setup.File))
         {
-            _logger.Log($"Opening file: {setup.File}");
-            await client.ExecuteAsync("OpenFile", new Dictionary<string, string>
+            // Resolve relative paths against the workload directory so the
+            // Rhino agent receives an absolute path it can open.
+            var resolvedPath = setup.File;
+            if (!Path.IsPathRooted(resolvedPath))
             {
-                ["path"] = setup.File
-            }, ct).ConfigureAwait(false);
+                resolvedPath = Path.Combine(_workloadsDir, workload.Name, setup.File);
+            }
+            var ext = Path.GetExtension(resolvedPath).ToLowerInvariant();
+            _logger.Log($"Opening file: {resolvedPath}");
+            if (ext == ".gh" || ext == ".ghx")
+            {
+                await client.ExecuteAsync("OpenGrasshopperDefinition", new Dictionary<string, string>
+                {
+                    ["path"] = resolvedPath
+                }, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await client.ExecuteAsync("OpenFile", new Dictionary<string, string>
+                {
+                    ["path"] = resolvedPath
+                }, ct).ConfigureAwait(false);
+            }
         }
 
         // Set viewport projection/display mode if specified (size is handled by WindowPositioner)
@@ -879,4 +1173,41 @@ public sealed class TestRunner
 
     private static string Truncate(string s, int max = 120)
         => s.Length <= max ? s : s.Substring(0, max - 3) + "...";
+
+    /// <summary>
+    /// Same as <see cref="EvaluateAssertAsync"/> but for the named-pipe path
+    /// (HarnessClient instead of in-process ICanaryAgent). Used by the Rhino
+    /// workload's CPig regression tests.
+    /// </summary>
+    private static async Task<(bool ok, string message)> EvaluateClientAssertAsync(
+        HarnessClient client, TestAssert assert, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(assert.Nickname))
+            return (false, $"{assert.Type}: missing 'nickname'");
+
+        var resp = await client.ExecuteAsync("GrasshopperGetPanelText",
+            new Dictionary<string, string> { ["nickname"] = assert.Nickname }, ct).ConfigureAwait(false);
+
+        if (!resp.Success)
+            return (false, $"GetPanelText('{assert.Nickname}') failed: {resp.Message}");
+
+        string text = resp.Data != null && resp.Data.TryGetValue("text", out var t) ? t : string.Empty;
+
+        return assert.Type switch
+        {
+            "PanelEquals" => string.Equals(text.Trim(), assert.Text.Trim(), StringComparison.Ordinal)
+                ? (true, string.Empty)
+                : (false, $"PanelEquals '{assert.Nickname}': expected \"{assert.Text}\", got \"{Truncate(text)}\""),
+
+            "PanelContains" => text.Contains(assert.Text, StringComparison.Ordinal)
+                ? (true, string.Empty)
+                : (false, $"PanelContains '{assert.Nickname}': \"{assert.Text}\" not found in \"{Truncate(text)}\""),
+
+            "PanelDoesNotContain" => !text.Contains(assert.Text, StringComparison.Ordinal)
+                ? (true, string.Empty)
+                : (false, $"PanelDoesNotContain '{assert.Nickname}': \"{assert.Text}\" found in panel"),
+
+            _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain)")
+        };
+    }
 }

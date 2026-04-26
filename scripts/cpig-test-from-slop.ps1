@@ -91,6 +91,7 @@ foreach ($slopFile in $slopFiles) {
         name        = $canaryTestName
         workload    = 'rhino'
         description = "$description (auto-generated from $($slopFile.Name))"
+        runMode     = 'shared'
         setup       = [ordered]@{
             file     = 'fixtures/cpig_slop_loader.gh'
             viewport = [ordered]@{
@@ -102,6 +103,11 @@ foreach ($slopFile in $slopFiles) {
         }
         actions     = @(
             [ordered]@{ type = 'WaitForGrasshopperSolution'; timeoutMs = 5000 },
+            [ordered]@{ type = 'GrasshopperSetToggle'; nickname = 'Build'; value = $false },
+            [ordered]@{ type = 'GrasshopperSetToggle'; nickname = 'Cleanup'; value = $true },
+            [ordered]@{ type = 'WaitForGrasshopperSolution'; timeoutMs = 5000 },
+            [ordered]@{ type = 'GrasshopperSetToggle'; nickname = 'Cleanup'; value = $false },
+            [ordered]@{ type = 'WaitForGrasshopperSolution'; timeoutMs = 2000 },
             [ordered]@{ type = 'GrasshopperSetPanelText'; nickname = 'JsonPath'; text = $slopPathAbs },
             [ordered]@{ type = 'GrasshopperSetToggle'; nickname = 'Build'; value = $true },
             [ordered]@{ type = 'WaitForGrasshopperSolution'; timeoutMs = 30000 }

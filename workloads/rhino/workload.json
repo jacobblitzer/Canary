@@ -5,7 +5,7 @@
   "appArgs": "/nosplash /runscript=\"_-SetView _World _Perspective _Enter _-MaxViewport\"",
   "agentType": "rhino",
   "pipeName": "canary-rhino",
-  "startupTimeoutMs": 30000,
+  "startupTimeoutMs": 90000,
   "windowTitle": "Rhinoceros",
   "viewportClass": "Eto.Wpf.Forms.Controls.WpfViewportHandler",
   "setupCommands": []

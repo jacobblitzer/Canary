@@ -2,6 +2,7 @@
     "name":  "cpig-01-implicit-basic",
     "workload":  "rhino",
     "description":  "01 Implicit Basic (auto-generated from 01_implicit_basic.json)",
+    "runMode":  "shared",
     "setup":  {
                   "file":  "fixtures/cpig_slop_loader.gh",
                   "viewport":  {
@@ -15,6 +16,29 @@
                     {
                         "type":  "WaitForGrasshopperSolution",
                         "timeoutMs":  5000
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Build",
+                        "value":  false
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Cleanup",
+                        "value":  true
+                    },
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  5000
+                    },
+                    {
+                        "type":  "GrasshopperSetToggle",
+                        "nickname":  "Cleanup",
+                        "value":  false
+                    },
+                    {
+                        "type":  "WaitForGrasshopperSolution",
+                        "timeoutMs":  2000
                     },
                     {
                         "type":  "GrasshopperSetPanelText",
