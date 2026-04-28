@@ -1,0 +1,82 @@
+{
+  "name": "pigture-01-render-rounded-box",
+  "workload": "rhino",
+  "description": "01 Render Rounded Box — orange PBR material on a box, 25-pass Cycles render via RenderScene + RenderViewer.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/pigture_slop_loader.gh",
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 800,
+      "height": 600
+    }
+  },
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Pigture/tests/slop/01_render_rounded_box.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 120000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "post-render",
+      "atTimeMs": 15000,
+      "tolerance": 0.08
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "!!!"
+    }
+  ]
+}

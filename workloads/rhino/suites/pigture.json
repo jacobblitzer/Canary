@@ -1,0 +1,7 @@
+{
+  "name": "pigture",
+  "description": "Pigture regression tests — runs in a single shared Rhino instance via Slop loader. Render tests use 120s timeout and 0.08 tolerance for Cycles noise variance.",
+  "tests": [
+    "pigture-01-render-rounded-box"
+  ]
+}

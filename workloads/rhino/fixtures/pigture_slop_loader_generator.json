@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {"id": "title", "type": "scribble", "name": "Pigture Slop Loader", "font_size": 24, "bold": true},
+
+    {"id": "json_path", "type": "panel", "name": "JsonPath", "content": "C:/Repos/Pigture/tests/slop/01_render_rounded_box.json"},
+
+    {"id": "build",   "type": "toggle", "name": "Build",   "value": 0},
+    {"id": "cleanup", "type": "toggle", "name": "Cleanup", "value": 0},
+
+    {"id": "slop",  "type": "component", "name": "Slop",         "guid": "51070A00-51DF-4E00-B000-510DDEF00002"},
+    {"id": "slopx", "type": "component", "name": "Slop Cleanup", "guid": "51070A00-51DF-4E00-B000-510DDEF00004"},
+
+    {"id": "p_log",     "type": "panel", "name": "SlopLog",     "content": ""},
+    {"id": "p_success", "type": "panel", "name": "SlopSuccess", "content": ""},
+    {"id": "p_count",   "type": "panel", "name": "SlopCount",   "content": ""},
+    {"id": "p_xlog",    "type": "panel", "name": "CleanupLog",  "content": ""},
+    {"id": "p_xcount",  "type": "panel", "name": "CleanupCount","content": ""},
+
+    {"id": "hub",   "type": "component", "name": "Log Hub",     "guid": "51070A00-51DF-4E00-C000-510DDEF00011"},
+    {"id": "guard", "type": "component", "name": "Crash Guard", "guid": "51070A00-51DF-4E00-C000-510DDEF00012"}
+  ],
+  "wires": [
+    {"from": "build",     "from_output": 0, "to": "slop", "to_input": 1},
+    {"from": "json_path", "from_output": 0, "to": "slop", "to_input": 4},
+
+    {"from": "cleanup", "from_output": 0, "to": "slopx", "to_input": 0},
+
+    {"from": "slop",  "from_output": 0, "to": "p_log",     "to_input": 0},
+    {"from": "slop",  "from_output": 1, "to": "p_success", "to_input": 0},
+    {"from": "slop",  "from_output": 2, "to": "p_count",   "to_input": 0},
+    {"from": "slopx", "from_output": 0, "to": "p_xlog",    "to_input": 0},
+    {"from": "slopx", "from_output": 1, "to": "p_xcount",  "to_input": 0}
+  ],
+  "values": [
+    {"node": "guard", "input": 0, "value": "true"},
+    {"node": "hub",   "input": 0, "value": "true"}
+  ],
+  "groups": [
+    {"name": "Title", "nodes": ["title"]},
+    {"name": "Inputs",      "color": "#4488FF", "nodes": ["json_path", "build", "cleanup"]},
+    {"name": "Builder",     "color": "#FFAA44", "nodes": ["slop"]},
+    {"name": "Cleaner",     "color": "#FF8866", "nodes": ["slopx"]},
+    {"name": "Reports",     "color": "#888888", "nodes": ["p_log", "p_success", "p_count", "p_xlog", "p_xcount"]},
+    {"name": "Diagnostics", "color": "#FF6688", "nodes": ["hub", "guard"]}
+  ]
+}
