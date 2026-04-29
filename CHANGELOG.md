@@ -12,10 +12,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- File-source checkpoints: `TestCheckpoint` gains `source` (default `"viewport"`) and `panelNickname` fields — when `source: "file"`, the runner reads a file path from a GH panel instead of capturing a viewport screenshot, then copies it into candidates for normal pixel-diff comparison. Enables Pigture Cycles render output to flow through the checkpoint pipeline.
+- VLM Oracle comparison mode (Phase 8): checkpoints with `mode: "vlm"` evaluate screenshots against natural-language descriptions using a Vision-Language Model, returning pass/fail verdicts without requiring baseline images
+- `VlmConfig` type for configuring VLM provider/model in test setup
+- `ClaudeVlmProvider`: calls Anthropic Messages API with base64 screenshot + description prompt
+- `VlmEvaluator` factory with API key resolution from `CANARY_VLM_API_KEY` / `ANTHROPIC_API_KEY`
+- Mixed-mode test support: pixel-diff and VLM checkpoints can coexist in the same test
+- HTML report: VLM detail sections showing description, reasoning, confidence, and screenshot
+- `OllamaVlmProvider`: calls local Ollama instance for VLM evaluation — no API key required, supports any vision-capable model (e.g., `gemma4:e4b`)
+- 26 unit tests for VLM feature (98 total)
+- 7 Penumbra VLM oracle test definitions: `vlm-tape-csg-geometry`, `vlm-atlas-blob-organic`, `vlm-cornell-box-layout`, `vlm-teapot-shape`, `vlm-multi-field-separation`, `vlm-terrain-landscape`, `vlm-teapot-metal-mixed`
+- `vlm` suite definition (7 tests) for the Penumbra workload
+- Full suite updated to 51 tests (was 44)
+
 ### Fixed
 - Atlas cell boundary rectangular artifact in Penumbra — face-neighbor expansion in cascade manager ([bug 0005](docs/bugs/0005-atlas-cell-boundary-artifact.md))
 
 ### Added
+- 10 new CPig gap buildout test entries: `cpig-24-shortest-path`, `cpig-25-feature-edges`, `cpig-26-graph-export`, `cpig-27-svg-export`, `cpig-28-unroll-overlap`, `cpig-29-unroll-tabs`, `cpig-30-vdb-morphology`, `cpig-31-vdb-nary-boolean`, `cpig-32-geodesic`, `cpig-33-adaptive-mesh`
+- CPig suite updated to 33 tests (was 23) — covers graph shortest path, feature edges, export formats, unroll overlap/tabs, VDB morphology, geodesic distance, and adaptive meshing
+- 5 new CPig field modifier test definitions: `cpig-19-noise-field`, `cpig-20-domain-modifiers`, `cpig-21-field-mix`, `cpig-22-turbulence`, `cpig-23-displace-mesh`
+- CPig suite updated to 22 tests (was 17) — covers noise, domain modifiers, value modifiers, and geometry effects
+- `--keep-open` flag for `canary run` — keeps the target application open after tests complete for manual inspection (press Ctrl+C to close)
 - Phase 9 material preset tests: 5 new Canary tests (metal, wood, marble, zebra, damascus on SDF Teapot)
 - Phase 9 environment preset tests: 4 atlas-blob env tests (outdoor, sunset, night, neutral) + 2 custom lighting/bg tests
 - `materials.json` + `environment.json` suite definitions

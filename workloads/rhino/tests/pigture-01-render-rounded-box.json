@@ -1,17 +1,36 @@
 {
   "name": "pigture-01-render-rounded-box",
   "workload": "rhino",
-  "description": "01 Render Rounded Box — orange PBR material on a box, 25-pass Cycles render via RenderScene + RenderViewer.",
-  "runMode": "shared",
+  "description": "01 Render Rounded Box \u2014 orange PBR material on a box, 25-pass Cycles render via RenderScene \u002B RenderViewer.",
   "setup": {
     "file": "fixtures/pigture_slop_loader.gh",
     "viewport": {
-      "projection": "Perspective",
-      "displayMode": "Shaded",
       "width": 800,
-      "height": 600
-    }
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
   },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "render-output",
+      "source": "file",
+      "panelNickname": "RenderFilePath",
+      "atTimeMs": 0,
+      "tolerance": 0.08,
+      "description": "Cycles render output of orange PBR material on rounded box",
+      "mode": "pixel-diff",
+      "camera": null,
+      "stabilizeMs": null
+    }
+  ],
   "actions": [
     {
       "type": "WaitForGrasshopperSolution",
@@ -52,31 +71,37 @@
     },
     {
       "type": "WaitForGrasshopperSolution",
-      "timeoutMs": 120000
-    }
-  ],
-  "checkpoints": [
+      "timeoutMs": 30000
+    },
     {
-      "name": "post-render",
-      "atTimeMs": 15000,
-      "tolerance": 0.08
+      "type": "GrasshopperSetToggle",
+      "nickname": "Run",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 120000
     }
   ],
   "asserts": [
     {
       "type": "PanelEquals",
       "nickname": "SlopSuccess",
-      "text": "True"
+      "text": "True",
+      "description": ""
     },
     {
       "type": "PanelDoesNotContain",
       "nickname": "SlopLog",
-      "text": "FATAL"
+      "text": "FATAL",
+      "description": ""
     },
     {
       "type": "PanelDoesNotContain",
       "nickname": "SlopLog",
-      "text": "!!!"
+      "text": "!!!",
+      "description": ""
     }
-  ]
+  ],
+  "keepOpenOnFailure": true
 }

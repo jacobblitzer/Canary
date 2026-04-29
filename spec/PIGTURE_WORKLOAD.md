@@ -34,7 +34,7 @@ The fixture is a binary `.gh` file generated from `pigture_slop_loader_generator
 ## Test JSON schema
 Same as CPig — see `spec/CPIG_WORKLOAD.md` for the full schema. Pigture tests follow the same `setup` + `actions[]` + `checkpoints[]` + `asserts[]` structure.
 
-Example:
+Example (two-phase render pattern):
 ```json
 {
   "name": "pigture-01-render-rounded-box",
@@ -44,11 +44,16 @@ Example:
     "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
   },
   "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle",    "nickname": "Build",   "value": false },
     { "type": "GrasshopperSetToggle",    "nickname": "Cleanup", "value": true },
     { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
     { "type": "GrasshopperSetToggle",    "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
     { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/Pigture/tests/slop/01_render_rounded_box.json" },
     { "type": "GrasshopperSetToggle",    "nickname": "Build",   "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "GrasshopperSetToggle",    "nickname": "Run",     "value": true },
     { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
   ],
   "checkpoints": [
@@ -56,10 +61,46 @@ Example:
   ],
   "asserts": [
     { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True" },
-    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" }
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!" }
   ]
 }
 ```
+
+### Two-phase render pattern
+
+Pigture render tests use a **two-phase** approach to separate geometry creation from rendering:
+
+1. **Phase 1 (Build):** Slop builds the graph with `Run=false` in the Slop JSON. Geometry components solve, Content Cache pushes objects into the Rhino document, but RenderScene does nothing.
+2. **Phase 2 (Render):** Canary sets the `Run` toggle to `true`. RenderScene sees valid geometry and executes the bake-capture-delete cycle.
+
+This is necessary because Content Cache and RenderScene can race in a single solution pass — Content Cache may not finish pushing geometry before RenderScene attempts to render. The `Run` toggle inside the Slop JSON must start at `value: 0` (false).
+
+### File-source checkpoints
+
+Pigture checkpoints use `"source": "file"` instead of the default `"source": "viewport"`. The viewport screenshot only captures whatever Rhino's display mode renders (Shaded), not the Cycles output. The actual rendered bitmap is saved to disk by RenderViewer and its path flows through a `RenderFilePath` panel.
+
+```json
+{
+  "name": "render-output",
+  "source": "file",
+  "panelNickname": "RenderFilePath",
+  "tolerance": 0.08,
+  "mode": "pixel-diff"
+}
+```
+
+When `source` is `"file"`, the runner:
+1. Reads the panel identified by `panelNickname` via `GrasshopperGetPanelText`.
+2. Verifies the file exists at the returned path.
+3. Copies it to `candidates/{checkpoint.Name}.png`.
+4. Proceeds with the normal pixel-diff (or VLM) comparison against the baseline.
+
+The Slop JSON wires this up with two panels:
+- `SavePath` — deterministic output path (e.g. `C:/Repos/Pigture/tests/renders/01_rounded_box.png`), wired to RenderViewer input 1.
+- `RenderFilePath` — receives the saved path from RenderViewer output 0, read by Canary at checkpoint time.
+
+This generalizes to any file-producing component — any test can use `"source": "file"` if the candidate image is written to disk by the definition itself.
 
 ## Naming convention
 Test name `pigture-NN-slug` mirrors the Slop JSON filename `NN_slug.json` in `C:\Repos\Pigture\tests\slop\`. Underscores in the JSON name become hyphens in the test name.

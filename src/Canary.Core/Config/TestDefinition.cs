@@ -58,6 +58,15 @@ public sealed class TestDefinition
     public List<TestAssert> Asserts { get; set; } = new();
 
     /// <summary>
+    /// When true and this test fails or crashes, the target application is kept
+    /// alive after the suite completes so the user can inspect state manually.
+    /// In the CLI, acts as an automatic --keep-open. In the UI, the runner
+    /// panel shows a "Close App" button instead of killing immediately.
+    /// </summary>
+    [JsonPropertyName("keepOpenOnFailure")]
+    public bool KeepOpenOnFailure { get; set; }
+
+    /// <summary>
     /// Parse a test definition from a JSON string.
     /// </summary>
     public static TestDefinition Parse(string json)
@@ -115,6 +124,13 @@ public sealed class TestSetup
     /// </summary>
     [JsonPropertyName("canvas")]
     public CanvasSetup? Canvas { get; set; }
+
+    /// <summary>
+    /// VLM oracle configuration for checkpoints with <c>mode = "vlm"</c>.
+    /// Optional — only needed when at least one checkpoint uses VLM mode.
+    /// </summary>
+    [JsonPropertyName("vlm")]
+    public VlmConfig? Vlm { get; set; }
 }
 
 /// <summary>
@@ -151,6 +167,32 @@ public sealed class TestCheckpoint
 
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Capture source: "viewport" (default) takes a screenshot of the target
+    /// window; "file" reads a file path from a Grasshopper panel (identified
+    /// by <see cref="PanelNickname"/>) and copies that file as the candidate
+    /// image. Use "file" for render outputs (e.g. Pigture Cycles renders)
+    /// that are saved to disk by the definition itself.
+    /// </summary>
+    [JsonPropertyName("source")]
+    public string Source { get; set; } = "viewport";
+
+    /// <summary>
+    /// Nickname of a Grasshopper panel whose text contains the file path to
+    /// use as the candidate image. Required when <see cref="Source"/> is "file";
+    /// ignored otherwise.
+    /// </summary>
+    [JsonPropertyName("panelNickname")]
+    public string? PanelNickname { get; set; }
+
+    /// <summary>
+    /// Comparison mode: "pixel-diff" (default) uses baseline comparison,
+    /// "vlm" uses a Vision-Language Model to evaluate the screenshot against
+    /// <see cref="Description"/>.
+    /// </summary>
+    [JsonPropertyName("mode")]
+    public string Mode { get; set; } = "pixel-diff";
 
     /// <summary>
     /// Camera position for scripted captures (Penumbra). If set, the test runner

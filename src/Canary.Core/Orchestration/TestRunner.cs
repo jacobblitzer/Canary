@@ -18,6 +18,8 @@ public sealed class TestRunner
     private readonly ITestLogger _logger;
     private readonly PixelDiffComparer _pixelDiff = new();
     private readonly SsimComparer _ssim = new();
+    private IVlmProvider? _vlmProvider;
+    private Config.VlmConfig? _vlmConfig;
 
     /// <summary>
     /// Callback invoked when the target window handle is found.
@@ -120,6 +122,9 @@ public sealed class TestRunner
                 }
                 _logger.Log("Actions complete.");
             }
+
+            // 5c. Initialize VLM provider if any checkpoint uses vlm mode
+            InitVlmProviderIfNeeded(testDef);
 
             // 6. Process checkpoints (capture + compare)
             var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
@@ -350,11 +355,15 @@ public sealed class TestRunner
                 _ => ("???", TestStatusLevel.Info)
             };
 
+            var hasVlm = result.CheckpointResults.Any(c => c.VlmDescription != null);
             var maxDiff = result.CheckpointResults.Count > 0
                 ? result.CheckpointResults.Max(c => c.DiffPercentage)
                 : 0;
 
-            _logger.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", level);
+            var statusDetail = hasVlm && maxDiff == 0
+                ? $"{result.TestName} (VLM)"
+                : $"{result.TestName} ({maxDiff:P1} max diff)";
+            _logger.LogStatus(symbol, statusDetail, level);
 
             // Verbose: show per-checkpoint details
             if (_logger.Verbose)
@@ -362,7 +371,10 @@ public sealed class TestRunner
                 foreach (var cp in result.CheckpointResults)
                 {
                     var cpSymbol = cp.Status == TestStatus.Passed ? "  +" : "  -";
-                    _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
+                    if (cp.VlmDescription != null)
+                        _logger.Log($"{cpSymbol} {cp.Name}: VLM conf={cp.VlmConfidence:F2} — {Truncate(cp.VlmReasoning ?? "")}");
+                    else
+                        _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
                     if (!string.IsNullOrEmpty(cp.ErrorMessage))
                         _logger.Log($"    Error: {cp.ErrorMessage}");
                 }
@@ -490,6 +502,8 @@ public sealed class TestRunner
 
                     if (result.Status != TestStatus.Crashed)
                     {
+                        InitVlmProviderIfNeeded(test);
+
                         var testDir = GetTestDirectory(workload.Name, test.Name);
                         Directory.CreateDirectory(testDir);
 
@@ -590,10 +604,14 @@ public sealed class TestRunner
             TestStatus.New => ("NEW", TestStatusLevel.New),
             _ => ("???", TestStatusLevel.Info)
         };
+        var hasVlm = result.CheckpointResults.Any(c => c.VlmDescription != null);
         var maxDiff = result.CheckpointResults.Count > 0
             ? result.CheckpointResults.Max(c => c.DiffPercentage)
             : 0;
-        _logger.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", level);
+        var statusDetail = hasVlm && maxDiff == 0
+            ? $"{result.TestName} (VLM)"
+            : $"{result.TestName} ({maxDiff:P1} max diff)";
+        _logger.LogStatus(symbol, statusDetail, level);
         if (!string.IsNullOrEmpty(result.ErrorMessage))
             _logger.Log($"  Error: {result.ErrorMessage}");
     }
@@ -662,6 +680,9 @@ public sealed class TestRunner
                 }
                 _logger.Log("Actions complete.");
             }
+
+            // 2c. Initialize VLM provider if any checkpoint uses vlm mode
+            InitVlmProviderIfNeeded(testDef);
 
             // 3. Process checkpoints with camera positioning
             var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
@@ -782,18 +803,25 @@ public sealed class TestRunner
                 _ => ("???", TestStatusLevel.Info)
             };
 
+            var hasVlm = result.CheckpointResults.Any(c => c.VlmDescription != null);
             var maxDiff = result.CheckpointResults.Count > 0
                 ? result.CheckpointResults.Max(c => c.DiffPercentage)
                 : 0;
 
-            _logger.LogStatus(symbol, $"{result.TestName} ({maxDiff:P1} max diff)", level);
+            var statusDetail = hasVlm && maxDiff == 0
+                ? $"{result.TestName} (VLM)"
+                : $"{result.TestName} ({maxDiff:P1} max diff)";
+            _logger.LogStatus(symbol, statusDetail, level);
 
             if (_logger.Verbose)
             {
                 foreach (var cp in result.CheckpointResults)
                 {
                     var cpSymbol = cp.Status == TestStatus.Passed ? "  +" : "  -";
-                    _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
+                    if (cp.VlmDescription != null)
+                        _logger.Log($"{cpSymbol} {cp.Name}: VLM conf={cp.VlmConfidence:F2} — {Truncate(cp.VlmReasoning ?? "")}");
+                    else
+                        _logger.Log($"{cpSymbol} {cp.Name}: diff={cp.DiffPercentage:P2}, ssim={cp.SsimScore:F4}, tol={cp.Tolerance:P2}");
                     if (!string.IsNullOrEmpty(cp.ErrorMessage))
                         _logger.Log($"    Error: {cp.ErrorMessage}");
                 }
@@ -879,21 +907,65 @@ public sealed class TestRunner
 
         try
         {
-            // Capture screenshot
             var candidatePath = Path.Combine(testDir, "candidates", $"{checkpoint.Name}.png");
             Directory.CreateDirectory(Path.GetDirectoryName(candidatePath)!);
 
-            _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
-            var captureResult = await agent.CaptureScreenshotAsync(new CaptureSettings
+            if (string.Equals(checkpoint.Source, "file", StringComparison.OrdinalIgnoreCase))
             {
-                Width = captureWidth,
-                Height = captureHeight,
-                OutputPath = candidatePath
-            }).ConfigureAwait(false);
+                // File-source checkpoint: read the file path from a GH panel
+                if (string.IsNullOrWhiteSpace(checkpoint.PanelNickname))
+                {
+                    cpResult.Status = TestStatus.Crashed;
+                    cpResult.ErrorMessage = "File-source checkpoint requires 'panelNickname'.";
+                    return cpResult;
+                }
 
-            cpResult.CandidatePath = captureResult.FilePath;
+                _logger.Log($"Reading file path from panel '{checkpoint.PanelNickname}'...");
+                var panelResp = await agent.ExecuteAsync("GrasshopperGetPanelText",
+                    new Dictionary<string, string> { ["nickname"] = checkpoint.PanelNickname }).ConfigureAwait(false);
 
-            // Check for baseline
+                if (!panelResp.Success)
+                {
+                    cpResult.Status = TestStatus.Crashed;
+                    cpResult.ErrorMessage = $"Failed to read panel '{checkpoint.PanelNickname}': {panelResp.Message}";
+                    return cpResult;
+                }
+
+                var filePath = (panelResp.Data != null && panelResp.Data.TryGetValue("text", out var t) ? t : string.Empty).Trim();
+                _logger.Log($"File-source path: {filePath}");
+
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                {
+                    cpResult.Status = TestStatus.Crashed;
+                    cpResult.ErrorMessage = $"File-source path does not exist: '{filePath}'";
+                    return cpResult;
+                }
+
+                File.Copy(filePath, candidatePath, overwrite: true);
+                cpResult.CandidatePath = candidatePath;
+                _logger.Log($"Copied render output to {candidatePath}");
+            }
+            else
+            {
+                // Default: viewport capture
+                _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+                var captureResult = await agent.CaptureScreenshotAsync(new CaptureSettings
+                {
+                    Width = captureWidth,
+                    Height = captureHeight,
+                    OutputPath = candidatePath
+                }).ConfigureAwait(false);
+
+                cpResult.CandidatePath = captureResult.FilePath;
+            }
+
+            // Branch on comparison mode
+            if (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase))
+            {
+                return await ProcessVlmCheckpointAsync(cpResult, checkpoint, ct).ConfigureAwait(false);
+            }
+
+            // Default: pixel-diff mode
             var baselinePath = Path.Combine(testDir, "baselines", $"{checkpoint.Name}.png");
             cpResult.BaselinePath = baselinePath;
 
@@ -1018,21 +1090,66 @@ public sealed class TestRunner
 
         try
         {
-            // Capture screenshot
             var candidatePath = Path.Combine(testDir, "candidates", $"{checkpoint.Name}.png");
             Directory.CreateDirectory(Path.GetDirectoryName(candidatePath)!);
 
-            _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
-            var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
+            if (string.Equals(checkpoint.Source, "file", StringComparison.OrdinalIgnoreCase))
             {
-                Width = captureWidth,
-                Height = captureHeight,
-                OutputPath = candidatePath
-            }, ct).ConfigureAwait(false);
+                // File-source checkpoint: read the file path from a GH panel
+                // and copy it into the candidates directory.
+                if (string.IsNullOrWhiteSpace(checkpoint.PanelNickname))
+                {
+                    cpResult.Status = TestStatus.Crashed;
+                    cpResult.ErrorMessage = "File-source checkpoint requires 'panelNickname'.";
+                    return cpResult;
+                }
 
-            cpResult.CandidatePath = captureResult.FilePath;
+                _logger.Log($"Reading file path from panel '{checkpoint.PanelNickname}'...");
+                var panelResp = await client.ExecuteAsync("GrasshopperGetPanelText",
+                    new Dictionary<string, string> { ["nickname"] = checkpoint.PanelNickname }, ct).ConfigureAwait(false);
 
-            // Check for baseline
+                if (!panelResp.Success)
+                {
+                    cpResult.Status = TestStatus.Crashed;
+                    cpResult.ErrorMessage = $"Failed to read panel '{checkpoint.PanelNickname}': {panelResp.Message}";
+                    return cpResult;
+                }
+
+                var filePath = (panelResp.Data != null && panelResp.Data.TryGetValue("text", out var t) ? t : string.Empty).Trim();
+                _logger.Log($"File-source path: {filePath}");
+
+                if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                {
+                    cpResult.Status = TestStatus.Crashed;
+                    cpResult.ErrorMessage = $"File-source path does not exist: '{filePath}'";
+                    return cpResult;
+                }
+
+                File.Copy(filePath, candidatePath, overwrite: true);
+                cpResult.CandidatePath = candidatePath;
+                _logger.Log($"Copied render output to {candidatePath}");
+            }
+            else
+            {
+                // Default: viewport capture
+                _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+                var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
+                {
+                    Width = captureWidth,
+                    Height = captureHeight,
+                    OutputPath = candidatePath
+                }, ct).ConfigureAwait(false);
+
+                cpResult.CandidatePath = captureResult.FilePath;
+            }
+
+            // Branch on comparison mode
+            if (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase))
+            {
+                return await ProcessVlmCheckpointAsync(cpResult, checkpoint, ct).ConfigureAwait(false);
+            }
+
+            // Default: pixel-diff mode
             var baselinePath = Path.Combine(testDir, "baselines", $"{checkpoint.Name}.png");
             cpResult.BaselinePath = baselinePath;
 
@@ -1074,6 +1191,83 @@ public sealed class TestRunner
         {
             cpResult.Status = TestStatus.Crashed;
             cpResult.ErrorMessage = ex.Message;
+        }
+
+        return cpResult;
+    }
+
+    /// <summary>
+    /// Lazily initialize the VLM provider if the test definition has any vlm-mode
+    /// checkpoints and a provider hasn't been created yet.
+    /// </summary>
+    private void InitVlmProviderIfNeeded(TestDefinition testDef)
+    {
+        if (_vlmProvider != null) return;
+        if (!testDef.Checkpoints.Any(c => string.Equals(c.Mode, "vlm", StringComparison.OrdinalIgnoreCase)))
+            return;
+
+        _vlmConfig = testDef.Setup?.Vlm ?? new VlmConfig();
+        try
+        {
+            _vlmProvider = VlmEvaluator.Create(_vlmConfig);
+            _logger.Log($"VLM provider initialized: {_vlmConfig.Provider}/{_vlmConfig.Model}");
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Warning: VLM provider init failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Evaluate a screenshot using the VLM oracle. Shared by both the named-pipe
+    /// and in-process agent checkpoint paths.
+    /// </summary>
+    private async Task<CheckpointResult> ProcessVlmCheckpointAsync(
+        CheckpointResult cpResult,
+        TestCheckpoint checkpoint,
+        CancellationToken ct)
+    {
+        cpResult.VlmDescription = checkpoint.Description;
+
+        if (_vlmProvider == null)
+        {
+            cpResult.Status = TestStatus.Crashed;
+            cpResult.ErrorMessage = "VLM provider not initialized. Check API key configuration.";
+            return cpResult;
+        }
+
+        if (string.IsNullOrWhiteSpace(checkpoint.Description))
+        {
+            cpResult.Status = TestStatus.Crashed;
+            cpResult.ErrorMessage = "VLM checkpoint requires a non-empty 'description' field.";
+            return cpResult;
+        }
+
+        if (cpResult.CandidatePath == null || !File.Exists(cpResult.CandidatePath))
+        {
+            cpResult.Status = TestStatus.Crashed;
+            cpResult.ErrorMessage = "Screenshot file not found for VLM evaluation.";
+            return cpResult;
+        }
+
+        try
+        {
+            _logger.Log($"VLM evaluating: {checkpoint.Description}");
+            var imageBytes = await File.ReadAllBytesAsync(cpResult.CandidatePath, ct).ConfigureAwait(false);
+            var verdict = await _vlmProvider.EvaluateAsync(imageBytes, checkpoint.Description, ct).ConfigureAwait(false);
+
+            cpResult.VlmReasoning = verdict.Reasoning;
+            cpResult.VlmConfidence = verdict.Confidence;
+            cpResult.Status = verdict.Passed ? TestStatus.Passed : TestStatus.Failed;
+
+            _logger.Log($"VLM verdict: {(verdict.Passed ? "PASS" : "FAIL")} (confidence={verdict.Confidence:F2})");
+            if (!string.IsNullOrEmpty(verdict.Reasoning))
+                _logger.Log($"  Reasoning: {verdict.Reasoning}");
+        }
+        catch (Exception ex)
+        {
+            cpResult.Status = TestStatus.Crashed;
+            cpResult.ErrorMessage = $"VLM evaluation failed: {ex.Message}";
         }
 
         return cpResult;
