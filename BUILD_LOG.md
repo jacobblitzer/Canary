@@ -709,3 +709,13 @@ Promoted comparison mode to a runtime selector — the user picks pixel-diff (vi
 - Build: `dotnet build Canary.sln` → 0/0.
 
 Cross-repo coupling: CPig regenerates 19 retopo Slop+Canary test pairs that all emit `setup.vlm` + `setup.vlmDescription`; CPig adds 2 new accessor components (`CrossFieldExplode` BB019, `PatchLayoutExplode` BB01A) so VLM mode has visually distinct viewport content per stage.
+
+---
+
+## 2026-04-29 — Auto Log-Tap on every cpig-component output (cross-repo)
+
+No harness change — but Canary's Slop-loader pattern now consumes test JSONs that automatically wrap every cpig-component Goo output with a Slop `Log Tap`. Per-stage taps land in `LogHub` files alongside the viewport screenshot, so when a Canary run fails, the data-flow log is the first place to look (it shows where an upstream stage went empty / wrong before the screenshot was captured).
+
+- 19 retopo Canary test JSONs (cpig-34..52) regenerated with auto-inserted Log Tap nodes (mirrors the regenerated CPig Slop test JSONs).
+- `CLAUDE.md` gains a "Logging — Slop test JSONs auto-tap every component output" section with a back-reference to MultiVerse/CLAUDE.md's canonical "Logging in Slop tests" guide.
+- No behavioural change to test runs (Log Tap is a pass-through). Tap output flows into Slop's LogHub file — read it after a failing run to localize which stage went empty.
