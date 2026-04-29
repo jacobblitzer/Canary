@@ -36,24 +36,62 @@ public static class RunCommand
             "--quiet",
             "Suppress output except summary and exit code (for CI)");
 
-        var command = new Command("run", "Run visual regression tests against a workload")
+        var keepOpenOption = new Option<bool>(
+            "--keep-open",
+            "Keep the target application open after tests complete for manual inspection. Press Ctrl+C to close.");
+
+        var modeOption = new Option<string>(
+            "--mode",
+            description: "Comparison mode override: 'pixel-diff' (default — visual regression), 'vlm' (semantic correctness), or 'both' (run each checkpoint twice). Per-checkpoint mode='vlm' in test JSON still wins.",
+            getDefaultValue: () => "pixel-diff");
+
+        var command = new Command("run", "Run visual regression and/or VLM tests against a workload")
         {
             workloadOption,
             testOption,
             suiteOption,
             verboseOption,
-            quietOption
+            quietOption,
+            keepOpenOption,
+            modeOption
         };
 
-        command.SetHandler(async (workload, test, suite, verbose, quiet) =>
+        command.SetHandler(async (System.CommandLine.Invocation.InvocationContext ctx) =>
         {
+            var workload = ctx.ParseResult.GetValueForOption(workloadOption);
+            var test = ctx.ParseResult.GetValueForOption(testOption);
+            var suite = ctx.ParseResult.GetValueForOption(suiteOption);
+            var verbose = ctx.ParseResult.GetValueForOption(verboseOption);
+            var quiet = ctx.ParseResult.GetValueForOption(quietOption);
+            var keepOpen = ctx.ParseResult.GetValueForOption(keepOpenOption);
+            var modeStr = ctx.ParseResult.GetValueForOption(modeOption) ?? "pixel-diff";
+
             Program.Verbose = verbose;
             Program.Quiet = quiet;
             var logger = new ConsoleTestLogger(verbose, quiet);
-            await RunAsync(workload, test, suite, logger, Program.CancellationToken).ConfigureAwait(false);
-        }, workloadOption, testOption, suiteOption, verboseOption, quietOption);
+            var modeOverride = ParseModeOverride(modeStr, logger);
+            await RunAsync(workload, test, suite, logger, Program.CancellationToken, keepOpen, modeOverride).ConfigureAwait(false);
+        });
 
         return command;
+    }
+
+    /// <summary>
+    /// Parse the <c>--mode</c> flag string into a <see cref="ModeOverride"/>.
+    /// Logs and falls back to <see cref="ModeOverride.PixelDiff"/> on unknown values.
+    /// </summary>
+    private static ModeOverride ParseModeOverride(string raw, ConsoleTestLogger logger) => raw.ToLowerInvariant() switch
+    {
+        "pixel-diff" or "pixeldiff" or "regression" => ModeOverride.PixelDiff,
+        "vlm" or "semantic" or "correctness"        => ModeOverride.Vlm,
+        "both" or "all"                              => ModeOverride.Both,
+        _ => LogAndDefault(raw, logger),
+    };
+
+    private static ModeOverride LogAndDefault(string raw, ConsoleTestLogger logger)
+    {
+        logger.Log($"Warning: unknown --mode '{raw}'. Falling back to 'pixel-diff'.");
+        return ModeOverride.PixelDiff;
     }
 
     /// <summary>
@@ -92,7 +130,7 @@ public static class RunCommand
         }
     }
 
-    private static async Task RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct)
+    private static async Task RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct, bool keepOpen = false, ModeOverride modeOverride = ModeOverride.PixelDiff)
     {
         var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
 
@@ -125,7 +163,12 @@ public static class RunCommand
 
         try
         {
-            var runner = new TestRunner(pm, workloadsDir, logger);
+            var runner = new TestRunner(pm, workloadsDir, logger)
+            {
+                ModeOverride = modeOverride
+            };
+            if (modeOverride != ModeOverride.PixelDiff)
+                logger.Log($"Mode override: {modeOverride}");
 
             List<TestDefinition> tests;
             if (testName != null)
@@ -147,6 +190,7 @@ public static class RunCommand
                     var (suite, suiteTests) = await TestDiscovery.DiscoverTestsForSuiteAsync(
                         workloadsDir, workloadName, suiteName, logger).ConfigureAwait(false);
                     tests = suiteTests;
+                    if (suite.KeepOpen) keepOpen = true;
                     logger.Log($"Suite '{suiteName}': {suite.Description}");
                 }
                 catch (FileNotFoundException ex)
@@ -179,11 +223,19 @@ public static class RunCommand
             else if (tests.Count > 1 && tests.All(t => string.Equals(t.RunMode, "shared", StringComparison.OrdinalIgnoreCase)))
             {
                 logger.Log($"All {tests.Count} test(s) declare runMode=shared — using single-launch session.");
-                suite = await runner.RunSharedSuiteAsync(workload, tests, ct).ConfigureAwait(false);
+                suiteResult = await runner.RunSharedSuiteAsync(workload, tests, ct).ConfigureAwait(false);
             }
             else
             {
                 suiteResult = await runner.RunSuiteAsync(workload, tests, ct, suiteName).ConfigureAwait(false);
+            }
+
+            // Auto-enable keepOpen if any failed/crashed test requested it
+            if (!keepOpen)
+            {
+                keepOpen = tests.Any(t => t.KeepOpenOnFailure
+                    && suiteResult.TestResults.Any(r => r.TestName == t.Name
+                        && r.Status is TestStatus.Failed or TestStatus.Crashed));
             }
 
             // Generate reports — scoped under suite name when running a suite
@@ -203,6 +255,12 @@ public static class RunCommand
         }
         finally
         {
+            if (keepOpen)
+            {
+                logger.Log("Application kept open for inspection. Press Ctrl+C to close.");
+                try { await Task.Delay(Timeout.Infinite, ct).ConfigureAwait(false); }
+                catch (OperationCanceledException) { }
+            }
             pm.KillAll();
         }
     }

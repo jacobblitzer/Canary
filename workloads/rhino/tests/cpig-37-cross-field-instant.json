@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere mesh shaded normally. Small bright dots may be visible on the surface marking cross-field singularities \u2014 a sphere typically has 8 valence-3/-5 singularities. Short vectors at face centroids may also appear if cross-field directions are visualized."
     },
     "actions": [
         {

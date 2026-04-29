@@ -625,7 +625,7 @@
 
 ---
 
-## Post-Phase: Penumbra Bug Fix Verification (2026-04-25)
+## Post-Phase 12: Penumbra Bug Fix Verification (2026-04-25)
 
 ### Canary Run — 4 Suites After 9 Bug Fixes
 - **Date**: 2026-04-25
@@ -638,6 +638,41 @@
   - `display-modes`: 8 NEW (no baselines yet)
   - `overlays`: 7 NEW (no baselines yet)
 - **Notes**: 0 unexpected failures, 0 crashes. 15 NEW tests awaiting `canary approve`.
+
+---
+
+## Phase 13: CPig Regression Workload
+
+### Checkpoint 13.1: New agent actions
+- **Date**: 2026-04-26
+- **Status**: PASS
+- **Details**: Added `GrasshopperSetToggle`, `GrasshopperSetPanelText`, `GrasshopperGetPanelText` to `RhinoAgent.cs`. Each follows the existing `HandleGrasshopperSetSlider` pattern: case-insensitive nickname lookup, mutate, `ExpireSolution(true)`, marshal via `InvokeOnUi`. `GetPanelText` prefers VolatileData over UserText.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 13.2: Test runner extensions
+- **Date**: 2026-04-26
+- **Status**: PASS
+- **Details**: Extended `TestDefinition.cs` with `TestAction` and `TestAssert` classes. `TestRunner.RunTestAsync` executes `actions[]` sequentially before checkpoint capture. `asserts[]` evaluated after each checkpoint via `EvaluateClientAssertAsync` (named pipe path) and `EvaluateAssertAsync` (in-process path). Three assert types implemented: `PanelEquals` (exact trimmed match), `PanelContains` (substring), `PanelDoesNotContain` (inverse substring). Unknown types fail with typo-hint message.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 13.3: Loader fixture
+- **Date**: 2026-04-26
+- **Status**: PASS
+- **Details**: Built `workloads/rhino/fixtures/cpig_slop_loader.gh` (21KB) with Slop component, `JsonPath` panel, `Build` toggle, Crash Guard, Log Hub, three output panels (`SlopLog`, `SlopSuccess`, `SlopCount`). Generator template saved alongside as `cpig_slop_loader_generator.json`. Document-level viewport set to deterministic projection + display mode.
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 13.4: Bulk-generate test JSONs
+- **Date**: 2026-04-26
+- **Status**: PASS
+- **Details**: `scripts/cpig-test-from-slop.ps1` implemented — reads Slop JSON paths from `CPig/research/slop_tests/`, emits matching `cpig-NN-slug.json` under `workloads/rhino/tests/`. Script is idempotent. All 17 test JSONs generated and committed: `cpig-00-smoke-ping` through `cpig-16-field-evaluate`. Each test definition includes 3 actions (SetPanelText → SetToggle → WaitForSolution) and 3 asserts (SlopSuccess=True, SlopLog !contains FATAL, SlopLog !contains CRASH).
+- **SUPERVISOR_FLAGS**: None
+
+### Checkpoint 13.5: Initial baselines + Field Modifier tests
+- **Date**: 2026-04-27
+- **Status**: PASS (all 22 tests run, 22 NEW — first-run baseline capture)
+- **Details**: 5 new test definitions added for CPig's Field Modifiers sprint (cpig-19 through cpig-23). Suite expanded from 17 to 22 tests. All tests run via `canary run --workload rhino --suite cpig` in shared Rhino instance. All 22 tests report SlopSuccess=True, no FATAL/CRASH in logs.
+- **Notes**: Baselines captured but not yet approved. cpig-10 and cpig-13 remain excluded from suite (BUG-004 scope — libfive JIT batch eval crash).
+- **SUPERVISOR_FLAGS**: None
 
 ## Summary
 
@@ -656,3 +691,21 @@
 | 10 | Results Viewer + Baseline Management | 5 | 63 |
 | 11 | Test Manager — Create, Edit, Run | 6 | 69 |
 | 12 | Polish + Integration | 3 | 72 |
+| 13 | CPig Regression Workload (13.1–13.5) | 0 (infra) | 72 + 22 test defs |
+
+---
+
+## 2026-04-29 — Test mode duality (Phase 8.6)
+
+Promoted comparison mode to a runtime selector — the user picks pixel-diff (visual regression — code stability) or VLM (semantic correctness) per `canary run` invocation, without rewriting test JSONs.
+
+- `--mode <pixel-diff|vlm|both>` flag added to `canary run` (`src/Canary.Harness/Cli/RunCommand.cs`, default `pixel-diff`).
+- `ModeOverride` enum + `CheckpointMode` enum added to `Canary.Orchestration` (`src/Canary.Core/Orchestration/TestRunner.cs`).
+- `TestRunner.ModeOverride` property; `RunCommand` propagates the parsed flag.
+- Optional `setup.vlmDescription` field added to `TestSetup` (`src/Canary.Core/Config/TestDefinition.cs`); `ProcessVlmCheckpointAsync` falls back to it when a checkpoint omits its own `description`.
+- Refactor: `ProcessCheckpointAsync` + `ProcessAgentCheckpointAsync` take an optional `forceMode: CheckpointMode?` parameter; centralized loop in `DispatchClientCheckpointAsync` / `DispatchAgentCheckpointAsync` replaces 4 inlined call sites. `--mode both` runs each checkpoint twice and emits two `CheckpointResult` rows (the VLM one suffixed with `-vlm`).
+- Mode resolution: per-checkpoint `mode == "vlm"` always wins; otherwise `--mode` flag applies; otherwise pixel-diff.
+- Doc updates: `docs/features/vlm-oracle.md` rewritten with duality framing + writing-good-descriptions section; `spec/PHASES.md` Phase 8.6 entry; `CLAUDE.md` Quick Reference. MultiVerse `CLAUDE.md` gains the canonical "Testing modes" section; child repos (CPig, Slop, Pigture) carry back-references.
+- Build: `dotnet build Canary.sln` → 0/0.
+
+Cross-repo coupling: CPig regenerates 19 retopo Slop+Canary test pairs that all emit `setup.vlm` + `setup.vlmDescription`; CPig adds 2 new accessor components (`CrossFieldExplode` BB019, `PatchLayoutExplode` BB01A) so VLM mode has visually distinct viewport content per stage.

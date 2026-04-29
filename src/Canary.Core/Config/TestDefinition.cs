@@ -131,6 +131,17 @@ public sealed class TestSetup
     /// </summary>
     [JsonPropertyName("vlm")]
     public VlmConfig? Vlm { get; set; }
+
+    /// <summary>
+    /// Default natural-language description of what the viewport should show
+    /// when the test's components work correctly. Used by VLM mode as a
+    /// fallback when a checkpoint doesn't carry its own <c>description</c>,
+    /// and as the default when <c>--mode vlm</c> promotes pixel-diff
+    /// checkpoints to VLM evaluation. Free-form prose; the vision model
+    /// reads it directly. Optional.
+    /// </summary>
+    [JsonPropertyName("vlmDescription")]
+    public string? VlmDescription { get; set; }
 }
 
 /// <summary>

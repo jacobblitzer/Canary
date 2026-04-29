@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere mesh shaded normally. The Combine component takes multiple sizing inputs but does not add visible overlays."
     },
     "actions": [
         {

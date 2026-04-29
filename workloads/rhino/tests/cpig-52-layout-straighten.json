@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere with motorcycle separatrix arcs drawn over it. Compared to test 40, the arcs should look smoother and less jagged because they have been replaced by geodesic shortest paths."
     },
     "actions": [
         {

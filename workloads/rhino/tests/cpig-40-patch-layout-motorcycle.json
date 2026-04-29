@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere mesh with thin colored polylines (curves) drawn over the surface. These are motorcycle-graph separatrix arcs traced from cross-field singularities. There must be visibly more drawn lines than a Trivial layout \u2014 at least several curves crossing the sphere surface."
     },
     "actions": [
         {

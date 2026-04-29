@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere mesh shaded normally with cross-field singularities visible as small dots. Same family of overlay as test 37 but singularities may be in different positions because the seeding is different."
     },
     "actions": [
         {

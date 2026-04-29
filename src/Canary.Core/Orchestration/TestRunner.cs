@@ -11,6 +11,35 @@ namespace Canary.Orchestration;
 /// <summary>
 /// Orchestrates the full test lifecycle: launch app -> connect -> setup -> replay -> capture -> compare.
 /// </summary>
+/// <summary>
+/// Effective comparison mode for a checkpoint, after applying the
+/// <see cref="TestRunner.ModeOverride"/> CLI flag and any per-checkpoint
+/// <c>mode</c> override in the test JSON.
+/// </summary>
+public enum CheckpointMode
+{
+    /// <summary>Pixel-diff against a stored baseline.</summary>
+    PixelDiff,
+    /// <summary>VLM (vision-language model) evaluation against a description.</summary>
+    Vlm,
+}
+
+/// <summary>
+/// Optional runtime override of every checkpoint's comparison mode. Set by
+/// the <c>--mode</c> CLI flag.
+/// </summary>
+public enum ModeOverride
+{
+    /// <summary>No override. Each checkpoint's <c>mode</c> field is honoured.</summary>
+    None,
+    /// <summary>Force pixel-diff for all checkpoints (regression mode).</summary>
+    PixelDiff,
+    /// <summary>Force VLM for all checkpoints (correctness mode).</summary>
+    Vlm,
+    /// <summary>Run each checkpoint twice — once pixel-diff, once VLM.</summary>
+    Both,
+}
+
 public sealed class TestRunner
 {
     private readonly ProcessManager _processManager;
@@ -20,12 +49,22 @@ public sealed class TestRunner
     private readonly SsimComparer _ssim = new();
     private IVlmProvider? _vlmProvider;
     private Config.VlmConfig? _vlmConfig;
+    private string? _currentVlmDescription;
 
     /// <summary>
     /// Callback invoked when the target window handle is found.
     /// Called from the test thread — callers must marshal to UI thread if needed.
     /// </summary>
     public Action<IntPtr>? OnTargetWindowFound { get; set; }
+
+    /// <summary>
+    /// Runtime override for checkpoint comparison mode. Defaults to
+    /// <see cref="ModeOverride.None"/>, which honours each checkpoint's
+    /// own <c>mode</c> field. Set via the <c>canary run --mode</c> CLI flag.
+    /// Per-checkpoint <c>mode = "vlm"</c> still wins over a
+    /// <see cref="ModeOverride.PixelDiff"/> override (explicit beats implicit).
+    /// </summary>
+    public ModeOverride ModeOverride { get; set; } = ModeOverride.None;
 
     public TestRunner(ProcessManager processManager, string workloadsDir, ITestLogger logger)
     {
@@ -201,17 +240,8 @@ public sealed class TestRunner
                         cancellationToken.ThrowIfCancellationRequested();
                         _logger.Log($"Checkpoint '{checkpoint.Name}' at {timeMs}ms");
 
-                        var cpResult = await ProcessCheckpointAsync(
-                            client!, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
-
-                        result.CheckpointResults.Add(cpResult);
-
-                        if (cpResult.Status == TestStatus.Failed)
-                            result.Status = TestStatus.Failed;
-                        else if (cpResult.Status == TestStatus.Crashed)
-                            result.Status = TestStatus.Crashed;
-                        else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
-                            result.Status = TestStatus.New;
+                        await DispatchClientCheckpointAsync(
+                            client!, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -247,17 +277,8 @@ public sealed class TestRunner
                         break;
                     }
 
-                    var cpResult = await ProcessCheckpointAsync(
-                        client!, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
-
-                    result.CheckpointResults.Add(cpResult);
-
-                    if (cpResult.Status == TestStatus.Failed)
-                        result.Status = TestStatus.Failed;
-                    else if (cpResult.Status == TestStatus.Crashed)
-                        result.Status = TestStatus.Crashed;
-                    else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
-                        result.Status = TestStatus.New;
+                    await DispatchClientCheckpointAsync(
+                        client!, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -517,14 +538,8 @@ public sealed class TestRunner
                                 break;
                             }
 
-                            var cpResult = await ProcessCheckpointAsync(
-                                client!, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
-
-                            result.CheckpointResults.Add(cpResult);
-
-                            if (cpResult.Status == TestStatus.Failed) result.Status = TestStatus.Failed;
-                            else if (cpResult.Status == TestStatus.Crashed) result.Status = TestStatus.Crashed;
-                            else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed) result.Status = TestStatus.New;
+                            await DispatchClientCheckpointAsync(
+                                client!, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
                         }
 
                         if (test.Asserts.Count > 0 && !appDead)
@@ -708,17 +723,8 @@ public sealed class TestRunner
                     }).ConfigureAwait(false);
                 }
 
-                var cpResult = await ProcessAgentCheckpointAsync(
-                    agent, checkpoint, testDir, captureWidth, captureHeight, cancellationToken).ConfigureAwait(false);
-
-                result.CheckpointResults.Add(cpResult);
-
-                if (cpResult.Status == TestStatus.Failed)
-                    result.Status = TestStatus.Failed;
-                else if (cpResult.Status == TestStatus.Crashed)
-                    result.Status = TestStatus.Crashed;
-                else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
-                    result.Status = TestStatus.New;
+                await DispatchAgentCheckpointAsync(
+                    agent, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
             }
 
             // 3b. Evaluate asserts after the last checkpoint (Phase 13.2).
@@ -897,11 +903,15 @@ public sealed class TestRunner
         string testDir,
         int captureWidth,
         int captureHeight,
-        CancellationToken ct)
+        CancellationToken ct,
+        CheckpointMode? forceMode = null)
     {
+        var displayName = forceMode == CheckpointMode.Vlm && checkpoint.Mode != "vlm"
+            ? $"{checkpoint.Name}-vlm"
+            : checkpoint.Name;
         var cpResult = new CheckpointResult
         {
-            Name = checkpoint.Name,
+            Name = displayName,
             Tolerance = checkpoint.Tolerance
         };
 
@@ -959,8 +969,14 @@ public sealed class TestRunner
                 cpResult.CandidatePath = captureResult.FilePath;
             }
 
-            // Branch on comparison mode
-            if (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase))
+            // Branch on comparison mode. forceMode (set by ResolveEffectiveModes)
+            // wins over checkpoint.Mode. forceMode == null preserves the original
+            // per-checkpoint behaviour for backwards compatibility.
+            var effective = forceMode
+                ?? (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase)
+                    ? CheckpointMode.Vlm
+                    : CheckpointMode.PixelDiff);
+            if (effective == CheckpointMode.Vlm)
             {
                 return await ProcessVlmCheckpointAsync(cpResult, checkpoint, ct).ConfigureAwait(false);
             }
@@ -1080,11 +1096,18 @@ public sealed class TestRunner
         string testDir,
         int captureWidth,
         int captureHeight,
-        CancellationToken ct)
+        CancellationToken ct,
+        CheckpointMode? forceMode = null)
     {
+        // When forceMode is provided, append a suffix to the checkpoint name
+        // so two-mode runs (override=Both) emit distinguishable result rows.
+        // No suffix is added if the test only ran in a single mode.
+        var displayName = forceMode == CheckpointMode.Vlm && checkpoint.Mode != "vlm"
+            ? $"{checkpoint.Name}-vlm"
+            : checkpoint.Name;
         var cpResult = new CheckpointResult
         {
-            Name = checkpoint.Name,
+            Name = displayName,
             Tolerance = checkpoint.Tolerance
         };
 
@@ -1143,8 +1166,14 @@ public sealed class TestRunner
                 cpResult.CandidatePath = captureResult.FilePath;
             }
 
-            // Branch on comparison mode
-            if (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase))
+            // Branch on comparison mode. forceMode (set by ResolveEffectiveModes)
+            // wins over checkpoint.Mode. forceMode == null preserves the original
+            // per-checkpoint behaviour for backwards compatibility.
+            var effective = forceMode
+                ?? (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase)
+                    ? CheckpointMode.Vlm
+                    : CheckpointMode.PixelDiff);
+            if (effective == CheckpointMode.Vlm)
             {
                 return await ProcessVlmCheckpointAsync(cpResult, checkpoint, ct).ConfigureAwait(false);
             }
@@ -1198,13 +1227,21 @@ public sealed class TestRunner
 
     /// <summary>
     /// Lazily initialize the VLM provider if the test definition has any vlm-mode
-    /// checkpoints and a provider hasn't been created yet.
+    /// checkpoints and a provider hasn't been created yet. Also stashes the
+    /// test's <c>setup.vlmDescription</c> default so it can be used when a
+    /// VLM checkpoint doesn't carry its own <c>description</c>.
     /// </summary>
     private void InitVlmProviderIfNeeded(TestDefinition testDef)
     {
+        // Stash the per-test default description regardless of provider state.
+        _currentVlmDescription = testDef.Setup?.VlmDescription;
+
         if (_vlmProvider != null) return;
-        if (!testDef.Checkpoints.Any(c => string.Equals(c.Mode, "vlm", StringComparison.OrdinalIgnoreCase)))
-            return;
+
+        bool checkpointWantsVlm = testDef.Checkpoints.Any(c =>
+            string.Equals(c.Mode, "vlm", StringComparison.OrdinalIgnoreCase));
+        bool overrideWantsVlm = ModeOverride == ModeOverride.Vlm || ModeOverride == ModeOverride.Both;
+        if (!checkpointWantsVlm && !overrideWantsVlm) return;
 
         _vlmConfig = testDef.Setup?.Vlm ?? new VlmConfig();
         try
@@ -1219,6 +1256,78 @@ public sealed class TestRunner
     }
 
     /// <summary>
+    /// Resolve the effective comparison mode(s) for a checkpoint, applying
+    /// the precedence rule: per-checkpoint <c>mode = "vlm"</c> wins, then
+    /// <see cref="ModeOverride"/> applies, otherwise pixel-diff.
+    /// Returns 1 or 2 modes (2 only when override is <see cref="ModeOverride.Both"/>
+    /// and the checkpoint isn't already explicit).
+    /// </summary>
+    private IReadOnlyList<CheckpointMode> ResolveEffectiveModes(TestCheckpoint checkpoint)
+    {
+        bool checkpointIsExplicitVlm = string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase);
+        if (checkpointIsExplicitVlm)
+            return new[] { CheckpointMode.Vlm };
+
+        return ModeOverride switch
+        {
+            ModeOverride.Vlm  => new[] { CheckpointMode.Vlm },
+            ModeOverride.PixelDiff => new[] { CheckpointMode.PixelDiff },
+            ModeOverride.Both => new[] { CheckpointMode.PixelDiff, CheckpointMode.Vlm },
+            _ => new[] { CheckpointMode.PixelDiff },
+        };
+    }
+
+    /// <summary>
+    /// Roll the rolling test-level status forward based on a single
+    /// checkpoint result. Centralises the same Failed/Crashed/New escalation
+    /// logic that every call site duplicated before <see cref="ModeOverride"/>
+    /// expanded the model from "1 result per checkpoint" to "1 or 2".
+    /// </summary>
+    private static void EscalateStatus(TestResult result, CheckpointResult cpResult)
+    {
+        if (cpResult.Status == TestStatus.Failed)
+            result.Status = TestStatus.Failed;
+        else if (cpResult.Status == TestStatus.Crashed)
+            result.Status = TestStatus.Crashed;
+        else if (cpResult.Status == TestStatus.New && result.Status == TestStatus.Passed)
+            result.Status = TestStatus.New;
+    }
+
+    /// <summary>
+    /// Run <see cref="ProcessCheckpointAsync"/> once per resolved effective mode
+    /// (1 or 2 invocations), append each result to <paramref name="result"/>,
+    /// and roll the test-level status forward.
+    /// </summary>
+    private async Task DispatchClientCheckpointAsync(
+        HarnessClient client, TestCheckpoint checkpoint, string testDir,
+        int captureWidth, int captureHeight, TestResult result, CancellationToken ct)
+    {
+        foreach (var mode in ResolveEffectiveModes(checkpoint))
+        {
+            var cpResult = await ProcessCheckpointAsync(
+                client, checkpoint, testDir, captureWidth, captureHeight, ct, mode).ConfigureAwait(false);
+            result.CheckpointResults.Add(cpResult);
+            EscalateStatus(result, cpResult);
+        }
+    }
+
+    /// <summary>
+    /// Agent-flavoured analogue of <see cref="DispatchClientCheckpointAsync"/>.
+    /// </summary>
+    private async Task DispatchAgentCheckpointAsync(
+        ICanaryAgent agent, TestCheckpoint checkpoint, string testDir,
+        int captureWidth, int captureHeight, TestResult result, CancellationToken ct)
+    {
+        foreach (var mode in ResolveEffectiveModes(checkpoint))
+        {
+            var cpResult = await ProcessAgentCheckpointAsync(
+                agent, checkpoint, testDir, captureWidth, captureHeight, ct, mode).ConfigureAwait(false);
+            result.CheckpointResults.Add(cpResult);
+            EscalateStatus(result, cpResult);
+        }
+    }
+
+    /// <summary>
     /// Evaluate a screenshot using the VLM oracle. Shared by both the named-pipe
     /// and in-process agent checkpoint paths.
     /// </summary>
@@ -1227,7 +1336,12 @@ public sealed class TestRunner
         TestCheckpoint checkpoint,
         CancellationToken ct)
     {
-        cpResult.VlmDescription = checkpoint.Description;
+        // Description precedence: per-checkpoint description (most specific)
+        // wins over the test-level setup.vlmDescription default.
+        var description = !string.IsNullOrWhiteSpace(checkpoint.Description)
+            ? checkpoint.Description
+            : (_currentVlmDescription ?? string.Empty);
+        cpResult.VlmDescription = description;
 
         if (_vlmProvider == null)
         {
@@ -1236,10 +1350,10 @@ public sealed class TestRunner
             return cpResult;
         }
 
-        if (string.IsNullOrWhiteSpace(checkpoint.Description))
+        if (string.IsNullOrWhiteSpace(description))
         {
             cpResult.Status = TestStatus.Crashed;
-            cpResult.ErrorMessage = "VLM checkpoint requires a non-empty 'description' field.";
+            cpResult.ErrorMessage = "VLM checkpoint requires a non-empty 'description' on the checkpoint or 'setup.vlmDescription' on the test.";
             return cpResult;
         }
 
@@ -1252,9 +1366,9 @@ public sealed class TestRunner
 
         try
         {
-            _logger.Log($"VLM evaluating: {checkpoint.Description}");
+            _logger.Log($"VLM evaluating: {description}");
             var imageBytes = await File.ReadAllBytesAsync(cpResult.CandidatePath, ct).ConfigureAwait(false);
-            var verdict = await _vlmProvider.EvaluateAsync(imageBytes, checkpoint.Description, ct).ConfigureAwait(false);
+            var verdict = await _vlmProvider.EvaluateAsync(imageBytes, description, ct).ConfigureAwait(false);
 
             cpResult.VlmReasoning = verdict.Reasoning;
             cpResult.VlmConfidence = verdict.Confidence;

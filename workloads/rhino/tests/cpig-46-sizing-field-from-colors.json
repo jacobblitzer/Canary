@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere mesh shaded normally. The Slop log may report a graceful 'Mesh has no per-vertex colors' error \u2014 that is expected for the sphere fixture and is not a build failure."
     },
     "actions": [
         {

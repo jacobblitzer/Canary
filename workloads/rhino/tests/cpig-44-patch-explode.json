@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "Multiple coloured sub-meshes filling a sphere shape \u2014 each patch from the motorcycle layout shown as a separately-coloured region. The patches together cover the original sphere."
     },
     "actions": [
         {

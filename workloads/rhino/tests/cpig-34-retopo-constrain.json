@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated 3D sphere mesh shown in shaded mode against a grey background. No bright red feature polylines should be drawn \u2014 a smooth UV-sphere has no auto-detected sharp edges at the 30-degree dihedral threshold. The mesh shape is recognizably spherical."
     },
     "actions": [
         {

@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A quad-dominant remesh of a sphere. The viewport shows a sphere shape made primarily of quadrilateral faces (visible as four-sided cells when wireframed). Some triangles may appear near the poles. The mesh is recognizably spherical and is NOT the original triangulated mesh."
     },
     "actions": [
         {

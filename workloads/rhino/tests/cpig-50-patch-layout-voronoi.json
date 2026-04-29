@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere with thin polylines drawn between Voronoi cell boundaries \u2014 distinct visible regions/patches separated by arc polylines. Must show more arcs than a Trivial layout."
     },
     "actions": [
         {

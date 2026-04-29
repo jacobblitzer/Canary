@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere mesh shaded normally. The volumetric field source is a separate Field Sphere primitive sampled at vertex positions; nothing extra rendered on top of the sphere."
     },
     "actions": [
         {

@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A quad-dominant remesh of a sphere with grid-aligned topology. Quads should appear in cleaner regular grids than the instant-extract version. Recognizably spherical."
     },
     "actions": [
         {

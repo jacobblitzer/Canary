@@ -291,3 +291,49 @@
 - Same as Qualia — placeholder config + documentation
 
 **Phase 7 Exit Criteria:** Documentation exists for adding new workloads. Stubs created for known future workloads.
+
+---
+
+## Phase 8: VLM Oracle
+**Goal:** Add a second comparison mode where a Vision-Language Model evaluates screenshots against natural-language descriptions, returning pass/fail verdicts without requiring baseline images.
+
+### Checkpoint 8.1: Configuration & Types
+- Add `mode` field to `TestCheckpoint` (values: `"pixel-diff"`, `"vlm"`)
+- Create `VlmConfig` DTO (provider, model, maxTokens)
+- Add `vlm` field to `TestSetup`
+- Existing `Description` field on `TestCheckpoint` serves as the VLM prompt
+
+### Checkpoint 8.2: VLM Provider Abstraction
+- `IVlmProvider` interface with `EvaluateAsync(imageBytes, description, ct) → VlmVerdict`
+- `VlmVerdict`: pass/fail, confidence (0–1), reasoning string
+- `ClaudeVlmProvider`: calls Anthropic Messages API via `HttpClient`, sends screenshot as base64 image
+- System prompt instructs model to return structured JSON verdict
+- `VlmEvaluator` factory: resolves API key from `CANARY_VLM_API_KEY` / `ANTHROPIC_API_KEY`, instantiates provider
+
+### Checkpoint 8.3: TestRunner Integration
+- Lazy-init VLM provider when first VLM checkpoint is encountered
+- Branch `ProcessCheckpointAsync` and `ProcessAgentCheckpointAsync` on `checkpoint.Mode`
+- VLM checkpoints skip baseline lookup — always produce a verdict directly
+- Add `VlmReasoning`, `VlmConfidence`, `VlmDescription` to `CheckpointResult`
+
+### Checkpoint 8.4: Reporting
+- HTML report: adaptive table columns for mixed-mode tests
+- VLM detail sections show description, reasoning, confidence, and screenshot
+- Console verbose output shows VLM confidence and reasoning
+
+### Checkpoint 8.5: Tests
+- Unit tests: Mode default value, JSON round-trip, VlmVerdict parsing, API response parsing
+- Full test definition deserialization with VLM config
+- Mixed-mode test (pixel-diff + VLM) deserialization
+
+**Phase 8 Exit Criteria:** VLM checkpoints produce verdicts from Claude, reports render VLM reasoning, existing pixel-diff tests unchanged.
+
+### Checkpoint 8.6: Mode Duality at the Harness Level
+- Add `--mode <pixel-diff|vlm|both>` flag to `canary run` (default `pixel-diff`).
+- Add `ModeOverride` enum + `TestRunner.ModeOverride` property; `RunCommand` propagates the flag.
+- Add optional `setup.vlmDescription` field on `TestDefinition.Setup`; `ProcessVlmCheckpointAsync` falls back to it when a checkpoint has no `description`.
+- Refactor `ProcessCheckpointAsync` + `ProcessAgentCheckpointAsync` to take an optional `forceMode: CheckpointMode?` parameter; centralize the loop in `DispatchClientCheckpointAsync` / `DispatchAgentCheckpointAsync`.
+- Mode resolution rule: per-checkpoint `mode == "vlm"` always wins; otherwise `--mode` flag applies; otherwise pixel-diff. `--mode both` runs each checkpoint twice and emits two `CheckpointResult` rows (the VLM one suffixed with `-vlm`).
+- Documentation: canonical "Testing modes — VLM vs. Visual Regression" section in `MultiVerse/CLAUDE.md`; back-references in CPig, Canary, Slop, and Pigture CLAUDE.md.
+
+**Phase 8.6 Exit Criteria:** every existing test runs unchanged under `--mode pixel-diff` (default); same tests run as VLM under `--mode vlm` when `setup.vlmDescription` is set; `--mode both` produces two verdicts per checkpoint in the HTML report. Cross-repo docs taught the duality once (MultiVerse) and linked from each child repo. Rationale: pixel-diff and VLM are different jobs (regression vs. correctness); mode should be a runtime choice, not a property baked into the test JSON.

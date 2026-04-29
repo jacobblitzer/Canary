@@ -9,6 +9,17 @@
 - **Run CPig tests**: `canary run --workload rhino --suite cpig` (from `C:\Repos\Canary`)
 - **Status**: Phase 13 in progress (checkpoints 13.1–13.4 complete, 13.5 baselines pending). 72 unit tests + 22 cpig test definitions.
 
+### Test mode duality (`--mode` flag)
+Every Canary test definition is mode-agnostic. The runtime selects how to evaluate:
+
+```
+canary run ... --mode pixel-diff   # default — visual regression vs baseline
+canary run ... --mode vlm          # semantic correctness via Ollama / Claude
+canary run ... --mode both         # run each checkpoint twice; report both verdicts
+```
+
+Visual regression is the unit-test-equivalent (catches code-stability deltas); VLM is the correctness oracle (catches semantic errors a baseline would silently encode). Per-checkpoint `mode: "vlm"` in the test JSON still wins over the flag. See [`MultiVerse/CLAUDE.md` § Testing modes](../MultiVerse/CLAUDE.md#testing-modes--vlm-vs-visual-regression) for the canonical when-to-use-which guidance. Implementation lives in `src/Canary.Harness/Cli/RunCommand.cs` (flag) + `src/Canary.Core/Orchestration/TestRunner.cs` (`ModeOverride` enum + dispatcher). Mode override resolution: per-checkpoint `mode == "vlm"` wins, otherwise `--mode` applies, otherwise pixel-diff.
+
 ### Running CPig Tests
 Always use `--suite cpig` to run CPig tests, not individual `--test` invocations. All CPig tests declare `runMode: shared`, which means Canary launches Rhino **once** and runs all tests sequentially in that single instance. Running tests individually with `--test` defeats this — each invocation opens and closes Rhino separately. The suite approach is faster and matches the intended workflow.
 

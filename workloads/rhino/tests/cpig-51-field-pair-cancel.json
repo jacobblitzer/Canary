@@ -10,7 +10,12 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A triangulated sphere with motorcycle separatrix arcs drawn over it, similar to test 40. After pair cancellation there may be fewer arcs, but the visual difference can be subtle \u2014 the key invariant is that arcs (curve overlays on the sphere) are present."
     },
     "actions": [
         {
