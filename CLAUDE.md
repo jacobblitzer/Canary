@@ -67,6 +67,21 @@ CHANGELOG.md      # Keep a Changelog format
 BUILD_LOG.md      # Phase checkpoint records
 ```
 
+### Cross-Repo Change Protocol
+
+**This rule is mandatory.** When your session's changes affect other repos (new features they consume, contract changes, schema changes, corrected documentation):
+
+1. **Update `CLAUDE.md` in every affected repo.** This is the #1 priority — CLAUDE.md is what the next Claude Code session reads first. Add or revise the section describing the capability/contract. If a new pattern was established (like file-source checkpoints), document it where future sessions will find it.
+
+2. **Update `spec/PEERS.md`** in every affected repo that has one. Keep contract descriptions, input/output mappings, and GUID tables current.
+
+3. **Log to MultiVerse.** Append a one-line entry to `C:\Repos\MultiVerse\BUILD_LOG.md`:
+   ```
+   YYYY-MM-DD | cross-repo | Canary → AffectedRepos | one-line summary
+   ```
+
+**What triggers this:** Any change that would leave another repo's CLAUDE.md or PEERS.md stale. Adding a `TestCheckpoint` field → update Pigture/CPig CLAUDE.md. Adding an agent action → update repos whose tests use it. Changing test conventions → update Slop CLAUDE.md if it affects JSON authoring.
+
 ### Auto-Journaling Rules
 
 **These rules are mandatory.** When working in this repo, maintain living documentation:
