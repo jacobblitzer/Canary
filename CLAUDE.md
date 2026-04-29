@@ -6,7 +6,32 @@
 - **Build**: `dotnet build Canary.sln` (must be 0 errors, 0 warnings)
 - **Test**: `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`
 - **Run Penumbra tests**: `canary run --workload penumbra`
-- **Status**: Phase 12 complete, 72+ tests passing
+- **Run CPig tests**: `canary run --workload rhino --suite cpig` (from `C:\Repos\Canary`)
+- **Status**: Phase 13 in progress (checkpoints 13.1–13.4 complete, 13.5 baselines pending). 72 unit tests + 22 cpig test definitions.
+
+### Running CPig Tests
+Always use `--suite cpig` to run CPig tests, not individual `--test` invocations. All CPig tests declare `runMode: shared`, which means Canary launches Rhino **once** and runs all tests sequentially in that single instance. Running tests individually with `--test` defeats this — each invocation opens and closes Rhino separately. The suite approach is faster and matches the intended workflow.
+
+```bash
+# Correct — single Rhino instance, all tests sequential
+cd C:\Repos\Canary
+canary run --workload rhino --suite cpig
+
+# Wrong — opens/closes Rhino for each test
+canary run --workload rhino --test cpig-19-noise-field
+canary run --workload rhino --test cpig-20-domain-modifiers
+```
+
+### Running Pigture Tests
+Same shared-suite pattern as CPig: `canary run --workload rhino --suite pigture`.
+
+Pigture checkpoints use `"source": "file"` instead of `"source": "viewport"` (the default). Viewport screenshots capture Rhino's Shaded display mode, not the Cycles render. The rendered image is saved to disk by RenderViewer, and its path flows through a `RenderFilePath` GH panel. At checkpoint time, the runner reads that panel via `GrasshopperGetPanelText`, copies the file to `candidates/`, and runs normal pixel-diff comparison.
+
+Key `TestCheckpoint` fields for file-source:
+- `"source": "file"` — use file instead of viewport capture
+- `"panelNickname": "RenderFilePath"` — which GH panel holds the file path
+
+See `spec/PIGTURE_WORKLOAD.md` for the full pattern.
 
 ### Before Any Work
 Read `spec/SUPERVISOR.md` — single source of truth for build decisions.
@@ -19,6 +44,7 @@ Read `spec/SUPERVISOR.md` — single source of truth for build decisions.
 5. `spec/TESTS.md` — Unit and integration test specifications (0–7)
 6. `spec/TESTS_UI.md` — Test specifications (8–12)
 7. `spec/CPIG_WORKLOAD.md` — Conventions for the CPig regression workload (Phase 13). Peer doc: `C:\Repos\CPig\spec\CANARY.md`.
+8. `spec/PIGTURE_WORKLOAD.md` — Conventions for the Pigture render workload. Peer doc: `C:\Repos\Pigture\spec\PEERS.md`.
 
 ### Key Rules
 - **Namespace**: `Canary` (core + harness), `Canary.Agent` (shared), `Canary.Agent.*` (per-app)
