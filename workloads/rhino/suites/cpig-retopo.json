@@ -1,0 +1,25 @@
+{
+  "name": "cpig-retopo",
+  "description": "Retopo sprint regression \u2014 5-stage pipeline + Phase 4 alts + topology surgery (cpig-34..52). Same shared Rhino runMode as the main cpig suite.",
+  "tests": [
+    "cpig-34-retopo-constrain",
+    "cpig-35-sizing-field-uniform",
+    "cpig-36-sizing-field-curvature",
+    "cpig-37-cross-field-instant",
+    "cpig-38-patch-layout-trivial",
+    "cpig-39-quad-extract-instant",
+    "cpig-40-patch-layout-motorcycle",
+    "cpig-41-quad-extract-harmonic",
+    "cpig-42-quad-mesh-attribute",
+    "cpig-43-quad-mesh-frames",
+    "cpig-44-patch-explode",
+    "cpig-45-sizing-field-geodesic",
+    "cpig-46-sizing-field-from-colors",
+    "cpig-47-sizing-field-from-volumetric",
+    "cpig-48-sizing-field-combine",
+    "cpig-49-cross-field-polyvector",
+    "cpig-50-patch-layout-voronoi",
+    "cpig-51-field-pair-cancel",
+    "cpig-52-layout-straighten"
+  ]
+}
