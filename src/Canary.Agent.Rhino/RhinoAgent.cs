@@ -196,22 +196,125 @@ public sealed class RhinoAgent : ICanaryAgent
 
     private static AgentResponse HandleSetViewport(Dictionary<string, string> parameters)
     {
-        var view = RhinoDoc.ActiveDoc?.Views.ActiveView;
+        var doc = RhinoDoc.ActiveDoc;
+        if (doc == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active document." };
+        }
+
+        // Diagnostic: log all viewport names + persist to a file so the
+        // harness can inspect what the agent saw, even though RhinoApp.WriteLine
+        // surfaces only inside Rhino's command line.
+        try
+        {
+            var allViews = string.Join(", ", System.Linq.Enumerable.Select(
+                doc.Views, v => $"{v.ActiveViewport.Name}({(v == doc.Views.ActiveView ? "active" : "_")})"));
+            RhinoApp.WriteLine($"[Canary] SetViewport — views: {allViews}");
+            try
+            {
+                System.IO.File.AppendAllText(@"C:\Repos\CPig\logs\agent_viewport_diag.log",
+                    $"{DateTime.Now:HH:mm:ss} SetViewport — views: {allViews}\n");
+            }
+            catch { }
+        }
+        catch { }
+
+        // Activate a viewport whose name matches the requested projection name
+        // (Rhino's default view names "Top"/"Front"/"Right"/"Perspective"
+        // double as projection labels). Then maximize so the captured bitmap
+        // covers only that one view rather than a quadrant of the 4-view
+        // layout. RhinoScreenCapture grabs doc.Views.ActiveView — without
+        // this activation step the default Top view stays active and
+        // captures an empty CPlane.
+        if (parameters.TryGetValue("projection", out var projection))
+        {
+            var pl = projection.ToLowerInvariant();
+            string? viewName = pl switch
+            {
+                "perspective" => "Perspective",
+                "top"         => "Top",
+                "front"       => "Front",
+                "right"       => "Right",
+                _             => null,
+            };
+            if (viewName != null)
+            {
+                bool activated = false;
+                foreach (var v in doc.Views)
+                {
+                    if (string.Equals(v.ActiveViewport.Name, viewName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        doc.Views.ActiveView = v;
+                        // Force activation by setting the viewport active +
+                        // running RhinoScript SetActiveView. The C# property
+                        // setter alone isn't enough when no view was active
+                        // before — Rhino expects a focus event.
+                        try
+                        {
+                            RhinoApp.RunScript($"_-SetActiveView _{viewName} _Enter", echo: false);
+                        }
+                        catch { }
+                        activated = doc.Views.ActiveView == v;
+                        RhinoApp.WriteLine($"[Canary] SetViewport — '{viewName}' activated={activated}");
+                        try
+                        {
+                            System.IO.File.AppendAllText(@"C:\Repos\CPig\logs\agent_viewport_diag.log",
+                                $"  -> activated '{viewName}': result={(doc.Views.ActiveView?.ActiveViewport.Name ?? "null")}\n");
+                        }
+                        catch { }
+                        break;
+                    }
+                }
+                if (!activated)
+                    RhinoApp.WriteLine($"[Canary] SetViewport — no viewport named '{viewName}' found");
+            }
+        }
+
+        // Maximize the (now-active) viewport unconditionally — screenshots are
+        // a single view's bitmap, never a multi-pane layout.
+        try { RhinoApp.RunScript("_-MaxViewport _Enter", echo: false); }
+        catch (Exception mex) { RhinoApp.WriteLine($"[Canary] MaxViewport: {mex.Message}"); }
+
+        // Recenter the camera. Tests typically build geometry via Grasshopper
+        // (post-setup), so doc geometry is empty here — but a default
+        // Perspective camera looks at the world origin from a fixed distance,
+        // which may be too close or too far for downstream-built content.
+        // Setting the camera to a known orbital position provides a
+        // predictable starting point. ZoomExtents in WaitForGrasshopperSolution's
+        // quiesce branch then re-frames once geometry exists.
+        try
+        {
+            var v = doc.Views.ActiveView;
+            if (v != null)
+            {
+                var avp = v.ActiveViewport;
+                avp.SetCameraLocation(new global::Rhino.Geometry.Point3d(40, -40, 30), updateTargetLocation: false);
+                avp.SetCameraTarget(global::Rhino.Geometry.Point3d.Origin, updateCameraLocation: false);
+                v.Redraw();
+            }
+        }
+        catch (Exception cex) { RhinoApp.WriteLine($"[Canary] camera reset: {cex.Message}"); }
+
+        try
+        {
+            System.IO.File.AppendAllText(@"C:\Repos\CPig\logs\agent_viewport_diag.log",
+                $"  -> after MaxViewport+camera: active={(doc.Views.ActiveView?.ActiveViewport.Name ?? "null")}\n");
+        }
+        catch { }
+
+        var view = doc.Views.ActiveView;
         if (view == null)
         {
-            return new AgentResponse
-            {
-                Success = false,
-                Message = "No active viewport."
-            };
+            return new AgentResponse { Success = false, Message = "No active viewport." };
         }
 
         var vp = view.ActiveViewport;
 
-        // Set projection
-        if (parameters.TryGetValue("projection", out var projection))
+        // Set projection (mutates the projection of the now-active viewport, in
+        // case the named-view activation above couldn't find a match).
+        if (parameters.TryGetValue("projection", out var projection2))
         {
-            switch (projection.ToLowerInvariant())
+            switch (projection2.ToLowerInvariant())
             {
                 case "perspective":
                     vp.ChangeToPerspectiveProjection(true, 50.0);
