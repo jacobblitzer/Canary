@@ -86,7 +86,7 @@ internal sealed class ImageViewerForm : Form
         {
             ForeColor = Color.FromArgb(220, 220, 220)
         };
-        fitBtn.Click += (_, _) => SetZoom(1.0f);
+        fitBtn.Click += (_, _) => FitToWindow(scrollPanel);
 
         toolbar.Items.Add(zoomInBtn);
         toolbar.Items.Add(zoomOutBtn);
@@ -116,19 +116,32 @@ internal sealed class ImageViewerForm : Form
         {
             if (File.Exists(path))
             {
-                // Load without locking the file
-                using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                // Load into memory copy — avoids file lock and stream-after-dispose
                 _pictureBox.Image?.Dispose();
-                _pictureBox.Image = Image.FromStream(stream);
-                ApplyZoom();
-                Text = $"Image Viewer — {Path.GetFileName(path)}";
+                using (var original = Image.FromFile(path))
+                    _pictureBox.Image = new Bitmap(original);
+                FitToWindow(_pictureBox.Parent as Panel);
+                Text = $"Image Viewer \u2014 {Path.GetFileName(path)}";
             }
         }
         catch
         {
             _pictureBox.Image = null;
-            Text = "Image Viewer — Failed to load";
+            Text = "Image Viewer \u2014 Failed to load";
         }
+    }
+
+    private void FitToWindow(Panel? container)
+    {
+        if (_pictureBox.Image == null || container == null)
+        {
+            ApplyZoom();
+            return;
+        }
+        float scaleX = (float)container.ClientSize.Width / _pictureBox.Image.Width;
+        float scaleY = (float)container.ClientSize.Height / _pictureBox.Image.Height;
+        float fit = Math.Min(scaleX, scaleY);
+        SetZoom(Math.Clamp(fit, 0.1f, 1.0f));
     }
 
     private void SetZoom(float zoom)

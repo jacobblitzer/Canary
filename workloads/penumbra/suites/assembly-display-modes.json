@@ -1,0 +1,18 @@
+{
+  "name": "assembly-display-modes",
+  "description": "All display modes on the Mechanical Assembly scene (eval, viz, wireframe, point cloud)",
+  "tests": [
+    "assembly-default",
+    "assembly-eval-tape",
+    "assembly-viz-normal",
+    "assembly-viz-field-id",
+    "assembly-viz-cascades",
+    "assembly-viz-centroids",
+    "assembly-viz-aabbs",
+    "assembly-fieldAABBs-overlay",
+    "assembly-atomAABBs-overlay",
+    "assembly-wire-cascades",
+    "assembly-wire-bricks",
+    "assembly-point-cloud"
+  ]
+}

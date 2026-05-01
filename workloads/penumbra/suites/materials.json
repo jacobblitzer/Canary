@@ -1,0 +1,11 @@
+{
+  "name": "materials",
+  "description": "Phase 9 material presets — metal, wood, marble, zebra, damascus on SDF Teapot",
+  "tests": [
+    "teapot-material-metal",
+    "teapot-material-wood",
+    "teapot-material-marble",
+    "teapot-material-zebra",
+    "teapot-material-damascus"
+  ]
+}

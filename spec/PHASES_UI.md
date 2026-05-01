@@ -1,4 +1,4 @@
-# PHASES_UI.md — Canary Build Phases 8–12 (GUI + Refactor)
+# PHASES_UI.md — Canary Build Phases 8–13 (GUI + Refactor + CPig Workload)
 
 ## Phase 8: Rhino .rhp Fix + Canary.Core Extraction
 **Goal:** Fix the Rhino plugin to output `.rhp`, and extract all shared logic from `Canary.Harness` into a new `Canary.Core` library so both the CLI and GUI can share it.
@@ -203,19 +203,22 @@
 - Extend test JSON schema: `actions[]` and `asserts[]` arrays (see `spec/CPIG_WORKLOAD.md` for shape).
 - `actions[]` runs sequentially before checkpoint capture.
 - `asserts[]` runs after each checkpoint.
-- Implement in `Canary.Harness/TestRunner.cs`. New deserialization classes in `Canary.Core/Models/`.
-- 3 new assert kinds: `PanelEquals`, `PanelContains`, `PanelDoesNotContain`. Each calls `GrasshopperGetPanelText` then string-compares.
+- Implement in `Canary.Core/Orchestration/TestRunner.cs`. Deserialization classes in `Canary.Core/Config/TestDefinition.cs` (`TestAction`, `TestAssert`).
+- 3 new assert kinds: `PanelEquals`, `PanelContains`, `PanelDoesNotContain`. Each calls `GrasshopperGetPanelText` then string-compares. Unknown types fail with typo-hint message.
+- **Status:** Landed 2026-04-26. `TestRunner.RunTestAsync` executes `actions[]` before checkpoints, evaluates `asserts[]` after each checkpoint via `EvaluateClientAssertAsync`. Build clean, 0 warnings.
 
 ### Checkpoint 13.3: Loader fixture
 - Build `workloads/rhino/fixtures/cpig_slop_loader.gh` with a Slop component, `JsonPath` panel, `Build` toggle, Crash Guard, Log Hub, three output panels (`SlopLog`, `SlopSuccess`, `SlopCount`).
 - Set deterministic viewport projection + display mode at the document level.
 - Save with both Rhino and Grasshopper closed cleanly.
 - Verify it loads + builds the smoke test (`16_field_evaluate.json`) end-to-end manually.
+- **Status:** Landed 2026-04-26. Fixture file is 21KB. Also includes `cpig_slop_loader_generator.json` template.
 
 ### Checkpoint 13.4: Bulk-generate test JSONs
 - Helper script `scripts/cpig-test-from-slop.ps1`: reads a Slop JSON file path, emits a matching `cpig-NN-slug.json` test definition under `workloads/rhino/tests/`.
 - Run for all 17 Slop tests in `CPig/research/slop_tests/`.
 - First run records candidates only (no baselines); review, approve manually.
+- **Status:** Landed 2026-04-26. Script is fully implemented and idempotent. All 17 test JSONs generated and committed.
 
 ### Checkpoint 13.5: Initial baselines
 - Run `canary run --workload rhino --filter "cpig-*"` end-to-end.

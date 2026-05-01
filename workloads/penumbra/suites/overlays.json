@@ -1,0 +1,13 @@
+{
+  "name": "overlays",
+  "description": "Debug overlay renders — bricks, cascades, AABBs, point clouds",
+  "tests": [
+    "atlas-blob-bricks-overlay",
+    "atlas-blob-cascades-overlay",
+    "assembly-fieldAABBs-overlay",
+    "assembly-atomAABBs-overlay",
+    "teapot-bricks-overlay",
+    "multi-field-point-cloud",
+    "stress-test-cascades-overlay"
+  ]
+}

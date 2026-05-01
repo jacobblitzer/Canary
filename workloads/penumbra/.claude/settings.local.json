@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(powershell -File -:*)",
+      "Bash(powershell:*)",
+      "Bash(xargs:*)",
+      "Bash(dir:*)",
+      "Bash(dotnet run:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run build:core:*)",
+      "Bash(npx vitest run --reporter=verbose)",
+      "Bash(npx vitest:*)",
+      "Bash(start http://localhost:3000)"
+    ]
+  }
+}

@@ -4,20 +4,24 @@ using Canary.Orchestration;
 namespace Canary.UI.Services;
 
 /// <summary>
-/// Scans a workloads directory and loads all workload configs and test definitions.
+/// Scans a workloads directory and loads all workload configs, suites, test definitions, and recordings.
 /// </summary>
 public sealed class WorkloadExplorer
 {
     /// <summary>
-    /// A discovered workload with its config and test definitions.
+    /// A discovered workload with its config, suites, test definitions, and recordings.
     /// </summary>
     public sealed class WorkloadEntry
     {
         public required WorkloadConfig Config { get; init; }
+        public required List<SuiteDefinition> Suites { get; init; }
         public required List<TestDefinition> Tests { get; init; }
         public required List<string> Recordings { get; init; }
         public required string Directory { get; init; }
     }
+
+    /// <summary>Event raised when a workload directory has an invalid config.</summary>
+    public event Action<string>? LoadWarning;
 
     /// <summary>
     /// Discover all workloads in the given directory.
@@ -42,6 +46,17 @@ public sealed class WorkloadExplorer
                 var workloadName = Path.GetFileName(dir);
                 var tests = await TestDiscovery.DiscoverTestsAsync(workloadsDir, workloadName).ConfigureAwait(false);
 
+                // Discover suites
+                List<SuiteDefinition> suites;
+                try
+                {
+                    suites = await TestDiscovery.DiscoverSuitesAsync(workloadsDir, workloadName).ConfigureAwait(false);
+                }
+                catch
+                {
+                    suites = new List<SuiteDefinition>();
+                }
+
                 // Discover recordings
                 var recordings = new List<string>();
                 var recordingsDir = Path.Combine(dir, "recordings");
@@ -55,14 +70,16 @@ public sealed class WorkloadExplorer
                 {
                     Config = config,
                     Directory = dir,
+                    Suites = suites,
                     Tests = tests,
                     Recordings = recordings
                 });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"WorkloadExplorer error: {ex}");
-                // Skip workloads with invalid configs
+                var msg = $"Skipped '{Path.GetFileName(dir)}': {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"WorkloadExplorer: {msg}");
+                LoadWarning?.Invoke(msg);
             }
         }
 

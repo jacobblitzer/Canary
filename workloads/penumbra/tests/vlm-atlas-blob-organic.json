@@ -1,0 +1,31 @@
+{
+  "name": "vlm-atlas-blob-organic",
+  "workload": "penumbra",
+  "description": "VLM oracle: verify 12-Sphere Blob renders as organic smooth shape",
+  "setup": {
+    "scene": { "index": 1, "sceneName": "12-Sphere Blob" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front-organic",
+      "mode": "vlm",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 800,
+      "description": "A 3D rendered organic blobby shape against a dark background. The shape should appear smooth and rounded, like a cluster of merged spheres forming one continuous blob. It should have a blue/cool-toned material with smooth shading and no sharp edges. The silhouette should be irregular and organic — not a perfect sphere, not a box. The surface normals should create smooth shading gradients without hard discontinuities or visible grid/voxel artifacts."
+    },
+    {
+      "name": "side-silhouette",
+      "mode": "vlm",
+      "camera": { "azimuth": 90, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 800,
+      "description": "Side view of the organic blob. The silhouette should be bumpy and irregular — showing merged lobes from the constituent spheres. The surface should be smooth (no brick-edge artifacts or grid lines). The blob should be roughly centered in the viewport and occupy a substantial portion of the frame. Material should be blue/cool-toned."
+    }
+  ]
+}

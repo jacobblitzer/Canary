@@ -1,0 +1,31 @@
+{
+  "name": "vlm-teapot-shape",
+  "workload": "penumbra",
+  "description": "VLM oracle: verify SDF Teapot renders recognizable teapot silhouette",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot (atlas CSG)" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front-recognizable",
+      "mode": "vlm",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 10 },
+      "stabilizeMs": 500,
+      "description": "A 3D rendered teapot (Utah teapot style) against a dark background. The teapot should have a clearly identifiable body (round pot), a spout extending from one side, a handle on the opposite side forming a loop/arch, and a lid on top with a small knob. The material should be cream, beige, or light-colored. The overall form should be smooth and organic — this is a smooth-union SDF composition, so joints between body/spout/handle/lid should blend smoothly rather than having sharp seams."
+    },
+    {
+      "name": "three-quarter-completeness",
+      "mode": "vlm",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 10 },
+      "stabilizeMs": 500,
+      "description": "Three-quarter view of the SDF teapot. All major parts should be visible: the round body, the spout (pointing roughly toward the viewer or to the side), the handle (a curved loop on the opposite side from the spout), and the lid with knob on top. No parts should be missing, clipped, or rendered as black/transparent holes. The smooth-union joints should be visible as gentle bulges rather than sharp intersections."
+    }
+  ]
+}

@@ -77,97 +77,101 @@ Canary/
 │   └── TESTS.md
 │
 ├── src/
-│   ├── Canary.Harness/               # Console app — the orchestrator
-│   │   ├── Canary.Harness.csproj
-│   │   ├── Program.cs                # CLI entry point, Ctrl+C handler
-│   │   ├── Cli/
-│   │   │   ├── RunCommand.cs         # `canary run` verb
-│   │   │   ├── RecordCommand.cs      # `canary record` verb
-│   │   │   ├── ApproveCommand.cs     # `canary approve` verb
-│   │   │   └── ReportCommand.cs      # `canary report` verb
-│   │   ├── Runner/
-│   │   │   ├── TestRunner.cs         # Orchestrates test execution
-│   │   │   ├── TestDefinition.cs     # Deserializes test JSON
-│   │   │   └── TestResult.cs         # Pass/fail/crash result model
-│   │   ├── Input/
-│   │   │   ├── InputRecorder.cs      # Records mouse/keyboard to JSON
-│   │   │   ├── InputReplayer.cs      # Replays recorded input via SendInput
-│   │   │   ├── InputEvent.cs         # Mouse/keyboard event data model
-│   │   │   └── ViewportLocator.cs    # Finds target window, converts coords
+│   ├── Canary.Core/                   # Shared library — extracted Phase 8
+│   │   ├── Canary.Core.csproj         # net8.0-windows, ImageSharp
+│   │   ├── ITestLogger.cs             # Logging abstraction
+│   │   ├── Config/
+│   │   │   ├── TestDefinition.cs      # Test JSON deserialization (incl. TestAction, TestAssert)
+│   │   │   └── WorkloadConfig.cs
 │   │   ├── Comparison/
-│   │   │   ├── PixelDiffComparer.cs  # Per-pixel comparison with tolerance
-│   │   │   ├── SsimComparer.cs       # Structural similarity (secondary)
-│   │   │   ├── ComparisonResult.cs   # Score + diff image path
-│   │   │   └── CompositeBuilder.cs   # Stitches baseline|candidate|diff
-│   │   ├── Reporting/
-│   │   │   ├── HtmlReportGenerator.cs
-│   │   │   └── JUnitReportGenerator.cs
-│   │   └── Lifecycle/
-│   │       ├── AppLauncher.cs        # Starts/stops target applications
-│   │       ├── Watchdog.cs           # Heartbeat monitor, kill on timeout
-│   │       └── ProcessManager.cs     # Tracks child processes for cleanup
+│   │   │   ├── PixelDiffComparer.cs
+│   │   │   ├── SsimComparer.cs
+│   │   │   ├── ComparisonResult.cs
+│   │   │   └── CompositeBuilder.cs
+│   │   ├── Input/
+│   │   │   ├── InputRecorder.cs
+│   │   │   ├── InputReplayer.cs
+│   │   │   ├── InputEvent.cs
+│   │   │   └── ViewportLocator.cs
+│   │   ├── Orchestration/
+│   │   │   ├── TestRunner.cs          # Runs actions[], checkpoints, asserts[]
+│   │   │   ├── TestResult.cs
+│   │   │   ├── TestDiscovery.cs
+│   │   │   ├── BaselineManager.cs
+│   │   │   ├── AppLauncher.cs
+│   │   │   ├── Watchdog.cs
+│   │   │   └── ProcessManager.cs
+│   │   └── Reporting/
+│   │       ├── HtmlReportGenerator.cs
+│   │       └── JUnitReportGenerator.cs
+│   │
+│   ├── Canary.Harness/               # Console app — thin CLI shell
+│   │   ├── Canary.Harness.csproj     # References Canary.Core
+│   │   ├── Program.cs                # CLI entry point, Ctrl+C handler
+│   │   ├── ConsoleTestLogger.cs      # ITestLogger → console
+│   │   └── Cli/
+│   │       ├── RunCommand.cs
+│   │       ├── RecordCommand.cs
+│   │       ├── ApproveCommand.cs
+│   │       └── ReportCommand.cs
+│   │
+│   ├── Canary.UI/                     # WinForms GUI — Phase 9–12
+│   │   ├── Canary.UI.csproj          # WinExe, net8.0-windows
+│   │   ├── Program.cs
+│   │   ├── MainForm.cs
+│   │   ├── Services/
+│   │   │   └── WorkloadExplorer.cs
+│   │   ├── Controls/
+│   │   │   ├── ResultsViewerControl.cs
+│   │   │   ├── TestEditorControl.cs
+│   │   │   ├── WorkloadEditorControl.cs
+│   │   │   ├── TestRunnerPanel.cs
+│   │   │   └── RecordingPanel.cs
+│   │   └── GuiTestLogger.cs
 │   │
 │   ├── Canary.Agent/                  # Shared library — agent interface + IPC
-│   │   ├── Canary.Agent.csproj
-│   │   ├── ICanaryAgent.cs           # Interface: Execute, Capture, Heartbeat
-│   │   ├── AgentServer.cs            # Named pipe server (runs inside app)
-│   │   ├── HarnessClient.cs          # Named pipe client (runs in harness)
+│   │   ├── Canary.Agent.csproj       # net8.0;net48 multi-target
+│   │   ├── ICanaryAgent.cs
+│   │   ├── AgentServer.cs
+│   │   ├── HarnessClient.cs
 │   │   └── Protocol/
-│   │       ├── RpcMessage.cs         # JSON-RPC request/response models
-│   │       ├── RpcMethods.cs         # Method name constants
-│   │       └── ScreenshotResult.cs   # Screenshot path + metadata
+│   │       ├── RpcMessage.cs
+│   │       ├── RpcMethods.cs
+│   │       └── ScreenshotResult.cs
 │   │
-│   └── Canary.Agent.Rhino/           # Rhino-specific agent plugin
-│       ├── Canary.Agent.Rhino.csproj
-│       ├── CanaryRhinoPlugin.cs      # Plugin loader, agent startup
-│       ├── RhinoAgent.cs             # Implements ICanaryAgent for Rhino
-│       └── RhinoScreenCapture.cs     # ViewCapture.CaptureToBitmap wrapper
+│   └── Canary.Agent.Rhino/           # Rhino-specific agent plugin (.rhp)
+│       ├── Canary.Agent.Rhino.csproj  # net48, TargetExt=.rhp
+│       ├── CanaryRhinoPlugin.cs
+│       ├── RhinoAgent.cs             # GH actions: SetSlider, SetToggle, SetPanelText, GetPanelText
+│       └── RhinoScreenCapture.cs
+│
+├── scripts/
+│   └── cpig-test-from-slop.ps1       # Generates cpig-NN-slug.json from Slop JSONs
 │
 ├── tests/
-│   ├── Canary.Tests/                  # Unit + integration tests
-│   │   ├── Canary.Tests.csproj
-│   │   ├── Comparison/
-│   │   │   ├── PixelDiffComparerTests.cs
-│   │   │   ├── SsimComparerTests.cs
-│   │   │   └── CompositeBuilderTests.cs
-│   │   ├── Input/
-│   │   │   ├── InputEventSerializationTests.cs
-│   │   │   ├── ViewportLocatorTests.cs
-│   │   │   └── CoordinateNormalizationTests.cs
-│   │   ├── Protocol/
-│   │   │   ├── RpcMessageTests.cs
-│   │   │   └── NamedPipeRoundtripTests.cs
-│   │   ├── Runner/
-│   │   │   ├── TestDefinitionParsingTests.cs
-│   │   │   └── TestRunnerTests.cs
-│   │   └── TestData/
-│   │       ├── baseline_red_square.png
-│   │       ├── candidate_red_square.png
-│   │       ├── candidate_shifted.png
-│   │       └── sample_recording.json
-│   │
-│   └── Canary.Tests.Integration/      # Tests requiring a running app
-│       └── Canary.Tests.Integration.csproj
+│   ├── Canary.Tests/
+│   │   └── ...                        # 72 unit tests
+│   └── Canary.Tests.Integration/
+│       └── ...
 │
-├── workloads/                         # Test definitions per project
-│   ├── pigment/
-│   │   ├── workload.json              # Workload config (app path, agent type)
+├── workloads/
+│   ├── rhino/
+│   │   ├── workload.json
+│   │   ├── fixtures/
+│   │   │   ├── cpig_slop_loader.gh            # CPig test loader (Phase 13)
+│   │   │   └── cpig_slop_loader_generator.json
 │   │   ├── tests/
-│   │   │   ├── sculpt-standard-undo.json
-│   │   │   └── paint-red-on-white.json
-│   │   ├── recordings/
-│   │   │   ├── sculpt-standard-undo.input.json
-│   │   │   └── paint-red-on-white.input.json
-│   │   ├── baselines/
-│   │   │   ├── sculpt-standard-undo/
-│   │   │   │   ├── after_stroke.png
-│   │   │   │   └── after_undo.png
-│   │   │   └── paint-red-on-white/
-│   │   │       └── after_paint.png
+│   │   │   ├── cpig-00-smoke-ping.json        # 17 CPig tests (cpig-00 through cpig-16)
+│   │   │   ├── ...
+│   │   │   ├── cpig-16-field-evaluate.json
+│   │   │   ├── smoke-test.json
+│   │   │   └── salimon.json
 │   │   └── results/                   # gitignored — populated by test runs
-│   ├── qualia/
+│   ├── pigment/
 │   │   └── ...
-│   └── penumbra/
+│   ├── penumbra/
+│   │   └── ...
+│   └── qualia/
 │       └── ...
 │
 └── .gitignore
@@ -338,6 +342,32 @@ Canary/
 
 ---
 
+### Phase 13: CPig Regression Workload
+**Expected Artifacts:**
+- [ ] `RhinoAgent.cs` handles `GrasshopperSetToggle`, `GrasshopperSetPanelText`, `GrasshopperGetPanelText`
+- [ ] `TestDefinition.cs` deserializes `actions[]` (`TestAction`) and `asserts[]` (`TestAssert`)
+- [ ] `TestRunner.cs` executes `actions[]` before checkpoints, evaluates `asserts[]` after each checkpoint
+- [ ] Three assert types implemented: `PanelEquals`, `PanelContains`, `PanelDoesNotContain`
+- [ ] `workloads/rhino/fixtures/cpig_slop_loader.gh` built with Slop, JsonPath, Build, CrashGuard, LogHub, 3 output panels
+- [ ] `scripts/cpig-test-from-slop.ps1` generates test JSONs from Slop definitions
+- [ ] 17 `cpig-*` test JSONs committed under `workloads/rhino/tests/`
+- [ ] All 17 tests run end-to-end without harness crash
+- [ ] `cpig-00-smoke-ping` passes pixel diff
+- [ ] Crash-related tests (`cpig-07`, `cpig-09`, `cpig-16`) confirm CPig mitigations hold (Watchdog does NOT fire)
+- [ ] Baselines approved and committed
+
+**Regression Check:**
+- All Phase 0–12 tests still pass
+- Existing rhino workload tests (`smoke-test`, `salimon`) unaffected
+
+**Known Pitfalls:**
+- CPig `cpig_native.dll` must be loadable by Rhino on the test machine — verify DLL path in `NativeLibrary.cs`
+- Slop JSON paths in test definitions use absolute paths (`C:/Repos/CPig/...`) — must match the machine's layout
+- New machine environments may have different display drivers, affecting pixel diffs — re-approve baselines when switching machines
+- Three CPig components (Field Evaluate, Mesh Shell, Alpha Wrap) have mitigated-but-not-root-caused native crashes — if Watchdog fires during these tests, capture `cpig_debug.log` and `%LOCALAPPDATA%\CPig\trace.log` before investigating
+
+---
+
 ## Dependency Matrix
 
 | Component | Depends On | Phase Introduced |
@@ -358,6 +388,12 @@ Canary/
 | HtmlReportGenerator | — (string templates) | 5 |
 | CanaryRhinoPlugin | RhinoCommon, Canary.Agent | 6 |
 | RhinoAgent | RhinoCommon, Canary.Agent | 6 |
+| Canary.Core | SixLabors.ImageSharp, Canary.Agent | 8 |
+| Canary.UI (WinForms) | Canary.Core, Canary.Agent | 9 |
+| BaselineManager | Canary.Core | 8 |
+| TestAction / TestAssert | Canary.Core.Config | 13 |
+| cpig_slop_loader.gh | Slop, CPig, Grasshopper | 13 |
+| cpig-test-from-slop.ps1 | CPig/research/slop_tests/ | 13 |
 
 ---
 

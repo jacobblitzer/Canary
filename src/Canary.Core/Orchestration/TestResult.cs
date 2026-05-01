@@ -25,6 +25,11 @@ public sealed class CheckpointResult
     public string? CandidatePath { get; set; }
     public string? DiffImagePath { get; set; }
     public string? ErrorMessage { get; set; }
+
+    // VLM oracle fields — populated only for mode="vlm" checkpoints
+    public string? VlmReasoning { get; set; }
+    public double VlmConfidence { get; set; }
+    public string? VlmDescription { get; set; }
 }
 
 /// <summary>

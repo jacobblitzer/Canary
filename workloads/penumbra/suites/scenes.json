@@ -1,0 +1,16 @@
+{
+  "name": "scenes",
+  "description": "All 10 scene default renders and orbits",
+  "tests": [
+    "tape-csg-orbit",
+    "atlas-blob-orbit",
+    "multi-field-orbit",
+    "stress-test-orbit",
+    "hybrid-default",
+    "cornell-box-default",
+    "teapot-default",
+    "terrain-default",
+    "assembly-default",
+    "columns-default"
+  ]
+}

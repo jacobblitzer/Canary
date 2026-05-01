@@ -37,6 +37,8 @@ internal sealed class WorkloadEditorControl : UserControl
     private readonly Button _probeButton;
     private readonly Label _probeStatusLabel;
 
+    private bool _disposed;
+
     public event Action<string>? SaveRequested;
 
     public WorkloadEditorControl()
@@ -391,6 +393,12 @@ internal sealed class WorkloadEditorControl : UserControl
         SaveRequested?.Invoke(json);
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        _disposed = true;
+        base.Dispose(disposing);
+    }
+
     private async void OnProbeInstance(object? sender, EventArgs e)
     {
         _probeButton.Enabled = false;
@@ -403,6 +411,8 @@ internal sealed class WorkloadEditorControl : UserControl
             var cdpPort = (int)_cdpPortBox.Value;
 
             var result = await PenumbraInstanceProbe.ProbeAsync(vitePort, cdpPort).ConfigureAwait(true);
+
+            if (_disposed) return;
 
             if (result.PenumbraReady)
             {

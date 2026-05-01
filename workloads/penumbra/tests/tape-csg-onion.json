@@ -1,0 +1,27 @@
+{
+  "name": "tape-csg-onion",
+  "workload": "penumbra",
+  "description": "Box-minus-sphere CSG — onion layers (2 layers, thickness 0.15)",
+  "setup": {
+    "scene": { "index": 0, "sceneName": "Box - Sphere" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetFieldEffect(window.__canaryGetFields()[0].id, {onionLayers:2, onionThickness:0.15})"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}

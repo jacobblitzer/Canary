@@ -1,0 +1,31 @@
+{
+  "name": "vlm-tape-csg-geometry",
+  "workload": "penumbra",
+  "description": "VLM oracle: verify Box-Sphere CSG scene renders correct geometry",
+  "setup": {
+    "scene": { "index": 0, "sceneName": "Box - Sphere" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front-geometry",
+      "mode": "vlm",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "description": "A 3D rendered scene against a dark background. The main object is a rectangular box with a spherical cavity cut out of it (boolean CSG difference). The box should have warm orange/amber material coloring. The spherical cutout should be clearly visible as a concave hemispherical depression on the front face, with sharp boolean edges where the sphere intersects the box faces. The object should be lit with visible shading across its faces."
+    },
+    {
+      "name": "three-quarter-depth",
+      "mode": "vlm",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 500,
+      "description": "A 3D rendered box-minus-sphere CSG object viewed from a three-quarter angle (roughly 45 degrees from front, slightly elevated). The spherical cavity should be visible as a concave cutout. At least two faces of the box should be visible, showing distinct shading. The object should have warm orange/amber material. The background should be dark. No rendering artifacts, missing faces, or black holes should be present."
+    }
+  ]
+}

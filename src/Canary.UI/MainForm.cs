@@ -21,8 +21,12 @@ public sealed class MainForm : Form
     private readonly ContextMenuStrip _workloadContextMenu;
     private readonly ContextMenuStrip _testContextMenu;
     private readonly ContextMenuStrip _recordingContextMenu;
+    private readonly ContextMenuStrip _suiteContextMenu;
     private readonly WorkloadExplorer _explorer = new();
+    private readonly ResultsHistory _resultsHistory = new();
     private AbortHotkey? _abortHotkey;
+    private TestRunnerPanel? _activeRunnerPanel;
+    private ToolStripButton? _closeWorkloadBtn;
 
     private string? _workloadsDir;
 
@@ -52,9 +56,12 @@ public sealed class MainForm : Form
             ShowLines = true,
             ShowRootLines = true,
             ItemHeight = 24,
-            AllowDrop = true
+            AllowDrop = true,
+            ShowNodeToolTips = true
         };
         _treeView.NodeMouseClick += OnTreeNodeClick;
+        _treeView.NodeMouseDoubleClick += OnTreeNodeDoubleClick;
+        _treeView.AfterSelect += OnTreeNodeSelected;
         _treeView.DragEnter += OnTreeDragEnter;
         _treeView.DragDrop += OnTreeDragDrop;
 
@@ -70,10 +77,11 @@ public sealed class MainForm : Form
         {
             Dock = DockStyle.Fill,
             Orientation = Orientation.Vertical,
-            SplitterDistance = 250,
-            FixedPanel = FixedPanel.Panel1,
+            SplitterDistance = 420,
+            Panel1MinSize = 300,
+            FixedPanel = FixedPanel.None,
             BackColor = Color.FromArgb(45, 45, 48),
-            SplitterWidth = 3
+            SplitterWidth = 8
         };
 
         _splitContainer.Panel1.Controls.Add(_treeView);
@@ -105,6 +113,10 @@ public sealed class MainForm : Form
         _workloadContextMenu = BuildWorkloadContextMenu();
         _testContextMenu = BuildTestContextMenu();
         _recordingContextMenu = BuildRecordingContextMenu();
+        _suiteContextMenu = BuildSuiteContextMenu();
+
+        // Wire load warnings to status bar
+        _explorer.LoadWarning += msg => BeginInvoke(() => _statusLabel.Text = $"Warning: {msg}");
 
         // Layout
         Controls.Add(_splitContainer);
@@ -195,6 +207,7 @@ public sealed class MainForm : Form
         var menu = new ContextMenuStrip();
         menu.Items.Add("Run All Tests", null, (_, _) => OnRunTests(this, EventArgs.Empty));
         menu.Items.Add("Edit Config", null, (_, _) => OnEditWorkloadConfig());
+        menu.Items.Add("New Suite", null, (_, _) => OnNewSuite());
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Open in Explorer", null, (_, _) => OnOpenInExplorer());
         return menu;
@@ -205,6 +218,7 @@ public sealed class MainForm : Form
         var menu = new ContextMenuStrip();
         menu.Items.Add("Run Test", null, (_, _) => OnRunTests(this, EventArgs.Empty));
         menu.Items.Add("Edit Test", null, (_, _) => OnEditTest());
+        menu.Items.Add("Duplicate Test", null, (_, _) => OnDuplicateTest());
         menu.Items.Add("Approve", null, (_, _) => OnApprove(this, EventArgs.Empty));
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Delete", null, (_, _) => OnDeleteSelected());
@@ -223,6 +237,17 @@ public sealed class MainForm : Form
         return menu;
     }
 
+    private ContextMenuStrip BuildSuiteContextMenu()
+    {
+        var menu = new ContextMenuStrip();
+        menu.Items.Add("Run Suite", null, (_, _) => OnRunTests(this, EventArgs.Empty));
+        menu.Items.Add("Edit Suite", null, (_, _) => OnEditSuite());
+        menu.Items.Add("Approve All", null, (_, _) => OnApproveSuite());
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("Open in Explorer", null, (_, _) => OnOpenInExplorer());
+        return menu;
+    }
+
     private void OnTreeNodeClick(object? sender, TreeNodeMouseClickEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
@@ -231,11 +256,21 @@ public sealed class MainForm : Form
 
             if (e.Node.Tag is WorkloadExplorer.WorkloadEntry)
                 _workloadContextMenu.Show(_treeView, e.Location);
+            else if (e.Node.Tag is SuiteDefinition)
+                _suiteContextMenu.Show(_treeView, e.Location);
             else if (e.Node.Tag is TestDefinition)
                 _testContextMenu.Show(_treeView, e.Location);
             else if (e.Node.Tag is string path && path.EndsWith(".input.json", StringComparison.OrdinalIgnoreCase))
                 _recordingContextMenu.Show(_treeView, e.Location);
         }
+    }
+
+    private void OnTreeNodeDoubleClick(object? sender, TreeNodeMouseClickEventArgs e)
+    {
+        if (e.Node.Tag is TestDefinition)
+            OnEditTest();
+        else if (e.Node.Tag is SuiteDefinition)
+            OnRunTests(this, EventArgs.Empty);
     }
 
     #endregion
@@ -270,6 +305,30 @@ public sealed class MainForm : Form
         var deployBtn = new ToolStripButton("Deploy Agent") { ToolTipText = "Deploy Rhino agent plugin" };
         deployBtn.Click += OnDeployAgent;
 
+        var expandBtn = new ToolStripButton("Expand All") { ToolTipText = "Expand / Collapse tree" };
+        expandBtn.Click += (_, _) =>
+        {
+            if (expandBtn.Text == "Expand All")
+            {
+                _treeView.ExpandAll();
+                expandBtn.Text = "Collapse";
+            }
+            else
+            {
+                _treeView.CollapseAll();
+                foreach (TreeNode workloadNode in _treeView.Nodes)
+                    workloadNode.Expand();
+                expandBtn.Text = "Expand All";
+            }
+        };
+
+        _closeWorkloadBtn = new ToolStripButton("Close Workload")
+        {
+            ToolTipText = "Kill workload processes (Rhino, etc.)",
+            Enabled = false
+        };
+        _closeWorkloadBtn.Click += OnCloseWorkload;
+
         strip.Items.Add(openBtn);
         strip.Items.Add(new ToolStripSeparator());
         strip.Items.Add(runBtn);
@@ -279,17 +338,37 @@ public sealed class MainForm : Form
         strip.Items.Add(reportBtn);
         strip.Items.Add(new ToolStripSeparator());
         strip.Items.Add(deployBtn);
+        strip.Items.Add(_closeWorkloadBtn);
+        strip.Items.Add(new ToolStripSeparator());
+        strip.Items.Add(expandBtn);
 
         return strip;
     }
 
     #endregion
 
+    /// <summary>
+    /// Flush-saves any active <see cref="TestEditorControl"/> or
+    /// <see cref="SuiteEditorControl"/> before clearing the content panel,
+    /// so unsaved changes aren't silently lost on navigation.
+    /// </summary>
+    private void ClearContentPanel()
+    {
+        foreach (Control c in _contentPanel.Controls)
+        {
+            if (c is TestEditorControl editor)
+                editor.FlushSave();
+            else if (c is SuiteEditorControl suiteEditor)
+                suiteEditor.FlushSave();
+        }
+        _contentPanel.Controls.Clear();
+    }
+
     #region Actions
 
     private void ShowWelcome()
     {
-        _contentPanel.Controls.Clear();
+        ClearContentPanel();
         _contentPanel.Controls.Add(new WelcomePanel());
     }
 
@@ -319,136 +398,215 @@ public sealed class MainForm : Form
         // Determine workload + tests from the selected tree node
         WorkloadExplorer.WorkloadEntry? entry = null;
         IReadOnlyList<TestDefinition> testsToRun;
+        string? suiteName = null;
+        bool useSharedMode = false;
+        bool suiteKeepOpen = false;
 
         var selected = _treeView.SelectedNode;
 
-        if (selected?.Tag is TestDefinition selectedTest)
+        if (selected?.Tag is SuiteDefinition suiteDef)
         {
-            // Single test selected — walk up to find WorkloadEntry
+            // Suite node selected — resolve tests via discovery
+            entry = FindWorkloadEntry(selected);
+            if (entry == null) { _statusLabel.Text = "Cannot find workload for this suite."; return; }
+
+            try
+            {
+                var (suite, suiteTests) = await TestDiscovery.DiscoverTestsForSuiteAsync(
+                    _workloadsDir, entry.Config.Name, suiteDef.Name).ConfigureAwait(true);
+                testsToRun = suiteTests;
+                suiteName = suiteDef.Name;
+                suiteKeepOpen = suite.KeepOpen;
+                useSharedMode = suiteTests.Count > 0 && suiteTests.All(t => t.RunMode == "shared");
+            }
+            catch (Exception ex)
+            {
+                _statusLabel.Text = $"Failed to resolve suite '{suiteDef.Name}': {ex.Message}";
+                return;
+            }
+        }
+        else if (selected?.Tag is TestDefinition selectedTest)
+        {
+            // Single test selected — reload from disk so edits are picked up
             entry = FindWorkloadEntry(selected);
             if (entry == null) { _statusLabel.Text = "Cannot find workload for this test."; return; }
-            testsToRun = new[] { selectedTest };
+            try
+            {
+                var testPath = Path.Combine(entry.Directory, "tests", $"{selectedTest.Name}.json");
+                var freshDef = await TestDefinition.LoadAsync(testPath).ConfigureAwait(true);
+                testsToRun = new[] { freshDef };
+            }
+            catch (Exception ex)
+            {
+                _statusLabel.Text = $"Failed to reload test: {ex.Message}";
+                return;
+            }
         }
         else if (selected?.Tag is WorkloadExplorer.WorkloadEntry we)
         {
-            // Workload node selected — run all tests
+            // Workload node selected — reload all tests from disk
             entry = we;
-            testsToRun = entry.Tests;
+            try
+            {
+                testsToRun = await TestDiscovery.DiscoverTestsAsync(
+                    _workloadsDir, entry.Config.Name).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _statusLabel.Text = $"Failed to reload tests: {ex.Message}";
+                return;
+            }
         }
         else
         {
-            _statusLabel.Text = $"Select a specific test or workload node. (Selected: \"{selected?.Text ?? "none"}\")";
+            _statusLabel.Text = $"Select a test, suite, or workload node. (Selected: \"{selected?.Text ?? "none"}\")";
             return;
         }
 
         if (testsToRun.Count == 0)
         {
-            _statusLabel.Text = "No tests found for this workload.";
+            _statusLabel.Text = "No tests found for this selection.";
             return;
         }
 
         var testNames = testsToRun.Count == 1 ? testsToRun[0].Name : $"{testsToRun.Count} tests";
+        var suiteLabel = suiteName != null ? $" (suite: {suiteName})" : "";
 
         var panel = new TestRunnerPanel();
-        panel.RunCompleted += suite =>
-        {
-            // Show results viewer for the first test result after run completes
-            if (suite.TestResults.Count > 0)
-            {
-                var firstResult = suite.TestResults[0];
-                var viewer = new ResultsViewerControl();
-                viewer.LoadResult(firstResult);
-
-                // Wire approve/reject events to BaselineManager
-                if (_workloadsDir != null)
-                {
-                    viewer.ApproveCheckpointRequested += cpName =>
-                    {
-                        try
-                        {
-                            BaselineManager.ApproveCheckpoint(_workloadsDir, firstResult.Workload, firstResult.TestName, cpName);
-                            _statusLabel.Text = $"Approved baseline for checkpoint '{cpName}'.";
-                            viewer.LoadResult(firstResult);
-                        }
-                        catch (Exception ex) { _statusLabel.Text = $"Approve failed: {ex.Message}"; }
-                    };
-                    viewer.RejectCheckpointRequested += cpName =>
-                    {
-                        try
-                        {
-                            BaselineManager.RejectCheckpoint(_workloadsDir, firstResult.Workload, firstResult.TestName, cpName);
-                            _statusLabel.Text = $"Rejected checkpoint '{cpName}'.";
-                        }
-                        catch (Exception ex) { _statusLabel.Text = $"Reject failed: {ex.Message}"; }
-                    };
-                    viewer.ApproveAllRequested += () =>
-                    {
-                        try
-                        {
-                            var count = BaselineManager.ApproveTest(_workloadsDir, firstResult.Workload, firstResult.TestName);
-                            _statusLabel.Text = $"Approved {count} baseline(s) for '{firstResult.TestName}'.";
-                            viewer.LoadResult(firstResult);
-                        }
-                        catch (Exception ex) { _statusLabel.Text = $"Approve failed: {ex.Message}"; }
-                    };
-                }
-
-                // Build split view: results on top, log on bottom
-                var logText = panel.LogText;
-                var split = new SplitContainer
-                {
-                    Dock = DockStyle.Fill,
-                    Orientation = Orientation.Horizontal,
-                    SplitterDistance = 400,
-                    BackColor = Color.FromArgb(30, 30, 30),
-                    Panel1MinSize = 100,
-                    Panel2MinSize = 60
-                };
-
-                split.Panel1.Controls.Add(viewer);
-
-                var logBox = new RichTextBox
-                {
-                    Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(20, 20, 20),
-                    ForeColor = Color.FromArgb(180, 180, 180),
-                    BorderStyle = BorderStyle.None,
-                    Font = new Font("Consolas", 8.5f),
-                    ReadOnly = true,
-                    WordWrap = false,
-                    ScrollBars = RichTextBoxScrollBars.Both,
-                    Text = logText
-                };
-
-                var logLabel = new Label
-                {
-                    Text = "Run Log (Ctrl+A, Ctrl+C to copy)",
-                    Dock = DockStyle.Top,
-                    ForeColor = Color.FromArgb(120, 120, 120),
-                    Font = new Font("Segoe UI", 8f),
-                    Height = 20,
-                    Padding = new Padding(4, 2, 0, 0),
-                    BackColor = Color.FromArgb(30, 30, 30)
-                };
-
-                split.Panel2.Controls.Add(logBox);
-                split.Panel2.Controls.Add(logLabel);
-
-                _contentPanel.Controls.Clear();
-                _contentPanel.Controls.Add(split);
-            }
-            else
-            {
-                // No test results — just keep the log visible
-                // (panel is already in _contentPanel from before the run)
-            }
-            _statusLabel.Text = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new";
-        };
-        _contentPanel.Controls.Clear();
+        _activeRunnerPanel = panel;
+        if (_closeWorkloadBtn != null) _closeWorkloadBtn.Enabled = true;
+        panel.RunCompleted += suite => OnRunCompleted(suite, panel, suiteName);
+        ClearContentPanel();
         _contentPanel.Controls.Add(panel);
 
-        _statusLabel.Text = $"Running {testNames} for {entry.Config.DisplayName}...";
-        await panel.RunAsync(entry.Config, testsToRun, _workloadsDir).ConfigureAwait(true);
+        _statusLabel.Text = $"Running {testNames}{suiteLabel} for {entry.Config.DisplayName}...";
+        await panel.RunAsync(entry.Config, testsToRun, _workloadsDir, suiteName: suiteName, useSharedMode: useSharedMode, suiteKeepOpen: suiteKeepOpen).ConfigureAwait(true);
+    }
+
+    private void OnCloseWorkload(object? sender, EventArgs e)
+    {
+        if (_activeRunnerPanel != null && _activeRunnerPanel.HasActiveProcesses)
+        {
+            _activeRunnerPanel.ForceKillProcesses();
+            _statusLabel.Text = "Workload processes killed.";
+        }
+        else
+        {
+            _statusLabel.Text = "No active workload processes to close.";
+        }
+        if (_closeWorkloadBtn != null) _closeWorkloadBtn.Enabled = false;
+    }
+
+    private void OnRunCompleted(SuiteResult suite, TestRunnerPanel panel, string? suiteName)
+    {
+        // Update toolbar button based on whether processes are still alive (keepOpen)
+        if (_closeWorkloadBtn != null)
+            _closeWorkloadBtn.Enabled = panel.HasActiveProcesses;
+
+        if (suite.TestResults.Count > 1 || suiteName != null)
+        {
+            // Multi-test or suite run — show aggregated suite view
+            var viewer = new ResultsViewerControl();
+            WireViewerEvents(viewer, suite.TestResults);
+            viewer.LoadSuiteResult(suite, suiteName ?? "All Tests");
+
+            ShowResultsWithLog(viewer, panel.LogText);
+        }
+        else if (suite.TestResults.Count == 1)
+        {
+            // Single test — show per-test results
+            var firstResult = suite.TestResults[0];
+            var viewer = new ResultsViewerControl();
+            WireViewerEvents(viewer, suite.TestResults);
+            viewer.LoadResult(firstResult);
+
+            ShowResultsWithLog(viewer, panel.LogText);
+        }
+        _statusLabel.Text = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new";
+    }
+
+    private void WireViewerEvents(ResultsViewerControl viewer, List<TestResult> results)
+    {
+        if (_workloadsDir == null) return;
+        var workloadsDir = _workloadsDir;
+
+        viewer.ApproveCheckpointRequested += (testName, cpName) =>
+        {
+            var result = results.FirstOrDefault(r => r.TestName == testName);
+            if (result == null) return;
+            try
+            {
+                BaselineManager.ApproveCheckpoint(workloadsDir, result.Workload, result.TestName, cpName);
+                _statusLabel.Text = $"Approved baseline for '{cpName}' in '{testName}'.";
+            }
+            catch (Exception ex) { _statusLabel.Text = $"Approve failed: {ex.Message}"; }
+        };
+        viewer.RejectCheckpointRequested += (testName, cpName) =>
+        {
+            var result = results.FirstOrDefault(r => r.TestName == testName);
+            if (result == null) return;
+            try
+            {
+                BaselineManager.RejectCheckpoint(workloadsDir, result.Workload, result.TestName, cpName);
+                _statusLabel.Text = $"Rejected checkpoint '{cpName}' in '{testName}'.";
+            }
+            catch (Exception ex) { _statusLabel.Text = $"Reject failed: {ex.Message}"; }
+        };
+        viewer.ApproveAllRequested += () =>
+        {
+            var total = 0;
+            foreach (var r in results)
+            {
+                try { total += BaselineManager.ApproveTest(workloadsDir, r.Workload, r.TestName); }
+                catch { /* skip tests with no candidates */ }
+            }
+            _statusLabel.Text = $"Approved {total} baseline(s).";
+        };
+    }
+
+    private void ShowResultsWithLog(ResultsViewerControl viewer, string logText)
+    {
+        var split = new SplitContainer
+        {
+            Dock = DockStyle.Fill,
+            Orientation = Orientation.Horizontal,
+            SplitterDistance = 400,
+            BackColor = Color.FromArgb(30, 30, 30),
+            Panel1MinSize = 100,
+            Panel2MinSize = 60
+        };
+
+        split.Panel1.Controls.Add(viewer);
+
+        var logBox = new RichTextBox
+        {
+            Dock = DockStyle.Fill,
+            BackColor = Color.FromArgb(20, 20, 20),
+            ForeColor = Color.FromArgb(180, 180, 180),
+            BorderStyle = BorderStyle.None,
+            Font = new Font("Consolas", 8.5f),
+            ReadOnly = true,
+            WordWrap = false,
+            ScrollBars = RichTextBoxScrollBars.Both,
+            Text = logText
+        };
+
+        var logLabel = new Label
+        {
+            Text = "Run Log (Ctrl+A, Ctrl+C to copy)",
+            Dock = DockStyle.Top,
+            ForeColor = Color.FromArgb(120, 120, 120),
+            Font = new Font("Segoe UI", 8f),
+            Height = 20,
+            Padding = new Padding(4, 2, 0, 0),
+            BackColor = Color.FromArgb(30, 30, 30)
+        };
+
+        split.Panel2.Controls.Add(logBox);
+        split.Panel2.Controls.Add(logLabel);
+
+        ClearContentPanel();
+        _contentPanel.Controls.Add(split);
     }
 
     private void OnRecord(object? sender, EventArgs e)
@@ -475,7 +633,7 @@ public sealed class MainForm : Form
                 _ = LoadWorkloadsDirAsync(_workloadsDir);
         };
 
-        _contentPanel.Controls.Clear();
+        ClearContentPanel();
         _contentPanel.Controls.Add(panel);
         _statusLabel.Text = "Recording mode — select workload and click Launch App & Record.";
     }
@@ -513,6 +671,21 @@ public sealed class MainForm : Form
         {
             _statusLabel.Text = "Select a test or workload to approve.";
         }
+    }
+
+    private void OnApproveSuite()
+    {
+        if (_workloadsDir == null || _treeView.SelectedNode?.Tag is not SuiteDefinition suiteDef) return;
+        var entry = FindWorkloadEntry(_treeView.SelectedNode);
+        if (entry == null) return;
+
+        var total = 0;
+        foreach (var testName in suiteDef.Tests)
+        {
+            try { total += BaselineManager.ApproveTest(_workloadsDir, entry.Config.Name, testName); }
+            catch { /* skip tests with no candidates */ }
+        }
+        _statusLabel.Text = $"Approved {total} baseline(s) for suite '{suiteDef.Name}'.";
     }
 
     private void OnViewReport(object? sender, EventArgs e)
@@ -631,7 +804,7 @@ public sealed class MainForm : Form
                 }
             };
 
-            _contentPanel.Controls.Clear();
+            ClearContentPanel();
             _contentPanel.Controls.Add(editor);
         }
     }
@@ -640,9 +813,25 @@ public sealed class MainForm : Form
     {
         if (_treeView.SelectedNode?.Tag is TestDefinition testDef)
         {
+            var entry = FindWorkloadEntry(_treeView.SelectedNode);
             var editor = new TestEditorControl();
             editor.LoadDefinition(testDef);
-            _contentPanel.Controls.Clear();
+
+            // Wire save to write JSON and refresh tree
+            editor.SaveRequested += json =>
+            {
+                if (_workloadsDir == null || entry == null) return;
+                try
+                {
+                    var testPath = Path.Combine(entry.Directory, "tests", $"{testDef.Name}.json");
+                    File.WriteAllText(testPath, json);
+                    _statusLabel.Text = $"Saved test: {testPath}";
+                    _ = LoadWorkloadsDirAsync(_workloadsDir);
+                }
+                catch (Exception ex) { _statusLabel.Text = $"Save failed: {ex.Message}"; }
+            };
+
+            ClearContentPanel();
             _contentPanel.Controls.Add(editor);
         }
     }
@@ -765,7 +954,7 @@ public sealed class MainForm : Form
                 foreach (var g in groups)
                     info.AppendText($"  {g.Key}: {g.Count()}\n");
 
-                _contentPanel.Controls.Clear();
+                ClearContentPanel();
                 _contentPanel.Controls.Add(info);
                 _statusLabel.Text = $"Viewing recording: {Path.GetFileName(path)} ({recording.Events.Count} events)";
             }
@@ -774,6 +963,122 @@ public sealed class MainForm : Form
                 _statusLabel.Text = $"Error reading recording: {ex.Message}";
             }
         }
+    }
+
+    private async void OnTreeNodeSelected(object? sender, TreeViewEventArgs e)
+    {
+        if (_workloadsDir == null || e.Node?.Tag is not TestDefinition testDef) return;
+
+        var entry = FindWorkloadEntry(e.Node);
+        if (entry == null) return;
+
+        try
+        {
+            var history = await _resultsHistory.ScanAsync(_workloadsDir, entry.Config.Name).ConfigureAwait(true);
+            var lastResult = history.FirstOrDefault(h => h.Result.TestName == testDef.Name);
+            if (lastResult != null)
+            {
+                var viewer = new ResultsViewerControl();
+                WireViewerEvents(viewer, new List<TestResult> { lastResult.Result });
+                viewer.LoadResult(lastResult.Result);
+                ClearContentPanel();
+                _contentPanel.Controls.Add(viewer);
+            }
+        }
+        catch { /* scan failed — ignore silently */ }
+    }
+
+    private void OnDuplicateTest()
+    {
+        if (_treeView.SelectedNode?.Tag is not TestDefinition testDef) return;
+        var entry = FindWorkloadEntry(_treeView.SelectedNode);
+        if (entry == null || _workloadsDir == null) return;
+
+        // Serialize and deserialize to deep-copy the definition
+        var json = System.Text.Json.JsonSerializer.Serialize(testDef,
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        var copy = System.Text.Json.JsonSerializer.Deserialize<TestDefinition>(json);
+        if (copy == null) return;
+
+        copy.Name = testDef.Name + "-copy";
+
+        var editor = new TestEditorControl();
+        editor.LoadDefinition(copy);
+
+        editor.SaveRequested += saveJson =>
+        {
+            try
+            {
+                var testsDir = Path.Combine(entry.Directory, "tests");
+                Directory.CreateDirectory(testsDir);
+                var testPath = Path.Combine(testsDir, $"{copy.Name}.json");
+                File.WriteAllText(testPath, saveJson);
+                _statusLabel.Text = $"Saved duplicate test: {testPath}";
+                _ = LoadWorkloadsDirAsync(_workloadsDir);
+            }
+            catch (Exception ex) { _statusLabel.Text = $"Save failed: {ex.Message}"; }
+        };
+
+        ClearContentPanel();
+        _contentPanel.Controls.Add(editor);
+        _statusLabel.Text = $"Duplicating test '{testDef.Name}' as '{copy.Name}'...";
+    }
+
+    private void OnEditSuite()
+    {
+        if (_treeView.SelectedNode?.Tag is not SuiteDefinition suiteDef) return;
+        var entry = FindWorkloadEntry(_treeView.SelectedNode);
+        if (entry == null || _workloadsDir == null) return;
+
+        var editor = new SuiteEditorControl();
+        editor.LoadDefinition(suiteDef, entry.Tests.ToList());
+
+        editor.SaveRequested += json =>
+        {
+            try
+            {
+                var suitesDir = Path.Combine(entry.Directory, "suites");
+                Directory.CreateDirectory(suitesDir);
+                var suitePath = Path.Combine(suitesDir, $"{suiteDef.Name}.json");
+                File.WriteAllText(suitePath, json);
+                _statusLabel.Text = $"Saved suite: {suitePath}";
+                _ = LoadWorkloadsDirAsync(_workloadsDir);
+            }
+            catch (Exception ex) { _statusLabel.Text = $"Save failed: {ex.Message}"; }
+        };
+
+        ClearContentPanel();
+        _contentPanel.Controls.Add(editor);
+    }
+
+    private void OnNewSuite()
+    {
+        var entry = FindWorkloadEntry(_treeView.SelectedNode);
+        if (entry == null || _workloadsDir == null) return;
+
+        var newSuite = new SuiteDefinition { Name = "new-suite", Description = "" };
+
+        var editor = new SuiteEditorControl();
+        editor.LoadDefinition(newSuite, entry.Tests.ToList());
+
+        editor.SaveRequested += json =>
+        {
+            try
+            {
+                var built = editor.BuildDefinition();
+                var suitesDir = Path.Combine(entry.Directory, "suites");
+                Directory.CreateDirectory(suitesDir);
+                var suitePath = Path.Combine(suitesDir, $"{built.Name}.json");
+                File.WriteAllText(suitePath, json);
+                _statusLabel.Text = $"Created suite: {suitePath}";
+                _ = LoadWorkloadsDirAsync(_workloadsDir);
+            }
+            catch (Exception ex) { _statusLabel.Text = $"Save failed: {ex.Message}"; }
+        };
+
+        ClearContentPanel();
+        _contentPanel.Controls.Add(editor);
+        _statusLabel.Text = "Creating new suite...";
     }
 
     private void OnDeleteSelected()
@@ -838,7 +1143,9 @@ public sealed class MainForm : Form
             Path.Combine(exeDir, "..", "workloads"),
             Path.Combine(exeDir, "..", "..", "workloads"),
             Path.Combine(exeDir, "..", "..", "..", "workloads"),
-            Path.Combine(Directory.GetCurrentDirectory(), "workloads")
+            Path.Combine(exeDir, "..", "..", "..", "..", "..", "..", "workloads"),
+            Path.Combine(Directory.GetCurrentDirectory(), "workloads"),
+            @"C:\Repos\Canary\workloads"
         };
 
         foreach (var candidate in candidates)
@@ -862,18 +1169,59 @@ public sealed class MainForm : Form
         {
             var workloads = await _explorer.LoadWorkloadsAsync(dir).ConfigureAwait(true);
 
+            // Collect history for status coloring
+            var historyByWorkload = new Dictionary<string, Dictionary<string, TestStatus>>();
+            foreach (var entry in workloads)
+            {
+                try
+                {
+                    var history = await _resultsHistory.ScanAsync(dir, entry.Config.Name).ConfigureAwait(true);
+                    var statusMap = new Dictionary<string, TestStatus>();
+                    foreach (var h in history)
+                    {
+                        // Most recent result wins (history is ordered by timestamp desc)
+                        if (!statusMap.ContainsKey(h.Result.TestName))
+                            statusMap[h.Result.TestName] = h.Result.Status;
+                    }
+                    historyByWorkload[entry.Config.Name] = statusMap;
+                }
+                catch { historyByWorkload[entry.Config.Name] = new Dictionary<string, TestStatus>(); }
+            }
+
+            var totalSuites = 0;
+
             foreach (var entry in workloads)
             {
                 var workloadNode = new TreeNode(entry.Config.DisplayName) { Tag = entry };
+                historyByWorkload.TryGetValue(entry.Config.Name, out var statusMap);
 
-                // Tests group
+                // Suites group
+                if (entry.Suites.Count > 0)
+                {
+                    var suitesGroup = new TreeNode($"Suites ({entry.Suites.Count})");
+                    suitesGroup.ForeColor = Color.FromArgb(150, 220, 130);
+                    foreach (var suite in entry.Suites)
+                    {
+                        var suiteNode = new TreeNode($"{suite.Name} ({suite.Tests.Count} tests)") { Tag = suite };
+                        suiteNode.ForeColor = Color.FromArgb(150, 220, 130);
+                        suiteNode.ToolTipText = string.Join(", ", suite.Tests.Take(8))
+                            + (suite.Tests.Count > 8 ? $" (+{suite.Tests.Count - 8} more)" : "");
+                        suitesGroup.Nodes.Add(suiteNode);
+                    }
+                    workloadNode.Nodes.Add(suitesGroup);
+                    totalSuites += entry.Suites.Count;
+                }
+
+                // All Tests group
                 if (entry.Tests.Count > 0)
                 {
-                    var testsGroup = new TreeNode($"Tests ({entry.Tests.Count})");
+                    var testsGroup = new TreeNode($"All Tests ({entry.Tests.Count})");
                     testsGroup.ForeColor = Color.FromArgb(100, 180, 255);
                     foreach (var test in entry.Tests)
                     {
                         var testNode = new TreeNode(test.Name) { Tag = test };
+                        testNode.ForeColor = GetTestStatusColor(statusMap, test.Name);
+                        testNode.ToolTipText = !string.IsNullOrEmpty(test.Description) ? test.Description : test.Name;
                         testsGroup.Nodes.Add(testNode);
                     }
                     workloadNode.Nodes.Add(testsGroup);
@@ -897,11 +1245,13 @@ public sealed class MainForm : Form
                 _treeView.Nodes.Add(workloadNode);
             }
 
-            _treeView.ExpandAll();
+            // Expand workload nodes to show group headers, but keep groups collapsed
+            foreach (TreeNode workloadNode in _treeView.Nodes)
+                workloadNode.Expand();
 
             var totalTests = workloads.Sum(w => w.Tests.Count);
             var totalRecordings = workloads.Sum(w => w.Recordings.Count);
-            _testCountLabel.Text = $"{workloads.Count} workload(s), {totalTests} test(s), {totalRecordings} recording(s)";
+            _testCountLabel.Text = $"{workloads.Count} workload(s), {totalSuites} suite(s), {totalTests} test(s)";
 
             if (workloads.Count == 0)
                 _statusLabel.Text = $"No workloads found in {dir}. Each subfolder needs a workload.json file.";
@@ -912,6 +1262,21 @@ public sealed class MainForm : Form
         {
             _statusLabel.Text = $"Error: {ex.Message}";
         }
+    }
+
+    private static Color GetTestStatusColor(Dictionary<string, TestStatus>? statusMap, string testName)
+    {
+        if (statusMap == null || !statusMap.TryGetValue(testName, out var status))
+            return Color.FromArgb(140, 140, 140); // gray — not run
+
+        return status switch
+        {
+            TestStatus.Passed => Color.FromArgb(80, 200, 80),
+            TestStatus.Failed => Color.FromArgb(220, 60, 60),
+            TestStatus.Crashed => Color.FromArgb(180, 80, 220),
+            TestStatus.New => Color.FromArgb(220, 180, 50),
+            _ => Color.FromArgb(140, 140, 140)
+        };
     }
 
     #endregion

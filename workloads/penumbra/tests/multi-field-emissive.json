@@ -1,0 +1,27 @@
+{
+  "name": "multi-field-emissive",
+  "workload": "penumbra",
+  "description": "Multi-Field — self-illumination on first field (emissive 3.0)",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetFieldEmissive(window.__canaryGetFields()[0].id, 3.0)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.03
+    }
+  ]
+}

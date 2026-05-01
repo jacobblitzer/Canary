@@ -12,3 +12,6 @@ TestResults/
 .obsidian/workspace-mobile.json
 .obsidian/plugins/*/data.json
 .trash/
+
+# Accidental Windows redirects
+nul

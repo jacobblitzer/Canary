@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>Canary.Agent.Penumbra</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Canary.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Canary.Core\Canary.Core.csproj" />
+    <ProjectReference Include="..\Canary.Agent\Canary.Agent.csproj" />
+  </ItemGroup>
+
+  <!-- No external NuGet packages required.
+       CDP uses built-in System.Net.WebSockets.Client and System.Net.Http.
+       Same philosophy as using System.IO.Pipes for named pipes. -->
+
+</Project>

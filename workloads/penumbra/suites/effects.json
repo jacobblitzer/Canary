@@ -1,0 +1,14 @@
+{
+  "name": "effects",
+  "description": "Phase 7+8 shader effects — fog, tone mapping, exposure, emissive, Fresnel, contours, onion, noise",
+  "tests": [
+    "tape-csg-fog",
+    "tape-csg-aces",
+    "tape-csg-exposure",
+    "multi-field-emissive",
+    "multi-field-fresnel",
+    "tape-csg-contours",
+    "tape-csg-onion",
+    "tape-csg-noise"
+  ]
+}

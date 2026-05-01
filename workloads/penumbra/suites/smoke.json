@@ -1,0 +1,10 @@
+{
+  "name": "smoke",
+  "description": "Quick sanity check — 4 original scene orbits",
+  "tests": [
+    "tape-csg-orbit",
+    "atlas-blob-orbit",
+    "multi-field-orbit",
+    "stress-test-orbit"
+  ]
+}

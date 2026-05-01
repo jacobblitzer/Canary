@@ -1,0 +1,9 @@
+{
+  "name": "foreign-objects",
+  "description": "Phase 4 foreign object integration — default render, field AABBs, foreign overlay",
+  "tests": [
+    "foreign-objects-default",
+    "foreign-objects-fieldAABBs",
+    "foreign-objects-foreignOverlay"
+  ]
+}

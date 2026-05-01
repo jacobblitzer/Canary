@@ -1,0 +1,7 @@
+{
+  "name": "stl-import",
+  "description": "STL file import pipeline — load mesh, convert to SDF, render",
+  "tests": [
+    "stl-import-benchy"
+  ]
+}

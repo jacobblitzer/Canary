@@ -1,0 +1,24 @@
+{
+  "name": "vlm-cornell-box-layout",
+  "workload": "penumbra",
+  "description": "VLM oracle: verify Cornell Box scene has correct wall colors and interior boxes",
+  "setup": {
+    "scene": { "index": 4, "sceneName": "Cornell Box" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front-colors",
+      "mode": "vlm",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "description": "A classic Cornell Box scene: an open-faced box viewed from the front. The left wall should be distinctly red/reddish. The right wall should be distinctly green. The floor, ceiling, and back wall should be white or light-colored. Inside the box, there should be two smaller white rectangular boxes (blocks) sitting on the floor. The scene should be lit and show color bleeding between surfaces. No walls should be missing or black."
+    }
+  ]
+}

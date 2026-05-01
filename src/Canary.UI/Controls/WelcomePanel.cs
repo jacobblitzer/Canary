@@ -30,13 +30,18 @@ internal sealed class WelcomePanel : Panel
 
         var instructions = new Label
         {
-            Text = "Select a workload or test from the tree to get started.\n\n"
+            Text = "Select a workload, suite, or test from the tree to get started.\n\n"
                  + "Use the toolbar to:\n"
                  + "  \u2022 Open a workloads folder\n"
-                 + "  \u2022 Run tests against a workload\n"
+                 + "  \u2022 Run tests or suites (right-click or F5)\n"
                  + "  \u2022 Record input for new tests\n"
                  + "  \u2022 Approve candidate baselines\n"
-                 + "  \u2022 View HTML reports",
+                 + "  \u2022 View HTML reports\n\n"
+                 + "Features:\n"
+                 + "  \u2022 Suites group tests for batch execution\n"
+                 + "  \u2022 VLM checkpoints use AI vision to evaluate screenshots\n"
+                 + "  \u2022 Shared-instance mode runs multiple tests in one app session\n"
+                 + "  \u2022 Double-click a test to edit, double-click a suite to run",
             Font = new Font("Segoe UI", 10f),
             ForeColor = Color.FromArgb(140, 140, 140),
             AutoSize = true,

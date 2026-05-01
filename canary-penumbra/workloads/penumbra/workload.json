@@ -1,0 +1,27 @@
+{
+  "name": "penumbra",
+  "displayName": "Penumbra (Browser)",
+  "appPath": "npm",
+  "appArgs": "run dev -- --port 3000 --strictPort",
+  "agentType": "penumbra-cdp",
+  "pipeName": "canary-penumbra",
+  "startupTimeoutMs": 30000,
+  "windowTitle": "Penumbra",
+  "viewportClass": "",
+  "penumbraConfig": {
+    "projectDir": "C:\\Repos\\Penumbra",
+    "chromePath": "",
+    "cdpPort": 9222,
+    "vitePort": 3000,
+    "defaultBackend": "webgpu",
+    "defaultCanvasWidth": 960,
+    "defaultCanvasHeight": 540,
+    "defaultStabilizeMs": 500,
+    "chromeFlags": [
+      "--force-device-scale-factor=1",
+      "--disable-gpu-compositing",
+      "--hide-scrollbars",
+      "--disable-smooth-scrolling"
+    ]
+  }
+}

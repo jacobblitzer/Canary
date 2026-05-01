@@ -1,0 +1,13 @@
+{
+  "name": "vlm",
+  "description": "VLM oracle tests — semantic verification of scene content without baselines",
+  "tests": [
+    "vlm-tape-csg-geometry",
+    "vlm-atlas-blob-organic",
+    "vlm-cornell-box-layout",
+    "vlm-teapot-shape",
+    "vlm-multi-field-separation",
+    "vlm-terrain-landscape",
+    "vlm-teapot-metal-mixed"
+  ]
+}

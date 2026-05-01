@@ -1,0 +1,12 @@
+{
+  "name": "environment",
+  "description": "Phase 9 environment presets + custom lighting/background tests",
+  "tests": [
+    "atlas-blob-env-outdoor",
+    "atlas-blob-env-sunset",
+    "atlas-blob-env-night",
+    "atlas-blob-env-neutral",
+    "tape-csg-custom-lighting",
+    "tape-csg-bg-color"
+  ]
+}

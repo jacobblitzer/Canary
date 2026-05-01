@@ -78,10 +78,20 @@ Each follows the existing `HandleGrasshopperSetSlider` pattern: find by case-ins
 
 ## Workflow when adding a new CPig test
 1. CPig side: Slop JSON committed at `CPig/research/slop_tests/NN_slug.json` per `Slop/SLOP_STYLE.md`.
-2. Canary side: emit `workloads/rhino/tests/cpig-NN-slug.json` from the helper script (TODO: `scripts/cpig-test-from-slop.ps1`) or copy an existing test and edit the `path` field.
+2. Canary side: emit `workloads/rhino/tests/cpig-NN-slug.json` from the helper script (`scripts/cpig-test-from-slop.ps1`) or copy an existing test and edit the `path` field.
 3. Run the test once. First run records the candidate but no baseline exists, so it fails. Inspect the candidate PNG.
 4. If it looks correct, `canary baseline approve cpig-NN-slug` to lock the image as the baseline.
 5. Commit both the Slop JSON (CPig repo) and the Canary test JSON.
+
+## New machine / environment checklist
+When setting up on a new machine or after a major OS/driver update:
+1. Verify `C:\Repos\CPig\` exists and Slop JSON paths in test definitions resolve.
+2. Verify `cpig_native.dll` loads — build CPig native (`cmake --preset x64-release && cmake --build --preset x64-release`) and C# (`dotnet build CPig.sln`).
+3. Verify Rhino 8 is installed and the Canary Rhino agent plugin (`.rhp`) loads.
+4. Verify Slop plugin is installed in Grasshopper.
+5. Run `canary run --workload rhino --filter "cpig-00-smoke-ping"` as a smoke test.
+6. **Expect baseline mismatches** — different display drivers produce different pixel output. Re-approve all baselines with `canary approve` after visual inspection.
+7. Check `cpig_debug.log` and `%LOCALAPPDATA%\CPig\trace.log` if any test crashes.
 
 ## Cross-references
 - Peer doc: `C:\Repos\CPig\spec\CANARY.md`

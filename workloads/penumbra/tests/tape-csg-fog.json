@@ -1,0 +1,27 @@
+{
+  "name": "tape-csg-fog",
+  "workload": "penumbra",
+  "description": "Box-minus-sphere CSG — depth fog effect (density 0.1)",
+  "setup": {
+    "scene": { "index": 0, "sceneName": "Box - Sphere" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetFog({enabled:true, density:0.1})"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}

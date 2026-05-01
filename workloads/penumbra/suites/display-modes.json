@@ -1,0 +1,14 @@
+{
+  "name": "display-modes",
+  "description": "Visualization and evaluation display modes across scenes",
+  "tests": [
+    "atlas-blob-eval-tape",
+    "atlas-blob-viz-normal",
+    "atlas-blob-viz-cascades",
+    "teapot-viz-normal",
+    "teapot-eval-tape",
+    "assembly-viz-field-id",
+    "multi-field-viz-field-id",
+    "columns-viz-normal"
+  ]
+}

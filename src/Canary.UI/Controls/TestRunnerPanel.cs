@@ -16,6 +16,7 @@ internal sealed class TestRunnerPanel : UserControl
     private readonly RichTextBox _logBox;
     private readonly ProgressBar _progressBar;
     private readonly Label _statusLabel;
+    private readonly Label _suiteLabel;
     private readonly Button _stopButton;
     private CancellationTokenSource? _cts;
     private ProcessManager? _pm;
@@ -33,10 +34,10 @@ internal sealed class TestRunnerPanel : UserControl
         var topPanel = new FlowLayoutPanel
         {
             Dock = DockStyle.Top,
-            Height = 40,
+            AutoSize = true,
             FlowDirection = FlowDirection.LeftToRight,
             Padding = new Padding(8, 4, 8, 4),
-            WrapContents = false
+            WrapContents = true
         };
 
         _statusLabel = new Label
@@ -48,9 +49,19 @@ internal sealed class TestRunnerPanel : UserControl
             Margin = new Padding(0, 4, 12, 0)
         };
 
+        _suiteLabel = new Label
+        {
+            Text = "",
+            ForeColor = Color.FromArgb(150, 220, 130),
+            Font = new Font("Segoe UI", 9f),
+            AutoSize = true,
+            Margin = new Padding(0, 5, 12, 0),
+            Visible = false
+        };
+
         _stopButton = new Button
         {
-            Text = "Stop",
+            Text = "Stop (Pause)",
             FlatStyle = FlatStyle.Flat,
             BackColor = Color.FromArgb(180, 50, 50),
             ForeColor = Color.White,
@@ -62,6 +73,7 @@ internal sealed class TestRunnerPanel : UserControl
         _stopButton.Click += OnStop;
 
         topPanel.Controls.Add(_statusLabel);
+        topPanel.Controls.Add(_suiteLabel);
         topPanel.Controls.Add(_stopButton);
 
         _progressBar = new ProgressBar
@@ -96,6 +108,24 @@ internal sealed class TestRunnerPanel : UserControl
         AddLog("Stop requested — killing processes...");
     }
 
+    /// <summary>
+    /// Kills all tracked processes (e.g. Rhino left open via keepOpen).
+    /// Called from the toolbar "Close Workload" button.
+    /// </summary>
+    public void ForceKillProcesses()
+    {
+        _cts?.Cancel();
+        _pm?.KillAll();
+        _pm = null;
+        _stopButton.Enabled = false;
+        _stopButton.Text = "Stop (Pause)";
+        _statusLabel.Text += " — Workload closed.";
+        AddLog("Workload closed via toolbar.");
+    }
+
+    /// <summary>Returns true when a ProcessManager is active (processes may be running).</summary>
+    public bool HasActiveProcesses => _pm != null;
+
     private void AddLog(string message)
     {
         _logBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}{Environment.NewLine}");
@@ -106,7 +136,10 @@ internal sealed class TestRunnerPanel : UserControl
         WorkloadConfig workload,
         IReadOnlyList<TestDefinition> tests,
         string workloadsDir,
-        string? workloadJsonPath = null)
+        string? workloadJsonPath = null,
+        string? suiteName = null,
+        bool useSharedMode = false,
+        bool suiteKeepOpen = false)
     {
         _logBox.Clear();
         _progressBar.Value = 0;
@@ -114,11 +147,25 @@ internal sealed class TestRunnerPanel : UserControl
         _stopButton.Enabled = true;
         _statusLabel.Text = $"Running {tests.Count} test(s)...";
 
+        // Show suite info
+        if (suiteName != null)
+        {
+            var modeLabel = useSharedMode ? " [shared instance]" : "";
+            _suiteLabel.Text = $"Suite: {suiteName} ({tests.Count} tests){modeLabel}";
+            _suiteLabel.Visible = true;
+        }
+
         _cts = new CancellationTokenSource();
         _pm = new ProcessManager();
 
         var logger = new GuiTestLogger(this, verbose: true);
-        logger.MessageLogged += msg => AddLog(msg);
+        logger.MessageLogged += msg =>
+        {
+            AddLog(msg);
+            // Detect VLM evaluation in progress
+            if (msg.Contains("VLM evaluating", StringComparison.OrdinalIgnoreCase))
+                _statusLabel.Text = "VLM evaluating...";
+        };
         logger.StatusLogged += (symbol, msg, _) =>
         {
             _logBox.AppendText($"  {symbol} {msg}{Environment.NewLine}");
@@ -133,6 +180,7 @@ internal sealed class TestRunnerPanel : UserControl
         };
 
         AbortOverlayForm? overlay = null;
+        bool keepOpen = suiteKeepOpen;
 
         // Position Canary UI to the right of the target window
         var mainForm = FindForm();
@@ -175,12 +223,16 @@ internal sealed class TestRunnerPanel : UserControl
                 catch { /* form may be disposed */ }
             };
 
-            AddLog("Starting test suite...");
+            AddLog(suiteName != null ? $"Starting suite '{suiteName}'..." : "Starting test suite...");
 
             SuiteResult suite;
             if (workload.AgentType == "penumbra-cdp")
                 suite = await Task.Run(
                     () => RunPenumbraSuiteAsync(workload, tests, runner, workloadsDir, logger, _cts.Token),
+                    _cts.Token).ConfigureAwait(true);
+            else if (useSharedMode)
+                suite = await Task.Run(
+                    () => runner.RunSharedSuiteAsync(workload, tests, _cts.Token),
                     _cts.Token).ConfigureAwait(true);
             else
                 suite = await Task.Run(
@@ -189,6 +241,10 @@ internal sealed class TestRunnerPanel : UserControl
 
             _statusLabel.Text = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed";
             _progressBar.Value = _progressBar.Maximum;
+
+            keepOpen |= tests.Any(t => t.KeepOpenOnFailure
+                && suite.TestResults.Any(r => r.TestName == t.Name
+                    && r.Status is TestStatus.Failed or TestStatus.Crashed));
 
             foreach (var r in suite.TestResults)
             {
@@ -207,7 +263,23 @@ internal sealed class TestRunnerPanel : UserControl
             }
             catch (Exception ex)
             {
-                AddLog($"Warning: Could not save report — {ex.Message}");
+                AddLog($"Warning: Could not save report \u2014 {ex.Message}");
+            }
+
+            // Persist result JSON for each test (feeds ResultsHistory.ScanAsync)
+            foreach (var result in suite.TestResults)
+            {
+                try
+                {
+                    var resultDir = Path.Combine(workloadsDir, workload.Name, "results", result.TestName);
+                    Directory.CreateDirectory(resultDir);
+                    var resultPath = Path.Combine(resultDir, "result.json");
+                    await TestResultSerializer.SaveAsync(result, resultPath).ConfigureAwait(true);
+                }
+                catch (Exception ex)
+                {
+                    AddLog($"Warning: Could not save result for '{result.TestName}' \u2014 {ex.Message}");
+                }
             }
 
             RunCompleted?.Invoke(suite);
@@ -228,10 +300,29 @@ internal sealed class TestRunnerPanel : UserControl
             overlay = null;
             (FindForm() as MainForm)?.UnregisterAbortHotkey();
 
-            _pm.KillAll();
-            _pm = null;
-            _stopButton.Enabled = false;
-            _cts.Dispose();
+            if (keepOpen)
+            {
+                _statusLabel.Text += " — App kept open for inspection";
+                AddLog("App kept open for inspection (keepOpenOnFailure). Click Stop to close.");
+                _stopButton.Enabled = true;
+                _stopButton.Text = "Close App";
+                _stopButton.Click -= OnStop;
+                _stopButton.Click += (_, _) =>
+                {
+                    _pm?.KillAll();
+                    _pm = null;
+                    _stopButton.Enabled = false;
+                    _stopButton.Text = "Stop (Pause)";
+                };
+            }
+            else
+            {
+                _pm?.KillAll();
+                _pm = null;
+                _stopButton.Enabled = false;
+            }
+
+            _cts?.Dispose();
             _cts = null;
         }
     }

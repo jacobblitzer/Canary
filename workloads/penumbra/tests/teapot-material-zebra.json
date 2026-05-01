@@ -1,0 +1,27 @@
+{
+  "name": "teapot-material-zebra",
+  "workload": "penumbra",
+  "description": "SDF Teapot with Zebra material preset (tight contour stripes)",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot (atlas CSG)" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryApplyMaterialPreset(window.__canaryGetFields()[0].id, 'zebra')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 10 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 10 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}

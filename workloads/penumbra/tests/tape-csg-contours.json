@@ -1,0 +1,27 @@
+{
+  "name": "tape-csg-contours",
+  "workload": "penumbra",
+  "description": "Box-minus-sphere CSG — contour lines (spacing 0.5)",
+  "setup": {
+    "scene": { "index": 0, "sceneName": "Box - Sphere" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetFieldEffect(window.__canaryGetFields()[0].id, {contourLines:true, contourSpacing:0.5})"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}

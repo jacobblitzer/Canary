@@ -1,0 +1,27 @@
+{
+  "name": "atlas-blob-env-night",
+  "workload": "penumbra",
+  "description": "12-Sphere Blob with Night environment preset (dim blue light, near-black background)",
+  "setup": {
+    "scene": { "index": 1, "sceneName": "12-Sphere Blob" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryApplyEnvironmentPreset('night')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}

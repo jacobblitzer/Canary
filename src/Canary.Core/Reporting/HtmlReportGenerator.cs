@@ -88,8 +88,17 @@ public static class HtmlReportGenerator
         // Checkpoints table
         if (test.CheckpointResults.Count > 0)
         {
+            var hasVlm = test.CheckpointResults.Any(cp => cp.VlmDescription != null);
+            var hasPixelDiff = test.CheckpointResults.Any(cp => cp.VlmDescription == null);
+
             sb.AppendLine("<table>");
-            sb.AppendLine("<tr><th>Checkpoint</th><th>Status</th><th>Diff %</th><th>Tolerance</th><th>SSIM</th></tr>");
+
+            // Adaptive header: show columns relevant to the checkpoint types present
+            sb.Append("<tr><th>Checkpoint</th><th>Status</th><th>Mode</th>");
+            if (hasPixelDiff) sb.Append("<th>Diff %</th><th>Tolerance</th><th>SSIM</th>");
+            if (hasVlm) sb.Append("<th>Confidence</th>");
+            sb.AppendLine("</tr>");
+
             foreach (var cp in test.CheckpointResults)
             {
                 var cpClass = cp.Status switch
@@ -98,18 +107,71 @@ public static class HtmlReportGenerator
                     TestStatus.Failed => "fail",
                     _ => "crash"
                 };
+                var isVlm = cp.VlmDescription != null;
+
                 sb.AppendLine($"<tr class=\"{cpClass}\">");
                 sb.AppendLine($"<td>{Escape(cp.Name)}</td>");
                 sb.AppendLine($"<td><span class=\"status-badge {cpClass}\">{cp.Status.ToString().ToUpperInvariant()}</span></td>");
-                sb.AppendLine($"<td>{cp.DiffPercentage:P2}</td>");
-                sb.AppendLine($"<td>{cp.Tolerance:P2}</td>");
-                sb.AppendLine($"<td>{cp.SsimScore:F4}</td>");
+                sb.AppendLine($"<td>{(isVlm ? "VLM" : "Pixel")}</td>");
+
+                if (hasPixelDiff)
+                {
+                    if (isVlm)
+                    {
+                        sb.AppendLine("<td>—</td><td>—</td><td>—</td>");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"<td>{cp.DiffPercentage:P2}</td>");
+                        sb.AppendLine($"<td>{cp.Tolerance:P2}</td>");
+                        sb.AppendLine($"<td>{cp.SsimScore:F4}</td>");
+                    }
+                }
+
+                if (hasVlm)
+                {
+                    sb.AppendLine(isVlm
+                        ? $"<td>{cp.VlmConfidence:F2}</td>"
+                        : "<td>—</td>");
+                }
+
                 sb.AppendLine("</tr>");
             }
             sb.AppendLine("</table>");
+
+            // VLM detail sections
+            foreach (var cp in test.CheckpointResults.Where(c => c.VlmDescription != null))
+            {
+                sb.AppendLine("<div class=\"vlm-detail\">");
+                sb.AppendLine($"<h3>VLM: {Escape(cp.Name)}</h3>");
+                sb.AppendLine($"<p class=\"vlm-description\"><strong>Description:</strong> {Escape(cp.VlmDescription!)}</p>");
+                if (!string.IsNullOrEmpty(cp.VlmReasoning))
+                    sb.AppendLine($"<p class=\"vlm-reasoning\"><strong>Reasoning:</strong> {Escape(cp.VlmReasoning)}</p>");
+                sb.AppendLine($"<p class=\"vlm-confidence\"><strong>Confidence:</strong> {cp.VlmConfidence:F2}</p>");
+
+                // Embed the captured screenshot
+                if (cp.CandidatePath != null && File.Exists(cp.CandidatePath))
+                {
+                    try
+                    {
+                        var bytes = File.ReadAllBytes(cp.CandidatePath);
+                        var base64 = Convert.ToBase64String(bytes);
+                        sb.AppendLine($"<img class=\"vlm-screenshot\" src=\"data:image/png;base64,{base64}\" alt=\"Screenshot for {Escape(cp.Name)}\">");
+                    }
+                    catch
+                    {
+                        sb.AppendLine("<p class=\"error\">Failed to embed screenshot.</p>");
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(cp.ErrorMessage))
+                    sb.AppendLine($"<p class=\"error\">{Escape(cp.ErrorMessage)}</p>");
+
+                sb.AppendLine("</div>");
+            }
         }
 
-        // Composite image (base64 embedded)
+        // Composite image (base64 embedded) — pixel-diff checkpoints only
         if (test.CompositeImagePath != null && File.Exists(test.CompositeImagePath))
         {
             try
@@ -166,5 +228,11 @@ public static class HtmlReportGenerator
         th { text-align: left; padding: 6px 10px; background: #0f3460; font-size: 0.85em; }
         td { padding: 6px 10px; border-bottom: 1px solid #2a2a4a; font-size: 0.85em; }
         .composite { max-width: 100%; margin-top: 12px; border-radius: 4px; border: 1px solid #333; }
+        .vlm-detail { margin: 12px 0; padding: 12px; background: #1a1a3e; border-radius: 6px; border-left: 3px solid #64b5f6; }
+        .vlm-detail h3 { font-size: 0.95em; margin-bottom: 6px; color: #90caf9; }
+        .vlm-description { color: #b0bec5; margin: 4px 0; font-size: 0.85em; }
+        .vlm-reasoning { color: #e0e0e0; margin: 4px 0; font-size: 0.85em; }
+        .vlm-confidence { color: #999; margin: 4px 0; font-size: 0.85em; }
+        .vlm-screenshot { max-width: 100%; margin-top: 8px; border-radius: 4px; border: 1px solid #333; }
         """;
 }

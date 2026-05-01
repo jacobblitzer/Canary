@@ -1,0 +1,24 @@
+{
+  "name": "vlm-multi-field-separation",
+  "workload": "penumbra",
+  "description": "VLM oracle: verify Multi-Field scene shows three distinct separated primitives",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front-three-objects",
+      "mode": "vlm",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "description": "A 3D rendered scene with three distinct geometric primitives against a dark background. There should be: (1) a sphere, (2) a box/cube, and (3) a torus (donut shape). The three objects should be spatially separated from each other — not overlapping or merged. Each object should have a different color: the sphere should be red/warm, the box should be green, and the torus should be blue. All three objects should be clearly visible and rendered with proper shading."
+    }
+  ]
+}

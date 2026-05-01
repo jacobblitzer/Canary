@@ -1,0 +1,24 @@
+{
+  "name": "vlm-terrain-landscape",
+  "workload": "penumbra",
+  "description": "VLM oracle: verify Procedural Terrain renders terrain with water plane",
+  "setup": {
+    "scene": { "index": 6, "sceneName": "Procedural Terrain" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front-landscape",
+      "mode": "vlm",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 500,
+      "description": "A 3D rendered landscape scene against a dark background. The scene should contain a green terrain surface with rolling hills or undulating bumps — this is a procedurally displaced surface, so it should look organic and natural, not flat. Below or at the base of the terrain, there should be a blue or blue-translucent water plane. The terrain should be above the water level in at least some areas, with the water visible in lower areas. No error dialogs, debug text, or UI overlays should be visible."
+    }
+  ]
+}
