@@ -1,3 +1,11 @@
+---
+type: phases
+repo: Canary
+current_phase: 13
+total_phases: 9
+status: in_progress
+---
+
 # PHASES.md — Canary Build Phases
 
 ## Phase 0: Solution Scaffold + CLI Shell

@@ -1,3 +1,16 @@
+---
+type: repo
+repo: Canary
+phase: 13
+phase_name: "Phase 13 in progress"
+status: active
+last_audit: 2026-04-30
+test_count: 72
+component_count: null
+peers: [CPig, Penumbra, Slop, Pigture]
+tags: [multiverse, repo]
+---
+
 # CLAUDE.md
 
 ## Project: Canary — Cross-Application Visual Regression Testing Harness
