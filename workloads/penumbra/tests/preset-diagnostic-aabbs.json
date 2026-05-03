@@ -1,0 +1,21 @@
+{
+  "name": "preset-diagnostic-aabbs",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 — 'diagnostic-aabbs' preset. Field + atom AABB wireframes + centroid markers, surface colored by field-ID rainbow. Locks the AABB overlay axis.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "diagnostic-aabbs",
+    "vlmDescription": "An SDF teapot with multiple AABB wireframes (field bounds + atom bounds) overlaid as colored boxes. Centroid markers visible. The teapot itself is rainbow-colored by field index.",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    }
+  ]
+}

@@ -142,6 +142,26 @@ public sealed class TestSetup
     /// </summary>
     [JsonPropertyName("vlmDescription")]
     public string? VlmDescription { get; set; }
+
+    /// <summary>
+    /// Named Penumbra display preset to apply before the first checkpoint
+    /// (Penumbra workload only). The harness resolves the preset by name
+    /// against:
+    ///   1. The workload's <c>display-presets/&lt;name&gt;.json</c> directory
+    ///      (workload-local — wins on conflict).
+    ///   2. The shipped runtime catalog (<c>@penumbra/runtime/display-presets/</c>).
+    ///
+    /// When set, the harness calls <c>pass.loadDisplayPreset(name)</c> after
+    /// the scene loads but before the first checkpoint. The resolved preset
+    /// path + checksum are recorded in the run log for repro.
+    ///
+    /// When omitted, the renderer's default state is used (matches
+    /// pre-DisplayState behavior). Unknown names log a warning + no-op.
+    ///
+    /// See <c>spec/PENUMBRA_WORKLOAD.md</c> and Penumbra ADR 0011.
+    /// </summary>
+    [JsonPropertyName("displayPreset")]
+    public string? DisplayPreset { get; set; }
 }
 
 /// <summary>

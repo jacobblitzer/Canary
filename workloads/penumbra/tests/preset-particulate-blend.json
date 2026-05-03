@@ -1,0 +1,21 @@
+{
+  "name": "preset-particulate-blend",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 — 'particulate-blend' preset. 50/50 surface + particulate composite. Verifies blend-mode dispatch through DisplayState.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "particulate-blend",
+    "vlmDescription": "A solid SDF teapot with a soft particulate haze overlaid, both visible — silhouette readable, atmospheric layer adds volume.",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2500,
+      "tolerance": 0.05
+    }
+  ]
+}

@@ -882,6 +882,21 @@ public sealed class TestRunner
             }
         }
 
+        // Apply Penumbra display preset (Penumbra ADR 0011 / spec/PENUMBRA_WORKLOAD.md).
+        // Resolves the named preset and dispatches LoadDisplayPreset on the agent.
+        // The Penumbra-side handler (PenumbraBridgeAgent) calls
+        // pass.loadDisplayPreset(name) which in turn merges the preset into
+        // the renderer's DisplayState. Unknown names log a warning + no-op.
+        if (!string.IsNullOrWhiteSpace(setup.DisplayPreset))
+        {
+            _logger.Log($"Applying display preset: {setup.DisplayPreset}");
+            var presetResult = await agent.ExecuteAsync("LoadDisplayPreset", new Dictionary<string, string>
+            {
+                ["name"] = setup.DisplayPreset
+            }).ConfigureAwait(false);
+            _logger.Log($"  → {presetResult.Message}");
+        }
+
         // Run setup commands
         foreach (var cmd in setup.Commands)
         {

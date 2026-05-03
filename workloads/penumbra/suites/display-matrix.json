@@ -1,0 +1,14 @@
+{
+  "name": "display-matrix",
+  "description": "Penumbra ADR 0011 / spec/PENUMBRA_WORKLOAD.md — Cartesian sweep over the shipped DisplayState preset catalog. Each test fixes a single (scene × preset) pair to lock the preset surface end-to-end. Adding a new preset to Penumbra/packages/runtime/src/display-presets/ should be matched here. Run with --mode pixel-diff for regression coverage; --mode vlm for correctness via the vlmDescription baked into each test.",
+  "tests": [
+    "preset-smoke-test",
+    "preset-default",
+    "preset-diagnostic-bricks",
+    "preset-diagnostic-aabbs",
+    "preset-diagnostic-march-steps",
+    "preset-particulate-cloud",
+    "preset-particulate-blend",
+    "preset-monument"
+  ]
+}

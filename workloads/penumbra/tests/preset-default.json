@@ -1,0 +1,32 @@
+{
+  "name": "preset-default",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 smoke — load 'default' preset before first checkpoint, render the SDF Teapot scene, capture three angles. Locks the displayPreset wiring without exercising any non-default axis.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "default",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.02
+    },
+    {
+      "name": "top-down",
+      "camera": { "azimuth": 0, "elevation": 80, "distance": 10 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.02
+    }
+  ]
+}

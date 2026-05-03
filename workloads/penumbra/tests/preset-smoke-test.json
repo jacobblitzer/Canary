@@ -1,0 +1,20 @@
+{
+  "name": "preset-smoke-test",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 — 'smoke-test' preset. Minimal deterministic state: surface mode, atlas eval, no overlays, no post-fx. Cheapest of the matrix; runs first to fail-fast on schema drift.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "smoke-test",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    }
+  ]
+}

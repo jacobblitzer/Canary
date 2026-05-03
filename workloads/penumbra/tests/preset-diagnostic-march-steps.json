@@ -1,0 +1,21 @@
+{
+  "name": "preset-diagnostic-march-steps",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 — 'diagnostic-march-steps' preset. Heatmap of march-step counts per pixel.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "diagnostic-march-steps",
+    "vlmDescription": "An SDF teapot rendered as a step-count heatmap: red where many march steps were needed (thin features, near-tangent rays), blue where few (deep interior or open background). No PBR shading visible.",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    }
+  ]
+}

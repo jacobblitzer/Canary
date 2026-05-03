@@ -1,0 +1,21 @@
+{
+  "name": "preset-diagnostic-bricks",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 — 'diagnostic-bricks' preset. Atlas eval + brick wireframes + cascade overlay + cascade-allocation viz coloring. Locks atomMode/vizMode/overlays propagation.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "diagnostic-bricks",
+    "vlmDescription": "An SDF teapot with visible brick-allocation wireframes and cascade volume overlay. The surface itself is colored by which cascade contains each pixel (blue, teal, orange shading per cascade band). Diagnostic look.",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    }
+  ]
+}

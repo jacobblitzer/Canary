@@ -1,0 +1,9 @@
+{
+  "name": "display-smoke",
+  "description": "Fail-fast subset of display-matrix. Three presets exercise the displayPreset wiring without running every diagnostic. Use this for CI smoke; switch to display-matrix for the comprehensive sweep.",
+  "tests": [
+    "preset-smoke-test",
+    "preset-particulate-cloud",
+    "preset-diagnostic-bricks"
+  ]
+}

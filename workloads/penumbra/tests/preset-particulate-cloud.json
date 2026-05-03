@@ -1,0 +1,27 @@
+{
+  "name": "preset-particulate-cloud",
+  "workload": "penumbra",
+  "description": "Penumbra ADR 0011 — load 'particulate-cloud' preset. SDF Teapot rendered as a wispy 3D point cloud anchored to the surface via atlas seeding + fbm displacement + Newton-step pull. Verifies that all particulate axes (cloudNoise=0.8, seedSubdivision=4, softness=0.7, pullMode=sdf) propagate from the JSON catalog through the renderer.",
+  "setup": {
+    "scene": { "index": 5, "sceneName": "SDF Teapot" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "displayPreset": "particulate-cloud",
+    "vlmDescription": "A soft, wispy cloud of light particles arranged around the silhouette of an SDF teapot, anchored to the surface but with organic density variation. Not a hard surface, not a uniform fog — particulate haze with visible 3D parallax depth.",
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 2500,
+      "tolerance": 0.05
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2500,
+      "tolerance": 0.05
+    }
+  ]
+}

@@ -168,10 +168,11 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
             "WaitForStable" => await WaitForStableAsync(parameters).ConfigureAwait(false),
             "SetBackend" => await SetBackendAsync(parameters).ConfigureAwait(false),
             "RunCommand" => await RunCommandAsync(parameters).ConfigureAwait(false),
+            "LoadDisplayPreset" => await LoadDisplayPresetAsync(parameters).ConfigureAwait(false),
             _ => new AgentResponse
             {
                 Success = false,
-                Message = $"Unknown action: {action}. Supported: LoadScene, LoadSceneByName, SetCamera, SetCanvasSize, WaitForStable, SetBackend, RunCommand"
+                Message = $"Unknown action: {action}. Supported: LoadScene, LoadSceneByName, SetCamera, SetCanvasSize, WaitForStable, SetBackend, RunCommand, LoadDisplayPreset"
             }
         };
     }
@@ -325,6 +326,65 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
 
         var result = await _cdp!.EvaluateAsync(command).ConfigureAwait(false);
         return Ok($"Command executed. Result: {result ?? "undefined"}");
+    }
+
+    /// <summary>
+    /// Load a Penumbra display preset by name. Resolves through the renderer's
+    /// shipped catalog (<see href="../../Penumbra/packages/runtime/src/display-presets/"/>).
+    /// Unknown names log a warning + no-op renderer-side; this method records
+    /// the requested name and the resulting <c>getDisplayState().displayMode</c>
+    /// in the response message for the run log. See Penumbra ADR 0011 + the
+    /// PENUMBRA_WORKLOAD spec.
+    /// </summary>
+    private async Task<AgentResponse> LoadDisplayPresetAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("name", out var name) || string.IsNullOrWhiteSpace(name))
+            return Fail("LoadDisplayPreset requires 'name' parameter (non-empty string).");
+
+        // The Studio test harness exposes window.__canaryRenderer (the renderer
+        // instance) and window.__canaryPass (the PenumbraPass). For Studio's
+        // direct-renderer setup we go through the renderer; for adapter-based
+        // setups (Qualia, future hosts) we go through the Pass.
+        var script = $@"
+            (function() {{
+                var target = window.__canaryPass || window.__canaryRenderer;
+                if (!target || typeof target.loadDisplayPreset !== 'function') {{
+                    return JSON.stringify({{ ok: false, error: 'loadDisplayPreset unavailable' }});
+                }}
+                try {{
+                    target.loadDisplayPreset({JsonSerializer.Serialize(name)});
+                    var state = typeof target.getDisplayState === 'function' ? target.getDisplayState() : null;
+                    return JSON.stringify({{
+                        ok: true,
+                        displayMode: state ? state.displayMode : null,
+                        atomMode: state ? state.atomMode : null,
+                        vizMode: state ? state.vizMode : null,
+                    }});
+                }} catch (e) {{
+                    return JSON.stringify({{ ok: false, error: String(e) }});
+                }}
+            }})()";
+
+        var raw = await _cdp!.EvaluateAsync(script).ConfigureAwait(false);
+        var rawText = raw?.ToString() ?? "{}";
+        try
+        {
+            using var doc = JsonDocument.Parse(rawText);
+            var root = doc.RootElement;
+            if (root.TryGetProperty("ok", out var ok) && ok.ValueKind == JsonValueKind.True)
+            {
+                var displayMode = root.TryGetProperty("displayMode", out var dm) ? dm.GetString() : null;
+                var atomMode = root.TryGetProperty("atomMode", out var am) ? am.GetString() : null;
+                var vizMode = root.TryGetProperty("vizMode", out var vm) ? vm.GetString() : null;
+                return Ok($"Preset '{name}' applied. displayMode={displayMode}, atomMode={atomMode}, vizMode={vizMode}");
+            }
+            var error = root.TryGetProperty("error", out var e) ? e.GetString() : "unknown";
+            return Fail($"LoadDisplayPreset('{name}') failed: {error}");
+        }
+        catch (JsonException)
+        {
+            return Fail($"LoadDisplayPreset('{name}') returned non-JSON: {rawText}");
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
