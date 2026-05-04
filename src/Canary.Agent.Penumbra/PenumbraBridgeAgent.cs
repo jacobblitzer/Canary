@@ -66,7 +66,13 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         _chrome = await ChromeLauncher.LaunchAsync(chromeOpts, ct).ConfigureAwait(false);
 
         // 3. Connect CDP
-        _cdp = new CdpClient(TimeSpan.FromSeconds(15));
+        // 60s (was 15s) — Phase 11 atlas tests fire `setDisplayState` calls
+        // that can trigger a 10–15s synchronous brick-build + Dawn pipeline
+        // cross-compile on the JS main thread. With a 15s per-eval ceiling,
+        // every atlas-bearing test would time out the heartbeat and the
+        // watchdog (2s interval × 3 misses = ~6s grace) declared the agent
+        // dead. The longer ceiling lets the work finish and report ok.
+        _cdp = new CdpClient(TimeSpan.FromSeconds(60));
         await _cdp.ConnectAsync(_chrome.WebSocketUrl, ct).ConfigureAwait(false);
 
         // Enable required domains
@@ -75,7 +81,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
 
         // 4. Navigate to Penumbra test harness
         var url = $"{_vite.Url}?autostart=true&backend={_config.DefaultBackend}";
-        await _cdp.NavigateAsync(url, TimeSpan.FromSeconds(30), ct).ConfigureAwait(false);
+        await _cdp.NavigateAsync(url, TimeSpan.FromSeconds(60), ct).ConfigureAwait(false);
 
         // 5. Wait for Penumbra to initialize (renderer ready)
         await WaitForPenumbraReadyAsync(ct).ConfigureAwait(false);
@@ -104,7 +110,13 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         _externalViteUrl = viteUrl;
 
         // Connect CDP to the existing page
-        _cdp = new CdpClient(TimeSpan.FromSeconds(15));
+        // 60s (was 15s) — Phase 11 atlas tests fire `setDisplayState` calls
+        // that can trigger a 10–15s synchronous brick-build + Dawn pipeline
+        // cross-compile on the JS main thread. With a 15s per-eval ceiling,
+        // every atlas-bearing test would time out the heartbeat and the
+        // watchdog (2s interval × 3 misses = ~6s grace) declared the agent
+        // dead. The longer ceiling lets the work finish and report ok.
+        _cdp = new CdpClient(TimeSpan.FromSeconds(60));
         await _cdp.ConnectAsync(pageWsUrl, ct).ConfigureAwait(false);
 
         await _cdp.EnableDomainAsync("Page", ct).ConfigureAwait(false);
@@ -311,7 +323,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
 
         var baseUrl = _externalViteUrl ?? _vite!.Url;
         var url = $"{baseUrl}?autostart=true&backend={backend}";
-        await _cdp!.NavigateAsync(url, TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+        await _cdp!.NavigateAsync(url, TimeSpan.FromSeconds(60)).ConfigureAwait(false);
         await WaitForPenumbraReadyAsync().ConfigureAwait(false);
         await LockCanvasSizeAsync(_canvasWidth, _canvasHeight).ConfigureAwait(false);
         await MeasureCanvasOffsetAsync().ConfigureAwait(false);

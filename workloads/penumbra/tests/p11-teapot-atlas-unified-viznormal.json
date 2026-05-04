@@ -1,0 +1,34 @@
+{
+  "name": "p11-teapot-atlas-unified-viznormal",
+  "workload": "penumbra",
+  "description": "Phase 11 diagnostic \u00e2\u20ac\u201d SDF Teapot, eval=atlas, dispatchModel=unified, viz=normal. Same purpose as the multi-field variant: isolate geometry from materials. Single-field, many-atom path.",
+  "setup": {
+    "scene": {
+      "index": 5,
+      "sceneName": "SDF Teapot (atlas CSG)"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canarySetDisplayMode('eval-atlas')",
+      "window.__canaryRenderer.setDisplayState({ render: { dispatchModel: 'unified' } })",
+      "window.__canarySetDisplayMode('viz-normal')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": {
+        "azimuth": 30,
+        "elevation": 20,
+        "distance": 10
+      },
+      "stabilizeMs": 12000,
+      "tolerance": 0.04
+    }
+  ]
+}

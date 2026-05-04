@@ -1,0 +1,33 @@
+{
+  "name": "p11-multi-tape-legacy",
+  "workload": "penumbra",
+  "description": "Phase 11 matrix \u00e2\u20ac\u201d Multi-Field (multitape), eval=tape, dispatchModel=legacy. Baseline for the multi-tape correctness comparison.",
+  "setup": {
+    "scene": {
+      "index": 2,
+      "sceneName": "Multi-Field"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canarySetDisplayMode('eval-tape')",
+      "window.__canaryRenderer.setDisplayState({ render: { dispatchModel: 'legacy' } })"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": {
+        "azimuth": 30,
+        "elevation": 20,
+        "distance": 8
+      },
+      "stabilizeMs": 3000,
+      "tolerance": 0.03
+    }
+  ]
+}

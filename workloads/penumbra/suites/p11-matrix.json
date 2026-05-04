@@ -1,0 +1,16 @@
+{
+  "name": "p11-matrix",
+  "description": "Phase 11 / ADR 0012 matrix — Multi-Field (multitape) and SDF Teapot, each through {tape, atlas} × {legacy, unified} dispatch, plus 2 viz-normal diagnostics on the hot atlas+unified cells. 10 single-checkpoint tests; expected runtime ~2-3 min on first run while atlas pipeline cross-compiles.",
+  "tests": [
+    "p11-multi-tape-legacy",
+    "p11-multi-tape-unified",
+    "p11-multi-atlas-legacy",
+    "p11-multi-atlas-unified",
+    "p11-teapot-tape-legacy",
+    "p11-teapot-tape-unified",
+    "p11-teapot-atlas-legacy",
+    "p11-teapot-atlas-unified",
+    "p11-multi-atlas-unified-viznormal",
+    "p11-teapot-atlas-unified-viznormal"
+  ]
+}
