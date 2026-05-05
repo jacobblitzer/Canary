@@ -1,0 +1,9 @@
+{
+  "name": "d3-tricubic",
+  "description": "Penumbra Wave 3 Phase 6 — Tier D3 (tricubic interpolation + degree-9 Sturm-sequence root isolation per Ban et al. 2025 / Sigg & Hadwiger 2005). Three fixtures locking DisplayState.render.tricubicEnabled = true on the Multi-Field, Mechanical Assembly, and 12-Sphere Blob scenes. CPU + WGSL math foundations shipped in Phases 6a-6d (catmull-rom basis, tricubic evaluator, Sturm root finder, cubic-along-ray polynomial extraction); Phase 6e shipped the AtlasUniforms toggle + DisplayState axis. As of the 6f ship, the toggle is INERT — the actual main-atlas.wgsl marchRay branch wiring (sample-fetch helper that reads the 4×4×4 atlas neighborhood + tricubic+Sturm refinement at hit detection) is a deferred follow-on. Pixel-diff baselines locked at the toggle-ON state pixel-match the corresponding toggle-OFF baselines (multi-field-orbit, assembly-default, atlas-blob-orbit) — the Canary contract is 'flipping the toggle is not a regression at this stage'. When the marchRay branch wiring ships, baselines will be re-approved to reflect the genuine quality lift (sharper CSG edges, sub-pixel detail on hero scenes).",
+  "tests": [
+    "multi-field-d3-tricubic-on",
+    "assembly-d3-tricubic-on",
+    "atlas-blob-d3-tricubic-on"
+  ]
+}
