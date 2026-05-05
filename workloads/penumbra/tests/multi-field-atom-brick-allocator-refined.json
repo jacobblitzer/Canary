@@ -1,0 +1,29 @@
+{
+  "name": "multi-field-atom-brick-allocator-refined",
+  "workload": "penumbra",
+  "description": "Wave 1 / E1 Step 7 — multi-field-three-atlas-atoms regression with sub-brick refinement on. Combines `useAtomBrickAllocator: true` with `subBrickRefinement: true` (interval trigger, threshold 2.0, maxDepth 1) — the full per-atom sub-brick subdivision path. Each atom intersecting a cell flagged for refinement gets its own pool node (Step 6a's ownerAtomIndex API) with its own 8 child atlas slots; the WGSL `sampleAtomAtlasCascade` (Step 6c) descends per-atom rather than sharing a single subdivided cell across all overlapping atoms. Pre-Step-6 only one atom per shared cell would render correctly post-subdivision (last-write-wins); post-Step-6 all overlapping atoms render with sub-brick detail.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetClassificationMethod('interval')",
+      "window.__canarySetDisplayState({ render: { useAtomBrickAllocator: true, subBrickRefinement: true, subBrickTrigger: 'interval', subBrickThreshold: 2.0, subBrickMaxDepth: 1 } })",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 3000,
+      "tolerance": 0.05
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 3000,
+      "tolerance": 0.05
+    }
+  ]
+}

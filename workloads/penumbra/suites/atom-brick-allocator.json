@@ -1,0 +1,8 @@
+{
+  "name": "atom-brick-allocator",
+  "description": "Penumbra Wave 1 / E1+E2 — per-atom brick allocator (ADR 0012 + 0014 follow-on). Pins behavior of the `useAtomBrickAllocator` flag end-to-end on the Multi-Field scene. Two fixtures: flag-on without refinement (verifies the multi-slot per-cell list path), and flag-on with sub-brick refinement (verifies the per-atom subdivision integration shipped in Wave 1 Steps 6a/6b/6c). Comparison baseline: the existing `multi-field-orbit` test runs the same scene with the flag default off; pixel-diffing the two confirms the per-atom path produces correct output for the multi-field-three-spheres scenario. Active until Step 8 flips the default — at which point this suite continues to pin the same behavior under the new default.",
+  "tests": [
+    "multi-field-atom-brick-allocator-on",
+    "multi-field-atom-brick-allocator-refined"
+  ]
+}
