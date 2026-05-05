@@ -1,0 +1,21 @@
+{
+  "name": "assembly-mesh-determinism",
+  "workload": "penumbra",
+  "description": "Wave 3 Phase 5d — E6 mesh-extraction determinism baseline on the Mechanical Assembly scene. 8-field hybrid scene with CSG difference operations exercises the per-atom dispatch path (each atom owns its own brick at shared cells) → multi-tape mesh extraction. Most complex of the three determinism fixtures: catches regressions in cascade-adapter brick-info ordering, multi-atom slot allocation, and per-atom tape resolution.",
+  "setup": {
+    "scene": { "index": 7, "sceneName": "Mechanical Assembly (hybrid)" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "JSON.stringify(window.__canaryExtractMeshDeterminism())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 15 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.04
+    }
+  ]
+}

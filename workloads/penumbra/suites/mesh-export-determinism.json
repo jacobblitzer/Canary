@@ -1,0 +1,9 @@
+{
+  "name": "mesh-export-determinism",
+  "description": "Penumbra Wave 3 Phase 5d — E6 mesh-extraction determinism baseline. Three programmatic-assertion fixtures (Multi-Field + 12-Sphere Blob + Mechanical Assembly) that invoke `__canaryExtractMeshDeterminism()` after atlas build and capture a deterministic summary (counts + bbox + FNV-1a hashes + sample positions/normals) into the test JSON output. NOT pixel-diff — a numeric determinism check that locks the marching-cubes core, vertex welding (hash grid), normal sampling (gradient via central differences), and per-atom cascade adapter against silent regressions. Cross-hardware safe: the CPU mesh-extraction pipeline runs against the same SDF tape evaluator that drives the GPU populate shader; same input → same output bit-exact across machines. The companion pixel-diff suites (`d1-lipschitz`, `multiscale-overlays`) cover the renderer's GPU output; this suite catches CPU-side regressions those would miss (e.g., a swapped MC tri-table entry, an off-by-one in welding's grid key, a flipped normal direction).",
+  "tests": [
+    "multi-field-mesh-determinism",
+    "atlas-blob-mesh-determinism",
+    "assembly-mesh-determinism"
+  ]
+}
