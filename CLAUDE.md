@@ -81,6 +81,38 @@ path produces correct output. Step 8 of the E1+E2 plan flips the
 default — at which point this suite continues to pin the same
 behavior under the new default.
 
+### Active architecture initiative — Penumbra Tier D1 directional Lipschitz (Wave 3 Phase 3, shipped 2026-05-05)
+
+Penumbra now writes per-brick directional Lipschitz polynomials
+into a 64-coefficient buffer per atlas slot during populate.wgsl
+(Bernstein-trivariate degree-3 tensor product, sampled gradient
+magnitudes at 4×4×4 = 64 brick-local grid points). main-atlas.wgsl's
+marchRay reads `lipschitzAtBrick(slotIdx, rd)` and divides stepDist
+by the per-direction L (with `max(L, 1.0)` sphere-tracing safety
+floor). Replaces the legacy global-Lipschitz constant; expected
+visual benefit is tighter step sizes through bricks where local L
+varies by direction (CSG kinks, noise-displaced surfaces).
+
+Two new test fixtures + suite under `workloads/penumbra/`:
+- `multi-field-d1-lipschitz.json` — baseline atlas + per-atom path
+  with D1 unconditional. 3 checkpoints.
+- `multi-field-d1-lipschitz-refined.json` — D1 + sub-brick
+  refinement. 2 checkpoints + multiscale signal capture.
+
+Suite: `d1-lipschitz.json` runs both. Pixel-diff baselines
+approved on first run.
+
+Run:
+```
+canary run --workload penumbra --suite d1-lipschitz
+```
+
+Cross-pixel comparison baseline: `multi-field-orbit` ran with
+constant-Lipschitz pre-D1; D1 should produce near-identical
+output (per-direction L is tighter or equal to global L; never
+larger when geometry is uniform). Visible improvements expected
+on thin features and CSG-edge surfaces.
+
 ### Test mode duality (`--mode` flag)
 Every Canary test definition is mode-agnostic. The runtime selects how to evaluate:
 

@@ -1,0 +1,31 @@
+{
+  "name": "multi-field-d1-lipschitz",
+  "workload": "penumbra",
+  "description": "Wave 3 Phase 3 (6/N) — Tier D1 per-brick directional Lipschitz field baseline. Multi-Field scene rendered with the always-on D1 path: populate.wgsl writes per-brick Bernstein-trivariate coefficients (64 floats per brick, sampled gradient magnitudes at 4×4×4 grid points), main-atlas.wgsl's marchRay reads `lipschitzAtBrick(slotIdx, rd)` and uses it as a per-direction step-size divisor (replaces the legacy global-Lipschitz constant). Visual expectation: pixel-near-identical to the pre-D1 baseline (`multi-field-orbit`), since the constant-polynomial stub mathematically degenerates to scalar Lipschitz; with the actual gradient sampling shipped in Phase 3 (4.5/N), L is now per-direction and may produce slightly larger safe step sizes (faster convergence, no overshoot). Pixel-diff baselines approved on first run.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": []
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.04
+    },
+    {
+      "name": "side",
+      "camera": { "azimuth": 90, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.04
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.04
+    }
+  ]
+}

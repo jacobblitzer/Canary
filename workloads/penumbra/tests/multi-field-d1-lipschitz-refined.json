@@ -1,0 +1,29 @@
+{
+  "name": "multi-field-d1-lipschitz-refined",
+  "workload": "penumbra",
+  "description": "Wave 3 Phase 3 (6/N) — Tier D1 + sub-brick refinement combined. D1's per-brick directional Lipschitz is unconditional (always wired into marchRay's step divisor); this fixture additionally enables `subBrickRefinement: true` (interval trigger, threshold 2.0, maxDepth 1) so the refinement-on path also exercises the D1 step-size scaling at sub-brick granularity. Populate writes Bernstein coefficients for both parent bricks AND any sub-brick children allocated by `applyPerAtomSubdivision`. Visual: should match `multi-field-sub-brick-refinement-on` near-identically, with potentially cleaner thin-feature edges from D1's tighter per-direction L bounds.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetClassificationMethod('interval')",
+      "window.__canarySetDisplayState({ render: { subBrickRefinement: true, subBrickTrigger: 'interval', subBrickThreshold: 2.0, subBrickMaxDepth: 1 } })",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 3000,
+      "tolerance": 0.05
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 3000,
+      "tolerance": 0.05
+    }
+  ]
+}

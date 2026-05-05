@@ -1,0 +1,8 @@
+{
+  "name": "d1-lipschitz",
+  "description": "Penumbra Wave 3 Phase 3 — Tier D1 per-brick directional Lipschitz field. Pins the always-on D1 path on the Multi-Field scene: per-brick Bernstein-trivariate coefficients written by populate.wgsl from sampled gradient magnitudes at 4×4×4 = 64 grid points; main-atlas.wgsl's `lipschitzAtBrick(slotIdx, dir)` evaluates the polynomial at the ray's direction and divides marchRay's stepDist by the result (with `max(L, 1.0)` floor for sphere-tracing safety). Two fixtures: baseline (atlas + per-atom path, no sub-brick refinement) and refined (with sub-brick refinement on). Both are unconditional — D1 is the shipping behavior post-Wave-3-Phase-3, no flag toggle. Pixel-diff vs the pre-D1 `multi-field-orbit` should be near-zero (constant-polynomial baseline degenerates to scalar Lipschitz; gradient-sampled baseline produces tighter per-direction L → potentially faster convergence on thin features, no visual overshoot).",
+  "tests": [
+    "multi-field-d1-lipschitz",
+    "multi-field-d1-lipschitz-refined"
+  ]
+}
