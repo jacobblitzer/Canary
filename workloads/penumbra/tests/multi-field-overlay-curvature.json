@@ -1,0 +1,28 @@
+{
+  "name": "multi-field-overlay-curvature",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with curvature overlay enabled. Per-brick |k1|+|k2| (sum of absolute principal curvatures) computed via central differences on the brick's voxels (Goldman 2005 divergence-of-normalized-gradient formula). Bricks colored by a blue → purple gradient; peaks at sharp surface bends. Stage 2 of ADR 0014 — voxel snapshot path B (sparse, ~27 evals per brick).",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryToggleOverlay('curvature')",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    }
+  ]
+}

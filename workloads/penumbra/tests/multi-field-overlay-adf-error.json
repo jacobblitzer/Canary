@@ -1,0 +1,28 @@
+{
+  "name": "multi-field-overlay-adf-error",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with adfError overlay enabled. Per-brick maximum trilinear-interpolation error vs ground-truth SDF at 19 interior probe points (Frisken et al. SIGGRAPH 2000). Cool → hot ramp; red bricks indicate trilinear lookup is lying noticeably. Stage 2 of ADR 0014.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryToggleOverlay('adfError')",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 2000,
+      "tolerance": 0.03
+    }
+  ]
+}

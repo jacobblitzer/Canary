@@ -1,0 +1,28 @@
+{
+  "name": "multi-field-overlay-sub-brick-preview-interval",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with subBrickPreview='interval' overlay enabled. Wireframe-only 2×2×2 dashed grid drawn inside cells that WOULD be subdivided under the 'interval' trigger — uses the same shouldSubdivide(...) predicate the allocator uses, so this preview is a faithful 'what if' of sub-brick refinement before committing to the full atlas rebake. Toggle cycles through ['off' → 'interval' → 'adf' → 'curvature']; one toggle from the default 'off' lands on 'interval'.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryToggleOverlay('subBrickPreview')",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    }
+  ]
+}

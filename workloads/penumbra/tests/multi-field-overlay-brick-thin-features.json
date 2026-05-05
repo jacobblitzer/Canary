@@ -1,0 +1,28 @@
+{
+  "name": "multi-field-overlay-brick-thin-features",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with brickThinFeatures overlay enabled. Bricks where the SDF surface barely tangents (containsZeroCrossing && minSdf > -0.01) outlined in amber. Reads from cascadeManager.getBrickMetaMirror() (Stage 1 of ADR 0014). When the multi-field bug from Phase 11.4 is fixed, every field's bricks should contribute; today only the last-built field's bricks light up.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryToggleOverlay('brickThinFeatures')",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    }
+  ]
+}

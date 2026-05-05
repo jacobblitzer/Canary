@@ -1,0 +1,13 @@
+{
+  "name": "multiscale-overlays",
+  "description": "Penumbra ADR 0014 — multiscale diagnostic overlays on the Multi-Field scene. One fixture per overlay (intervalWidthHeatmap, brickThinFeatures, cascadeMismatch, curvature, adfError, subBrickPreview) plus one fixture exercising sub-brick refinement end-to-end. Pixel-diff baselines approved on the first run. The overlays are decoupled from SDF rendering — toggling them changes only the wireframe pass, never the SDF output.",
+  "tests": [
+    "multi-field-overlay-interval-width-heatmap",
+    "multi-field-overlay-brick-thin-features",
+    "multi-field-overlay-cascade-mismatch",
+    "multi-field-overlay-curvature",
+    "multi-field-overlay-adf-error",
+    "multi-field-overlay-sub-brick-preview-interval",
+    "multi-field-sub-brick-refinement-on"
+  ]
+}

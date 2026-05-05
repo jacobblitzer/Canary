@@ -1,0 +1,29 @@
+{
+  "name": "multi-field-sub-brick-refinement-on",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with sub-brick refinement enabled end-to-end. Toggles render.subBrickRefinement = true (interval trigger, threshold 2.0, maxDepth 1) which schedules a full atlas rebake via _applyDisplayDiff. Captures the post-bake render PLUS the diagnostic state (subBrickPoolNodeCount > 0 confirms refinement actually ran). When refinement is off the render is byte-identical to multi-field-orbit; when on, CSG-edge fidelity should improve in regions where the interval trigger fires.",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canarySetClassificationMethod('interval')",
+      "window.__canarySetDisplayState({ render: { subBrickRefinement: true, subBrickTrigger: 'interval', subBrickThreshold: 2.0, subBrickMaxDepth: 1 } })",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 3000,
+      "tolerance": 0.04
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 3000,
+      "tolerance": 0.04
+    }
+  ]
+}

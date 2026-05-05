@@ -1,0 +1,28 @@
+{
+  "name": "multi-field-overlay-interval-width-heatmap",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with intervalWidthHeatmap overlay enabled. Cells colored by SDF complexity (intervalWidth / cellDiagonal — cool = simple primitive, hot = CSG / smooth-union). Read directly from NarrowBandClassifier output via cascadeManager.getMultiscaleSignalState() (Stage 1 of ADR 0014).",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryToggleOverlay('intervalWidthHeatmap')",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    }
+  ]
+}

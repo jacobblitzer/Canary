@@ -1,0 +1,28 @@
+{
+  "name": "multi-field-overlay-cascade-mismatch",
+  "workload": "penumbra",
+  "description": "Multi-Field scene with cascadeMismatch overlay enabled. Cells where cascade 0 (fine) reports no brick but cascade 1 (coarse) sees a thin-feature surface — a strong signal for sub-brick refinement candidates (JCGT 2022 NVIDIA cross-validation). Read from cascadeManager.getBrickMetaMirror() per cascade (Stage 1 of ADR 0014).",
+  "setup": {
+    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "window.__canaryToggleOverlay('cascadeMismatch')",
+      "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    },
+    {
+      "name": "three-quarter",
+      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "stabilizeMs": 1500,
+      "tolerance": 0.03
+    }
+  ]
+}
