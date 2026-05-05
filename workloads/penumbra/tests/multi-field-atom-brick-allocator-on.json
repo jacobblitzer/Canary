@@ -1,14 +1,12 @@
 {
   "name": "multi-field-atom-brick-allocator-on",
   "workload": "penumbra",
-  "description": "Wave 1 / E1 Step 7 — multi-field-three-atlas-atoms regression. Multi-Field scene with `useAtomBrickAllocator: true` (the per-atom brick path shipped in Wave 1 Steps 1-6 of the E1+E2 plan; ADR 0012 + 0014 follow-on). Flag is the soak-gate switch; default is `false` until Step 8 flips it. With the flag off the legacy per-cell `sampleFieldAtlas` is used (last-write-wins on cells touched by multiple atoms — the multi-field-three-spheres bug); with the flag on, `sampleAtomAtlas` walks the multi-slot per-cell list so each atom owns its own brick at the shared cell. This test pins the post-Step-6 baseline.",
+  "description": "Wave 1 / E1 Step 7 — multi-field-three-atlas-atoms regression. Multi-Field scene rendered through the per-atom brick path (the shipping atlas path as of Step 8d's default flip and Step 9's kill-switch retirement). Each atom owns its own brick at any shared cell via the multi-slot per-cell list — fixes the multi-field-three-spheres last-write-wins bug from before Wave 1.",
   "setup": {
     "scene": { "index": 2, "sceneName": "Multi-Field" },
     "backend": "webgpu",
     "canvas": { "width": 960, "height": 540 },
-    "commands": [
-      "window.__canarySetDisplayState({ render: { useAtomBrickAllocator: true } })"
-    ]
+    "commands": []
   },
   "checkpoints": [
     {

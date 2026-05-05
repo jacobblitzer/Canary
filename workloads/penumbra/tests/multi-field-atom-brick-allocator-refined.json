@@ -8,7 +8,7 @@
     "canvas": { "width": 960, "height": 540 },
     "commands": [
       "window.__canarySetClassificationMethod('interval')",
-      "window.__canarySetDisplayState({ render: { useAtomBrickAllocator: true, subBrickRefinement: true, subBrickTrigger: 'interval', subBrickThreshold: 2.0, subBrickMaxDepth: 1 } })",
+      "window.__canarySetDisplayState({ render: { subBrickRefinement: true, subBrickTrigger: 'interval', subBrickThreshold: 2.0, subBrickMaxDepth: 1 } })",
       "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
     ]
   },
