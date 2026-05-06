@@ -50,6 +50,17 @@ public sealed partial class ViteManager : IDisposable
             CreateNoWindow = true,
         };
 
+        // Penumbra Bug 0031 — suppress Vite's auto-open of the user's
+        // default browser. Penumbra's vite.config.ts honors this env
+        // var (open: !process.env.PENUMBRA_NO_AUTO_OPEN). Without it,
+        // every Canary run launches TWO browser instances: the
+        // auto-opened user-default-browser tab + Canary's own Chrome,
+        // both connected to the dev server, both writing to the
+        // shared penumbra-startup.log, both compiling Dawn pipelines
+        // in parallel. See Penumbra docs/bugs/0031-*.md +
+        // docs/research/2026-05-06-canary-vite-auto-open-fix-plan.md.
+        psi.Environment["PENUMBRA_NO_AUTO_OPEN"] = "1";
+
         _process = Process.Start(psi)
             ?? throw new InvalidOperationException("Failed to start Vite dev server.");
 
