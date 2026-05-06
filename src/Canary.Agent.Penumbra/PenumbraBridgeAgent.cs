@@ -72,17 +72,20 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         // every atlas-bearing test would time out the heartbeat and the
         // watchdog (2s interval × 3 misses = ~6s grace) declared the agent
         // dead. The longer ceiling lets the work finish and report ok.
-        // 2026-05-06 raised 60s → 180s. The previous 60s was tuned for
-        // the heaviest case at the time: scene-load triggering a Dawn
-        // pipeline cross-compile on the JS main thread. Penumbra now
-        // exposes window.__canaryWaitForAtlasPipelineReady(timeoutMs)
-        // (default 120s) which sits as a setup command for every
-        // atlas-bearing test; the await-promise round-trip is bounded
+        // 2026-05-06 raised 60s → 180s; 2026-05-06 (later) raised
+        // 180s → 240s. Penumbra exposes
+        // window.__canaryWaitForAtlasPipelineReady(timeoutMs) (default
+        // 120s) and window.__canaryRunComputeMarcherSmoke(timeoutMs)
+        // (180s for E5 Phase 7b/3 — Dawn's
+        // createComputePipelineAsync also takes ~90s on this hardware
+        // because the compute shader is the same WGSL stack as the
+        // fragment marcher). The await-promise round-trip is bounded
         // by the helper's own timeout, so the CDP layer must allow
-        // headroom over it. 180s = 1.5× the helper's 120s default —
+        // headroom over it. 240s = 1.33× the longest helper timeout —
         // accommodates timing variance on the ~50s atlas pipeline
-        // build without false-positive CDP timeouts.
-        _cdp = new CdpClient(TimeSpan.FromSeconds(180));
+        // build + ~90s compute pipeline build without false-positive
+        // CDP timeouts.
+        _cdp = new CdpClient(TimeSpan.FromSeconds(240));
         await _cdp.ConnectAsync(_chrome.WebSocketUrl, ct).ConfigureAwait(false);
 
         // Enable required domains
@@ -126,17 +129,20 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         // every atlas-bearing test would time out the heartbeat and the
         // watchdog (2s interval × 3 misses = ~6s grace) declared the agent
         // dead. The longer ceiling lets the work finish and report ok.
-        // 2026-05-06 raised 60s → 180s. The previous 60s was tuned for
-        // the heaviest case at the time: scene-load triggering a Dawn
-        // pipeline cross-compile on the JS main thread. Penumbra now
-        // exposes window.__canaryWaitForAtlasPipelineReady(timeoutMs)
-        // (default 120s) which sits as a setup command for every
-        // atlas-bearing test; the await-promise round-trip is bounded
+        // 2026-05-06 raised 60s → 180s; 2026-05-06 (later) raised
+        // 180s → 240s. Penumbra exposes
+        // window.__canaryWaitForAtlasPipelineReady(timeoutMs) (default
+        // 120s) and window.__canaryRunComputeMarcherSmoke(timeoutMs)
+        // (180s for E5 Phase 7b/3 — Dawn's
+        // createComputePipelineAsync also takes ~90s on this hardware
+        // because the compute shader is the same WGSL stack as the
+        // fragment marcher). The await-promise round-trip is bounded
         // by the helper's own timeout, so the CDP layer must allow
-        // headroom over it. 180s = 1.5× the helper's 120s default —
+        // headroom over it. 240s = 1.33× the longest helper timeout —
         // accommodates timing variance on the ~50s atlas pipeline
-        // build without false-positive CDP timeouts.
-        _cdp = new CdpClient(TimeSpan.FromSeconds(180));
+        // build + ~90s compute pipeline build without false-positive
+        // CDP timeouts.
+        _cdp = new CdpClient(TimeSpan.FromSeconds(240));
         await _cdp.ConnectAsync(pageWsUrl, ct).ConfigureAwait(false);
 
         await _cdp.EnableDomainAsync("Page", ct).ConfigureAwait(false);
