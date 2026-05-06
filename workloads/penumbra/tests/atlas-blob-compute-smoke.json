@@ -16,6 +16,7 @@
       "window.__canaryHideUI(true)",
       "window.__canaryWaitForAtlasPipelineReady(120000)",
       "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeCalibration()",
       "window.__canaryRunComputeMarcherSmoke(15000)"
     ]
   },
