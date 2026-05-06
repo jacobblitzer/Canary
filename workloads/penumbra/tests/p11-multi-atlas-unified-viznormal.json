@@ -16,7 +16,8 @@
       "window.__canaryHideUI(true)",
       "window.__canarySetDisplayMode('eval-atlas')",
       "window.__canaryRenderer.setDisplayState({ render: { dispatchModel: 'unified' } })",
-      "window.__canarySetDisplayMode('viz-normal')"
+      "window.__canarySetDisplayMode('viz-normal')",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
     ]
   },
   "checkpoints": [

@@ -15,7 +15,8 @@
     "commands": [
       "window.__canaryHideUI(true)",
       "window.__canarySetDisplayMode('eval-atlas')",
-      "window.__canaryRenderer.setDisplayState({ render: { dispatchModel: 'legacy' } })"
+      "window.__canaryRenderer.setDisplayState({ render: { dispatchModel: 'legacy' } })",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
     ]
   },
   "checkpoints": [

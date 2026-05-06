@@ -103,6 +103,14 @@ public sealed class CdpClient : IDisposable
     /// <param name="expression">JavaScript expression to evaluate.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>The string value of the result, or null.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the expression
+    /// throws a JS exception or the awaited Promise rejects. Surfaces the
+    /// exception text from CDP's <c>exceptionDetails</c>. Without this
+    /// check, rejected Promises silently appear as null/empty-object
+    /// successes (e.g., <c>reject(new Error("foo"))</c> JSON-serializes
+    /// to <c>{}</c> via <c>returnByValue</c>). Surfaced 2026-05-06 by
+    /// the Penumbra atlas-pipeline Candidate A workaround; see Penumbra
+    /// commit a5d542c.</exception>
     public async Task<string?> EvaluateAsync(string expression, CancellationToken ct = default)
     {
         var result = await SendAsync("Runtime.evaluate", new
@@ -111,6 +119,14 @@ public sealed class CdpClient : IDisposable
             returnByValue = true,
             awaitPromise = true
         }, ct).ConfigureAwait(false);
+
+        // Check for exceptions — same pattern as the typed overload.
+        var exceptionDetails = result?["exceptionDetails"];
+        if (exceptionDetails != null)
+        {
+            var text = exceptionDetails["text"]?.GetValue<string>() ?? "Unknown JS error";
+            throw new InvalidOperationException($"JavaScript evaluation failed: {text}");
+        }
 
         var value = result?["result"]?["value"];
         return value?.ToJsonString();

@@ -14,7 +14,8 @@
     },
     "commands": [
       "window.__canaryHideUI(true)",
-      "window.__canarySetDisplayState({ render: { tricubicEnabled: true } })"
+      "window.__canarySetDisplayState({ render: { tricubicEnabled: true } })",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
     ]
   },
   "checkpoints": [

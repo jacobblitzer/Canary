@@ -7,7 +7,8 @@
     "backend": "webgpu",
     "canvas": { "width": 960, "height": 540 },
     "commands": [
-      "window.__canaryApplyEnvironmentPreset('outdoor')"
+      "window.__canaryApplyEnvironmentPreset('outdoor')",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
     ]
   },
   "checkpoints": [
