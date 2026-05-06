@@ -38,6 +38,25 @@ public sealed partial class ViteManager : IDisposable
 
         var effectiveTimeout = timeout ?? TimeSpan.FromSeconds(30);
 
+        // 2026-05-06 — Penumbra E5 Phase 7b/3 bring-up surfaced a
+        // silent test correctness bug: a previous test run could
+        // leave an orphaned node.exe listening on the dev port (the
+        // child process spawned by `cmd /c npm run dev` can survive
+        // its parent's kill on Windows). The new Vite instance hits
+        // EADDRINUSE — but in some race conditions the harness reads
+        // the prior server's still-buffered "ready" line BEFORE the
+        // EADDRINUSE error arrives, treats startup as successful, and
+        // then quietly serves files from the WRONG projectDir for
+        // the rest of the test. Symptom: changes to the workload's
+        // projectDir don't take effect; stale shader code is served.
+        //
+        // Fix: actively check the port before starting and kill any
+        // process holding it. Aggressive but safe in CI/automation
+        // contexts (no user-owned dev servers to preserve). The
+        // warning log makes it visible when this fires so a manual
+        // run noticing it can investigate.
+        await KillStaleListenerAsync(_port, ct).ConfigureAwait(false);
+
         // Use cmd /c on Windows to run npm (npm is a .cmd file)
         var psi = new ProcessStartInfo
         {
@@ -172,6 +191,109 @@ public sealed partial class ViteManager : IDisposable
 
     [GeneratedRegex(@"\x1B\[[0-9;]*[a-zA-Z]")]
     private static partial Regex AnsiRegex();
+
+    /// <summary>
+    /// If anything is listening on <paramref name="port"/>, kill it.
+    /// Windows-specific: shells out to `netstat -ano` to find the
+    /// owning PID, then `taskkill /F /PID`. No-op when the port is
+    /// free.
+    ///
+    /// Used by <see cref="StartAsync"/> to scrub orphaned processes
+    /// from prior runs so the new Vite always serves files from the
+    /// expected projectDir. See the comment in StartAsync for the
+    /// failure mode this prevents.
+    /// </summary>
+    private static async Task KillStaleListenerAsync(int port, CancellationToken ct)
+    {
+        var pid = FindListenerPid(port);
+        if (pid is null) return;
+
+        Console.WriteLine($"[ViteManager] Port {port} held by PID {pid} — killing stale listener before starting fresh dev server.");
+
+        var killPsi = new ProcessStartInfo
+        {
+            FileName = "taskkill.exe",
+            Arguments = $"/F /T /PID {pid.Value}",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        try
+        {
+            using var killProc = Process.Start(killPsi);
+            if (killProc is not null)
+            {
+                await killProc.WaitForExitAsync(ct).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ViteManager] taskkill failed: {ex.Message}. Vite startup may EADDRINUSE.");
+            return;
+        }
+
+        // Brief wait for the OS to release the socket. TIME_WAIT can
+        // hang for tens of seconds for a normal close but a forcibly-
+        // killed process drops the socket immediately on Windows.
+        await Task.Delay(TimeSpan.FromMilliseconds(300), ct).ConfigureAwait(false);
+
+        // Confirm. If still occupied, log + continue — Vite's own
+        // EADDRINUSE detection becomes the next line of defense.
+        var stillPid = FindListenerPid(port);
+        if (stillPid is not null)
+        {
+            Console.WriteLine($"[ViteManager] WARNING: Port {port} still held by PID {stillPid} after taskkill. Vite startup will likely fail with EADDRINUSE.");
+        }
+    }
+
+    /// <summary>
+    /// Returns the PID of the process listening on <paramref name="port"/>,
+    /// or null if the port is free. Parses `netstat -ano` output —
+    /// Windows-specific. Looks only at LISTENING sockets (ignores
+    /// ESTABLISHED / TIME_WAIT entries).
+    /// </summary>
+    private static int? FindListenerPid(int port)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = "netstat.exe",
+            Arguments = "-ano",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        try
+        {
+            using var proc = Process.Start(psi);
+            if (proc is null) return null;
+            var output = proc.StandardOutput.ReadToEnd();
+            proc.WaitForExit(2000);
+
+            // Lines look like:
+            //   TCP    0.0.0.0:3000           0.0.0.0:0              LISTENING       12345
+            //   TCP    [::]:3000              [::]:0                 LISTENING       12345
+            //   TCP    [::1]:3000             [::]:0                 LISTENING       12345
+            // We want the PID for any LISTENING socket on the chosen port.
+            var portSuffix = $":{port}";
+            foreach (var line in output.Split('\n'))
+            {
+                if (!line.Contains("LISTENING")) continue;
+                var trimmed = line.Trim();
+                // Local address is the second field. Match if it ends with our port.
+                var parts = trimmed.Split((char[])[' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 5) continue;
+                if (!parts[1].EndsWith(portSuffix)) continue;
+                if (int.TryParse(parts[^1], out var pid)) return pid;
+            }
+        }
+        catch
+        {
+            // Swallow — if netstat fails, fall through to "port appears free".
+        }
+        return null;
+    }
 
     /// <inheritdoc />
     public void Dispose()
