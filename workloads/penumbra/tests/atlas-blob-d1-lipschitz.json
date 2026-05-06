@@ -1,23 +1,39 @@
 {
   "name": "atlas-blob-d1-lipschitz",
   "workload": "penumbra",
-  "description": "Wave 3 Phase 5c — D1 directional Lipschitz on the 12-Sphere Blob scene. Sanity check: smooth-union geometry has nearly-uniform Lipschitz across directions (the union's gradient magnitude stays bounded by 1 everywhere by the smooth-min upper-bound), so D1's per-direction L should degenerate to ~scalar. Output should be pixel-near-identical to `atlas-blob-orbit` — confirms D1 doesn't regress the smooth-blob path. Pixel-diff baselines approved on first run; tight tolerance because D1 should NOT change anything visibly here.",
+  "description": "Wave 3 Phase 5c \u2014 D1 directional Lipschitz on the 12-Sphere Blob scene. Sanity check: smooth-union geometry has nearly-uniform Lipschitz across directions (the union's gradient magnitude stays bounded by 1 everywhere by the smooth-min upper-bound), so D1's per-direction L should degenerate to ~scalar. Output should be pixel-near-identical to `atlas-blob-orbit` \u2014 confirms D1 doesn't regress the smooth-blob path. Pixel-diff baselines approved on first run; tight tolerance because D1 should NOT change anything visibly here.",
   "setup": {
-    "scene": { "index": 1, "sceneName": "12-Sphere Blob" },
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
     "backend": "webgpu",
-    "canvas": { "width": 960, "height": 540 },
-    "commands": []
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)"
+    ]
   },
   "checkpoints": [
     {
       "name": "front",
-      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
       "stabilizeMs": 800,
       "tolerance": 0.025
     },
     {
       "name": "three-quarter",
-      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "camera": {
+        "azimuth": 45,
+        "elevation": 30,
+        "distance": 8
+      },
       "stabilizeMs": 800,
       "tolerance": 0.025
     }

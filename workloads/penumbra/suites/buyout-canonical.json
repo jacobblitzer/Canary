@@ -1,0 +1,11 @@
+{
+  "name": "buyout-canonical",
+  "description": "Wave 3 Canary buyout — re-baseline the four canonical orbit fixtures + assembly-default after adding window.__canaryHideUI(true) to their setup commands. Captures clean HUD-free goldens so subsequent Wave 3 toggle fixtures (d1-lipschitz, d3-tricubic, mesh-export-determinism) have visual reference baselines to compare against.",
+  "tests": [
+    "multi-field-orbit",
+    "atlas-blob-orbit",
+    "stress-test-orbit",
+    "tape-csg-orbit",
+    "assembly-default"
+  ]
+}

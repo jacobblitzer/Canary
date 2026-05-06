@@ -1,25 +1,40 @@
 {
   "name": "multi-field-d3-tricubic-on",
   "workload": "penumbra",
-  "description": "Wave 3 Phase 6f — Tier D3 (tricubic + Sturm-sequence root isolation) toggle on the Multi-Field scene. Flips DisplayState.render.tricubicEnabled to true via setDisplayState. The CPU + WGSL math foundations (Phases 6a-6d) are shipped and the AtlasUniforms struct grew to carry the toggle; the actual main-atlas.wgsl marchRay branch wiring is a deferred follow-on. As of Phase 6e ship, this fixture is pixel-equivalent to `multi-field-orbit` (toggle is inert) — the baseline locks the no-regression contract. When the marchRay branch wiring ships, the baseline gets re-approved to reflect the genuine quality lift (sharper CSG edges, sub-pixel detail). Pixel-diff baselines approved on first run.",
+  "description": "Wave 3 Phase 6f \u2014 Tier D3 (tricubic + Sturm-sequence root isolation) toggle on the Multi-Field scene. Flips DisplayState.render.tricubicEnabled to true via setDisplayState. The CPU + WGSL math foundations (Phases 6a-6d) are shipped and the AtlasUniforms struct grew to carry the toggle; the actual main-atlas.wgsl marchRay branch wiring is a deferred follow-on. As of Phase 6e ship, this fixture is pixel-equivalent to `multi-field-orbit` (toggle is inert) \u2014 the baseline locks the no-regression contract. When the marchRay branch wiring ships, the baseline gets re-approved to reflect the genuine quality lift (sharper CSG edges, sub-pixel detail). Pixel-diff baselines approved on first run.",
   "setup": {
-    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "scene": {
+      "index": 2,
+      "sceneName": "Multi-Field"
+    },
     "backend": "webgpu",
-    "canvas": { "width": 960, "height": 540 },
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
     "commands": [
+      "window.__canaryHideUI(true)",
       "window.__canarySetDisplayState({ render: { tricubicEnabled: true } })"
     ]
   },
   "checkpoints": [
     {
       "name": "front",
-      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
       "stabilizeMs": 1500,
       "tolerance": 0.04
     },
     {
       "name": "three-quarter",
-      "camera": { "azimuth": 45, "elevation": 30, "distance": 8 },
+      "camera": {
+        "azimuth": 45,
+        "elevation": 30,
+        "distance": 8
+      },
       "stabilizeMs": 1500,
       "tolerance": 0.04
     }

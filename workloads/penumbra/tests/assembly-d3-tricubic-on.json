@@ -1,25 +1,40 @@
 {
   "name": "assembly-d3-tricubic-on",
   "workload": "penumbra",
-  "description": "Wave 3 Phase 6f — D3 tricubic toggle on Mechanical Assembly. The CSG-edge thin-feature scene is where D3's quality lift will show most when the marchRay branch lands (sub-pixel-accurate edge intersection via Sturm root finding on the cubic-along-ray polynomial). As of Phase 6e ship, this fixture pixel-matches `assembly-default` (toggle is inert); baseline locks the no-regression contract for the toggle-ON state. Re-approves when marchRay branch wiring ships.",
+  "description": "Wave 3 Phase 6f \u2014 D3 tricubic toggle on Mechanical Assembly. The CSG-edge thin-feature scene is where D3's quality lift will show most when the marchRay branch lands (sub-pixel-accurate edge intersection via Sturm root finding on the cubic-along-ray polynomial). As of Phase 6e ship, this fixture pixel-matches `assembly-default` (toggle is inert); baseline locks the no-regression contract for the toggle-ON state. Re-approves when marchRay branch wiring ships.",
   "setup": {
-    "scene": { "index": 7, "sceneName": "Mechanical Assembly (hybrid)" },
+    "scene": {
+      "index": 7,
+      "sceneName": "Mechanical Assembly (hybrid)"
+    },
     "backend": "webgpu",
-    "canvas": { "width": 960, "height": 540 },
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
     "commands": [
+      "window.__canaryHideUI(true)",
       "window.__canarySetDisplayState({ render: { tricubicEnabled: true } })"
     ]
   },
   "checkpoints": [
     {
       "name": "front",
-      "camera": { "azimuth": 0, "elevation": 15, "distance": 15 },
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 15
+      },
       "stabilizeMs": 2000,
       "tolerance": 0.04
     },
     {
       "name": "three-quarter",
-      "camera": { "azimuth": 45, "elevation": 30, "distance": 15 },
+      "camera": {
+        "azimuth": 45,
+        "elevation": 30,
+        "distance": 15
+      },
       "stabilizeMs": 2000,
       "tolerance": 0.04
     }

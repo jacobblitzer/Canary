@@ -1,19 +1,30 @@
 {
   "name": "multi-field-mesh-determinism",
   "workload": "penumbra",
-  "description": "Wave 3 Phase 5d — E6 mesh-extraction determinism baseline. Renders the Multi-Field scene in atlas mode, then invokes `__canaryExtractMeshDeterminism()` to run the cascade → MC → welding → normals pipeline against the live atlas and capture a deterministic summary (vertex/triangle/brick counts, bbox, FNV-1a hashes of vertex/index/normal buffers, first 3 sample positions + normals). The summary becomes the golden across runs; any change in the MC table, welding epsilon, normal direction, sampling cadence, or per-atom dispatch ordering produces a different hash → test failure. NO pixel-diff — this is a programmatic (numeric) determinism check. Cross-hardware safe because the pipeline is pure CPU + same FieldTape evaluator. Pixel-diff tests in `d1-lipschitz` and `multiscale-overlays` cover the GPU side; this fixture catches CPU-side regressions the pixel-diff path would miss.",
+  "description": "Wave 3 Phase 5d \u2014 E6 mesh-extraction determinism baseline. Renders the Multi-Field scene in atlas mode, then invokes `__canaryExtractMeshDeterminism()` to run the cascade \u2192 MC \u2192 welding \u2192 normals pipeline against the live atlas and capture a deterministic summary (vertex/triangle/brick counts, bbox, FNV-1a hashes of vertex/index/normal buffers, first 3 sample positions + normals). The summary becomes the golden across runs; any change in the MC table, welding epsilon, normal direction, sampling cadence, or per-atom dispatch ordering produces a different hash \u2192 test failure. NO pixel-diff \u2014 this is a programmatic (numeric) determinism check. Cross-hardware safe because the pipeline is pure CPU + same FieldTape evaluator. Pixel-diff tests in `d1-lipschitz` and `multiscale-overlays` cover the GPU side; this fixture catches CPU-side regressions the pixel-diff path would miss.",
   "setup": {
-    "scene": { "index": 2, "sceneName": "Multi-Field" },
+    "scene": {
+      "index": 2,
+      "sceneName": "Multi-Field"
+    },
     "backend": "webgpu",
-    "canvas": { "width": 960, "height": 540 },
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
     "commands": [
+      "window.__canaryHideUI(true)",
       "JSON.stringify(window.__canaryExtractMeshDeterminism())"
     ]
   },
   "checkpoints": [
     {
       "name": "front",
-      "camera": { "azimuth": 0, "elevation": 15, "distance": 8 },
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
       "stabilizeMs": 1500,
       "tolerance": 0.04
     }
