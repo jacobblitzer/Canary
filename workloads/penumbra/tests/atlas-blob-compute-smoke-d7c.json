@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-d7c",
+  "workload": "penumbra",
+  "description": "E5 Phase 7d Step 8 — D7c smooth-min omega uplift enabled. The atlas-blob scene is all smooth-min (12 spheres smooth-unioned), so u.sceneAllSmoothMinOnly is 1 and the uplift activates: omega 1.2 → 1.8 effective. Verifies D7c path runs without crash + produces identical pixel output (the uplift is a safe upper bound for smooth-min SDFs — sphere-trace invariant preserved). No pipeline rebuild needed since D7c is a runtime flag, not a compile-time override.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canarySetComputeMarchToggles({enableD7cSmoothMinUplift: true})",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-d7c",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
