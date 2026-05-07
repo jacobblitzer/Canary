@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-bisection",
+  "workload": "penumbra",
+  "description": "E5 Phase 7d Step 7 — bisection fallback enabled (along with D2 cubic, since bisection only fires when cubic returns no in-range root). Sets toggles BEFORE prebuild so the FIRST pipeline is built with both BISECTION_ENABLED and D2_CUBIC_ENABLED. tileCount=8 for maximum per-tile budget headroom — bisection is heaviest of the per-overshoot features (6 sceneSDF calls per fire). Currently expected to CRASH on iGPU; parked as a regression gate for the eventual fix path (S5 lower res, S2 deeper tiling, or bigger GPU).",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetComputeMarchToggles({tileCount: 8, enableD2Cubic: true, enableBisection: true})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(60000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-bisection",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
