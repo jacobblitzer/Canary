@@ -1,0 +1,36 @@
+{
+  "name": "atlas-blob-compute-determinism",
+  "workload": "penumbra",
+  "description": "E5 Phase 7d Step 10 — compute marcher determinism check. Captures the storage texture 5 times and verifies all captures are bitwise-identical. Compute output is deterministic per-pixel (no atomics in outColor writes, only in the dispatchCounters buffer). Failure indicates a regression — race condition, uniform-buffer write race between captures, or non-deterministic per-thread state.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canarySetComputeMarchToggles({})",
+      "window.__canaryRunComputeMarcherSmoke(15000)",
+      "window.__canaryComputeMarcherDeterminismCheck(5)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-after-determinism",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
