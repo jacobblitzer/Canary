@@ -9,7 +9,7 @@
   "windowTitle": "Penumbra",
   "viewportClass": "",
   "penumbraConfig": {
-    "projectDir": "C:\\Repos\\Penumbra",
+    "projectDir": "C:\\Repos\\Penumbra-compute-march",
     "chromePath": "",
     "cdpPort": 9222,
     "vitePort": 3000,
