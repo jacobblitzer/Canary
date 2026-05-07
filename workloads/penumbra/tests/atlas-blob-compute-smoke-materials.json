@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-materials",
+  "workload": "penumbra",
+  "description": "E5 Phase 7e+ — materials port. enableMaterials=true makes hit pixels look up per-atom diffuse colors via sceneSDF_material_unified instead of the hardcoded 0.7 gray albedo. Compile-time gated like D5/D2 (heavy feature, +1 sceneSDF-equivalent per hit pixel ~145ms estimated). Pipeline rebuilds with MATERIALS_ENABLED=1. Set tileCount=2 for the per-tile budget headroom that the extra per-hit cost needs. Lighting must also be ON (materials only matter inside the FEAT_LIGHTING branch).",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetComputeMarchToggles({tileCount: 8, enableLighting: true, enableMaterials: true})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-materials",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
