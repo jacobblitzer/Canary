@@ -1,0 +1,11 @@
+{
+  "name": "feature-loader-c6-spike",
+  "description": "Phase 1 C6 (Dawn pipeline cache) empirical test. Runs 5 sequential atlas-pipeline builds, accumulates samples in C6 stub's localStorage, and emits the cold-vs-warm verdict on the 5th run. Final test's `[c6-verdict]` console.log line tells us whether Chrome's DawnWebGPUCache hits (H_A) or misses (H_B) on Penumbra's explicit-pipeline-layout atlas pipeline. CAVEAT: requires Canary's Chrome instance to use a persistent profile (localStorage + DawnWebGPUCache must survive across tests). If samples reset between tests, run the spike manually via `npm run dev` instead — the same instrumentation works there.",
+  "tests": [
+    "feature-loader-c6-spike-1",
+    "feature-loader-c6-spike-2",
+    "feature-loader-c6-spike-3",
+    "feature-loader-c6-spike-4",
+    "feature-loader-c6-spike-5"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "feature-loader-c6-spike-1",
+  "workload": "penumbra",
+  "description": "Phase 1 spike (ADR 0015 / docs/research/2026-05-07-c6-dawn-pipeline-cache-spike.md) — sample 1 of 5. Clears C6 history then loads Penumbra fresh; the atlas-pipeline build records the FIRST sample. Fails if the C6 stub didn't capture a sample (proves the renderer's onPipelineCreate hook is wired). Run as part of the `feature-loader-c6-spike` suite to accumulate cold-vs-warm comparison.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryClearC6CacheHistory()",
+      "window.__canarySetDisplayState({features: {dawnPipelineCacheSpike: 'on'}})",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "(() => { const r = window.__canaryGetC6CacheReport(); if (!r || r.ok === false) throw new Error('C6 stub unavailable: ' + JSON.stringify(r)); const atlas = r.labels && r.labels['penumbra-render-atlas']; if (!atlas) throw new Error('atlas pipeline label missing from report — onPipelineCreate hook not wired? labels=' + JSON.stringify(Object.keys(r.labels || {}))); if (atlas.samples < 1) throw new Error('atlas samples=' + atlas.samples + ' (expected >=1) — wiring works but no build observed'); console.log('[c6-spike-1] sample 1 captured: cold=' + atlas.coldMs + 'ms samples=' + atlas.samples); return 'sample 1 ok'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-after-sample-1",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.05
+    }
+  ]
+}

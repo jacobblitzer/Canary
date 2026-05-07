@@ -1,0 +1,34 @@
+{
+  "name": "feature-loader-c6-spike-2",
+  "workload": "penumbra",
+  "description": "Phase 1 spike — sample 2 of 5. NO history clear (depends on -spike-1 having run); reload accumulates a second atlas pipeline build sample. Passes if samples >= 2. The build duration on this load tells us whether Chrome's DawnWebGPUCache is hitting (warm load is fast) or missing (still ~49s).",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canarySetDisplayState({features: {dawnPipelineCacheSpike: 'on'}})",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "(() => { const r = window.__canaryGetC6CacheReport(); const atlas = r && r.labels && r.labels['penumbra-render-atlas']; if (!atlas) throw new Error('atlas label missing — was -spike-1 run first? labels=' + JSON.stringify(Object.keys((r && r.labels) || {}))); if (atlas.samples < 2) throw new Error('atlas samples=' + atlas.samples + ' (expected >=2 — depends on -spike-1 having seeded). localStorage may not persist between Canary tests; switch to manual sampling via dev server.'); console.log('[c6-spike-2] sample 2 captured: cold=' + atlas.coldMs + 'ms warmAvg=' + atlas.warmAvgMs + 'ms samples=' + atlas.samples); return 'sample 2 ok'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-after-sample-2",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.05
+    }
+  ]
+}
