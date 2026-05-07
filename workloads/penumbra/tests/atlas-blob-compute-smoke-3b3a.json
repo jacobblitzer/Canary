@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-3b3a",
+  "workload": "penumbra",
+  "description": "E5 Phase 7d Step 9 — enables 3B per-brick safety + 3A DDA step cap. Both are cheap (1 brickMeta lookup + arithmetic for 3B; pure arithmetic for 3A). Pipeline rebuilds with both override constants enabled (~10-15s). Verifies the cheap end of Step 9 fits the tile=1 budget without going over TDR. D1 + D5 (heavier) parked separately like Step 6/7.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetComputeMarchToggles({enable3BSafety: true, enable3ADdaCap: true})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-3b3a",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
