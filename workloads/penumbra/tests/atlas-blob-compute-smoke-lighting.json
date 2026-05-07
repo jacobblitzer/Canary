@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-lighting",
+  "workload": "penumbra",
+  "description": "E5 Phase 7e+ — Lambert + hemispheric ambient lighting using existing 3-tap forward-difference normal. Hit pixels write a properly-lit color (diffuse × NdotL + ambient × hemiBlend) instead of normal-as-color. Hardcoded gray (0.7) albedo until the material lookup ports. Pure arithmetic — no extra sceneSDF calls, no pipeline rebuild on toggle.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canarySetComputeMarchToggles({enableLighting: true})",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-lighting",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
