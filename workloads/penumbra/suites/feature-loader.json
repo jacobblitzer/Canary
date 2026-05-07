@@ -1,0 +1,11 @@
+{
+  "name": "feature-loader",
+  "description": "Phase 0 feature loader (ADR 0014) verification — pixel-identical baseline + profile applies + matrix enforcement + 14-stub wiring sweep.",
+  "tests": [
+    "feature-loader-all-off",
+    "feature-loader-performance-profile",
+    "feature-loader-quality-profile",
+    "feature-loader-mutex-rejection",
+    "feature-loader-stub-wiring"
+  ]
+}

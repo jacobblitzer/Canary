@@ -1,0 +1,35 @@
+{
+  "name": "feature-loader-stub-wiring",
+  "workload": "penumbra",
+  "description": "Phase 0 feature loader (ADR 0014) — verify all 14 stubs are wired. For each feature, toggle off→on, assert activations >= 1 (stub idiom: applyFeatureTransition increments on every off→on). Skip features that are mutex with already-on ones; reset state between each. The fixture passes only when every one of the 14 features has logged at least one activation.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canaryLoadFeatureProfile('default')",
+      "(async () => { const keys = ['progressiveBrickBaking','resolutionRampAtlasBuild','splatCache','svoStorageBackend','vdbBackend','bvhAtomDispatch','perfectHashIndirection','persistentThreadBake','eventDrivenRender','bc4AtlasCompression','silhouetteFirstBake','dawnPipelineCacheSpike','meshDrivenClassification','meshBootstrapRaymarch']; const failures = []; for (const k of keys) { window.__canaryLoadFeatureProfile('default'); window.__canarySetDisplayState({features: {[k]: 'on'}}); const status = window.__canaryGetFeatureStatus(k); if (!status || status.ok === false) { failures.push(k + ': status null'); continue; } if (status.activations < 1) { failures.push(k + ': activations=' + status.activations + ' (expected >=1)'); } if (status.mode !== 'on') { failures.push(k + ': mode=' + status.mode + ' (expected on — feature was likely rejected by matrix)'); } } if (failures.length > 0) throw new Error('stub-wiring failures: ' + failures.join('; ')); return 'all 14 stubs wired'; })()",
+      "window.__canaryLoadFeatureProfile('default')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "post-stub-sweep",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}

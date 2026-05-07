@@ -1,0 +1,40 @@
+{
+  "name": "feature-loader-mutex-rejection",
+  "workload": "penumbra",
+  "description": "Phase 0 feature loader (ADR 0014) — verify the compatibility matrix rejects mutex pairs at setDisplayState time. Sets svoStorageBackend on, then attempts vdbBackend on — expects vdbBackend to remain off (rejection drops the offending portion of the partial). Also verifies invalidates is a soft warning (both toggles stay on, blocker emitted).",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canaryLoadFeatureProfile('default')",
+      "window.__canarySetDisplayState({features: {svoStorageBackend: 'on'}})",
+      "(() => { const all = window.__canaryGetAllFeatureStatus(); if (all.svoStorageBackend?.mode !== 'on') throw new Error('B1 svoStorageBackend should be on, got ' + JSON.stringify(all.svoStorageBackend)); return 'B1 on'; })()",
+      "window.__canarySetDisplayState({features: {vdbBackend: 'on'}})",
+      "(() => { const all = window.__canaryGetAllFeatureStatus(); if (all.vdbBackend?.mode === 'on') throw new Error('B2 vdbBackend should have been rejected (mutex with B1), but it is on. all=' + JSON.stringify(all)); if (all.svoStorageBackend?.mode !== 'on') throw new Error('B1 should still be on after B2 rejection, got ' + JSON.stringify(all.svoStorageBackend)); return 'B2 mutex rejection verified'; })()",
+      "window.__canaryLoadFeatureProfile('default')",
+      "window.__canarySetDisplayState({features: {progressiveBrickBaking: 'on', splatCache: 'on'}})",
+      "(() => { const all = window.__canaryGetAllFeatureStatus(); if (all.progressiveBrickBaking?.mode !== 'on') throw new Error('A3 should be on (soft invalidates is not a rejection), got ' + JSON.stringify(all.progressiveBrickBaking)); if (all.splatCache?.mode !== 'on') throw new Error('A6 should be on, got ' + JSON.stringify(all.splatCache)); const violations = window.__canaryValidateCurrentFeatures(); const soft = violations.filter(v => v.reason === 'invalidates'); if (soft.length === 0) throw new Error('expected at least one soft invalidates violation between A3 and A6, got ' + JSON.stringify(violations)); return 'soft invalidates verified: both toggles on, ' + soft.length + ' soft warning(s)'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "post-matrix-tests",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.05
+    }
+  ]
+}

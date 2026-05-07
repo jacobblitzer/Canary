@@ -1,0 +1,34 @@
+{
+  "name": "feature-loader-all-off",
+  "workload": "penumbra",
+  "description": "Phase 0 feature loader (ADR 0014) baseline — apply the 'default' profile (every feature off), screenshot. Must be pixel-identical to atlas-blob-compute-smoke for the same scene/camera. Load-bearing: this is the regression that proves the Phase 0 scaffolding didn't perturb the default render path.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canaryLoadFeatureProfile('default')",
+      "(() => { const all = window.__canaryGetAllFeatureStatus(); if (!all || all.ok === false) throw new Error('feature registry unavailable: ' + JSON.stringify(all)); for (const [k,v] of Object.entries(all)) { if (v.mode !== 'off') throw new Error('feature ' + k + ' was not off after default profile: ' + JSON.stringify(v)); } return 'all features off'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-all-off",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
