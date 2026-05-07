@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-wg16",
+  "workload": "penumbra",
+  "description": "E5 Phase 7f — workgroup size 16×16 = 256 threads/wg variant. Pipeline rebuilds with WORKGROUP_DIM=16 override. Larger workgroups amortize per-workgroup overhead (kernel launch, tile setup) better; some hardware favors them when the per-thread work is short.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetComputeMarchToggles({workgroupDim: 16})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-wg16",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}

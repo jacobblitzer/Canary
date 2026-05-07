@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-wg4",
+  "workload": "penumbra",
+  "description": "E5 Phase 7f — workgroup size 4×4 = 16 threads/wg variant. Pipeline rebuilds with WORKGROUP_DIM=4 override. Smaller workgroups have less intra-group divergence + finer scheduling granularity. Some hardware (especially iGPU) may favor 4×4 over the default 8×8.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetComputeMarchToggles({workgroupDim: 4})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-wg4",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
