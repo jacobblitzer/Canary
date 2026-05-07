@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-d3tricubic",
+  "workload": "penumbra",
+  "description": "E5 Phase 7e — D3 tricubic firing in the compute path. tricubicEnabled is a SCENE-LEVEL toggle (DisplayState.render.tricubicEnabled, NOT in computeMarchToggles) — it controls atlas-uniform `tricubicEnabled` which the SHARED atlas helpers read. Both fragment + compute pipelines see the same uniform, so flipping it on makes the compute path use 64-tap Catmull-Rom evaluation in `sampleAtomAtlasCascade` instead of 8-tap trilinear. ~8x texture fetch increase per sceneSDF call. Currently expected to crash on iGPU; parked as regression gate for stronger hardware. Same scene as default smoke for direct comparison once it's runnable.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetDisplayState({render: {tricubicEnabled: true}})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(15000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-d3tricubic",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
