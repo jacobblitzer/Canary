@@ -1,0 +1,35 @@
+{
+  "name": "atlas-blob-compute-smoke-d2cubic",
+  "workload": "penumbra",
+  "description": "E5 Phase 7d Step 6 — D2 cubic refinement enabled. With tileCount=2 (per Step 4) for headroom + enableD2Cubic=true, the pipeline rebuilds with D2_CUBIC_ENABLED=1 and the cubicFires counter ticks on overshoots in thin-feature bricks. Verifies pipeline rebuild on toggle change works + cubic firing produces no crash + counter accumulates.",
+  "setup": {
+    "scene": {
+      "index": 1,
+      "sceneName": "12-Sphere Blob"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetComputeMarchToggles({tileCount: 4, enableD2Cubic: true})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
+      "window.__canaryRunComputeMarcherSmoke(60000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front-with-d2cubic",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 15,
+        "distance": 8
+      },
+      "stabilizeMs": 800,
+      "tolerance": 0.02
+    }
+  ]
+}
