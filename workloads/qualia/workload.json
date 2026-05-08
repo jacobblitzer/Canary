@@ -1,11 +1,27 @@
 {
   "name": "qualia",
-  "displayName": "Qualia",
-  "appPath": "C:\\Path\\To\\Qualia.exe",
-  "appArgs": "",
-  "agentType": "qualia",
+  "displayName": "Qualia (Browser)",
+  "appPath": "npm",
+  "appArgs": "run dev",
+  "agentType": "qualia-cdp",
   "pipeName": "canary-qualia",
-  "startupTimeoutMs": 15000,
+  "startupTimeoutMs": 30000,
   "windowTitle": "Qualia",
-  "viewportClass": ""
+  "viewportClass": "",
+  "qualiaConfig": {
+    "projectDir": "C:\\Repos\\Qualia",
+    "chromePath": "",
+    "cdpPort": 9223,
+    "vitePort": 5173,
+    "defaultCanvasWidth": 1280,
+    "defaultCanvasHeight": 720,
+    "defaultStabilizeMs": 500,
+    "readyTimeoutSec": 30,
+    "clearLocalStorageOnInit": true,
+    "chromeFlags": [
+      "--force-device-scale-factor=1",
+      "--hide-scrollbars",
+      "--disable-smooth-scrolling"
+    ]
+  }
 }

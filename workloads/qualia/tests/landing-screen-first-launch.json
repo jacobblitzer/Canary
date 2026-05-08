@@ -1,0 +1,24 @@
+{
+  "name": "landing-screen-first-launch",
+  "workload": "qualia",
+  "description": "First-launch baseline — Qualia boots with localStorage cleared, the LandingScreen modal appears with the Standard profile pre-selected. Screenshot captures the full window so any chrome / modal layout regression shows up.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "A modal dialog titled 'Configure Qualia' centered over a dimmed background. Below the title is a row of four selectable 'profile pills' labeled Minimal, Standard, Cinematic, Workshop, and a fifth Custom pill. The Standard pill should be visibly highlighted (active state). Below the pills is a scrollable list of module rows organized by group ('Core', 'FX', 'Workshop', etc.), each row showing a checkbox, label, description, and a colored cost badge (Cheap / Medium / Expensive). At the bottom: a count summary ('N / M modules enabled') and Cancel + Apply buttons. The layout should be clean and uncluttered — checkboxes vertically aligned with their labels, no overlapping pills, no overlapping rows.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryShowLandingScreen()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "first-launch-standard",
+      "stabilizeMs": 600,
+      "tolerance": 0.02
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "landing-screen-overlap-vlm",
+  "workload": "qualia",
+  "description": "VLM-only check that the LandingScreen has no visually overlapping or clipped UI elements. The user reported overlap on the May-8 build; this test pins the verdict so a CSS regression flips it back to red.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryShowLandingScreen()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "no-overlap",
+      "mode": "vlm",
+      "stabilizeMs": 600,
+      "description": "Inspect the LandingScreen modal carefully. Pass ONLY if every UI element is visually separated and aligned: (1) profile pills do not overlap each other or the title, (2) each module row's checkbox is on the same line as its label and the cost / requirement badges, (3) module rows do not overlap each other vertically, (4) the footer (summary text + Cancel/Apply buttons) does not overlap the last module row. Fail if any element overlaps another, is clipped at the modal edge, or is rendered on top of a different element when it shouldn't be. Reasoning should call out the specific overlap if found."
+    },
+    {
+      "name": "checkbox-alignment",
+      "mode": "vlm",
+      "stabilizeMs": 200,
+      "description": "Same modal — focus on checkbox alignment within each module row. Each row should have: checkbox on the LEFT, then a column of {label + cost badge + optional requirement chips} on the same baseline, then the description text below the label, then the small monospace module id (e.g. 'render.nodes') below the description. Pass only if this layout holds for every visible row. Fail if any row has a checkbox vertically misaligned with its label, or text wrapping that pushes the cost badge onto a separate line."
+    }
+  ]
+}

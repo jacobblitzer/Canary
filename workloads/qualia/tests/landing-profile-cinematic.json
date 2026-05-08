@@ -1,0 +1,25 @@
+{
+  "name": "landing-profile-cinematic",
+  "workload": "qualia",
+  "description": "Click the Cinematic profile pill in the LandingScreen, screenshot the resulting state. The pill should highlight, the Custom pill should remain dim, and FX modules (edge-flow, selection-halo, hover-lift, post-process, node-pulse, connection-sweep, label-bloom) should switch to checked.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "LandingScreen modal with the 'Cinematic' profile pill highlighted (active state — typically a colored border / background). All other pills (Minimal, Standard, Workshop, Custom) should appear dim / unselected. The module list should show FX-group rows (edge-flow, selection-halo, hover-lift, post-process, node-pulse, connection-sweep, label-bloom) with checked checkboxes; render.penumbra-backdrop should also be checked. The summary text near the footer should read approximately '21 / 37 modules enabled' (or similar count higher than the Standard default).",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryShowLandingScreen()",
+      "window.__canaryClickProfilePill('cinematic')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "cinematic-active",
+      "stabilizeMs": 400,
+      "tolerance": 0.03
+    }
+  ]
+}

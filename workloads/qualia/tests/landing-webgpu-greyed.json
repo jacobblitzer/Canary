@@ -1,0 +1,20 @@
+{
+  "name": "landing-webgpu-greyed",
+  "workload": "qualia",
+  "description": "Capability gating — the render.penumbra-backdrop module requires WebGPU + penumbra. On a Chrome that supports WebGPU (the default on the test box), the row should be selectable. This test is intentionally pixel-diff only — its job is to lock the row's visual state on the configured test machine. If the test machine ever changes WebGPU availability, the baseline re-approve will reflect that.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryShowLandingScreen()",
+      "(() => { document.querySelector('.landing-body').scrollTop = 0; return true; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "fx-group-visible",
+      "stabilizeMs": 400,
+      "tolerance": 0.03
+    }
+  ]
+}

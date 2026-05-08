@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Canary.UI", "src\Canary.UI\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Canary.Agent.Penumbra", "src\Canary.Agent.Penumbra\Canary.Agent.Penumbra.csproj", "{D518D3BF-ADEF-474C-A87B-EED99C58D609}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Canary.Agent.Qualia", "src\Canary.Agent.Qualia\Canary.Agent.Qualia.csproj", "{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,18 @@ Global
 		{D518D3BF-ADEF-474C-A87B-EED99C58D609}.Release|x64.Build.0 = Release|Any CPU
 		{D518D3BF-ADEF-474C-A87B-EED99C58D609}.Release|x86.ActiveCfg = Release|Any CPU
 		{D518D3BF-ADEF-474C-A87B-EED99C58D609}.Release|x86.Build.0 = Release|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Debug|x64.Build.0 = Debug|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Debug|x86.Build.0 = Debug|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Release|x64.ActiveCfg = Release|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Release|x64.Build.0 = Release|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Release|x86.ActiveCfg = Release|Any CPU
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +156,6 @@ Global
 		{B597ABAA-B16D-4F02-BEA4-23880A11BE71} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{7D8407B1-0AF8-465A-9B2F-22BE2F02E4E5} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{D518D3BF-ADEF-474C-A87B-EED99C58D609} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{ECD289FB-246C-437C-B19D-8CC7EDDFA63F} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

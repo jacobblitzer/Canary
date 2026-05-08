@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Canary.Agent.Penumbra;
+using Canary.Agent.Qualia;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.Reporting;
@@ -97,6 +98,38 @@ public static class RunCommand
     /// <summary>
     /// Run the Penumbra CDP suite: create the bridge agent once, run all tests through it, then clean up.
     /// </summary>
+    private static async Task<SuiteResult> RunQualiaSuiteAsync(
+        TestRunner runner,
+        WorkloadConfig workload,
+        List<TestDefinition> tests,
+        string configPath,
+        ConsoleTestLogger logger,
+        CancellationToken ct,
+        string? suiteName = null)
+    {
+        logger.Log("Initializing Qualia CDP bridge agent...");
+
+        var qualiaConfig = await QualiaWorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
+        using var agent = new QualiaBridgeAgent(qualiaConfig.QualiaConfig);
+
+        ct.Register(() =>
+        {
+            try { agent.AbortAsync().Wait(3000); } catch { }
+        });
+
+        await agent.InitializeAsync(ct).ConfigureAwait(false);
+        logger.Log("Qualia bridge agent ready.  Press Ctrl+C to abort");
+
+        try
+        {
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct, suiteName).ConfigureAwait(false);
+        }
+        finally
+        {
+            logger.Log("Shutting down Qualia bridge agent...");
+        }
+    }
+
     private static async Task<SuiteResult> RunPenumbraSuiteAsync(
         TestRunner runner,
         WorkloadConfig workload,
@@ -219,6 +252,10 @@ public static class RunCommand
             if (workload.AgentType == "penumbra-cdp")
             {
                 suiteResult = await RunPenumbraSuiteAsync(runner, workload, tests, configPath, logger, ct, suiteName).ConfigureAwait(false);
+            }
+            else if (workload.AgentType == "qualia-cdp")
+            {
+                suiteResult = await RunQualiaSuiteAsync(runner, workload, tests, configPath, logger, ct, suiteName).ConfigureAwait(false);
             }
             else if (tests.Count > 1 && tests.All(t => string.Equals(t.RunMode, "shared", StringComparison.OrdinalIgnoreCase)))
             {

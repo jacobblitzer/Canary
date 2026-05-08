@@ -1,0 +1,11 @@
+{
+  "name": "landing-screen",
+  "description": "LandingScreen + ModuleRegistry visual regression suite. Pins the modal's first-launch appearance, profile-pill highlight states, the toggle→Custom UX rule, and a VLM check that no UI elements overlap (the May-8 user-reported bug).",
+  "tests": [
+    "landing-screen-first-launch",
+    "landing-screen-overlap-vlm",
+    "landing-profile-cinematic",
+    "landing-toggle-flips-to-custom",
+    "landing-webgpu-greyed"
+  ]
+}

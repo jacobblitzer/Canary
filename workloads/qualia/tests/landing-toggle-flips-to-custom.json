@@ -1,0 +1,27 @@
+{
+  "name": "landing-toggle-flips-to-custom",
+  "workload": "qualia",
+  "description": "Toggling any individual module checkbox while a profile is active should flip the visible 'active' pill from that profile to Custom. Locks the data-driven 'Custom emerges from tweaking' UX rule.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryShowLandingScreen()",
+      "window.__canaryClickProfilePill('standard')",
+      "window.__canaryToggleLandingModule('render.grid')",
+      "(() => { const s = window.__canaryGetLandingState(); if (!s || !s.ok) throw new Error('landing state unavailable: ' + JSON.stringify(s)); if (s.value.activeProfile !== 'custom') throw new Error('expected activeProfile=custom after toggle, got: ' + s.value.activeProfile); return 'profile flipped to custom'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "custom-active-after-toggle",
+      "mode": "vlm",
+      "stabilizeMs": 400,
+      "description": "LandingScreen modal with the 'Custom' profile pill in the highlighted / active state. The 'Standard' pill should be visibly NOT active (no highlight) even though it was clicked first. The render.grid module's checkbox should be unchecked (it was toggled off). All other profile pills should be unselected. The toggle interaction is what flipped the pill — verify by visual cue."
+    }
+  ]
+}
