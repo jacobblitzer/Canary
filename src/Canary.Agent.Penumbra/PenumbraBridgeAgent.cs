@@ -435,7 +435,14 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
     /// </summary>
     private async Task WaitForPenumbraReadyAsync(CancellationToken ct = default)
     {
-        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(30);
+        // 2026-05-08: bumped 30 → 120s. Penumbra's `installCanaryHooks`
+        // runs deep inside mainWebGPU (~line 4284) AFTER the atlas
+        // pipeline build, which on Intel iGPU takes 30-45s on a cold
+        // Dawn pipeline cache (28% warm-cache hit per C6 spike). The
+        // prior 30s ceiling timed out before the harness could expose
+        // __canaryGetRendererInfo. 120s gives 2-3× headroom for cold
+        // loads while still failing fast on real init bugs.
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(120);
 
         while (DateTime.UtcNow < deadline)
         {
