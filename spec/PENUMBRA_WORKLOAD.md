@@ -2,12 +2,15 @@
 type: spec
 project: Canary
 component: workload
-status: proposed
-date: 2026-05-03
+status: accepted
+date: 2026-05-07
 parent_adr: ../../Penumbra/docs/decisions/0011-display-state-model.md
+related_adrs:
+  - ../../Penumbra/docs/decisions/0014-multi-resolution-indirection.md
+  - ../../Penumbra/docs/decisions/0015-feature-loader-and-stubs.md
 ---
 
-# Penumbra Workload — display-preset-driven auto-tests
+# Penumbra Workload — display-preset, feature-loader, and compute-marcher tests
 
 ## Purpose
 
@@ -129,10 +132,102 @@ references the affected preset, or the test will fail to load.
   preset file's git SHA in the baseline filename, or freeze the preset
   schema with a `schemaVersion` field. Recommend `schemaVersion`.
 
+## Feature-Loader Workload (Penumbra ADR 0015, shipped 2026-05-07)
+
+Penumbra ships a `DisplayState.features` axis with 14 progressive
+feature toggles (A3, A4, A6, B1, B2, B4, B5, C1–C4, C6, C8, C9). The
+Canary harness exercises this axis via 5 new `__canary*` hooks:
+
+- `__canaryGetFeatureStatus(key)` / `__canaryGetAllFeatureStatus()`
+  — read current feature mode + activation count.
+- `__canaryLoadFeatureProfile(name)` — bulk-apply a profile
+  (`'default' | 'performance' | 'quality'`).
+- `__canaryValidateCurrentFeatures()` — runs the compatibility
+  matrix; surfaces mutex rejections and soft-invalidate
+  `DisplayBlocker` entries.
+- `__canaryCaptureFeatureEvents(durationMs)` — records the stub
+  emit-stream so test fixtures can assert on intent telemetry
+  (would-have-bake-tiers, would-classify, etc.).
+
+**5 fixtures** under `workloads/penumbra/tests/feature-loader-*.json`:
+
+| Fixture | Purpose |
+|---|---|
+| `feature-loader-all-off.json` | Pixel-identical regression baseline (proves all-off matches pre-feature-loader render) |
+| `feature-loader-performance-profile.json` | Loads performance profile; asserts toggles applied |
+| `feature-loader-quality-profile.json` | Loads quality profile; asserts toggles applied |
+| `feature-loader-mutex-rejection.json` | Asserts B1+B2 mutex pair is rejected; asserts A3+A6 soft-invalidates surface as `DisplayBlocker` entries (not crash) |
+| `feature-loader-stub-wiring.json` | Toggles each of the 14 features one-at-a-time; asserts each stub records `activations >= 1` when ON |
+
+Suite: `workloads/penumbra/suites/feature-loader.json` runs all 5.
+
+Compatibility matrix lives in `Penumbra/packages/runtime/src/feature-compat.ts`
+(15 unit tests). Of the 14 stubs, 12 are deferred + 2 (C2
+eventDrivenRender, C9 meshBootstrapRaymarch) graduated to real
+implementations on 2026-05-07. The deferred set ships with
+`// DEFERRED:` markers in each stub file citing the per-feature
+blocker.
+
+## Compute-Marcher Workload (Penumbra Wave 3 Phase 7 / E5, merged 2026-05-07)
+
+Penumbra's compute-stage marchRay (sub-phases 7b/3 → 7g shipped on
+main; 7h/7i pending) is exercised by 12 fixtures driven via 3 new
+`__canary*` hooks:
+
+- `__canarySetComputeMarchToggles(partial)` — granular per-feature
+  enables (`tileCount`, `enablePersistentThreading`,
+  `persistentWorkgroupCount`, `enableD2Cubic`, `enableBisection`,
+  `enableD7bCsgStep`, etc.). Routes through
+  `displayState.render.computeMarchToggles`.
+- `__canaryRunComputeCalibration()` — runs the calibration phase
+  that measures sceneSDF cost per hit on the current hardware,
+  caches the result for the budget allocator.
+- `__canaryRunComputeMarcherDeterminism(samples)` — runs N
+  consecutive compute dispatches and returns hash-divergence + first
+  diverging-byte info; locks the GPU path against determinism
+  regressions.
+
+**12 fixtures** under `workloads/penumbra/tests/atlas-blob-compute-*.json`:
+
+| Fixture | Toggles / strategy |
+|---|---|
+| `atlas-blob-compute-smoke.json` | Baseline minimal compute marcher |
+| `atlas-blob-compute-tiled.json` | S2 tile dispatch |
+| `atlas-blob-compute-d2cubic.json` | D2 cubic refinement (override-constant gated) |
+| `atlas-blob-compute-bisection.json` | 6-iter bisection fallback (override-constant gated) |
+| `atlas-blob-compute-d7c.json` | D7c smooth-min uplift |
+| `atlas-blob-compute-3b3a.json` | 3B per-brick safety + 3A DDA cap |
+| `atlas-blob-compute-determinism.json` | Wraps `__canaryRunComputeMarcherDeterminism` |
+| `atlas-blob-compute-d3tricubic.json` | D3 tricubic + Sturm at hit |
+| `atlas-blob-compute-wg4.json` | Workgroup size = 4 (Phase 7f) |
+| `atlas-blob-compute-wg16.json` | Workgroup size = 16 (Phase 7f) |
+| `atlas-blob-compute-lighting.json` | Lambert + hemispheric ambient |
+| `atlas-blob-compute-materials.json` | Material lookup (override-constant gated) |
+
+Suite: `workloads/penumbra/suites/compute-marcher.json` runs all 12.
+
+**Critical constraint**: per-dispatch GPU time on Intel iGPU is at
+91% of Windows TDR ceiling (1367ms of 1500ms). Several fixtures
+ship under compile-time override constants and are
+hardware-dependent — `d2cubic`, `bisection`, `materials`, `d3tricubic`
+fixtures are gated to stronger-GPU smokes (firing crashes the
+iGPU even though the infrastructure is correct).
+
+Run:
+```
+canary run --workload penumbra --suite compute-marcher
+```
+
 ## Related
 
 - Penumbra ADR 0011 — display-state-model (parent contract).
+- Penumbra ADR 0014 — multi-resolution indirection (multiscale
+  follow-on, not yet shipped).
+- Penumbra ADR 0015 — feature-loader + stubs (Phase 0).
 - Qualia ADR 0010 — display-state consumer (parallel adoption).
 - `Canary/spec/TESTS.md` — TestDefinition base schema.
 - `MultiVerse/CLAUDE.md` — cross-repo change protocol + Slop logging
   convention (logger substitution noted above).
+- `Penumbra/docs/research/2026-05-06-compute-marcher-tdr-strategies.md`
+  — Compute-marcher TDR strategy table + per-feature cost model
+  (resumption pointer for 7h/7i).
