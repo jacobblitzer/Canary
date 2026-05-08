@@ -4,7 +4,7 @@ repo: Canary
 phase: 13
 phase_name: "Phase 13 in progress"
 status: active
-last_audit: 2026-05-07
+last_audit: 2026-05-08
 test_count: 72
 component_count: null
 peers: [CPig, Penumbra, Slop, Pigture]
@@ -21,6 +21,46 @@ tags: [multiverse, repo]
 - **Run Penumbra tests**: `canary run --workload penumbra`
 - **Run CPig tests**: `canary run --workload rhino --suite cpig` (from `C:\Repos\Canary`)
 - **Status**: Phase 13 in progress (checkpoints 13.1–13.4 complete, 13.5 baselines pending). 72 unit tests + 22 cpig test definitions.
+
+### Active architecture initiative — Penumbra A3 multiscale foundation + 5 graduated features (PR #6 + #7 merged 2026-05-08)
+
+Penumbra shipped the A3 progressive coarse → medium → fine brick
+baking foundation plus 4 follow-on graduations on top of it. Of
+the 14 Phase 0 feature stubs, **5 are now real implementations**:
+
+| Feature | Real impl | Behavior |
+|---|---|---|
+| A3 progressiveBrickBaking | 2026-05-08 | Async 3-tier bake (2³ → 4³ → 8³) with RAF yields between tiers. ~50ms coarse / ~250ms medium / ~2.5s fine. User sees first chunky pixel ~8× sooner. |
+| A4 resolutionRampAtlasBuild | 2026-05-08 | Caps render resolution per A3 tier (0.25× → 0.33× → 0.5× → 1.0×). Composes multiplicatively with motion-aware ProgressiveQualityController. |
+| C2 eventDrivenRender | 2026-05-07 | EventEmitter for brick-complete + (new) tier-complete events. Render gates on dirty flag. |
+| C4 silhouetteFirstBake | 2026-05-08 | Reorders dispatch list by camera-near priority WITHIN each A3 tier. |
+| C9 meshBootstrapRaymarch | 2026-05-07 | CPU dual-contouring mesh provides initial-t guess; rays start from mesh hit. |
+
+Plus **E5 compute marcher early-start** (free-rider on A3): the
+compute marcher inherits tier-aware sampling automatically through
+`main-atlas-helpers.wgsl` concatenation, so it can render during
+A3 build window.
+
+**Compatibility matrix changes** (2026-05-08): A-series and
+C-series features all compose post-graduation. Hard mutex pairs
+remain only between alternative storage backends (B1 / B2 / B5 —
+indirection structures) and alternative classification sources
+(B1 / B2 / C8). No soft invalidates remain.
+
+**Pending Canary work** (Penumbra Phase 12, not yet shipped on
+this side):
+- `atlas-blob-progressive-{coarse,medium,fine}.json` — capture
+  per-tier outputs to verify progressive UX
+- `atlas-blob-{a4-res-ramp,c4-silhouette-first}.json` — toggle
+  isolation
+- New CDP hooks: `__canaryWaitForTier(tier)`,
+  `__canaryGetTierBuildState()`
+- Suite: `progressive-bake.json`
+
+See `Penumbra/docs/research/2026-05-08-a3-followon-phases.md` for
+the resumption pointer; `feature-loader-mutex-rejection` should be
+retargeted (the A3+A6 invalidates pair it covered no longer
+exists).
 
 ### Active architecture initiative — Penumbra Phase 0 feature loader (ADR 0015, shipped 2026-05-07)
 
@@ -41,8 +81,11 @@ C8, C9). The Canary surface for this is:
   `feature-loader-all-off` (pixel-identical regression baseline),
   `feature-loader-performance-profile`,
   `feature-loader-quality-profile`,
-  `feature-loader-mutex-rejection` (verifies B1+B2 mutex + A3+A6 soft
-  invalidates), `feature-loader-stub-wiring` (toggles each of 14
+  `feature-loader-mutex-rejection` (verifies B1+B2 mutex; A3+A6 soft
+  invalidates were removed 2026-05-08 when both graduated and were
+  found to compose — the fixture should be retargeted at a still-
+  extant invalidates pair when one is added in the future),
+  `feature-loader-stub-wiring` (toggles each of 14
   features one-at-a-time, asserts `activations >= 1`).
 - **Suite** `workloads/penumbra/suites/feature-loader.json` runs all 5.
 
