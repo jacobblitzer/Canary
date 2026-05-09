@@ -1,0 +1,7 @@
+{
+  "name": "bug-0036-stall",
+  "description": "Bug 0036 stall regression — single long-soak fixture on the 64-sphere stress scene. ~7 minutes wall-clock; runs gentle camera drift + two scheduled rapid-input bursts via setup.commands. Checkpoints pixel-diff a baseline at staggered times to catch the 'screen went black' failure mode. Companion observability hooks (__canaryGetRenderLoopState + __canaryGetDeviceState) accumulate state into window.__bug0036Samples for human DevTools inspection. See Penumbra/docs/bugs/0036-display-stalls-gumball-alive.md.",
+  "tests": [
+    "bug-0036-display-stall-soak"
+  ]
+}

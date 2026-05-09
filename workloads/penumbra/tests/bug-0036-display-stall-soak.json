@@ -1,0 +1,60 @@
+{
+  "name": "bug-0036-display-stall-soak",
+  "workload": "penumbra",
+  "description": "Bug 0036 regression — long-soak (~7min) on the 64-sphere stress scene with scheduled rapid-input bursts. The 2026-05-09 investigation surfaces the stall pattern where the SDF render path freezes while the gumball overlay still receives input. Setup commands inject a continuous gentle camera drift plus two rapid-burst windows (T+90s and T+240s, 30 events/sec for 5s each) that exercise the input layer while the atlas is rebuilding under pressure. Checkpoints at staggered stabilizeMs cumulatively soak ~420s. Pixel-diff at each checkpoint catches the 'screen went black' failure mode; the new __canaryGetRenderLoopState + __canaryGetDeviceState hooks accumulate state into window.__bug0036Samples for post-mortem inspection. Detecting stalls automatically (asserts on hook return values) is a Canary feature gap noted in docs/debug-sessions/2026-05-09-bug-0036-stall-investigation.md — for now, the human runs DevTools inspection at any failure.",
+  "setup": {
+    "scene": {
+      "index": 8,
+      "sceneName": "64-Sphere Stress"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "(() => { window.__bug0036Samples = []; window.__bug0036SoakStart = performance.now(); const sample = () => { try { const r = window.__canaryGetRenderLoopState && window.__canaryGetRenderLoopState(); const d = window.__canaryGetDeviceState && window.__canaryGetDeviceState(); window.__bug0036Samples.push({ tMs: Math.round(performance.now() - window.__bug0036SoakStart), loop: r, device: d }); } catch (e) { window.__bug0036Samples.push({ tMs: -1, error: String(e) }); } }; sample(); window.__bug0036SampleHandle = setInterval(sample, 30000); })()",
+      "(() => { let theta = 0; window.__bug0036DriftHandle = setInterval(() => { theta = (theta + 0.6) % 360; try { window.__canarySetCamera && window.__canarySetCamera(theta, 25, 12); } catch (_) { } }, 100); })()",
+      "(() => { const burst = (label) => { try { window.__bug0036Samples.push({ tMs: Math.round(performance.now() - window.__bug0036SoakStart), event: 'burst-start', label }); } catch (_) {} let i = 0; const h = setInterval(() => { i++; const a = (i * 13.7) % 360; const e = 10 + (i % 60) * 0.8; const dist = 8 + ((i * 0.3) % 6); try { window.__canarySetCamera && window.__canarySetCamera(a, e, dist); } catch (_) {} if (i >= 150) { clearInterval(h); try { window.__bug0036Samples.push({ tMs: Math.round(performance.now() - window.__bug0036SoakStart), event: 'burst-end', label }); } catch (_) {} } }, 33); }; setTimeout(() => burst('T+90'), 90000); setTimeout(() => burst('T+240'), 240000); })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "t0-warmup",
+      "camera": { "azimuth": 0, "elevation": 25, "distance": 12 },
+      "stabilizeMs": 4000,
+      "tolerance": 0.06
+    },
+    {
+      "name": "t30-baseline",
+      "camera": { "azimuth": 60, "elevation": 25, "distance": 12 },
+      "stabilizeMs": 30000,
+      "tolerance": 0.06
+    },
+    {
+      "name": "t120-post-first-burst",
+      "camera": { "azimuth": 120, "elevation": 25, "distance": 12 },
+      "stabilizeMs": 60000,
+      "tolerance": 0.06
+    },
+    {
+      "name": "t210-mid-soak",
+      "camera": { "azimuth": 180, "elevation": 25, "distance": 12 },
+      "stabilizeMs": 90000,
+      "tolerance": 0.06
+    },
+    {
+      "name": "t330-post-second-burst",
+      "camera": { "azimuth": 240, "elevation": 25, "distance": 12 },
+      "stabilizeMs": 120000,
+      "tolerance": 0.06
+    },
+    {
+      "name": "t450-late-soak",
+      "camera": { "azimuth": 300, "elevation": 25, "distance": 12 },
+      "stabilizeMs": 120000,
+      "tolerance": 0.06
+    }
+  ]
+}
