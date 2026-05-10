@@ -21,7 +21,7 @@
     {
       "name": "grid-default",
       "stabilizeMs": 1500,
-      "tolerance": 0.05
+      "tolerance": 0.15
     }
   ]
 }

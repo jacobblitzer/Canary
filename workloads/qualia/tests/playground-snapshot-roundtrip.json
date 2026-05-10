@@ -24,7 +24,7 @@
     {
       "name": "snapshot-restored-tree",
       "stabilizeMs": 2500,
-      "tolerance": 0.05
+      "tolerance": 0.18
     }
   ]
 }

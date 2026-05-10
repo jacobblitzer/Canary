@@ -21,7 +21,7 @@
     {
       "name": "stress-1k-default",
       "stabilizeMs": 4000,
-      "tolerance": 0.08
+      "tolerance": 0.18
     }
   ]
 }

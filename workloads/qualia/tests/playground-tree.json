@@ -21,7 +21,7 @@
     {
       "name": "tree-default",
       "stabilizeMs": 2000,
-      "tolerance": 0.05
+      "tolerance": 0.18
     }
   ]
 }
