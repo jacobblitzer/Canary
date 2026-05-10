@@ -1,0 +1,26 @@
+{
+  "name": "playground-random",
+  "workload": "qualia",
+  "description": "Open the Debug Playground (Workshop profile), load the Random scenario at default params (40 nodes, edgeDensity 0.15, seed 1), screenshot. The scenario pill bar at the top should show 'Random' active; the viewport should show ~40 instanced sphere nodes connected by ~120 line edges in a force-directed layout.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Full-viewport overlay titled 'Debug Playground' over a dark background. Top: header bar with title and a Close (Esc) button. Below: a horizontal pill row with scenarios — Random (active, highlighted in blue), Grid, Tree, Scale-free, Stress 1k, Stress 10k. Below that: a row of number-input parameter controls (Nodes, Edge density, Seed). The main viewport area (largest section) shows a 3D scene: roughly 40 blue spherical nodes scattered through 3D space, connected by darker line edges in a force-directed cloud. Bottom: a 'Snapshots (N)' header with a 'Save snapshot' button; either an empty-state hint or a list of saved snapshots.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')",
+      "window.__canaryPlaygroundOpen()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "random-default",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05
+    }
+  ]
+}

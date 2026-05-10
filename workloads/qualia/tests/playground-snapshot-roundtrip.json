@@ -1,0 +1,30 @@
+{
+  "name": "playground-snapshot-roundtrip",
+  "workload": "qualia",
+  "description": "Snapshot round-trip — load the Tree scenario, save a labeled snapshot, switch to Random (so the active state changes), then restore the snapshot. The final screenshot should match the Tree state (active pill = Tree, viewport shows tree topology). Validates that PlaygroundSaveSnapshot + PlaygroundRestoreSnapshot persist graph + module config + camera correctly.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Debug Playground overlay with the 'Tree' pill highlighted (restored from snapshot). The viewport shows a tree-shaped graph of ~121 nodes. Crucially, the snapshot strip at the bottom of the overlay should now show at least one saved snapshot row labeled 'tree-baseline' with a recent timestamp ('Ns ago' or similar). The fact that the active scenario is Tree (not Random) demonstrates the restore overrode the intermediate Random switch.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')",
+      "window.__canaryPlaygroundOpen()",
+      "window.__canaryPlaygroundLoadScenario('tree')",
+      "window.__canaryPlaygroundSaveSnapshot('tree-baseline')",
+      "window.__canaryPlaygroundLoadScenario('random')",
+      "(async () => { const snaps = window.__canaryPlaygroundListSnapshots(); const tree = snaps.find(s => s.label === 'tree-baseline'); if (tree) window.__canaryPlaygroundRestoreSnapshot(tree.id); return tree ? tree.id : null; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "snapshot-restored-tree",
+      "stabilizeMs": 2500,
+      "tolerance": 0.05
+    }
+  ]
+}

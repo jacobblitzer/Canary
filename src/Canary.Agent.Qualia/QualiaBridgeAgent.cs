@@ -125,11 +125,23 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
             "ClickLandingApply"    => await EvaluateOkAsync("window.__canaryClickLandingApply()").ConfigureAwait(false),
             "ClickLandingCancel"   => await EvaluateOkAsync("window.__canaryClickLandingCancel()").ConfigureAwait(false),
             "ClearStorage"         => await EvaluateOkAsync("(()=>{localStorage.clear();sessionStorage.clear();return true;})()").ConfigureAwait(false),
+            "PlaygroundOpen"       => await EvaluateOkAsync("window.__canaryPlaygroundOpen()").ConfigureAwait(false),
+            "PlaygroundClose"      => await EvaluateOkAsync("window.__canaryPlaygroundClose()").ConfigureAwait(false),
+            "PlaygroundLoadScenario" => await PlaygroundLoadScenarioAsync(parameters).ConfigureAwait(false),
+            "PlaygroundSetParam"   => await PlaygroundSetParamAsync(parameters).ConfigureAwait(false),
+            "PlaygroundSaveSnapshot" => await PlaygroundSaveSnapshotAsync(parameters).ConfigureAwait(false),
+            "PlaygroundRestoreSnapshot" => await PlaygroundRestoreSnapshotAsync(parameters).ConfigureAwait(false),
+            "PlaygroundDeleteSnapshot" => await PlaygroundDeleteSnapshotAsync(parameters).ConfigureAwait(false),
+            "PlaygroundListSnapshots" => await EvaluateOkAsync("window.__canaryPlaygroundListSnapshots()").ConfigureAwait(false),
+            "PlaygroundGetState"   => await EvaluateOkAsync("window.__canaryPlaygroundGetState()").ConfigureAwait(false),
             _ => Fail(
                 $"Unknown action: {action}. Supported: RunCommand, WaitForReady, WaitForStable, " +
                 "SetCanvasSize, HideUI, ApplyProfile, SetModuleEnabled, ShowLandingScreen, " +
                 "CloseLandingScreen, ClickProfilePill, ToggleLandingModule, ClickLandingApply, " +
-                "ClickLandingCancel, ClearStorage")
+                "ClickLandingCancel, ClearStorage, PlaygroundOpen, PlaygroundClose, " +
+                "PlaygroundLoadScenario, PlaygroundSetParam, PlaygroundSaveSnapshot, " +
+                "PlaygroundRestoreSnapshot, PlaygroundDeleteSnapshot, PlaygroundListSnapshots, " +
+                "PlaygroundGetState")
         };
     }
 
@@ -289,6 +301,74 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
         var result = await _cdp!.EvaluateAsync($"window.__canaryToggleLandingModule({jsId})")
             .ConfigureAwait(false);
         return Ok($"Toggled {id}. Result: {result ?? "undefined"}");
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Playground actions (Wave 0.B / ADR 0012 phase D)
+    // ──────────────────────────────────────────────────────────────────────
+
+    private async Task<AgentResponse> PlaygroundLoadScenarioAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("id", out var id) || string.IsNullOrWhiteSpace(id))
+            return Fail("PlaygroundLoadScenario requires 'id' parameter (random|grid|tree|scale-free|stress-1k|stress-10k).");
+        var jsId = JsonSerializer.Serialize(id);
+
+        // Optional params object as JSON. Tests pass values one key at a time
+        // via `paramsJson` (a JSON-encoded record of number values).
+        var jsParams = "undefined";
+        if (parameters.TryGetValue("paramsJson", out var paramsJson) && !string.IsNullOrWhiteSpace(paramsJson))
+            jsParams = paramsJson;
+
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryPlaygroundLoadScenario({jsId}, {jsParams})"
+        ).ConfigureAwait(false);
+        return Ok($"Loaded scenario '{id}'. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> PlaygroundSetParamAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("key", out var key) || string.IsNullOrWhiteSpace(key))
+            return Fail("PlaygroundSetParam requires 'key' parameter.");
+        if (!parameters.TryGetValue("value", out var valueStr) || !double.TryParse(valueStr, out var value))
+            return Fail("PlaygroundSetParam requires 'value' (number) parameter.");
+        var jsKey = JsonSerializer.Serialize(key);
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryPlaygroundSetParam({jsKey}, {value})"
+        ).ConfigureAwait(false);
+        return Ok($"Set param {key}={value}. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> PlaygroundSaveSnapshotAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("label", out var label) || string.IsNullOrWhiteSpace(label))
+            return Fail("PlaygroundSaveSnapshot requires 'label' parameter.");
+        var jsLabel = JsonSerializer.Serialize(label);
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryPlaygroundSaveSnapshot({jsLabel})"
+        ).ConfigureAwait(false);
+        return Ok($"Saved snapshot '{label}'. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> PlaygroundRestoreSnapshotAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("id", out var id) || string.IsNullOrWhiteSpace(id))
+            return Fail("PlaygroundRestoreSnapshot requires 'id' parameter.");
+        var jsId = JsonSerializer.Serialize(id);
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryPlaygroundRestoreSnapshot({jsId})"
+        ).ConfigureAwait(false);
+        return Ok($"Restored snapshot '{id}'. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> PlaygroundDeleteSnapshotAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("id", out var id) || string.IsNullOrWhiteSpace(id))
+            return Fail("PlaygroundDeleteSnapshot requires 'id' parameter.");
+        var jsId = JsonSerializer.Serialize(id);
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryPlaygroundDeleteSnapshot({jsId})"
+        ).ConfigureAwait(false);
+        return Ok($"Deleted snapshot '{id}'. Result: {result ?? "undefined"}");
     }
 
     // ──────────────────────────────────────────────────────────────────────

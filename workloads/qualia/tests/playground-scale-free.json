@@ -1,0 +1,27 @@
+{
+  "name": "playground-scale-free",
+  "workload": "qualia",
+  "description": "Switch to the Scale-free scenario (Barabási–Albert, N=80, m=2). The degree distribution is power-law, so a few hub nodes attract many connections while leaves have only one or two.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Debug Playground overlay with the 'Scale-free' pill highlighted. Nodes reads 80, m reads 2. The viewport shows 80 nodes connected by ~157 edges in a force-directed cloud. Visually the structure is distinct from Random: there are a handful of high-degree 'hub' nodes near the center surrounded by lower-degree nodes radiating outward — a power-law degree distribution. No regular lattice or tree pattern.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')",
+      "window.__canaryPlaygroundOpen()",
+      "window.__canaryPlaygroundLoadScenario('scale-free')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "scale-free-default",
+      "stabilizeMs": 2000,
+      "tolerance": 0.05
+    }
+  ]
+}

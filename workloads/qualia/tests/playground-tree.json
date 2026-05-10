@@ -1,0 +1,27 @@
+{
+  "name": "playground-tree",
+  "workload": "qualia",
+  "description": "Switch to the Tree scenario (depth 4, branching 3 → 121 nodes, 120 edges, perfect tree). The force layout should fan it into a roughly radial / hierarchical structure with the root central.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Debug Playground overlay with the 'Tree' pill highlighted. The Depth parameter reads 4, Branching reads 3. The viewport shows ~121 nodes in a tree topology — one root, three children, nine grandchildren, twenty-seven great-grandchildren, eighty-one leaves. Force-directed layout typically arranges trees as either a radial 'sunburst' or a fanned-out branch pattern. No cycles visible.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')",
+      "window.__canaryPlaygroundOpen()",
+      "window.__canaryPlaygroundLoadScenario('tree')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "tree-default",
+      "stabilizeMs": 2000,
+      "tolerance": 0.05
+    }
+  ]
+}

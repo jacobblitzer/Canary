@@ -11,12 +11,15 @@ against `window.__canary*` hooks installed by the app.
 
 ## Hook surface (Qualia side)
 
-Lives in `Qualia/packages/ui/src/canary-hooks.ts`, mounted at App boot.
-Coverage today is focused on the LandingScreen + ModuleRegistry:
+Lives in `Qualia/packages/ui/src/canary-hooks.ts` (app-level hooks), plus
+`Qualia/packages/ui/src/debug/Playground.tsx` (scenario / snapshot hooks
+installed only while the playground overlay is mounted).
+
+App-level (always available after `__canaryHooksReady === true`):
 
 - `__canaryHooksReady` — boolean marker set true after install.
 - `__canaryWaitForReady(timeoutMs)` — resolves once demo data has loaded.
-- `__canaryGetAppInfo()` — `{ ready, theme, moduleCount, profile, landingOpen }`.
+- `__canaryGetAppInfo()` — `{ ready, theme, moduleCount, profile, landingOpen, playgroundOpen }`.
 - `__canaryHideUI(hidden)` — hides toolbar/sidebar/panels for canvas-only screenshots.
 - `__canaryGetModuleConfig()` / `__canaryListModules()` — registry inspection.
 - `__canarySetModuleEnabled(id, enabled)` / `__canaryApplyProfile(name)` — mutation.
@@ -24,6 +27,23 @@ Coverage today is focused on the LandingScreen + ModuleRegistry:
 - `__canaryGetLandingState()` — DOM-driven inspection of the modal.
 - `__canaryClickProfilePill(name)` / `__canaryToggleLandingModule(id)`.
 - `__canaryClickLandingApply()` / `__canaryClickLandingCancel()`.
+- `__canaryPlaygroundOpen()` — opens the Debug Playground overlay. Returns
+  `{ ok: false, reason: 'module-disabled' }` when `debug.playground`
+  isn't enabled. Tests must `ApplyProfile('workshop')` (or
+  `SetModuleEnabled('debug.playground', true)`) first.
+- `__canaryPlaygroundClose()` / `__canaryPlaygroundIsOpen()`.
+
+Playground-scoped (only installed while the overlay is mounted — call
+`PlaygroundOpen` first):
+
+- `__canaryPlaygroundGetState()` — `{ activeScenario, params, snapshotCount,
+  nodeCount, edgeCount, moduleProfile }`.
+- `__canaryPlaygroundListScenarios()` — descriptor metadata for every
+  scenario id (`random | grid | tree | scale-free | stress-1k | stress-10k`).
+- `__canaryPlaygroundLoadScenario(id, paramsOverride?)` — switch scenario.
+- `__canaryPlaygroundSetParam(key, value)` — adjust the active scenario's param.
+- `__canaryPlaygroundListSnapshots()` / `__canaryPlaygroundSaveSnapshot(label)`
+  / `__canaryPlaygroundRestoreSnapshot(id)` / `__canaryPlaygroundDeleteSnapshot(id)`.
 
 All hooks return `{ ok, value | reason }` envelopes for failure paths.
 
@@ -43,6 +63,12 @@ All hooks return `{ ok, value | reason }` envelopes for failure paths.
 | `ToggleLandingModule` | Toggle a module checkbox by id inside the modal. |
 | `ClickLandingApply` / `ClickLandingCancel` | Footer buttons. |
 | `ClearStorage` | `localStorage.clear() + sessionStorage.clear()`. |
+| `PlaygroundOpen` / `PlaygroundClose` | Toggle the Wave 0.B Debug Playground overlay (gated by the `debug.playground` module — `ApplyProfile('workshop')` first). |
+| `PlaygroundLoadScenario` | Switch to a named scenario (`random`/`grid`/`tree`/`scale-free`/`stress-1k`/`stress-10k`). Optional `paramsJson` overrides per-scenario knobs. |
+| `PlaygroundSetParam` | Adjust a single scenario param (e.g. `nodeCount=120`); regenerates + reruns layout. |
+| `PlaygroundSaveSnapshot` | Persist current scratch graph + module config + camera to `localStorage[qualia.playground.snapshots]`. |
+| `PlaygroundRestoreSnapshot` / `PlaygroundDeleteSnapshot` | Replay or remove a snapshot by id. |
+| `PlaygroundListSnapshots` / `PlaygroundGetState` | Inspection. |
 
 ## Configuration
 
@@ -90,3 +116,8 @@ canary run --workload qualia --suite landing-screen --mode both
 Initial implementation — May 8, 2026. LandingScreen + module registry
 fixtures are the first batch. fx.* visual tests will follow once D1–D6
 have polished implementations beyond the Phase D scaffolds.
+
+Wave 0.B Debug Playground hooks landed 2026-05-10 (Qualia commit + this
+Canary update). First playground suite is `playground` (workloads/qualia/
+suites/playground.json) — one test per scenario plus a snapshot
+round-trip test. fx.* visual tests still queued.

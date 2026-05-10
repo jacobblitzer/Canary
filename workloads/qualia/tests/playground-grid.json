@@ -1,0 +1,27 @@
+{
+  "name": "playground-grid",
+  "workload": "qualia",
+  "description": "Switch the Debug Playground to the Grid scenario (6×6 default = 36 nodes, 60 edges). The force-directed layout should pull a 36-node 4-neighbour grid into a roughly planar / lattice-shaped arrangement.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Debug Playground overlay with the 'Grid' pill highlighted in blue. The Rows and Cols parameter inputs both read 6. The viewport shows 36 nodes connected as a 4-neighbour rectangular lattice — visually a regular grid that the force solver has untangled into either a roughly planar 6×6 mesh or a slightly bowed surface. Each node has 2-4 visible connections.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')",
+      "window.__canaryPlaygroundOpen()",
+      "window.__canaryPlaygroundLoadScenario('grid')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "grid-default",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05
+    }
+  ]
+}

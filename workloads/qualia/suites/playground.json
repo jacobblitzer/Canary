@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "description": "Debug Playground (Wave 0.B / ADR 0012). One pixel-diff + VLM check per scenario generator (random / grid / tree / scale-free / stress-1k) plus a snapshot round-trip. All scenarios pre-enable the `debug.playground` module via Workshop profile, then drive the playground through __canaryPlayground* hooks.",
+  "tests": [
+    "playground-random",
+    "playground-grid",
+    "playground-tree",
+    "playground-scale-free",
+    "playground-stress-1k",
+    "playground-snapshot-roundtrip"
+  ]
+}

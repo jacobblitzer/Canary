@@ -1,0 +1,27 @@
+{
+  "name": "playground-stress-1k",
+  "workload": "qualia",
+  "description": "Switch to the Stress 1k scenario (1000 nodes, ~1500 edges via random sparse generation). This is the d3-force-3d performance benchmark — the layout should complete and render without crashing or hanging.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Debug Playground overlay with 'Stress 1k' pill highlighted (no parameter controls — the stress scenarios are parameterless). The viewport shows a dense cloud of ~1000 small blue spherical nodes with ~1500 thin line edges forming an interconnected network. The cloud should be roughly spherical from the force solver's center-gravity term. Individual nodes are small but distinguishable; no rendering artifacts (no black screen, no exploding geometry, no single giant blob).",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')",
+      "window.__canaryPlaygroundOpen()",
+      "window.__canaryPlaygroundLoadScenario('stress-1k')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "stress-1k-default",
+      "stabilizeMs": 4000,
+      "tolerance": 0.08
+    }
+  ]
+}
