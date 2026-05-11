@@ -1,0 +1,26 @@
+{
+  "name": "main-cinematic-curl-noise",
+  "workload": "qualia",
+  "description": "Main viewport (not playground) under Cinematic profile — curl-noise field + bloom + Penumbra. Used as a visual oracle for Wave 2 atmospheric particles. The main app's ModuleRegistry is what Cinematic acts on; the playground overlay's own registry would default to Workshop (no curl-noise).",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Main Qualia viewport — the demo organization graph (12 person nodes in a hierarchical or social arrangement) rendered against a dark background. Behind the nodes, drifting blue points should be visible — the curl-noise particle field from Wave 2 (Cinematic profile). Each person-node should have a soft glow halo (bloom from Wave 1). No playground overlay; the standard Qualia chrome (toolbar / sidebar / properties panel) is on screen but UI is hidden via __canaryHideUI.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('cinematic')",
+      "window.__canarySetModuleEnabled('render.penumbra-backdrop', false)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "main-cinematic",
+      "stabilizeMs": 3000,
+      "tolerance": 0.3
+    }
+  ]
+}

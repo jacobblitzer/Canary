@@ -1,0 +1,20 @@
+{
+  "name": "main-standard-baseline",
+  "workload": "qualia",
+  "description": "Main viewport under Standard profile. Sanity check: this should show the demo organization graph (12 person nodes). If this is also empty, the rendering pipeline is broken regardless of Cinematic-specific modules.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('standard')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "main-standard",
+      "stabilizeMs": 3000,
+      "tolerance": 0.3
+    }
+  ]
+}
