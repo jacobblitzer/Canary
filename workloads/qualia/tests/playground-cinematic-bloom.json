@@ -1,0 +1,28 @@
+{
+  "name": "playground-cinematic-bloom",
+  "workload": "qualia",
+  "description": "Cinematic profile + tree scenario — verifies the Wave 1 bloom path. Cinematic enables fx.post-process (bloom) + render.penumbra-backdrop, but the playground viewport doesn't bind Penumbra (Phase D defer), so this captures bloom-only without Penumbra interop concerns. Used by humans + me (Claude) to eyeball whether bloom is visible. Pixel-diff tolerance is high — the point is visual confirmation, not regression locking.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e4b"
+    },
+    "vlmDescription": "Debug Playground overlay with 'Tree' pill highlighted. Cinematic profile is active so fx.post-process (bloom) is enabled. The 3D scene shows ~121 tree-arranged blue spherical nodes against a dark background. Critically — each node should have a visible soft halo of bloom around it (additive light leak suggesting a glow), not just a flat sphere. The dark background should NOT be pitch black; the baseline emissive (Wave 1 phase E / Bug 0019 fix) gives nodes self-illumination so the scene reads as a constellation, not voids around lit objects.",
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('cinematic')",
+      "window.__canarySetModuleEnabled('debug.playground', true)",
+      "window.__canaryPlaygroundOpen()",
+      "window.__canaryPlaygroundLoadScenario('tree')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "cinematic-tree-bloom",
+      "stabilizeMs": 2500,
+      "tolerance": 0.25
+    }
+  ]
+}
