@@ -1,0 +1,16 @@
+{
+  "name": "main-neon",
+  "workload": "qualia",
+  "description": "Neon display mode — saturated cyan/magenta, heavy bloom, chromatic aberration, deep vignette. Synthwave look.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('neon')"
+    ]
+  },
+  "checkpoints": [
+    { "name": "main-neon", "stabilizeMs": 2500, "tolerance": 0.3 }
+  ]
+}

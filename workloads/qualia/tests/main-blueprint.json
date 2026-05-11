@@ -1,0 +1,16 @@
+{
+  "name": "main-blueprint",
+  "workload": "qualia",
+  "description": "Blueprint display mode — faded nodes + straight thin white edges, no bloom, technical-drawing aesthetic.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('blueprint')"
+    ]
+  },
+  "checkpoints": [
+    { "name": "main-blueprint", "stabilizeMs": 2500, "tolerance": 0.3 }
+  ]
+}
