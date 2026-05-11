@@ -1,0 +1,20 @@
+{
+  "name": "main-workshop-minimap",
+  "workload": "qualia",
+  "description": "Main viewport under Workshop profile — exercises the Wave 5 v1 minimap. Workshop already enables render.minimap, so just applying the profile is enough to surface it bottom-right.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('workshop')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "main-workshop-minimap",
+      "stabilizeMs": 3000,
+      "tolerance": 0.3
+    }
+  ]
+}
