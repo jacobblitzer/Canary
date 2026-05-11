@@ -3,14 +3,22 @@
   "workload": "qualia",
   "description": "Pencil display mode — desaturated, polyline edges, deep vignette. NPR-lite draftsman.",
   "setup": {
-    "canvas": { "width": 1280, "height": 800 },
+    "canvas": {
+      "width": 1280,
+      "height": 800
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
       "window.__canaryApplyProfile('pencil')"
     ]
   },
   "checkpoints": [
-    { "name": "main-pencil", "stabilizeMs": 2500, "tolerance": 0.3 }
+    {
+      "name": "main-pencil",
+      "stabilizeMs": 2500,
+      "tolerance": 0.3
+    }
   ]
 }

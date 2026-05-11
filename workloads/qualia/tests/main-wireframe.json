@@ -3,14 +3,22 @@
   "workload": "qualia",
   "description": "Wireframe display mode — edges + labels only, nodes are invisible. Tests that nodeOpacity=0 hides instanced spheres while keeping edges + labels.",
   "setup": {
-    "canvas": { "width": 1280, "height": 800 },
+    "canvas": {
+      "width": 1280,
+      "height": 800
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
       "window.__canaryApplyProfile('wireframe')"
     ]
   },
   "checkpoints": [
-    { "name": "main-wireframe", "stabilizeMs": 2500, "tolerance": 0.3 }
+    {
+      "name": "main-wireframe",
+      "stabilizeMs": 2500,
+      "tolerance": 0.3
+    }
   ]
 }
