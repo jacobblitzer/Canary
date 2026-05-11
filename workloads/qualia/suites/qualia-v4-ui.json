@@ -1,0 +1,17 @@
+{
+  "name": "qualia-v4-ui",
+  "description": "VLM-driven UI tests for the qualia-v4 pointer / qverse / RAG surface (Waves A → C, 2026-05-12). Every checkpoint's `description` field is the LLM prompt — edit those to refine the pass/fail criteria as the UI evolves.",
+  "tests": [
+    "qualia-v4-pointers-empty-state",
+    "qualia-v4-pointers-add-form-open",
+    "qualia-v4-pointers-populated",
+    "qualia-v4-dead-node-prompt",
+    "qualia-v4-breadcrumb-nested",
+    "qualia-v4-qverse-navigator",
+    "qualia-v4-refresh-toolbar",
+    "qualia-v4-refresh-enabled",
+    "qualia-v4-ghost-node",
+    "qualia-v4-cross-qverse-badge",
+    "qualia-v4-perfpanel-rag-section"
+  ]
+}

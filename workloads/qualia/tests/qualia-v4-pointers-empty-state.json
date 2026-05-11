@@ -1,0 +1,22 @@
+{
+  "name": "qualia-v4-pointers-empty-state",
+  "workload": "qualia",
+  "description": "Newly-selected node with no pointers — Properties panel should show the empty-state copy and an '+ Add pointer' button. Tests the Wave A → B authoring surface from the qualia-v4 plan.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryAddNode({ id: 'canary-test-1', label: 'Empty Node' })",
+      "window.__canarySelectNode('canary-test-1')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pointers-empty-state",
+      "mode": "vlm",
+      "stabilizeMs": 400,
+      "description": "Inspect the right-hand Properties panel. Pass ONLY if you can see all of: (1) the selected node's label/type/subtitle fields populated near the top, (2) a section titled 'Pointers' (uppercase, monospace header) further down the panel, (3) directly under that header, a single line of muted gray text saying that there are no pointers yet (something like 'No pointers. Add one below…'), and (4) a dashed-outline button labeled '+ Add pointer' below that text. Fail if the Pointers section is missing entirely, if the empty-state copy is absent, or if the + Add pointer button is replaced by a populated list of pointer rows. Reasoning should call out which of (1)-(4) was not present."
+    }
+  ]
+}

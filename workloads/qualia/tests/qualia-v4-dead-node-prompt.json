@@ -1,0 +1,32 @@
+{
+  "name": "qualia-v4-dead-node-prompt",
+  "workload": "qualia",
+  "description": "Refresh discovered three missing pointers — DeadNodePrompt modal lists them with action buttons.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryAddNode({ id: 'canary-test-4a', label: 'Alpha' })",
+      "window.__canaryAddNode({ id: 'canary-test-4b', label: 'Beta' })",
+      "window.__canaryAddPointer({ nodeId: 'canary-test-4a', kind: 'file', path: 'never-existed.md', role: 'markdown' })",
+      "window.__canaryAddPointer({ nodeId: 'canary-test-4b', kind: 'file', path: 'also-gone.md', role: 'markdown' })",
+      "window.__canaryAddPointer({ nodeId: 'canary-test-4b', kind: 'directory', path: 'phantom-dir' })",
+      "window.__canaryRefreshPointers()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "modal-lists-missing",
+      "mode": "vlm",
+      "stabilizeMs": 500,
+      "description": "A modal overlay should be visible over a dimmed background. Pass ONLY if all of: (1) modal header reads 'Refresh — 3 missing pointers' (or similar, must say the count), (2) a body line explains the prompt (something like 'These pointers couldn't be resolved on disk. For each, choose what to do.'), (3) three rows are listed — each row shows a path (e.g. 'never-existed.md', 'also-gone.md', 'phantom-dir') on its own line with the node label below it ('on node Alpha' / 'on node Beta'), and (4) each row has three action buttons on its right: 'Keep ghost', 'Remove pointer', 'Delete node' (the last one styled as a danger / red button). Fail if the count is wrong, any row is missing, or the action buttons don't appear inline with their row."
+    },
+    {
+      "name": "modal-row-layout",
+      "mode": "vlm",
+      "stabilizeMs": 200,
+      "description": "Focus on a single row's internal layout. Within one row the path text on the left should NOT overlap the three action buttons on the right; they should be on the same horizontal baseline with the path left-aligned and the buttons right-aligned. The 'Delete node' button must visually stand out as the destructive option (red border / red text). Pass only if every row obeys this layout and the destructive button is distinguishable. Fail if any row wraps awkwardly, buttons stack vertically, or 'Delete node' looks the same as the safer 'Keep ghost' / 'Remove pointer' actions."
+    }
+  ]
+}

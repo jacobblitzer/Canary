@@ -1,0 +1,31 @@
+{
+  "name": "qualia-v4-pointers-populated",
+  "workload": "qualia",
+  "description": "Node with three pointers of different kinds — pointer list should render rows with kind pill, path, and status badge.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryAddNode({ id: 'canary-test-3', label: 'Triple-Pointer Node' })",
+      "window.__canaryAddPointer({ nodeId: 'canary-test-3', kind: 'file', path: 'docs/CLAUDE.md', role: 'markdown', status: 'live' })",
+      "window.__canaryAddPointer({ nodeId: 'canary-test-3', kind: 'directory', path: 'packages/core/src', status: 'live' })",
+      "window.__canaryAddPointer({ nodeId: 'canary-test-3', kind: 'url', url: 'https://example.com/data.json', status: 'unchecked' })",
+      "window.__canarySelectNode('canary-test-3')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pointer-rows-render",
+      "mode": "vlm",
+      "stabilizeMs": 400,
+      "description": "Properties panel, Pointers section. Pass ONLY if exactly three pointer rows are visible, each row showing: (1) a small uppercase kind pill on the left (FILE / DIRECTORY / URL — colored differently per kind), (2) the path or URL in monospace mid-row (e.g. 'docs/CLAUDE.md', 'packages/core/src/', 'https://example.com/data.json'), and (3) a small status badge on the right ('live' for the first two, 'unchecked' for the URL). Also pass if there is a dashed '+ Add pointer' button BELOW the three rows. Fail if rows are missing, the pill is omitted, the status badge is absent, or the kind pill / path / status are vertically misaligned within the row."
+    },
+    {
+      "name": "kind-pill-color-cues",
+      "mode": "vlm",
+      "stabilizeMs": 200,
+      "description": "Same panel. Focus on the kind-pill color. The FILE pill is the default theme accent (teal-ish). The DIRECTORY pill should look distinctly different (warm yellow / orange family). The URL pill should look distinctly different again (cool blue family). Pass if the three pills are visually distinguishable colors. Fail if all three pills look the same color or the colors are too similar to tell apart at a glance."
+    }
+  ]
+}

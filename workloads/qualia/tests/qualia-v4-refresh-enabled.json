@@ -1,0 +1,22 @@
+{
+  "name": "qualia-v4-refresh-enabled",
+  "workload": "qualia",
+  "description": "Once any node has a pointer, the Refresh button should switch to its enabled appearance.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryAddNode({ id: 'has-ptr', label: 'Pointed' })",
+      "window.__canaryAddPointer({ nodeId: 'has-ptr', kind: 'file', path: 'CLAUDE.md', role: 'markdown' })"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "refresh-now-enabled",
+      "mode": "vlm",
+      "stabilizeMs": 400,
+      "description": "Top toolbar. The Refresh button should now look ENABLED — same visual weight as Import/Export beside it. Pass only if Refresh appears active/clickable (not muted/disabled). Fail if it still looks dim or has the disabled cursor."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "qualia-v4-refresh-toolbar",
+  "workload": "qualia",
+  "description": "The Refresh button enabled/disabled state — disabled with no pointers, enabled with at least one.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "refresh-disabled-initially",
+      "mode": "vlm",
+      "stabilizeMs": 400,
+      "description": "Look at the top toolbar. The Refresh button should be visible next to Import/Export but rendered in a DISABLED state (muted color, no hover affordance, looks dimmer than the active Import/Export buttons next to it). Pass only if Refresh is clearly visible AND visibly disabled. Fail if it's missing entirely, or if it looks the same as the adjacent enabled buttons."
+    }
+  ]
+}

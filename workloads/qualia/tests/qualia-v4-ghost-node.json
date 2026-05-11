@@ -1,0 +1,23 @@
+{
+  "name": "qualia-v4-ghost-node",
+  "workload": "qualia",
+  "description": "A node whose pointer status is 'missing' should render visually dimmed with a '[missing]' badge on its label.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryAddNode({ id: 'ghost-1', label: 'Ghost Node' })",
+      "window.__canaryAddPointer({ nodeId: 'ghost-1', kind: 'file', path: 'does-not-exist.md', role: 'markdown', status: 'missing' })",
+      "window.__canarySelectNode('ghost-1')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "ghost-label-badge",
+      "mode": "vlm",
+      "stabilizeMs": 600,
+      "description": "Find the node labeled 'Ghost Node' in the 3D viewport. Pass ONLY if both: (1) the label text 'Ghost Node' is immediately followed by a red-colored '[missing]' badge (small, parenthetical-style annotation), AND (2) the node sphere itself looks visually dimmed / darker compared to other unrelated nodes — about 35% of the brightness it would have if its pointer were live. Fail if the [missing] badge is absent, is the wrong color (e.g. theme accent instead of red), or if the node sphere doesn't appear dimmed."
+    }
+  ]
+}

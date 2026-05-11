@@ -33,6 +33,40 @@ App-level (always available after `__canaryHooksReady === true`):
   `SetModuleEnabled('debug.playground', true)`) first.
 - `__canaryPlaygroundClose()` / `__canaryPlaygroundIsOpen()`.
 
+**qualia-v4 hooks** (added 2026-05-12; cover the pointer / qverse / RAG
+UI surface for VLM testing — see `suites/qualia-v4-ui.json`):
+
+- `__canaryAddNode({ id, type?, label?, importance? })` — fixture a graph node.
+- `__canarySelectNode(nodeId)` — select (drives PropertiesPanel content).
+- `__canaryAddPointer({ nodeId, kind, path?, url?, bytes?, encoding?, role?, slot?, status?, lastKnownHash? })` —
+  programmatically add a pointer. `kind` ∈ `file|directory|url|inline`. Returns the new pointer id.
+- `__canarySetPointerStatus(nodeId, pointerId, status)` — flip a pointer's
+  `status` (`live|stale|missing|conflicting|unchecked`) for fixture state.
+- `__canaryRefreshPointers()` — run the resolver against every pointer
+  (same as the Refresh toolbar button). Returns `{ missing, conflicting }` counts.
+- `__canarySwitchContext(contextId | null)` — `null` = superposition.
+- `__canarySpawnChildContext({ parentNodeId, parentContextId?, childContextId?, label?, nodeIds? })` —
+  fixture a child context off a parent node so tests can screenshot the
+  QverseNavigator + Breadcrumb in a nested state without driving a
+  real directory scan.
+- `__canaryGetPointerSection()` — DOM-readout of the Pointers section
+  on the right Properties panel.
+- `__canaryOpenAddPointerForm()` — clicks the `+ Add pointer` button.
+- `__canaryClickRefresh()` — clicks the Refresh toolbar button.
+- `__canaryClickPropTab('properties' | 'notes' | 'behavior' | 'edit')` —
+  switches the Properties panel sub-tab.
+- `__canaryGetDeadNodePrompt()` — modal state readout.
+- `__canaryGetCrossQverseBadge()` — corner-badge text + visibility.
+- `__canaryGetQverseNavigator()` — context count + active label.
+- `__canaryGetBreadcrumb()` — `{ nested, labels[], activeLabel }`.
+- `__canaryGetRagIndicator()` — top-center pill state.
+
+**Editing VLM prompts.** Every `mode: "vlm"` checkpoint's `description`
+field is the prompt sent to Gemma — that's the *editable expectation
+surface*. Tweak the description text to refine pass/fail criteria as
+the UI evolves; no code change required. The first `setup.vlmDescription`
+acts as test-wide context the model sees before each checkpoint.
+
 Playground-scoped (only installed while the overlay is mounted — call
 `PlaygroundOpen` first):
 

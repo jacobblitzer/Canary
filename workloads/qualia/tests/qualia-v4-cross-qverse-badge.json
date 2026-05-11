@@ -1,0 +1,21 @@
+{
+  "name": "qualia-v4-cross-qverse-badge",
+  "workload": "qualia",
+  "description": "When the active context has edges whose target node isn't in-context, a corner badge should count them.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canarySwitchContext('hierarchy')"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "no-badge-in-clean-context",
+      "mode": "vlm",
+      "stabilizeMs": 400,
+      "description": "In the top-right corner area of the viewport (below the toolbar, right side, NOT inside a panel), no 'cross-qverse edge' badge should be visible. Pass if you see no such corner pill. Fail if you see a teal-bordered pill with an upward-arrow icon and a count anywhere in that region."
+    }
+  ]
+}

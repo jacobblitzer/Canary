@@ -1,0 +1,31 @@
+{
+  "name": "qualia-v4-qverse-navigator",
+  "workload": "qualia",
+  "description": "Once any context has a parentContextId the QverseNavigator panel auto-shows. Renders a 2D tree of contexts in the corner.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canarySwitchContext('hierarchy')",
+      "window.__canaryAddNode({ id: 'nav-parent-1', label: 'src' })",
+      "window.__canarySpawnChildContext({ parentNodeId: 'nav-parent-1', label: 'src', childContextId: 'ctx-src' })",
+      "window.__canaryAddNode({ id: 'nav-parent-2', label: 'docs' })",
+      "window.__canarySpawnChildContext({ parentNodeId: 'nav-parent-2', label: 'docs', childContextId: 'ctx-docs2' })"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "navigator-visible",
+      "mode": "vlm",
+      "stabilizeMs": 600,
+      "description": "Look at the bottom-right area of the screen. A small dark rounded panel should be visible with the heading 'QVERSE' (small-caps, muted color) at the top. Below the heading is a 2D tree view showing rounded rectangles for each context. Pass ONLY if: (1) the 'QVERSE' header is visible, (2) at least 3 context rectangles are rendered (the active root + the two children), (3) parent-to-child connector lines are drawn between rects, and (4) the currently active context rect has a teal ring/border distinguishing it from the others. Fail if the panel is missing, the header text is wrong, fewer than 3 rects render, or no rect appears to be 'active'."
+    },
+    {
+      "name": "navigator-not-overlapping",
+      "mode": "vlm",
+      "stabilizeMs": 200,
+      "description": "Same panel. Focus on overlap with the existing Minimap (which lives in the bottom-right by default). Pass if the QverseNavigator and Minimap are both visible and clearly separated (vertically stacked or otherwise non-overlapping). Fail if they sit on top of each other or one is clipped behind the other so the user can't read both."
+    }
+  ]
+}
