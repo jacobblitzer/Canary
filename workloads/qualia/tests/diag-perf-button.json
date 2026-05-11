@@ -1,0 +1,18 @@
+{
+  "name": "diag-perf-button",
+  "workload": "qualia",
+  "description": "Click the bottom-toolbar Perf button + capture. Want to see if opening the perf panel actually does something to the UI darkness, and what edges look like at the same time.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 1000)); const btns = Array.from(document.querySelectorAll('button')).filter(b => /^Perf$/i.test(b.textContent || '')); if (btns.length === 0) return { error: 'no Perf button found' }; btns[0].click(); await new Promise(r => setTimeout(r, 600)); return { perfButtonsFound: btns.length, perfPanelDomCount: document.querySelectorAll('.perf-panel').length }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "perf-button-open", "stabilizeMs": 1500, "tolerance": 0.5 }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "diag-md-editor",
+  "workload": "qualia",
+  "description": "Force Alice to be a markdown node, dispatch a synthetic dblclick on the renderer to open the editor, screenshot.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 800)); const store = window.__qualiaRenderer?.getSceneManager?.()?._store; if (!store) return { error: 'no store' }; store.updateNode('alice', { type: 'markdown', notes: 'Alice is the CTO and **runs the eng org**.\\n\\nKey responsibilities:\\n- product strategy\\n- engineering org\\n- hiring' }); store.dispatch({ type: 'NODE_TYPE_REGISTER', payload: { descriptor: { id: 'markdown', label: 'Markdown', category: 'media', color: '#88aaff', icon: 'document', baseRadius: 0.9 } } }); await new Promise(r => setTimeout(r, 600)); return { aliceType: store.state.nodes.get('alice')?.type, notes: store.state.nodes.get('alice')?.notes?.slice(0, 30) }; })()",
+      "(async () => { await new Promise(r => setTimeout(r, 400)); const sm = window.__qualiaRenderer.getSceneManager(); const im = sm.interaction; im.simulateNodeClick?.('alice'); return { clicked: true }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "md-editor", "stabilizeMs": 1000, "tolerance": 0.5 }
+  ]
+}

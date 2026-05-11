@@ -1,0 +1,18 @@
+{
+  "name": "diag-edges-samples",
+  "workload": "qualia",
+  "description": "Diagnostic — inspect actual position buffer + first edge sample range to find why bezier renders nothing.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 800)); const sm = window.__qualiaRenderer.getSceneManager(); const em = sm.edgeMesh; const geom = em.lineSegments.geometry; const posAttr = geom.getAttribute('instanceStart'); const endAttr = geom.getAttribute('instanceEnd'); const colorAttr = geom.getAttribute('instanceColorStart'); const positions = sm._store.getActivePositions(); const edges = sm._store.getActiveEdges(); const firstEdge = edges[0]; const srcPos = firstEdge ? positions[firstEdge.source] : null; const tgtPos = firstEdge ? positions[firstEdge.target] : null; return { instanceCount: geom.instanceCount, hasInstanceStart: !!posAttr, instanceStartCount: posAttr?.count, instanceStartFirst6: posAttr ? Array.from(posAttr.array).slice(0, 18) : null, instanceColorFirst6: colorAttr ? Array.from(colorAttr.array).slice(0, 12) : null, firstEdgeId: firstEdge?.id, firstEdgeType: firstEdge?.type, firstEdgeSrcPos: srcPos, firstEdgeTgtPos: tgtPos, materialOpacity: em.lineSegments.material.opacity, materialUniformResolution: em.lineSegments.material.resolution?.toArray() }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "diag-samples", "stabilizeMs": 1500, "tolerance": 0.5 }
+  ]
+}

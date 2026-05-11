@@ -1,0 +1,19 @@
+{
+  "name": "diag-simulation",
+  "workload": "qualia",
+  "description": "Enable compute.simulation, ping a node, wait, capture. Verifies the runner causes edges to flash.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "window.__canarySetModuleEnabled('compute.simulation', true)",
+      "(async () => { await new Promise(r => setTimeout(r, 1000)); const fn = window.__qualiaSimulationPing; if (!fn) return { error: 'no ping function' }; const ok = fn('alice'); await new Promise(r => setTimeout(r, 800)); return { pingOk: ok, hasHook: !!fn }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "simulation", "stabilizeMs": 800, "tolerance": 0.5 }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "diag-sim-controls",
+  "workload": "qualia",
+  "description": "Enable compute.simulation + open Perf panel + verify sim controls section appears.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "window.__canarySetModuleEnabled('compute.simulation', true)",
+      "(async () => { await new Promise(r => setTimeout(r, 500)); const btn = Array.from(document.querySelectorAll('button')).find(b => /^Perf$/i.test(b.textContent || '')); btn?.click(); await new Promise(r => setTimeout(r, 800)); const controls = window.__qualiaSimulationControls; return { panelOpen: document.querySelectorAll('.perf-panel').length, hasControls: !!controls, tickRate: controls?.getTickRate(), pingMs: controls?.getPingIntervalMs() }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "sim-controls", "stabilizeMs": 1500, "tolerance": 0.5 }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "diag-edge-lengths",
+  "workload": "qualia",
+  "description": "Measure world-space length of each rendered segment + dump positions of first 3 edges to see why edges aren't visible.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 1200)); const r = window.__qualiaRenderer; const sm = r.getSceneManager(); const em = sm.edgeMesh; const geom = em.lineSegments.geometry; const buf = geom.getAttribute('instanceStart').array; const lengths = []; for (let i = 0; i < geom.instanceCount; i++) { const ax = buf[i * 6], ay = buf[i * 6 + 1], az = buf[i * 6 + 2]; const bx = buf[i * 6 + 3], by = buf[i * 6 + 4], bz = buf[i * 6 + 5]; const len = Math.hypot(bx - ax, by - ay, bz - az); lengths.push(Math.round(len * 100) / 100); } lengths.sort((a, b) => b - a); const cam = sm.camera; return { count: lengths.length, top5lens: lengths.slice(0, 5), bottom5lens: lengths.slice(-5), median: lengths[Math.floor(lengths.length / 2)], cameraPos: [Math.round(cam.position.x * 10) / 10, Math.round(cam.position.y * 10) / 10, Math.round(cam.position.z * 10) / 10], cameraTarget: [Math.round(sm.controls.target.x * 10) / 10, Math.round(sm.controls.target.y * 10) / 10, Math.round(sm.controls.target.z * 10) / 10], matDepthTest: em.lineSegments.material.depthTest, matDepthWrite: em.lineSegments.material.depthWrite, renderOrder: em.lineSegments.renderOrder }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "edge-lengths", "stabilizeMs": 1000, "tolerance": 0.5 }
+  ]
+}

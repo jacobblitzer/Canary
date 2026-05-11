@@ -1,0 +1,18 @@
+{
+  "name": "diag-edges-straight",
+  "workload": "qualia",
+  "description": "Diagnostic — force edges to straight via setPerfSettings, capture. If straight shows but bezier doesn't, the bezier sampler is broken.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 800)); const r = window.__qualiaRenderer; if (!r) return { error: 'no renderer' }; r.setPerfSettings({ edgeShape: 'straight', edgeWidthPx: 6 }); await new Promise(r => setTimeout(r, 300)); const sm = r.getSceneManager(); const em = sm.edgeMesh; return { shape: em.globalShape, count: em.count, lineWidth: em.lineSegments.material.linewidth, opacity: em.lineSegments.material.opacity, resolution: em.lineSegments.material.resolution.toArray() }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "diag-straight", "stabilizeMs": 1500, "tolerance": 0.5 }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "diag-perf-error",
+  "workload": "qualia",
+  "description": "Click Perf, catch console errors, dump DOM state.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { window.__capturedErrors = []; const origErr = console.error; console.error = (...args) => { window.__capturedErrors.push(args.map(a => typeof a === 'object' ? (a?.stack || a?.message || JSON.stringify(a)) : String(a)).join(' ')); origErr.apply(console, args); }; window.addEventListener('error', e => { window.__capturedErrors.push('window.onerror: ' + (e.error?.stack || e.message)); }); await new Promise(r => setTimeout(r, 500)); const btn = Array.from(document.querySelectorAll('button')).find(b => /^Perf$/i.test(b.textContent || '')); btn?.click(); await new Promise(r => setTimeout(r, 1500)); return { clicked: !!btn, errors: window.__capturedErrors.slice(0, 10), bodyChildCount: document.body.childElementCount, rootChildCount: document.getElementById('root')?.childElementCount, perfPanel: document.querySelector('.perf-panel')?.outerHTML?.slice(0, 200) }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "perf-error", "stabilizeMs": 1500, "tolerance": 0.5 }
+  ]
+}

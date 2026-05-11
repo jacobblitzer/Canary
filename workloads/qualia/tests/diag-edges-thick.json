@@ -1,0 +1,18 @@
+{
+  "name": "diag-edges-thick",
+  "workload": "qualia",
+  "description": "Force linewidth to 50px — if all 552 segments draw, we'll see a thick mess. If only 1 still, there's an instance-count bug.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 1200)); const r = window.__qualiaRenderer; r.setPerfSettings({ edgeWidthPx: 50, nodesVisible: false }); await new Promise(r2 => setTimeout(r2, 500)); const sm = r.getSceneManager(); const em = sm.edgeMesh; return { lw: em.lineSegments.material.linewidth, instCount: em.lineSegments.geometry.instanceCount, nodesVisible: false, segmentCount: em.count }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "edges-thick", "stabilizeMs": 1500, "tolerance": 0.5 }
+  ]
+}

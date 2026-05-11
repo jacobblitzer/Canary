@@ -1,0 +1,18 @@
+{
+  "name": "diag-dashed",
+  "workload": "qualia",
+  "description": "Count edges by type and verify mentor routing.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 1200)); const sm = window.__qualiaRenderer.getSceneManager(); const edges = sm._store.getActiveEdges(); const byType = {}; for (const e of edges) byType[e.type] = (byType[e.type] || 0) + 1; const mentorType = sm._store.edgeTypeRegistry.get('mentors'); const em = sm.edgeMesh; return { totalEdges: edges.length, byType, mentorDescriptor: mentorType ? { dash: mentorType.dash, directional: mentorType.directional } : null, dashedInstances: em.dashedSegments.geometry.instanceCount }; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "dashed", "stabilizeMs": 1000, "tolerance": 0.5 }
+  ]
+}
