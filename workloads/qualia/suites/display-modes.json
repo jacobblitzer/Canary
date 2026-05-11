@@ -1,0 +1,15 @@
+{
+  "name": "display-modes",
+  "workload": "qualia",
+  "description": "Captures each of the Rhino-style display profiles + Aurora end-to-end. Used as a visual oracle for the profile catalog — humans (and Claude) review the screenshots to confirm each mode reads distinctively.",
+  "tests": [
+    "main-standard-baseline",
+    "main-wireframe",
+    "main-shaded",
+    "main-pencil",
+    "main-artistic",
+    "main-rendered",
+    "main-cinematic-curl-noise",
+    "main-aurora"
+  ]
+}

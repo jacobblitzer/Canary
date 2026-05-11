@@ -1,0 +1,16 @@
+{
+  "name": "main-artistic",
+  "workload": "qualia",
+  "description": "Artistic display mode — heavy bloom + saturated warm grade + catmull-rom edges. Painterly.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('artistic')"
+    ]
+  },
+  "checkpoints": [
+    { "name": "main-artistic", "stabilizeMs": 2500, "tolerance": 0.3 }
+  ]
+}

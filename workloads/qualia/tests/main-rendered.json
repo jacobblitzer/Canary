@@ -1,0 +1,16 @@
+{
+  "name": "main-rendered",
+  "workload": "qualia",
+  "description": "Rendered display mode — production middle ground: moderate bloom, soft vignette, subtle particles.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('rendered')"
+    ]
+  },
+  "checkpoints": [
+    { "name": "main-rendered", "stabilizeMs": 2500, "tolerance": 0.3 }
+  ]
+}

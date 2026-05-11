@@ -1,0 +1,16 @@
+{
+  "name": "main-aurora",
+  "workload": "qualia",
+  "description": "Aurora display mode — Cinematic dialed to max. Penumbra + cubic-bezier edges + dense particles + heavy bloom + group atmosphere + echo trails + constellations.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryApplyProfile('aurora')"
+    ]
+  },
+  "checkpoints": [
+    { "name": "main-aurora", "stabilizeMs": 4000, "tolerance": 0.4 }
+  ]
+}
