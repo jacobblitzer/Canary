@@ -1,10 +1,16 @@
 {
   "name": "qualia-v4-refresh-toolbar",
   "workload": "qualia",
-  "description": "The Refresh button enabled/disabled state — disabled with no pointers, enabled with at least one.",
+  "description": "The Refresh button enabled/disabled state â€” disabled with no pointers, enabled with at least one.",
   "setup": {
-    "canvas": { "width": 1280, "height": 720 },
-    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "vlm": {
+      "provider": "ollama",
+      "model": "qwen2.5vl:7b"
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)"
     ]

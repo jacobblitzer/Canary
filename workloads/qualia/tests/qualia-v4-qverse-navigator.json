@@ -3,8 +3,14 @@
   "workload": "qualia",
   "description": "Once any context has a parentContextId the QverseNavigator panel auto-shows. Renders a 2D tree of contexts in the corner.",
   "setup": {
-    "canvas": { "width": 1280, "height": 720 },
-    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "vlm": {
+      "provider": "ollama",
+      "model": "qwen2.5vl:7b"
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canarySwitchContext('hierarchy')",

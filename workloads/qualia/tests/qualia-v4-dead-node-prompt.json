@@ -1,10 +1,16 @@
 {
   "name": "qualia-v4-dead-node-prompt",
   "workload": "qualia",
-  "description": "Refresh discovered three missing pointers — DeadNodePrompt modal lists them with action buttons.",
+  "description": "Refresh discovered three missing pointers â€” DeadNodePrompt modal lists them with action buttons.",
   "setup": {
-    "canvas": { "width": 1280, "height": 720 },
-    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "vlm": {
+      "provider": "ollama",
+      "model": "qwen2.5vl:7b"
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryAddNode({ id: 'canary-test-4a', label: 'Alpha' })",
@@ -20,7 +26,7 @@
       "name": "modal-lists-missing",
       "mode": "vlm",
       "stabilizeMs": 500,
-      "description": "A modal overlay should be visible over a dimmed background. Pass ONLY if all of: (1) modal header reads 'Refresh — 3 missing pointers' (or similar, must say the count), (2) a body line explains the prompt (something like 'These pointers couldn't be resolved on disk. For each, choose what to do.'), (3) three rows are listed — each row shows a path (e.g. 'never-existed.md', 'also-gone.md', 'phantom-dir') on its own line with the node label below it ('on node Alpha' / 'on node Beta'), and (4) each row has three action buttons on its right: 'Keep ghost', 'Remove pointer', 'Delete node' (the last one styled as a danger / red button). Fail if the count is wrong, any row is missing, or the action buttons don't appear inline with their row."
+      "description": "A modal overlay should be visible over a dimmed background. Pass ONLY if all of: (1) modal header reads 'Refresh â€” 3 missing pointers' (or similar, must say the count), (2) a body line explains the prompt (something like 'These pointers couldn't be resolved on disk. For each, choose what to do.'), (3) three rows are listed â€” each row shows a path (e.g. 'never-existed.md', 'also-gone.md', 'phantom-dir') on its own line with the node label below it ('on node Alpha' / 'on node Beta'), and (4) each row has three action buttons on its right: 'Keep ghost', 'Remove pointer', 'Delete node' (the last one styled as a danger / red button). Fail if the count is wrong, any row is missing, or the action buttons don't appear inline with their row."
     },
     {
       "name": "modal-row-layout",
