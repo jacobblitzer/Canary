@@ -12,7 +12,7 @@
       "window.__canaryWaitForReady(30000)",
       "window.__canaryShowLandingScreen()",
       "window.__canaryClickProfilePill('standard')",
-      "window.__canaryToggleLandingModule('render.grid')",
+      "window.__canaryToggleLandingPersona('render.grid')",
       "(() => { const s = window.__canaryGetLandingState(); if (!s || !s.ok) throw new Error('landing state unavailable: ' + JSON.stringify(s)); if (s.value.activeProfile !== 'custom') throw new Error('expected activeProfile=custom after toggle, got: ' + s.value.activeProfile); return 'profile flipped to custom'; })()"
     ]
   },
