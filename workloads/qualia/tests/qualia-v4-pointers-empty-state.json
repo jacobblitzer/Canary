@@ -18,7 +18,7 @@
       "name": "pointers-empty-state",
       "mode": "vlm",
       "stabilizeMs": 1500,
-      "description": "Right-hand Properties panel must show: (1) selected node fields (label/type/subtitle), (2) uppercase 'POINTERS' section header, (3) muted 'No pointers…' empty-state line, (4) dashed '+ Add pointer' button. Pass only if ALL four are present. Reasoning ≤ 20 words; just list which of 1-4 is missing, or write 'all present' if pass."
+      "description": "In the right-hand Properties panel of Qualia, verify: (1) node info section showing Label / Type / Subtitle / Importance, (2) a small light-gray section heading further down the panel — look for the WORD 'Pointers' in any case (it may be uppercase, lowercase, or styled as a small section label), (3) a sentence under it saying there are no pointers yet, (4) a button (often dashed-outline) containing the text 'Add pointer'. Pass if all four are visible. Reasoning ≤ 20 words; list missing items or write 'all present'."
     }
   ]
 }
