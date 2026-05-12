@@ -20,7 +20,7 @@
     {
       "name": "no-badge-in-clean-context",
       "mode": "vlm",
-      "stabilizeMs": 400,
+      "stabilizeMs": 800,
       "description": "In the top-right corner area of the viewport (below the toolbar, right side, NOT inside a panel), no 'cross-qverse edge' badge should be visible. Pass if you see no such corner pill. Fail if you see a teal-bordered pill with an upward-arrow icon and a count anywhere in that region."
     }
   ]

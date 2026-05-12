@@ -21,7 +21,7 @@
     {
       "name": "refresh-now-enabled",
       "mode": "vlm",
-      "stabilizeMs": 400,
+      "stabilizeMs": 800,
       "description": "Top toolbar. The Refresh button should now look ENABLED â€” same visual weight as Import/Export beside it. Pass only if Refresh appears active/clickable (not muted/disabled). Fail if it still looks dim or has the disabled cursor."
     }
   ]

@@ -20,7 +20,7 @@
     {
       "name": "rag-section-visible",
       "mode": "vlm",
-      "stabilizeMs": 500,
+      "stabilizeMs": 800,
       "description": "The Performance panel should be open on the right side of the screen. Scroll-visible inside it should be a section titled 'Embedding model (RAG)' (uppercase header). Below the header: a short muted-color hint mentioning 'Xenova/all-MiniLM-L6-v2', '384 dims', '22 MB', and 'IndexedDB'. Below that: a button labeled 'Download embedding model' that spans the full section width. Below the button: another muted hint line currently saying something like 'Not loaded â€” node RAG is heuristic-onlyâ€¦'. Pass only if all four are visible (title, model-info hint, full-width Download button, status line). Fail if the section is missing entirely or any of those four pieces is absent."
     }
   ]

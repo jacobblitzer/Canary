@@ -24,13 +24,13 @@
     {
       "name": "pointer-rows-render",
       "mode": "vlm",
-      "stabilizeMs": 400,
+      "stabilizeMs": 800,
       "description": "Properties panel, Pointers section. Pass ONLY if exactly three pointer rows are visible, each row showing: (1) a small uppercase kind pill on the left (FILE / DIRECTORY / URL â€” colored differently per kind), (2) the path or URL in monospace mid-row (e.g. 'docs/CLAUDE.md', 'packages/core/src/', 'https://example.com/data.json'), and (3) a small status badge on the right ('live' for the first two, 'unchecked' for the URL). Also pass if there is a dashed '+ Add pointer' button BELOW the three rows. Fail if rows are missing, the pill is omitted, the status badge is absent, or the kind pill / path / status are vertically misaligned within the row."
     },
     {
       "name": "kind-pill-color-cues",
       "mode": "vlm",
-      "stabilizeMs": 200,
+      "stabilizeMs": 800,
       "description": "Same panel. Focus on the kind-pill color. The FILE pill is the default theme accent (teal-ish). The DIRECTORY pill should look distinctly different (warm yellow / orange family). The URL pill should look distinctly different again (cool blue family). Pass if the three pills are visually distinguishable colors. Fail if all three pills look the same color or the colors are too similar to tell apart at a glance."
     }
   ]

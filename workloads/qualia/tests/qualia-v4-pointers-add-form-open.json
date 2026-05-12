@@ -22,13 +22,13 @@
     {
       "name": "add-form-fields-visible",
       "mode": "vlm",
-      "stabilizeMs": 400,
+      "stabilizeMs": 800,
       "description": "In the right Properties panel, the Pointers section should now show an INLINE FORM (bordered box, not a modal). Pass only if all of these form fields are visible and clearly labeled: (1) Kind â€” a dropdown defaulting to 'file (link to disk)', (2) Workspace-relative path â€” a text input with a 'Browseâ€¦' button to its right on the same line, (3) Slot â€” a text input prefilled with 'primary', (4) Role â€” a dropdown (auto from extension if blank). At the bottom: an 'Add' button and a 'Cancel' button. There should also be a small hint line: 'After adding, click Refresh to resolve against disk.' Fail if any of these fields is missing, the Browse button overlaps the input, or the form is rendered as a modal overlay instead of inline."
     },
     {
       "name": "add-form-no-overlap",
       "mode": "vlm",
-      "stabilizeMs": 200,
+      "stabilizeMs": 800,
       "description": "Same form, focus on layout cleanliness. Pass only if (a) every field label is on its own line above its input, (b) the path input + Browse button are on the same row with the Browse button visually right-aligned, (c) the Add and Cancel buttons are side-by-side at the bottom of the form, NOT stacked, (d) the hint line below the buttons doesn't overlap them, and (e) the form's bordered box doesn't push other Properties panel sections (like the ID display) off-screen."
     }
   ]

@@ -19,7 +19,7 @@
     {
       "name": "refresh-disabled-initially",
       "mode": "vlm",
-      "stabilizeMs": 400,
+      "stabilizeMs": 800,
       "description": "Look at the top toolbar. The Refresh button should be visible next to Import/Export but rendered in a DISABLED state (muted color, no hover affordance, looks dimmer than the active Import/Export buttons next to it). Pass only if Refresh is clearly visible AND visibly disabled. Fail if it's missing entirely, or if it looks the same as the adjacent enabled buttons."
     }
   ]
