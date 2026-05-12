@@ -13,7 +13,7 @@
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
       "window.__canaryApplyProfile('cinematic')",
-      "window.__canarySetModuleEnabled('render.penumbra-backdrop', false)"
+      "window.__canarySetPersonaEnabled('render.penumbra-backdrop', false)"
     ]
   },
   "checkpoints": [

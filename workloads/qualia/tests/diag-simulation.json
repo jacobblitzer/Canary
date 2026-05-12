@@ -9,7 +9,7 @@
       "window.__canaryCloseLandingScreen()",
       "window.__canarySetTheme('dark')",
       "window.__canaryApplyProfile('standard')",
-      "window.__canarySetModuleEnabled('compute.simulation', true)",
+      "window.__canarySetPersonaEnabled('compute.simulation', true)",
       "(async () => { await new Promise(r => setTimeout(r, 1000)); const fn = window.__qualiaSimulationPing; if (!fn) return { error: 'no ping function' }; const ok = fn('alice'); await new Promise(r => setTimeout(r, 800)); return { pingOk: ok, hasHook: !!fn }; })()"
     ]
   },

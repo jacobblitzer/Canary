@@ -21,11 +21,19 @@ App-level (always available after `__canaryHooksReady === true`):
 - `__canaryWaitForReady(timeoutMs)` — resolves once demo data has loaded.
 - `__canaryGetAppInfo()` — `{ ready, theme, moduleCount, profile, landingOpen, playgroundOpen }`.
 - `__canaryHideUI(hidden)` — hides toolbar/sidebar/panels for canvas-only screenshots.
-- `__canaryGetModuleConfig()` / `__canaryListModules()` — registry inspection.
-- `__canarySetModuleEnabled(id, enabled)` / `__canaryApplyProfile(name)` — mutation.
+- `__canaryGetPersonaConfig()` / `__canaryListPersonas()` — registry inspection.
+  (Renamed from `__canaryGetModuleConfig` / `__canaryListModules` in
+  Qualia Phase 7.2, 2026-05-12; the legacy names remain as
+  `@deprecated` aliases for one transition release.)
+- `__canarySetPersonaEnabled(id, enabled)` / `__canaryApplyProfile(name)` — mutation.
+  (Renamed from `__canarySetModuleEnabled` in Qualia Phase 7.2, 2026-05-12;
+  legacy alias preserved for one transition release.)
 - `__canaryShowLandingScreen()` / `__canaryCloseLandingScreen()`.
 - `__canaryGetLandingState()` — DOM-driven inspection of the modal.
-- `__canaryClickProfilePill(name)` / `__canaryToggleLandingModule(id)`.
+- `__canaryClickProfilePill(name)` / `__canaryToggleLandingPersona(id)`.
+  (`__canaryToggleLandingPersona` was `__canaryToggleLandingModule`
+  before Qualia Phase 7.2, 2026-05-12; legacy alias preserved for one
+  transition release.)
 - `__canaryClickLandingApply()` / `__canaryClickLandingCancel()`.
 - `__canaryPlaygroundOpen()` — opens the Debug Playground overlay. Returns
   `{ ok: false, reason: 'module-disabled' }` when `debug.playground`
@@ -57,10 +65,10 @@ All hooks return `{ ok, value | reason }` envelopes for failure paths.
 | `SetCanvasSize` | Set `documentElement` size — used to control screenshot dimensions. |
 | `HideUI` | Toggle the chrome-hide CSS class via `__canaryHideUI`. |
 | `ApplyProfile` | `__canaryApplyProfile(name)`. |
-| `SetModuleEnabled` | `__canarySetModuleEnabled(id, enabled)`. |
+| `SetModuleEnabled` | `__canarySetPersonaEnabled(id, enabled)` (action name preserved for backwards compat; JS hook renamed in Qualia Phase 7.2, 2026-05-12). |
 | `ShowLandingScreen` / `CloseLandingScreen` | Open / close the modal. |
 | `ClickProfilePill` | Click a pill by name (minimal/standard/cinematic/workshop). |
-| `ToggleLandingModule` | Toggle a module checkbox by id inside the modal. |
+| `ToggleLandingModule` | Toggle a persona checkbox by id inside the modal (action name preserved for backwards compat; JS hook renamed in Qualia Phase 7.2, 2026-05-12). |
 | `ClickLandingApply` / `ClickLandingCancel` | Footer buttons. |
 | `ClearStorage` | `localStorage.clear() + sessionStorage.clear()`. |
 | `PlaygroundOpen` / `PlaygroundClose` | Toggle the Wave 0.B Debug Playground overlay (gated by the `debug.playground` module — `ApplyProfile('workshop')` first). |

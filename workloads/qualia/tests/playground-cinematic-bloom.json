@@ -13,7 +13,7 @@
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
       "window.__canaryApplyProfile('cinematic')",
-      "window.__canarySetModuleEnabled('debug.playground', true)",
+      "window.__canarySetPersonaEnabled('debug.playground', true)",
       "window.__canaryPlaygroundOpen()",
       "window.__canaryPlaygroundLoadScenario('tree')"
     ]

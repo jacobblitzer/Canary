@@ -17,10 +17,14 @@ namespace Canary.Agent.Qualia;
 ///     <item><c>SetCanvasSize</c> — resize browser window.</item>
 ///     <item><c>HideUI</c> — call <c>__canaryHideUI(bool)</c>.</item>
 ///     <item><c>ApplyProfile</c> — call <c>__canaryApplyProfile(name)</c>.</item>
-///     <item><c>SetModuleEnabled</c> — call <c>__canarySetModuleEnabled(id, bool)</c>.</item>
+///     <item><c>SetModuleEnabled</c> — call <c>__canarySetPersonaEnabled(id, bool)</c> (action name preserved
+///         for backwards compat; JS hook renamed from <c>__canarySetModuleEnabled</c> in Qualia Phase 7.2,
+///         2026-05-12, with a deprecated alias maintained for one release).</item>
 ///     <item><c>ShowLandingScreen</c> / <c>CloseLandingScreen</c>.</item>
 ///     <item><c>ClickProfilePill</c> — click a pill by name.</item>
-///     <item><c>ToggleLandingModule</c> — toggle a module checkbox in the modal.</item>
+///     <item><c>ToggleLandingModule</c> — toggle a persona checkbox in the modal (action name preserved
+///         for backwards compat; JS hook renamed from <c>__canaryToggleLandingModule</c> in Qualia Phase 7.2,
+///         2026-05-12, with a deprecated alias maintained for one release).</item>
 ///     <item><c>ClickLandingApply</c> / <c>ClickLandingCancel</c>.</item>
 ///     <item><c>ClearStorage</c> — clear localStorage for the dev origin.</item>
 ///   </list>
@@ -278,7 +282,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
             return Fail("SetModuleEnabled requires 'enabled' boolean parameter.");
         var jsId = JsonSerializer.Serialize(id);
         var result = await _cdp!.EvaluateAsync(
-            $"window.__canarySetModuleEnabled({jsId}, {(enabled ? "true" : "false")})"
+            $"window.__canarySetPersonaEnabled({jsId}, {(enabled ? "true" : "false")})"
         ).ConfigureAwait(false);
         return Ok($"Set {id} = {enabled}. Result: {result ?? "undefined"}");
     }
@@ -298,7 +302,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
         if (!parameters.TryGetValue("id", out var id) || string.IsNullOrWhiteSpace(id))
             return Fail("ToggleLandingModule requires 'id' parameter.");
         var jsId = JsonSerializer.Serialize(id);
-        var result = await _cdp!.EvaluateAsync($"window.__canaryToggleLandingModule({jsId})")
+        var result = await _cdp!.EvaluateAsync($"window.__canaryToggleLandingPersona({jsId})")
             .ConfigureAwait(false);
         return Ok($"Toggled {id}. Result: {result ?? "undefined"}");
     }
