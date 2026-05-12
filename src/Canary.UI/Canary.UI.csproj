@@ -14,6 +14,7 @@
     <ProjectReference Include="..\Canary.Core\Canary.Core.csproj" />
     <ProjectReference Include="..\Canary.Agent\Canary.Agent.csproj" />
     <ProjectReference Include="..\Canary.Agent.Penumbra\Canary.Agent.Penumbra.csproj" />
+    <ProjectReference Include="..\Canary.Agent.Qualia\Canary.Agent.Qualia.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 using Canary;
 using Canary.Agent.Penumbra;
+using Canary.Agent.Qualia;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.Reporting;
@@ -257,6 +258,10 @@ internal sealed class TestRunnerPanel : UserControl
                 suite = await Task.Run(
                     () => RunPenumbraSuiteAsync(workload, tests, runner, workloadsDir, logger, _cts.Token),
                     _cts.Token).ConfigureAwait(true);
+            else if (workload.AgentType == "qualia-cdp")
+                suite = await Task.Run(
+                    () => RunQualiaSuiteAsync(workload, tests, runner, workloadsDir, logger, _cts.Token),
+                    _cts.Token).ConfigureAwait(true);
             else if (useSharedMode)
                 suite = await Task.Run(
                     () => runner.RunSharedSuiteAsync(workload, tests, _cts.Token),
@@ -351,6 +356,31 @@ internal sealed class TestRunnerPanel : UserControl
 
             _cts?.Dispose();
             _cts = null;
+        }
+    }
+
+    private async Task<SuiteResult> RunQualiaSuiteAsync(
+        WorkloadConfig workload,
+        IReadOnlyList<TestDefinition> tests,
+        TestRunner runner,
+        string workloadsDir,
+        ITestLogger logger,
+        CancellationToken ct)
+    {
+        var configPath = Path.Combine(workloadsDir, workload.Name, "workload.json");
+        var qConfig = await QualiaWorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
+
+        logger.Log("Initializing Qualia CDP bridge agent...");
+        using var agent = new QualiaBridgeAgent(qConfig.QualiaConfig);
+        try
+        {
+            await agent.InitializeAsync(ct).ConfigureAwait(false);
+            logger.Log("Qualia bridge agent ready.");
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            logger.Log("Shutting down Qualia bridge agent...");
         }
     }
 
