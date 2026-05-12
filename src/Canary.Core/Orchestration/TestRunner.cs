@@ -52,6 +52,12 @@ public sealed class TestRunner
     private string? _currentVlmDescription;
 
     /// <summary>
+    /// Structured event sink for GUI consumers (progress feed, per-checkpoint
+    /// cards). Defaults to a no-op; set via property after construction.
+    /// </summary>
+    public ITestProgressEvents Progress { get; set; } = NullTestProgressEvents.Instance;
+
+    /// <summary>
     /// Callback invoked when the target window handle is found.
     /// Called from the test thread — callers must marshal to UI thread if needed.
     /// </summary>
@@ -651,6 +657,8 @@ public sealed class TestRunner
             Status = TestStatus.Passed
         };
 
+        Progress.OnTestStarted(testDef.Name);
+
         try
         {
             // 1. Verify heartbeat
@@ -724,7 +732,7 @@ public sealed class TestRunner
                 }
 
                 await DispatchAgentCheckpointAsync(
-                    agent, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
+                    agent, checkpoint, testDef.Name, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
             }
 
             // 3b. Evaluate asserts after the last checkpoint (Phase 13.2).
@@ -777,6 +785,7 @@ public sealed class TestRunner
         }
 
         result.Duration = sw.Elapsed;
+        Progress.OnTestCompleted(testDef.Name, result.Status, sw.Elapsed.TotalSeconds);
         return result;
     }
 
@@ -915,6 +924,7 @@ public sealed class TestRunner
     private async Task<CheckpointResult> ProcessAgentCheckpointAsync(
         ICanaryAgent agent,
         TestCheckpoint checkpoint,
+        string testName,
         string testDir,
         int captureWidth,
         int captureHeight,
@@ -929,6 +939,8 @@ public sealed class TestRunner
             Name = displayName,
             Tolerance = checkpoint.Tolerance
         };
+
+        Progress.OnCheckpointStarted(testName, displayName, checkpoint.Description);
 
         try
         {
@@ -984,6 +996,9 @@ public sealed class TestRunner
                 cpResult.CandidatePath = captureResult.FilePath;
             }
 
+            if (cpResult.CandidatePath != null)
+                Progress.OnScreenshotCaptured(testName, displayName, cpResult.CandidatePath);
+
             // Branch on comparison mode. forceMode (set by ResolveEffectiveModes)
             // wins over checkpoint.Mode. forceMode == null preserves the original
             // per-checkpoint behaviour for backwards compatibility.
@@ -993,7 +1008,7 @@ public sealed class TestRunner
                     : CheckpointMode.PixelDiff);
             if (effective == CheckpointMode.Vlm)
             {
-                return await ProcessVlmCheckpointAsync(cpResult, checkpoint, ct).ConfigureAwait(false);
+                return await ProcessVlmCheckpointAsync(cpResult, checkpoint, testName, displayName, ct).ConfigureAwait(false);
             }
 
             // Default: pixel-diff mode
@@ -1009,7 +1024,7 @@ public sealed class TestRunner
 
             // Compare
             using var baseline = await Image.LoadAsync<Rgba32>(baselinePath, ct).ConfigureAwait(false);
-            using var candidate = await Image.LoadAsync<Rgba32>(cpResult.CandidatePath, ct).ConfigureAwait(false);
+            using var candidate = await Image.LoadAsync<Rgba32>(cpResult.CandidatePath!, ct).ConfigureAwait(false);
 
             if (baseline.Width != candidate.Width || baseline.Height != candidate.Height)
             {
@@ -1190,7 +1205,8 @@ public sealed class TestRunner
                     : CheckpointMode.PixelDiff);
             if (effective == CheckpointMode.Vlm)
             {
-                return await ProcessVlmCheckpointAsync(cpResult, checkpoint, ct).ConfigureAwait(false);
+                // Client (named-pipe) path doesn't track testName here; pass "" so events still fire.
+                return await ProcessVlmCheckpointAsync(cpResult, checkpoint, "", displayName, ct).ConfigureAwait(false);
             }
 
             // Default: pixel-diff mode
@@ -1206,7 +1222,7 @@ public sealed class TestRunner
 
             // Compare
             using var baseline = await Image.LoadAsync<Rgba32>(baselinePath, ct).ConfigureAwait(false);
-            using var candidate = await Image.LoadAsync<Rgba32>(cpResult.CandidatePath, ct).ConfigureAwait(false);
+            using var candidate = await Image.LoadAsync<Rgba32>(cpResult.CandidatePath!, ct).ConfigureAwait(false);
 
             if (baseline.Width != candidate.Width || baseline.Height != candidate.Height)
             {
@@ -1330,13 +1346,13 @@ public sealed class TestRunner
     /// Agent-flavoured analogue of <see cref="DispatchClientCheckpointAsync"/>.
     /// </summary>
     private async Task DispatchAgentCheckpointAsync(
-        ICanaryAgent agent, TestCheckpoint checkpoint, string testDir,
+        ICanaryAgent agent, TestCheckpoint checkpoint, string testName, string testDir,
         int captureWidth, int captureHeight, TestResult result, CancellationToken ct)
     {
         foreach (var mode in ResolveEffectiveModes(checkpoint))
         {
             var cpResult = await ProcessAgentCheckpointAsync(
-                agent, checkpoint, testDir, captureWidth, captureHeight, ct, mode).ConfigureAwait(false);
+                agent, checkpoint, testName, testDir, captureWidth, captureHeight, ct, mode).ConfigureAwait(false);
             result.CheckpointResults.Add(cpResult);
             EscalateStatus(result, cpResult);
         }
@@ -1349,6 +1365,8 @@ public sealed class TestRunner
     private async Task<CheckpointResult> ProcessVlmCheckpointAsync(
         CheckpointResult cpResult,
         TestCheckpoint checkpoint,
+        string testName,
+        string displayName,
         CancellationToken ct)
     {
         // Description precedence: per-checkpoint description (most specific)
@@ -1382,6 +1400,7 @@ public sealed class TestRunner
         try
         {
             _logger.Log($"VLM evaluating: {description}");
+            Progress.OnVlmEvaluating(testName, displayName, description);
             var imageBytes = await File.ReadAllBytesAsync(cpResult.CandidatePath, ct).ConfigureAwait(false);
             var verdict = await _vlmProvider.EvaluateAsync(imageBytes, description, ct).ConfigureAwait(false);
 
@@ -1392,11 +1411,13 @@ public sealed class TestRunner
             _logger.Log($"VLM verdict: {(verdict.Passed ? "PASS" : "FAIL")} (confidence={verdict.Confidence:F2})");
             if (!string.IsNullOrEmpty(verdict.Reasoning))
                 _logger.Log($"  Reasoning: {verdict.Reasoning}");
+            Progress.OnVlmVerdict(testName, displayName, verdict.Passed, verdict.Confidence, verdict.Reasoning ?? string.Empty);
         }
         catch (Exception ex)
         {
             cpResult.Status = TestStatus.Crashed;
             cpResult.ErrorMessage = $"VLM evaluation failed: {ex.Message}";
+            Progress.OnVlmVerdict(testName, displayName, false, 0, $"Crash: {ex.Message}");
         }
 
         return cpResult;

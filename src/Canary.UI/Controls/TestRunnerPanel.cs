@@ -14,6 +14,7 @@ namespace Canary.UI.Controls;
 internal sealed class TestRunnerPanel : UserControl
 {
     private readonly RichTextBox _logBox;
+    private readonly ProgressFeedPanel _progressFeed;
     private readonly ProgressBar _progressBar;
     private readonly Label _statusLabel;
     private readonly Label _suiteLabel;
@@ -95,10 +96,30 @@ internal sealed class TestRunnerPanel : UserControl
             ScrollBars = RichTextBoxScrollBars.Both
         };
 
-        Controls.Add(_logBox);
+        _progressFeed = new ProgressFeedPanel();
+
+        var split = new SplitContainer
+        {
+            Dock = DockStyle.Fill,
+            Orientation = Orientation.Vertical,
+            BackColor = Color.FromArgb(40, 40, 40),
+            SplitterWidth = 6,
+        };
+        split.Panel1.Controls.Add(_logBox);
+        split.Panel2.Controls.Add(_progressFeed);
+        split.HandleCreated += (_, _) =>
+        {
+            try { split.SplitterDistance = Math.Max(200, split.Width * 4 / 10); }
+            catch { /* control re-parented before handle was up */ }
+        };
+
+        Controls.Add(split);
         Controls.Add(_progressBar);
         Controls.Add(topPanel);
     }
+
+    /// <summary>Exposed so callers can clear / inspect / write to the feed.</summary>
+    public ProgressFeedPanel ProgressFeed => _progressFeed;
 
     private void OnStop(object? sender, EventArgs e)
     {
@@ -200,9 +221,15 @@ internal sealed class TestRunnerPanel : UserControl
             }));
         }
 
+        // Clear last run's feed
+        _progressFeed.Clear();
+
         try
         {
-            var runner = new TestRunner(_pm, workloadsDir, logger);
+            var runner = new TestRunner(_pm, workloadsDir, logger)
+            {
+                Progress = _progressFeed,
+            };
 
             // Show overlay when target window is found
             runner.OnTargetWindowFound = hwnd =>
