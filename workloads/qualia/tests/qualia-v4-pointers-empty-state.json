@@ -9,7 +9,7 @@
     },
     "vlm": {
       "provider": "ollama",
-      "model": "qwen2.5vl:7b"
+      "model": "qwen2.5vl:3b"
     },
     "commands": [
       "window.__canaryWaitForReady(30000)",

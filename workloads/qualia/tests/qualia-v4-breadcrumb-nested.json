@@ -3,13 +3,12 @@
   "workload": "qualia",
   "description": "Three-level qverse hierarchy active — Breadcrumb should walk ancestors with separators + back arrow.",
   "setup": {
-    "canvas": {
-      "width": 1280,
-      "height": 720
-    },
-    "vlm": {
-      "provider": "ollama",
-      "model": "qwen2.5vl:7b"
+    "file": "",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
     },
     "commands": [
       "window.__canaryCloseLandingScreen()",
@@ -21,20 +20,48 @@
       "window.__canaryAddNode({ id: 'parent-portal-2', label: 'guides' })",
       "window.__canarySpawnChildContext({ parentNodeId: 'parent-portal-2', parentContextId: 'ctx-docs', label: 'guides', childContextId: 'ctx-guides' })",
       "window.__canarySwitchContext('ctx-guides')"
-    ]
+    ],
+    "scene": null,
+    "backend": "webgpu",
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "vlm": {
+      "provider": "ollama",
+      "model": "qwen2.5vl:3b",
+      "maxTokens": 1024
+    },
+    "vlmDescription": null,
+    "displayPreset": null
   },
+  "runMode": "fresh",
+  "recording": "",
   "checkpoints": [
     {
       "name": "breadcrumb-renders",
+      "atTimeMs": 0,
+      "tolerance": 0,
+      "description": "Look at the bottom row of the app (just above the StatusBar). It should be a horizontal Breadcrumb showing the nested qverse path. Pass ONLY if you can see, in this exact left-to-right order: (1) an 'ALL' pill (for superposition), (2) a left-arrow ('←') back-up button, (3) the root context name (e.g. 'Reporting Structure' or 'hierarchy'), (4) a chevron / arrow separator ('›' or '>'), (5) the child context label ('docs'), (6) another chevron, (7) the active context label ('guides') visually highlighted as the active tab (e.g. teal-tinted background). Fail if separators are missing, the back arrow is absent, ancestors are not displayed, or the active tab isn't visually distinguished.",
+      "source": "viewport",
+      "panelNickname": null,
       "mode": "vlm",
-      "stabilizeMs": 800,
-      "description": "Look at the bottom row of the app (just above the StatusBar). It should be a horizontal Breadcrumb showing the nested qverse path. Pass ONLY if you can see, in this exact left-to-right order: (1) an 'ALL' pill (for superposition), (2) a left-arrow ('←') back-up button, (3) the root context name (e.g. 'Reporting Structure' or 'hierarchy'), (4) a chevron / arrow separator ('›' or '>'), (5) the child context label ('docs'), (6) another chevron, (7) the active context label ('guides') visually highlighted as the active tab (e.g. teal-tinted background). Fail if separators are missing, the back arrow is absent, ancestors are not displayed, or the active tab isn't visually distinguished."
+      "camera": null,
+      "stabilizeMs": null
     },
     {
       "name": "back-arrow-only-when-nested",
+      "atTimeMs": 0,
+      "tolerance": 0,
+      "description": "The left-arrow ('←') button should be present (it appears only when the active context has a parent). Pass if it is clearly visible immediately to the right of the 'ALL' pill. Fail if the arrow is missing OR is rendered far from the leading pill.",
+      "source": "viewport",
+      "panelNickname": null,
       "mode": "vlm",
-      "stabilizeMs": 800,
-      "description": "The left-arrow ('←') button should be present (it appears only when the active context has a parent). Pass if it is clearly visible immediately to the right of the 'ALL' pill. Fail if the arrow is missing OR is rendered far from the leading pill."
+      "camera": null,
+      "stabilizeMs": null
     }
-  ]
+  ],
+  "actions": [],
+  "asserts": [],
+  "keepOpenOnFailure": false
 }
