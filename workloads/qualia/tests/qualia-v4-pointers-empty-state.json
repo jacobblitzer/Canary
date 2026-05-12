@@ -4,7 +4,7 @@
   "description": "Newly-selected node with no pointers — Properties panel should show the empty-state copy and an '+ Add pointer' button. Tests the Wave A → B authoring surface from the qualia-v4 plan.",
   "setup": {
     "canvas": { "width": 1280, "height": 720 },
-    "vlm": { "provider": "ollama", "model": "gemma4:e4b" },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryHideUI(false)",
