@@ -12,6 +12,7 @@
       "model": "qwen2.5vl:7b"
     },
     "commands": [
+      "window.__canaryCloseLandingScreen()",
       "window.__canaryWaitForReady(30000)",
       "window.__canarySwitchContext('hierarchy')",
       "window.__canaryAddNode({ id: 'parent-portal', label: 'docs' })",

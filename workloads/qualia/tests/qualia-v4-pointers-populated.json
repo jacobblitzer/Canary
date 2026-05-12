@@ -12,6 +12,7 @@
       "model": "qwen2.5vl:7b"
     },
     "commands": [
+      "window.__canaryCloseLandingScreen()",
       "window.__canaryWaitForReady(30000)",
       "window.__canaryAddNode({ id: 'canary-test-3', label: 'Triple-Pointer Node' })",
       "window.__canaryAddPointer({ nodeId: 'canary-test-3', kind: 'file', path: 'docs/CLAUDE.md', role: 'markdown', status: 'live' })",

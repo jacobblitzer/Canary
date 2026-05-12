@@ -12,6 +12,7 @@
       "model": "qwen2.5vl:7b"
     },
     "commands": [
+      "window.__canaryCloseLandingScreen()",
       "window.__canaryWaitForReady(30000)",
       "window.__canaryAddNode({ id: 'ghost-1', label: 'Ghost Node' })",
       "window.__canaryAddPointer({ nodeId: 'ghost-1', kind: 'file', path: 'does-not-exist.md', role: 'markdown', status: 'missing' })",
