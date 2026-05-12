@@ -9,7 +9,7 @@
       "window.__canaryCloseLandingScreen()",
       "window.__canarySetTheme('dark')",
       "window.__canaryApplyProfile('standard')",
-      "window.__canarySetModuleEnabled('compute.simulation', true)",
+      "window.__canarySetPersonaEnabled('compute.simulation', true)",
       "(async () => { await new Promise(r => setTimeout(r, 500)); const btn = Array.from(document.querySelectorAll('button')).find(b => /^Perf$/i.test(b.textContent || '')); btn?.click(); await new Promise(r => setTimeout(r, 800)); const controls = window.__qualiaSimulationControls; return { panelOpen: document.querySelectorAll('.perf-panel').length, hasControls: !!controls, tickRate: controls?.getTickRate(), pingMs: controls?.getPingIntervalMs() }; })()"
     ]
   },
