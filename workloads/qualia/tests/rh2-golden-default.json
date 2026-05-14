@@ -1,0 +1,18 @@
+{
+  "name": "rh2-golden-default",
+  "workload": "qualia",
+  "description": "RH-2 (Qualia 2026-05-14): Proposed common-sense default — bubble junctions, edge 6px, bloom 0.6, dark theme, particulate off. Update this after the sweep picks final values.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryLoadMinimalSample()",
+      "window.__canaryApplyPerfSnapshot({ "theme": "dark", "perfSettings": { "activeJunction": "bubble", "edgeWidthPx": 6, "bloomStrength": 0.6, "renderMode": "surface" } })",
+      "window.__canaryWaitForRenderSettled(5000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "rh2-golden-default", "stabilizeMs": 1500, "tolerance": 0.4 }
+  ]
+}

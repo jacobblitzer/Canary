@@ -1,0 +1,18 @@
+{
+  "name": "rh2-edge-thick",
+  "workload": "qualia",
+  "description": "RH-2 (Qualia 2026-05-14): Edge width 12px. Tests how thick lines read at scale + don't drown the spheres.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryLoadMinimalSample()",
+      "window.__canaryApplyPerfSnapshot({ "theme": "dark", "perfSettings": { "edgeWidthPx": 12 }, "viewerSettings": { "edgeWidth": 12 } })",
+      "window.__canaryWaitForRenderSettled(5000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "rh2-edge-thick", "stabilizeMs": 1500, "tolerance": 0.4 }
+  ]
+}

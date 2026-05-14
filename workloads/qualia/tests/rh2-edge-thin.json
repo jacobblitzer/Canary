@@ -1,0 +1,18 @@
+{
+  "name": "rh2-edge-thin",
+  "workload": "qualia",
+  "description": "RH-2 (Qualia 2026-05-14): Edge width 3px. Tests how thin lines hold up against the cyan ring + halos.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryLoadMinimalSample()",
+      "window.__canaryApplyPerfSnapshot({ "theme": "dark", "perfSettings": { "edgeWidthPx": 3 }, "viewerSettings": { "edgeWidth": 3 } })",
+      "window.__canaryWaitForRenderSettled(5000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "rh2-edge-thin", "stabilizeMs": 1500, "tolerance": 0.4 }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "rh2-junction-surface",
+  "workload": "qualia",
+  "description": "RH-2 (Qualia 2026-05-14): Surface junction strategy. Edges meet on sphere surface; nubs may disappear.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryLoadMinimalSample()",
+      "window.__canaryApplyPerfSnapshot({ "theme": "dark", "perfSettings": { "activeJunction": "surface" } })",
+      "window.__canaryWaitForRenderSettled(5000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "rh2-junction-surface", "stabilizeMs": 1500, "tolerance": 0.4 }
+  ]
+}

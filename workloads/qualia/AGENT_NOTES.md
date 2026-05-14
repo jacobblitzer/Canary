@@ -163,3 +163,28 @@ Wave 0.B Debug Playground hooks landed 2026-05-10 (Qualia commit + this
 Canary update). First playground suite is `playground` (workloads/qualia/
 suites/playground.json) — one test per scenario plus a snapshot
 round-trip test. fx.* visual tests still queued.
+
+**RH-2 — Multi-display sweep (2026-05-14).** New suite `multi-display`
+with 11 tests (`rh2-*.json`) covers a sweep of perf/viewer/theme
+variants on the minimal sample (`Qualia/examples/minimal/.qualia`, 9
+nodes). Tests use three new Qualia-side hooks:
+
+- `__canaryApplyPerfSnapshot({ theme?, perfSettings?, viewerSettings? })` —
+  applies a settings bundle in one call. Schema mirrors what
+  `Qualia/packages/ui/src/snapshot.ts` emits, so an existing snapshot
+  can be replayed.
+- `__canaryWaitForRenderSettled(timeoutMs = 5000)` — resolves once two
+  consecutive frames have the same LOD digest. Use after
+  ApplyPerfSnapshot before screenshotting.
+- `__canaryLoadMinimalSample()` — loads `examples/minimal/.qualia` via
+  the dev FS plugin or the static mount. Lighter than driving the
+  Load-sample button.
+
+Tests don't need new bridge-agent C# actions — `setup.commands` runs
+the hooks as raw JS via `Runtime.evaluate`. Composite-grid output
+(combining the 11 screenshots into one PNG for at-a-glance comparison)
+lands as a Qualia-side post-processing script.
+
+```bash
+canary run --workload qualia --suite multi-display
+```

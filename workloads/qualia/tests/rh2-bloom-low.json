@@ -1,0 +1,18 @@
+{
+  "name": "rh2-bloom-low",
+  "workload": "qualia",
+  "description": "RH-2 (Qualia 2026-05-14): Bloom strength 0.3. Subtle glow; should look more like a CAD diagram.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryLoadMinimalSample()",
+      "window.__canaryApplyPerfSnapshot({ "theme": "dark", "perfSettings": { "bloomStrength": 0.3 } })",
+      "window.__canaryWaitForRenderSettled(5000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "rh2-bloom-low", "stabilizeMs": 1500, "tolerance": 0.4 }
+  ]
+}

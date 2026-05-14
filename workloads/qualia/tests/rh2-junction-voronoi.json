@@ -1,0 +1,18 @@
+{
+  "name": "rh2-junction-voronoi",
+  "workload": "qualia",
+  "description": "RH-2 (Qualia 2026-05-14): Voronoi junction strategy. Anti-bundling fan-out for busy nodes.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canaryLoadMinimalSample()",
+      "window.__canaryApplyPerfSnapshot({ "theme": "dark", "perfSettings": { "activeJunction": "voronoi" } })",
+      "window.__canaryWaitForRenderSettled(5000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "rh2-junction-voronoi", "stabilizeMs": 1500, "tolerance": 0.4 }
+  ]
+}
