@@ -38,5 +38,5 @@ Swapped indices 11 and 14 in the Float32Array returned by `getInvProjection()` i
 - Screenshot comparison before/after confirms fix
 
 ## Related
-- Spec: `specs/v4/03b-brick-overlay-fix.md` (Penumbra repo)
+- Spec: `spec/v4/03b-brick-overlay-fix.md` (Penumbra repo)
 - Test: `workloads/penumbra/tests/atlas-blob-bricks-overlay.json`
