@@ -1,16 +1,3 @@
----
-type: repo
-repo: Canary
-phase: 13
-phase_name: "Phase 13 in progress"
-status: active
-last_audit: 2026-05-08
-test_count: 72
-component_count: null
-peers: [CPig, Penumbra, Slop, Pigture]
-tags: [multiverse, repo]
----
-
 # CLAUDE.md
 
 ## Project: Canary — Cross-Application Visual Regression Testing Harness
@@ -20,7 +7,7 @@ tags: [multiverse, repo]
 - **Test**: `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`
 - **Run Penumbra tests**: `canary run --workload penumbra`
 - **Run CPig tests**: `canary run --workload rhino --suite cpig` (from `C:\Repos\Canary`)
-- **Status**: Phase 13 in progress (checkpoints 13.1–13.4 complete, 13.5 baselines pending). 72 unit tests + 22 cpig test definitions.
+- **Status**: see `spec/PHASES.md` for the canonical phase list and the tail of `BUILD_LOG.md` for current progress. Test counts move every commit; check `dotnet test --list-tests | wc -l` rather than trusting any number stamped here.
 
 ### Active architecture initiative — Penumbra bug 0036 stall observability + soak fixture (Phase A shipped 2026-05-09)
 
@@ -464,7 +451,7 @@ Read `spec/SUPERVISOR.md` — single source of truth for build decisions.
 ### Documentation Structure
 ```
 docs/
-  bugs/           # One .md per bug (Dataview-queryable frontmatter)
+  bugs/           # One .md per bug (frontmatter for status/severity)
   debug-sessions/ # Investigation journals
   decisions/      # Architecture Decision Records (MADR format)
   features/       # Feature status tracking
@@ -515,5 +502,4 @@ BUILD_LOG.md      # Phase checkpoint records
    component: "..."           # Subsystem (e.g., atlas, cdp, tape-compiler, comparison)
    ```
 
-### Commit Messages
-Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`.
+### C
