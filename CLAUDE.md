@@ -502,4 +502,34 @@ BUILD_LOG.md      # Phase checkpoint records
    component: "..."           # Subsystem (e.g., atlas, cdp, tape-compiler, comparison)
    ```
 
+### Key dependencies (per [`MultiVerse/STANDARD.md`](../MultiVerse/STANDARD.md) §21)
+
+| Package | Version | Notes |
+|---|---|---|
+| .NET | 8.0 (net8.0-windows) | Canary.UI requires Windows; Canary.Harness + Canary.Core are net8.0 cross-platform-capable |
+| xUnit / Microsoft.NET.Test.Sdk | latest test SDK | unit + integration tests in `src/*.Tests/` |
+| Microsoft.Playwright | (CDP driver) | drives Penumbra Vite dev server for visual regression |
+| SixLabors.ImageSharp | (pixel-diff backend) | baseline-vs-candidate comparison |
+| Ollama HTTP client (via `OllamaVlmProvider`) | gemma4:e4b or qwen2.5vl:7b | local VLM provider |
+
+### Release type (per [`MultiVerse/STANDARD.md`](../MultiVerse/STANDARD.md) §21)
+
+This repo is **infrastructure** — no formal release; milestone tags only (e.g. `canary-v1`). BUILD_LOG entries under the `milestone` category for notable progress.
+
+### How to reproduce bugs in this repo (per [`MultiVerse/STANDARD.md`](../MultiVerse/STANDARD.md) §15)
+
+- **Test runner:** `dotnet test C:/Repos/Canary/Canary.sln --filter "<TestName>"`. For the Canary GUI flow: kill any running Canary.UI.exe, build Release, launch the built exe directly (not `dotnet run` — it backgrounds wrong). Pattern:
+  ```bash
+  taskkill //IM Canary.UI.exe //F
+  cd C:/Repos/Canary && dotnet build Canary.sln --configuration Release
+  start "" "src/Canary.UI/bin/Release/net8.0-windows/Canary.UI.exe"
+  ```
+- **Repro harness:** workload-scoped — `workloads/rhino/`, `workloads/penumbra/`, `workloads/qualia/`. Test definitions at `workloads/<w>/tests/*.json`, suites at `workloads/<w>/suites/*.json`, fixtures at `workloads/<w>/fixtures/*.gh` (Rhino) or programmatic (Penumbra/Qualia). Run a single test: `canary run --workload rhino --test cpig-NN-slug --mode pixel-diff|vlm|both`.
+- **Environment:** Rhino 8 installed and licensed for Rhino-workload tests; a WebGPU-capable GPU + Vite dev server reachable for Penumbra workload; Ollama running locally (`ollama serve`) with the configured VLM model pulled.
+- **Known gotchas:** `taskkill` in Git Bash needs `//IM` (double slash); do NOT use `dotnet run` for the UI (background mode fails); workload `projectDir` paths are absolute Windows paths — match the local machine layout.
+
+### Skills available
+
+See [`MultiVerse/SKILLS.md`](../MultiVerse/SKILLS.md) for the canonical catalog. The `multiverse-supervisor` skill enforces [`MultiVerse/SUPERVISOR.md`](../MultiVerse/SUPERVISOR.md) at session start for any non-Conversation work.
+
 ### C
