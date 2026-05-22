@@ -100,11 +100,10 @@ Living tracker for all Canary features. Updated as work progresses.
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| `docs/bugs/` -- individual bug files | Done | Dataview-queryable frontmatter |
+| `docs/bugs/` -- individual bug files | Done | Per-bug status/severity in YAML frontmatter |
 | `docs/decisions/` -- ADRs | Done | MADR format |
 | `docs/debug-sessions/` -- investigation journals | Done | Template ready, no entries yet |
 | `docs/features/FEATURE_STATUS.md` | Done | This file |
 | `docs/templates/` -- reusable templates | Done | bug, decision, debug-session, feature |
 | `CHANGELOG.md` -- Keep a Changelog format | Done | Versions 0.1.0 through Unreleased |
 | Auto-journaling rules in CLAUDE.md | Done | Triggers for bugs, features, decisions |
-| Obsidian compatibility | Done | YAML frontmatter, standard links, .gitignore |
