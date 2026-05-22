@@ -36,5 +36,5 @@ fix-commit: ""
 - [ ] Manual verification
 
 ## Related
-- Changelog: [[CHANGELOG]]
+- Changelog: [CHANGELOG.md](../../CHANGELOG.md)
 - Files changed:
