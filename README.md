@@ -55,7 +55,7 @@ canary report
 |----------|-----------------|------------|--------|
 | Rhino | Rhino 8 | RhinoCommon plugin (.rhp) | Done |
 | Penumbra | Chrome via CDP | Browser bridge agent | Active |
-| Qualia | Custom viewer | Built-in module | Stub |
+| Qualia | Browser (Vite + Chrome via CDP) | `Canary.Agent.Qualia` | Active — 6 suites / 78 tests |
 | Grasshopper | Rhino 8 + GH | RhinoCommon plugin (.rhp) | Planned |
 
 ## Project Structure

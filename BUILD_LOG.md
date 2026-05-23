@@ -719,3 +719,49 @@ No harness change — but Canary's Slop-loader pattern now consumes test JSONs t
 - 19 retopo Canary test JSONs (cpig-34..52) regenerated with auto-inserted Log Tap nodes (mirrors the regenerated CPig Slop test JSONs).
 - `CLAUDE.md` gains a "Logging — Slop test JSONs auto-tap every component output" section with a back-reference to MultiVerse/CLAUDE.md's canonical "Logging in Slop tests" guide.
 - No behavioural change to test runs (Log Tap is a pass-through). Tap output flows into Slop's LogHub file — read it after a failing run to localize which stage went empty.
+
+---
+
+## 2026-05-24 — Qualia workload promoted Stub → Active (cross-repo reconcile R2)
+
+Per `MultiVerse/audit/2026-05-24-testing-canary-audit-and-plan.md`. The
+Qualia workload has been actively developed since 2026-05-08 (78 test
+fixtures, 6 suites, `Canary.Agent.Qualia` CDP bridge, ~50+
+`__canary*` hooks, RH-2 multi-display sweep, Wave 0.B Playground,
+qualia-v4-ui), but the doc surface still reported it as a stub. This
+entry catches the docs up — no code change to the harness or agent.
+
+- `spec/QUALIA_WORKLOAD.md` — new workload specification promoted from
+  `workloads/qualia/AGENT_NOTES.md`. Mirrors the structure of
+  `PENUMBRA_WORKLOAD.md` / `CPIG_WORKLOAD.md` / `PIGTURE_WORKLOAD.md`.
+  Documents the full hook surface (readiness / persona / landing /
+  playground / qualia-v4 / RH-2 / diagnostic), the agent action
+  mapping, mode selection, baseline conventions, suite roster, and
+  open questions (runMode shared, diag-* test family suiting, queued
+  eager-L3 + dev-test checkpoint type).
+- `spec/PEERS.md` — new Qualia section between Penumbra and Pigture.
+  Documents the bridge agent, workload files, Qualia-side contract
+  files, hook stability rules, port co-existence with Penumbra, the
+  hook-addition workflow.
+- `CHANGELOG.md` — `[Unreleased]` gains a `### Added — Qualia workload
+  (backfill May 2026)` block covering 2026-05-08 initial buildout
+  through 2026-05-24 spec promotion. Catches up entries the prior
+  monthly cadence missed.
+- `README.md` — Workload table Qualia row changed from
+  `Custom viewer | Built-in module | Stub` to
+  `Browser (Vite + Chrome via CDP) | Canary.Agent.Qualia | Active —
+  6 suites / 78 tests`.
+
+**Why this matters.** The 2026-05-24 Qualia Phase 1 eager-L3 puppeteer
+smoke surfaced a pre-existing bug (Qualia Bug 0043 —
+`BehaviorExtractor` FsAdapter stale-capture) that ran end-to-end
+duplicate of `Canary.Agent.Qualia`'s CDP capability. Operator-led
+discovery of the existing Canary surface was blocked because the docs
+said it didn't exist. This entry plus R1 (MultiVerse registers Qualia
+as a child) plus R3 (Qualia CLAUDE.md surfaces Canary) closes that
+gap. Subsequent moves (M1 — convert puppeteer smoke into a Canary
+suite; M2 — dev-test harness as Canary checkpoint type; D — auto-
+instrumentation skill) are sequenced in the audit doc.
+
+No code touched. No baselines moved. Doc-only commit per R2 of the
+reconcile.

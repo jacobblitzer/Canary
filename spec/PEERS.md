@@ -52,6 +52,81 @@ The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`work
 - Visual regression mode is the default; VLM mode is opt-in per test definition.
 - Hook renames (e.g. `__canaryModule*` → `__canaryPersona*` per Canary commit 074196c) trigger the Cross-Repo Change Protocol — both repos update in coordination.
 
+## Qualia (`C:\Repos\Qualia\`)
+
+**Role:** 3D graph editor (React + Vite + Three.js + WebGPU, with Tauri
+desktop wrap). Qualia tests run under Canary's `qualia` workload via a
+dedicated CDP bridge agent — the same pattern as Penumbra, but with a
+much wider hook surface covering LandingScreen, PersonaRegistry,
+qualia-v4 pointers/qverse/RAG UI, the Debug Playground (Wave 0.B), the
+RH-2 multi-display perf sweep, and pipeline diagnostic dumps.
+
+**Canary-side files:**
+- `src/Canary.Agent.Qualia/` — bridge agent (`QualiaBridgeAgent.cs`,
+  `QualiaConfig.cs`, `ViteManager.cs`). Spawns `npm run dev`, launches
+  Chrome with `--remote-debugging-port=9223`, drives via
+  `Runtime.evaluate` against `window.__canary*` hooks.
+- `workloads/qualia/workload.json` — wires `agentType: "qualia-cdp"` +
+  `qualiaConfig` block (projectDir, vitePort=5173, cdpPort=9223,
+  canvas size, ready timeout, `clearLocalStorageOnInit`).
+- `workloads/qualia/tests/*.json` — 78 test definitions
+  (diag-*, landing-*, main-*, playground-*, qualia-v4-*, rh2-*).
+- `workloads/qualia/suites/*.json` — 6 suites: `landing-screen`,
+  `display-modes`, `multi-display`, `pencil-diff`, `playground`,
+  `qualia-v4-ui`.
+- `workloads/qualia/baselines/` — committed reference PNGs per §16.
+- `workloads/qualia/AGENT_NOTES.md` — operator-facing hook + action
+  inventory.
+- `spec/QUALIA_WORKLOAD.md` — workload specification (this file's
+  per-workload counterpart).
+
+**Qualia-side files:**
+- `packages/ui/src/canary-hooks.ts` — `installCanaryHooks(deps)` +
+  ~50+ `window.__canary*` functions mounted once on App mount.
+- `packages/ui/src/debug/Playground.tsx` — installs the
+  playground-scoped scenario + snapshot hooks while the overlay is
+  mounted.
+- `packages/ui/src/App.tsx` — calls `installCanaryHooks` once on
+  mount with deps closed over the live registry + LandingScreen +
+  Playground state + ready-predicate.
+- `packages/ui/src/styles.css` — `.qualia-ui-hidden` selector
+  triggered by `__canaryHideUI(true)`.
+- `examples/sample/` + `examples/minimal/` — test vaults the suites
+  load.
+- `spec/PEERS.md` — Qualia-side mirror of this contract.
+
+**Contract:**
+- **Hook stability.** Adding a `__canary*` hook is non-breaking;
+  removing or renaming one without a coordinated Canary update will
+  break tests. Deprecation cycle: rename lands with the old name
+  preserved as `@deprecated` alias (`win.X = win.Y`) for one
+  transition release, then removed. Example: `__canaryModule*` →
+  `__canaryPersona*` rename (Phase 7.2, 2026-05-12); legacy aliases
+  still present.
+- **Co-existence with Penumbra.** Canary's Penumbra workload uses
+  CDP port 9222 + Vite port 3000. Qualia uses 9223 + 5173. Both can
+  run side-by-side without port conflicts.
+- **VLM model.** Tests targeting VLM mode use `gemma4:e4b` (matches
+  Canary's existing convention). Per-checkpoint `mode: "vlm"` wins
+  over the `--mode` flag.
+- **Baselines per §16.** Committed PNGs under
+  `workloads/qualia/baselines/`; candidates + diffs gitignored under
+  `workloads/qualia/results/`. Baseline approval follows the three-
+  question commit-message format.
+- **`runMode: shared`** is NOT yet supported by the Qualia agent.
+  Each test spawns a fresh Vite + Chrome (~5-10s overhead).
+  Queued — see `spec/QUALIA_WORKLOAD.md` § Open questions.
+
+**Adding a hook:**
+1. Extend `CanaryHookDeps` + `installCanaryHooks` in
+   `Qualia/packages/ui/src/canary-hooks.ts`.
+2. Add the action branch in `QualiaBridgeAgent.ExecuteAsync` IF the
+   hook is worth a named action; otherwise tests can call it
+   directly via `setup.commands` raw JS.
+3. Update `workloads/qualia/AGENT_NOTES.md` + (if the surface area
+   changed materially) `spec/QUALIA_WORKLOAD.md`.
+4. Append a one-line entry to `MultiVerse/BUILD_LOG.md` per §7.
+
 ## Pigture (`C:\Repos\Pigture\`)
 
 **Role:** RDK-backed Cycles render plugin. Pigture tests run under Canary's `rhino` workload (shared with CPig) using the same Slop-loader pattern.

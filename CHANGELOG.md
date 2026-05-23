@@ -12,6 +12,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Qualia workload (backfill May 2026; promoted from Stub → Active)
+- `spec/QUALIA_WORKLOAD.md` workload specification (2026-05-24) — promoted from `workloads/qualia/AGENT_NOTES.md` per the 2026-05-24 testing+Canary audit (`MultiVerse/audit/2026-05-24-testing-canary-audit-and-plan.md`).
+- `spec/PEERS.md` Qualia section (2026-05-24) — documents the Canary↔Qualia contract (hook stability, port co-existence with Penumbra, baseline conventions, hook-addition workflow).
+- Qualia workload buildout (2026-05-08) — initial commit `13771d9`. New `Canary.Agent.Qualia` CDP bridge agent, `workloads/qualia/workload.json` (agentType `qualia-cdp`, CDP port 9223, Vite port 5173 for co-existence with Penumbra), 5 fixtures + `landing-screen.json` suite. Pixel-diff + VLM (gemma4:e4b) supported. First fixture pins the May-8 LandingScreen overlap bug as a VLM regression.
+- Wave 0.B Playground hooks for Qualia workload (2026-05-10) — gated by Qualia's `debug.playground` module; scenario + snapshot hooks (random / grid / tree / scale-free / stress-1k / stress-10k); `playground.json` suite (one test per scenario + snapshot round-trip).
+- qualia-v4-ui suite (2026-05-12) — pointer / qverse / RAG UI fixtures. `__canaryPersona*` rename (legacy `__canaryModule*` aliases preserved for one transition release).
+- RH-2 multi-display sweep (2026-05-14) — `workloads/qualia/suites/multi-display.json` with 11 `rh2-*.json` tests covering theme / junction / edge-width / bloom / particulate variants on Qualia's `examples/minimal/.qualia` (9 nodes / 4 contexts / 1 ghost / 1 cross-context edge). Three new Qualia hooks: `__canaryApplyPerfSnapshot`, `__canaryWaitForRenderSettled`, `__canaryLoadMinimalSample`. Tests use `setup.commands` raw JS — no new C# bridge action needed.
+- Diagnostic dump hook (`__canaryDumpDiagnostics`, 2026-05-19) — renders pipeline state (persona enable map / edge type colors / tone mapping / bg / fog) as a top-right overlay before the next screenshot; dumps to console for offline capture. Pencil-profile debugging convention.
+- README.md workload table updated: Qualia row `Browser (Vite + Chrome via CDP) | Canary.Agent.Qualia | Active — 6 suites / 78 tests` (was `Custom viewer | Built-in module | Stub`).
+
 ### Added
 - File-source checkpoints: `TestCheckpoint` gains `source` (default `"viewport"`) and `panelNickname` fields — when `source: "file"`, the runner reads a file path from a GH panel instead of capturing a viewport screenshot, then copies it into candidates for normal pixel-diff comparison. Enables Pigture Cycles render output to flow through the checkpoint pipeline.
 - VLM Oracle comparison mode (Phase 8): checkpoints with `mode: "vlm"` evaluate screenshots against natural-language descriptions using a Vision-Language Model, returning pass/fail verdicts without requiring baseline images
