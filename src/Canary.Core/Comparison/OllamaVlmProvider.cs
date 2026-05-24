@@ -31,7 +31,20 @@ public sealed class OllamaVlmProvider : IVlmProvider
     {
         var base64 = Convert.ToBase64String(imageBytes);
 
-        // Ollama /api/chat format with vision support
+        // Ollama /api/chat format with vision support.
+        //
+        // Speed knobs:
+        //   keep_alive = "30m"     — model stays in VRAM between checkpoints
+        //                            (default 5m drops it during Vite+Chrome boot
+        //                            of the next test, forcing a 6-GB cold reload).
+        //   num_predict = 200      — cap response tokens. Our prompts ask for
+        //                            "≤ 20 words" reasoning; 200 leaves ample
+        //                            headroom vs Ollama's default 8192-token cap.
+        //   temperature = 0        — deterministic + cuts sampler overhead.
+        //   num_ctx = 4096         — qwen2.5vl supports up to 32K, but vision
+        //                            tokens for a 1280×720 frame already eat ~1300
+        //                            and the system+user prompt is short; 4K is
+        //                            plenty + halves KV-cache allocation vs default.
         var requestBody = new
         {
             model = _model,
@@ -50,7 +63,14 @@ public sealed class OllamaVlmProvider : IVlmProvider
                 }
             },
             stream = false,
-            format = "json"
+            format = "json",
+            keep_alive = "30m",
+            options = new
+            {
+                num_predict = 200,
+                temperature = 0.0,
+                num_ctx = 4096,
+            },
         };
 
         var json = JsonSerializer.Serialize(requestBody);
