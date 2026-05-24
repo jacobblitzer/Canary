@@ -1176,3 +1176,65 @@ toggle stub). Plus the long-standing mode picker GUI gap (§A1).
     contract; operator smokes the visual end).
 - **Snapshot tag `pre-impl-phase7-2026-05-24`** preserved during the
   work; deleted at commit.
+
+## 2026-05-24 — Debug-overhaul Phase 8 (C7 Tier 3 + C8 polish + C9 settings)
+
+S-M effort phase. Tier 3 heuristic process listing + per-user settings
+persistence + PastRuns quick-date filters. No snapshot tag — additive
+polish.
+
+- **HeuristicProcessLister (`src/Canary.Core/Localhost/`)**: Tier 3 of
+  §C7. Filters Process.GetProcesses() by name against a default list
+  (node, deno, bun, npm/npx/yarn/pnpm, python, dotnet, cargo, tauri,
+  ruby/rails, go). Returns Pid + Name + StartTime + MainWindowTitle.
+  WMI command-line filtering deliberately deferred — name-only is the
+  pragmatic Tier 3 ship; can land in a polish follow-up if signal too
+  noisy.
+- **LocalhostPanel Tier 3 toggle:** inline CheckBox reads initial state
+  from CanarySettings; toggling re-runs RefreshAsync which appends
+  heuristic-only PIDs (those not already in Tier 1/2 enumeration) with
+  Provenance = DevServerHeuristic + dimmer row color + caveat label
+  in the CommandLine column. Status footer shows the count split
+  ("5 listening + 12 heuristic").
+- **CanarySettings (`src/Canary.Core/Settings/`)**: JSON file at
+  %LocalAppData%\Canary\settings.json. Fields: UiMode (stabilization /
+  maturation), ShowTier3Processes (bool), RetentionDays (int, default
+  14, range 1–365). Load() returns defaults on missing file or parse
+  failure. Save() does atomic write-to-.tmp + rename. JsonOptions
+  exposed for serializer reuse.
+- **SettingsPanel persistence wiring:** Phase 7's placeholder gets
+  hooked up — radios / checkbox / numeric input changes fire
+  PersistAndNotify which calls Save + raises SettingsChanged event +
+  updates status label. Initial state hydrated from CanarySettings.Load.
+  Stabilization radio label clarifies "Maturation panels NOT in v1 per
+  §C9 — toggle only" per the design's explicit scope statement.
+- **PastRunsPanel quick filters:** All / Last 7d / Last 30d buttons in a
+  FlowLayoutPanel; active button highlighted blue. ApplyFilter combines
+  the date range with the substring filter (date is the outer
+  constraint, substring narrows further). TableLayoutPanel ColumnCount
+  bumped 3 → 4.
+- **Files added:** `src/Canary.Core/Localhost/HeuristicProcessLister.cs`,
+  `src/Canary.Core/Settings/CanarySettings.cs`,
+  `tests/Canary.Tests/Localhost/Tier3HeuristicTests.cs`,
+  `tests/Canary.Tests/Settings/CanarySettingsTests.cs`.
+- **Files modified:** `src/Canary.UI/Panels/SettingsPanel.cs` (load +
+  save wiring, Tier 3 + retention controls, SettingsChanged event),
+  `src/Canary.UI/Panels/PastRunsPanel.cs` (quick-date filter buttons,
+  ApplyFilter combines date + substring), `src/Canary.UI/Controls/LocalhostPanel.cs`
+  (Tier 3 inline toggle + heuristic-row append in RefreshAsync,
+  CanarySettings hydration).
+- **Verification:** `dotnet build Canary.sln` = 0/0. `dotnet test
+  --filter "Category=Unit"` = 220 Passed (was 212; +8 new). `dotnet test
+  --filter "Category=Integration"` = 2 Passed (unchanged).
+- **Deferred:**
+  - **WMI Win32_Process command-line filtering for Tier 3** — name-only
+    is the ship; can land if false-positive rate is too high.
+  - **Maturation-mode panels** — explicitly NOT in v1 per §C9; the
+    Settings toggle persists the choice but no behavior flips today.
+  - **Retention helper auto-wiring** — `ResultRetention.PurgeOlderThan`
+    is callable, but no automatic invocation at CLI / UI startup yet.
+    Operator can call it from scripts using the persisted
+    `CanarySettings.RetentionDays`.
+  - **PastRuns body search across REPORT.md content** — current filter
+    is metadata-only (workload/test/verdict/runId). Body search would
+    need lazy-load + index; future polish.

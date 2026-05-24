@@ -12,6 +12,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Debug-overhaul Phase 8 (C7 Tier 3 + C8 polish + C9 settings, 2026-05-24)
+- `Canary.Localhost.HeuristicProcessLister` — Tier 3 of design §C7. `Enumerate()` returns Process.GetProcesses() filtered by the default dev-server-likely name list (node, deno, bun, npm/npx/yarn/pnpm, python, dotnet, cargo, tauri, ruby/rails, go). Custom name filter accepted. WMI command-line filtering deliberately deferred — name-only ships with a "may be false positive" caveat.
+- `LocalhostPanel` gains a "Show all dev-server-likely processes" inline CheckBox (initial state from `CanarySettings.ShowTier3Processes`). When checked, heuristic processes not already in the Tier 1/2 enumeration append below with `Provenance = DevServerHeuristic` and a dimmer row color. Status footer shows e.g. "5 listening + 12 heuristic".
+- `Canary.Settings.CanarySettings` — JSON-persisted per-user knobs at `%LocalAppData%\Canary\settings.json`. Three fields shipped: `UiMode` (stabilization / maturation), `ShowTier3Processes`, `RetentionDays` (default 14, range 1–365). Atomic save (write-to-.tmp + rename). Missing-file load returns defaults.
+- `SettingsPanel` (Phase 7 placeholder) wires through to `CanarySettings.Load`/`Save`. Radio + checkbox + numeric input changes persist immediately. Status label confirms saves; `SettingsChanged` event for future consumers. The Stabilization radio's label clarifies that Maturation-mode panels are NOT in v1 per §C9 (only the toggle ships).
+- `PastRunsPanel` quick-date filters per §C8: All / Last 7d / Last 30d toggle buttons highlight the active range (blue) and re-apply the substring filter on top. TableLayoutPanel column count bumped from 3 → 4 to accommodate.
+- 8 new unit tests: 4 `Tier3HeuristicTests` (default name list shape, Enumerate doesn't throw, custom-filter constraint, empty-filter returns empty); 4 `CanarySettingsTests` (defaults, save+load round-trip, missing-file load returns defaults, settings file path shape).
+
 ### Added — Debug-overhaul Phase 7 (C4 UI overhaul, 2026-05-24)
 - `Canary.UI.Navigation.INavMode` interface + 5 concrete implementations (`PastRunsNavMode`, `LocalhostNavMode`, `FeedbackNavMode`, `TelemetryNavMode`, `SettingsNavMode`) per design §C4. Each lazy-creates + caches its content control on first activation.
 - `MainForm` wraps the existing TreeView + content `SplitContainer` inside a `TabControl`'s first "Tests" tab and adds 5 more tabs for the nav modes. Tab content is created on first selection; `_workloadsDir` is propagated to PastRuns + Telemetry panels on load. The historic Tests flow is preserved verbatim under the new shell.

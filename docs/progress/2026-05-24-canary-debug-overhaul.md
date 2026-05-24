@@ -326,3 +326,30 @@ mode picker resolves the §A1 GUI gap.
   Tier 3 toggle, retention slider, PastRuns body search + tag filters,
   PastRuns ↔ AnnotatedImageForm hand-off, UIOverhaulSmokeTests
   integration test.
+
+## Phase 8 — C7 Tier 3 + C8 polish + C9 settings (2026-05-24)
+
+S-M effort phase. Tier 3 heuristic process listing + per-user settings
+persistence + PastRuns quick-date filters.
+
+- **No snapshot tag** — additive polish (per §0.2 rule 2 threshold).
+- **HeuristicProcessLister:** Tier 3 of §C7. Process.GetProcesses()
+  filtered by name (node/deno/bun/python/dotnet/cargo/tauri/...). WMI
+  command-line filtering deferred — name-only ships with a
+  "may-be-false-positive" caveat.
+- **LocalhostPanel Tier 3 toggle:** inline checkbox; on activate,
+  RefreshAsync appends heuristic-only PIDs below the netstat-derived
+  rows with dimmer color + DevServerHeuristic provenance label.
+  Status footer splits the count.
+- **CanarySettings:** JSON at %LocalAppData%\Canary\settings.json.
+  UiMode + ShowTier3Processes + RetentionDays. Atomic save; defaults
+  on missing-file load.
+- **SettingsPanel persistence:** wired through to CanarySettings.Load
+  / Save; per-change PersistAndNotify with SettingsChanged event for
+  consumers.
+- **PastRunsPanel quick filters:** All / Last 7d / Last 30d buttons
+  combine with the substring filter.
+- **Tests:** 8 new unit tests (4 Tier 3 + 4 CanarySettings).
+- **Verification:** build 0/0; Unit 212 → 220; Integration 2 unchanged.
+- **Deferred:** WMI command-line filtering (Tier 3 polish), Maturation
+  panels (out per §C9), retention auto-wiring, PastRuns body search.
