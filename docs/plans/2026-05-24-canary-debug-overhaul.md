@@ -1,10 +1,16 @@
 ---
 date: 2026-05-24
 tags: [plan, canary, debug, ui, telemetry, debug-overhaul]
-status: proposed
+status: in-progress
 project: canary
 component: full-surface
 ---
+
+> **Implementation in flight (started 2026-05-24).** Driving prompt:
+> `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`. Progress
+> log: `docs/progress/2026-05-24-canary-debug-overhaul.md`. Status flips to
+> `shipped` after Phase 9 (cross-repo doc pass) lands.
+
 
 # Canary debug-overhaul — design proposal
 
