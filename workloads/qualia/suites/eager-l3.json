@@ -1,0 +1,7 @@
+{
+  "name": "eager-l3",
+  "description": "Phase M1 (2026-05-25) — RAG eager L3 extraction Canary suite. Partial port of `Qualia/scripts/smoke-eager-l3.mjs`: only the no-provider-noop fixture lands today, because the originally-scoped cold-launch + warm-launch + provider-swap fixtures all require either mid-test `location.reload()` (which crashes the bridge agent's CDP target — 'Inspected target navigated or closed') OR a sweep-retrigger hook that doesn't exist yet. Unblock the rest by: (a) extending QualiaBridgeAgent with a `Reload` action that calls `_cdp.NavigateAsync(_vite.Url)` + re-waits for readiness — single ~15-line method; OR (b) adding a `__canaryRetriggerEagerSweep` hook on the Qualia side that dispatches a GRAPH_LOAD or directly calls `RagOrchestrator._enqueueEagerL3()` (private — needs a public surface). Either path is small but expands beyond M1's Canary-only scope. Tracked under `MultiVerse/audit/2026-05-24-testing-canary-audit-and-plan.md` Phase M1 follow-ups + the move to Phase M2 dev-test-source checkpoint type which would collapse these fixtures to one-liners.",
+  "tests": [
+    "eager-l3-no-provider-noop"
+  ]
+}

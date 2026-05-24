@@ -1,0 +1,22 @@
+{
+  "name": "eager-l3-no-provider-noop",
+  "workload": "qualia",
+  "description": "Phase M1 — eager L3 extraction structural port (no-provider case). ADR 0031 hard rule: the RAG orchestrator silently no-ops when no extraction provider is configured. Boots with cleared localStorage (no provider seed), waits 5s for any GRAPH_LOAD to complete, then asserts the dev-test report contains NO '[RagOrchestrator] eager L3 sweep' log line. Renders a green PASS badge if the silent no-op holds; throws (CRASH outcome) if any sweep log appears. NOTE: The originally-scoped cold-launch + warm-launch fixtures are deferred — they require `location.reload()` mid-test which crashes the CDP context (Bridge agent doesn't currently handle mid-test navigation). Unblock by either (a) adding a `Reload` action to QualiaBridgeAgent that calls `_cdp.NavigateAsync(_vite.Url)` + re-waits for readiness, or (b) adding a `__canaryRetriggerEagerSweep` Qualia hook that calls the orchestrator's private sweep method directly. See `MultiVerse/audit/2026-05-24-testing-canary-audit-and-plan.md` Phase M1 follow-ups.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "new Promise(r => setTimeout(r, 5000))",
+      "(async () => { const r = await window.__qualiaRunDevTests(); if (r.includes('[RagOrchestrator] eager L3 sweep')) { const line = r.split('\\n').find(l => l.includes('eager L3 sweep')) || '(line not extractable)'; throw new Error('expected silent no-op but sweep log appeared: ' + line); } return 'sweep silent'; })()",
+      "(() => { const b = document.createElement('div'); b.id = 'canary-eager-l3-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS no-provider sweep silent'; document.body.appendChild(b); return true; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "no-provider-noop-badge",
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}
