@@ -387,3 +387,33 @@ session. The driving prompt's frontmatter is flipped to EXECUTED. The
 master snapshot tag `pre-impl-debug-overhaul-2026-05-24` is preserved
 for operator review / rollback; per the prompt's §11 final step it
 deletes once the operator confirms everything is good.
+
+## Post-Phase-9 polish (2026-05-24)
+
+Operator-driven UX fixes following the first end-to-end UI run.
+Operator ran `display-modes` Qualia suite from the new toolbar
+(10 NEW baselines, all passed), screenshotted, and called out four
+toolbar/nav-tab issues. All four shipped in commit `0946954`:
+
+1. Mode picker width 110 → 140 px (`pixel-diff` was truncating to
+   `pixel-di`).
+2. Nav tabs upgraded to `TabAppearance.FlatButtons` + fixed
+   `ItemSize(140, 32)` + Segoe UI 10.5pt + `Padding(12, 6)` — were
+   visually weak before; now look like primary nav.
+3. Tests-only toolbar items hide on non-Tests tabs (the §C4 polish
+   that Phase 7 deferred). Tracked in `_testsOnlyToolbarItems` array;
+   toggled via `_navTabControl.SelectedIndexChanged`. Open Folder
+   stays visible everywhere.
+4. Localhost toolbar button dropped — Phase 4 leftover, fully
+   redundant with the Localhost nav tab.
+
+Build + 220 unit tests still green. Operator confirmed "looks good".
+
+## Session closeout
+
+- Commits past `pre-impl-debug-overhaul-2026-05-24`: 40 (39
+  implementation + 1 polish + 1 chore for `.claude/settings.local.json`
+  harness allowlist drift). Plus 3 cross-repo commits in
+  Penumbra/Qualia/MultiVerse (all pushed).
+- Snapshot tag preserved as rollback anchor.
+- Working tree clean at session end.

@@ -12,6 +12,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed — Debug-overhaul polish (post-Phase 9, 2026-05-24)
+- **Toolbar mode picker** widened (110 → 140 px) so "pixel-diff" + the dropdown chevron fits without truncation.
+- **Nav tabs** upgraded from default styling to `TabAppearance.FlatButtons` + fixed `ItemSize(140, 32)` + Segoe UI 10.5pt + `Padding(12, 6)`. Now visually the primary surface rather than an easy-to-miss strip.
+- **Tests-only toolbar items** (Run Tests / Mode label + picker / Record / Approve / View Report / Deploy Agent / Close Workload / Expand All + their grouping separators) hide when the operator switches to any non-Tests nav tab. Only Open Folder stays visible everywhere (it discovers the workloads dir all panels read). Implements the §C4 polish deferred from Phase 7.
+- **Localhost toolbar button dropped** — was a Phase 4 leftover (originally opened a popup; Phase 7 had it just switch tabs) fully redundant with the Localhost nav tab. `OnShowLocalhost` handler removed.
+
 ### Changed — Debug-overhaul Phase 9 (cross-repo doc pass, 2026-05-24)
 - `CLAUDE.md` Quick Reference rewritten to point operators at the new debug-overhaul surfaces: toolbar mode picker, 6 nav tabs, per-run dir layout, telemetry NDJSON path, MCP server, feedback inbox. The §16 rule 8 line updated to reflect Phase 1 having shipped (no longer "queued").
 - `docs/features/FEATURE_STATUS.md` gains a Debug-overhaul section table mapping each shipped feature to its phase number plus the consolidated deferred follow-ups list.

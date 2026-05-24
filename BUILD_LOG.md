@@ -1319,3 +1319,68 @@ prompt's §11 final-summary step.
   on hardware-bearing machine. The Phase 8 build + test run completes
   green; no code path was modified in ways that would break the
   existing VLM/pixel-diff verdict generation.
+
+## 2026-05-24 — Debug-overhaul post-Phase-9 polish (operator screenshot review)
+
+Operator ran the UI after Phase 9 closeout, screenshotted the result,
+and called out four toolbar/nav-tab UX issues. All four addressed in
+one commit (`0946954`):
+
+1. **Mode picker truncation.** Width 110 → 140 px so "pixel-diff" +
+   chevron fit. The Phase 7 default ate ~20px on the chevron leaving
+   ~90px for text — short by ~10px.
+2. **Nav tabs visually weak.** Upgraded to `TabAppearance.FlatButtons`
+   + fixed `ItemSize(140, 32)` + Segoe UI 10.5pt (was default 9pt) +
+   `Padding(12, 6)`. Now visibly the primary nav surface.
+3. **Toolbar clutter on non-Tests tabs.** Tests-only items (Run Tests
+   / Mode / Record / Approve / View Report / Deploy Agent / Close
+   Workload / Expand All + their grouping separators) collected into a
+   `_testsOnlyToolbarItems` array; `_navTabControl.SelectedIndexChanged`
+   now calls `UpdateToolbarVisibilityForActiveTab` which toggles
+   `Visible` on each. Open Folder stays visible everywhere. Implements
+   the §C4 polish that was explicitly deferred from Phase 7.
+4. **Localhost toolbar button** dropped entirely. Phase 4 added it as
+   a popup launcher; Phase 7 made it a tab-switch shortcut redundant
+   with the Localhost nav tab. `OnShowLocalhost` handler deleted (zero
+   remaining callers).
+
+Verification: `dotnet build src/Canary.UI/Canary.UI.csproj
+--configuration Release` = 0/0. `dotnet test --filter "Category=Unit"` =
+220 Passed (unchanged). Operator relaunched, confirmed "looks good".
+
+## 2026-05-24 — Debug-overhaul session closeout
+
+End-of-session bookkeeping:
+
+- **Commits this session past `pre-impl-debug-overhaul-2026-05-24`:** 40
+  (39 implementation + 1 post-Phase-9 polish).
+- **Cross-repo pushes done:** Penumbra `5c5672f..d372694` → origin/main;
+  Qualia `0cc90ca..04c5e29` → origin/master; MultiVerse `dc574ce..75a9c66`
+  → origin/main.
+- **Canary push state:** master at `0946954`, fully synced with
+  origin/master.
+- **Snapshot tag `pre-impl-debug-overhaul-2026-05-24`:** preserved as
+  the rollback anchor per the implementation prompt §11 ("Delete the
+  master snapshot tag (only if you confirm everything is pushed)").
+  Operator's call when to delete; meanwhile it's a cheap safety
+  net pointing at HEAD ~40 commits ago.
+- **`.claude/settings.local.json`:** harness auto-appended a
+  `Bash(dotnet *)` allowlist entry during the session — committed as a
+  tracked chore so the working tree is clean (file is tracked, not in
+  .gitignore).
+- **Working tree state at session end:** clean. Master branch only.
+- **Hardware-bearing follow-ups for operator on a separate machine** (per
+  the prompt's hard rule 8 + the deferred integration tests):
+  - Run Penumbra workload end-to-end to confirm Phase 2 CDP telemetry
+    capture produces a populated `telemetry.ndjson` and Phase 3
+    `REPORT.md` reflects accurate verdicts (already smoked on Qualia
+    `display-modes` suite during this session — 10 NEW baselines).
+  - Run Rhino-workload tests (need Rhino 8 installed) to confirm the
+    non-bridge `RunTestAsync` path also writes per-run `runs/<timestamp>/`
+    dirs correctly.
+  - Register `Canary.McpServer.exe` in a Claude Code `.mcp.json` +
+    exercise `list_recent_runs` / `get_run_report` /
+    `list_localhost_ports` from a Claude session.
+  - VLM smoke (`canary run --workload qualia --suite landing-screen
+    --mode vlm`) to confirm the toolbar mode picker + Phase 2
+    telemetry coexist with VLM oracle evaluation.

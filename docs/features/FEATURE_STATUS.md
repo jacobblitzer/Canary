@@ -114,6 +114,7 @@ by `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`.
 | UI overhaul (nav tabs + mode picker) | Done | 7 (C4) | INavMode + TabControl wrapping the SplitContainer. Tests/PastRuns/Localhost/Feedback/Telemetry/Settings tabs. Toolbar mode picker resolves §A1 gap. |
 | Settings persistence | Done | 8 (C9) | `CanarySettings` at `%LocalAppData%\Canary\settings.json`. UI mode + Tier 3 + retention. Maturation-mode panels not built per §C9. |
 | Cross-repo doc pass | Done | 9 | Penumbra + Qualia CLAUDE.mds + MultiVerse BUILD_LOG updated. |
+| Toolbar / nav-tab polish | Done | post-Phase 9 | Mode picker width fix; nav tabs FlatButtons + larger font; Tests-only items hide on non-Tests tabs; redundant Localhost toolbar button dropped. |
 
 **Deferred follow-ups** (documented in BUILD_LOG.md phase entries):
 - Rhino-side `RhinoApp.WriteLine` interception (Phase 2 — no clean RhinoCommon 8 hook found in scope; queued v2).
