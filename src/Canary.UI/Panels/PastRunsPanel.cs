@@ -16,6 +16,9 @@ public sealed class PastRunsPanel : UserControl
 
     private string? _workloadsDir;
     private List<RunRow> _allRuns = new();
+    private DateRange _dateFilter = DateRange.All;
+
+    private enum DateRange { All, Last7Days, Last30Days }
 
     public PastRunsPanel()
     {
@@ -28,11 +31,12 @@ public sealed class PastRunsPanel : UserControl
             Dock = DockStyle.Top,
             Height = 36,
             BackColor = Color.FromArgb(45, 45, 48),
-            ColumnCount = 3,
+            ColumnCount = 4,
             Padding = new Padding(6, 4, 6, 4),
         };
         top.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        top.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         top.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         var label = new Label { Text = "Filter:", AutoSize = true, ForeColor = Color.FromArgb(220, 220, 220), Padding = new Padding(0, 6, 6, 0) };
         _filterBox = new TextBox
@@ -43,11 +47,35 @@ public sealed class PastRunsPanel : UserControl
             BorderStyle = BorderStyle.FixedSingle,
         };
         _filterBox.TextChanged += (_, _) => ApplyFilter();
+
+        // Phase 8 polish — quick date filters per §C8 + §0.4 default.
+        var dateRow = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true, BackColor = Color.FromArgb(45, 45, 48) };
+        Button MakeDateButton(string text, DateRange range)
+        {
+            var b = new Button { Text = text, AutoSize = true, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(60, 60, 60), ForeColor = Color.White };
+            b.Click += (_, _) =>
+            {
+                _dateFilter = range;
+                foreach (Control c in dateRow.Controls)
+                    if (c is Button bb) bb.BackColor = bb == b ? Color.FromArgb(0, 122, 204) : Color.FromArgb(60, 60, 60);
+                ApplyFilter();
+            };
+            return b;
+        }
+        var allBtn = MakeDateButton("All", DateRange.All);
+        var d7Btn = MakeDateButton("Last 7d", DateRange.Last7Days);
+        var d30Btn = MakeDateButton("Last 30d", DateRange.Last30Days);
+        allBtn.BackColor = Color.FromArgb(0, 122, 204);
+        dateRow.Controls.Add(allBtn);
+        dateRow.Controls.Add(d7Btn);
+        dateRow.Controls.Add(d30Btn);
+
         var refreshBtn = new Button { Text = "Refresh", AutoSize = true, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(60, 60, 60), ForeColor = Color.White };
         refreshBtn.Click += (_, _) => Reload();
         top.Controls.Add(label, 0, 0);
         top.Controls.Add(_filterBox, 1, 0);
-        top.Controls.Add(refreshBtn, 2, 0);
+        top.Controls.Add(dateRow, 2, 0);
+        top.Controls.Add(refreshBtn, 3, 0);
 
         // Body split
         _split = new SplitContainer
@@ -150,9 +178,16 @@ public sealed class PastRunsPanel : UserControl
     private void ApplyFilter()
     {
         var needle = _filterBox.Text.Trim();
+        var minDate = _dateFilter switch
+        {
+            DateRange.Last7Days => DateTime.UtcNow.AddDays(-7),
+            DateRange.Last30Days => DateTime.UtcNow.AddDays(-30),
+            _ => DateTime.MinValue,
+        };
+        var byDate = _allRuns.Where(r => r.WhenUtc >= minDate);
         var filtered = string.IsNullOrEmpty(needle)
-            ? _allRuns
-            : _allRuns.Where(r =>
+            ? byDate.ToList()
+            : byDate.Where(r =>
                   r.Workload.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
                   r.TestName.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
                   r.Verdict.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
