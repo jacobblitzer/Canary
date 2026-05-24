@@ -19,6 +19,15 @@ public sealed class ResultsHistory
 
     /// <summary>
     /// Scan results directories under a workload for saved result JSON files.
+    /// Reads both layouts so the UI does not lose visibility of older runs
+    /// during the Phase 3 migration (design §C2):
+    ///   - Legacy flat layout: `results/[<suite>/]<test>/result.json`
+    ///     (written by TestRunnerPanel pre-Phase-3 — same file overwrote
+    ///     per run).
+    ///   - New per-run layout: `results/[<suite>/]<test>/runs/<timestamp>/result.json`
+    ///     (written by TestRunner per Phase 3 — every run preserved).
+    /// New layout wins where both are present for the same test; legacy
+    /// stays read-only history.
     /// </summary>
     public async Task<List<HistoryEntry>> ScanAsync(string workloadsDir, string workloadName)
     {
@@ -28,6 +37,8 @@ public sealed class ResultsHistory
         if (!Directory.Exists(resultsDir))
             return entries;
 
+        // Single GetFiles recursive walk picks up both layouts —
+        // result.json under <test>/ AND under <test>/runs/<timestamp>/.
         foreach (var file in Directory.GetFiles(resultsDir, "result.json", SearchOption.AllDirectories))
         {
             try
