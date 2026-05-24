@@ -775,3 +775,12 @@ Phase A of the audit prompt `MultiVerse/prompts/canary-debug-overhaul-audit-2026
 - **Output:** `docs/research/2026-05-24-canary-surface-audit.md` covering A1 (UI WinForms surface — 13 controls / services), A2 (CLI — `run` / `record` / `approve` / `report` + every flag), A3 (telemetry per workload — Rhino / Penumbra / Qualia + unified gap), A4 (report artifacts + result.json shape + side channels), A5 (non-headless / UI-first state — `Canary.UI.exe` is never launched by CLI), A6 (localhost-relevant infra — two `ViteManager` copies with `netstat -ano` + `taskkill /F /T`), A7 (screenshot + diff infra — pixel-diff, SSIM, composite strips, no annotation surface).
 - **Headline findings:** (1) Console + Network CDP domains are never enabled — zero JS console capture, zero network capture. (2) `--mode` CLI flag has no UI picker; GUI runs ignore `ModeOverride`. (3) Result files overwrite — no run history beyond most-recent. (4) Vite/Chrome processes bypass `ProcessManager`; can orphan on bridge-agent crash. (5) `RunCommand.RunAsync` returns void → CLI always exits 0 (regression from `spec/PHASES.md` Phase 4 spec).
 - **Status:** Phase A complete; Phase B (prior-art survey) next.
+
+## 2026-05-24 — Debug-overhaul audit Phase B
+
+Phase B of the audit prompt. Doc-only; no source changes.
+
+- **Output:** `docs/research/2026-05-24-test-harness-prior-art.md` covering Playwright Inspector + Trace Viewer, Cypress App + Cloud Dashboard, and Sysinternals Process Explorer. ~150 words per tool with steal / skip lists. Cross-tool synthesis table maps each borrowed convention to the §C design section that will use it.
+- **Third-tool selection:** Sysinternals Process Explorer. Playwright + Cypress cover the test-runner-UI angle; Process Explorer covers the localhost-manager + process-tree provenance angle (§C7 Tier 1 + Tier 2) that neither Playwright nor Cypress addresses.
+- **No live web fetches required** — all conventions cited are stable canonical surfaces (Playwright Trace Viewer file format, Cypress `open` vs `run` verb model, Process Explorer kill-tree default).
+- **Status:** Phase B complete; Phase C (design proposals) next.
