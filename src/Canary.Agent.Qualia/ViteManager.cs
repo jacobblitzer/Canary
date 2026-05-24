@@ -137,75 +137,12 @@ public sealed partial class ViteManager : IDisposable
     [GeneratedRegex(@"\x1B\[[0-9;]*[a-zA-Z]")]
     private static partial Regex AnsiRegex();
 
+    // Delegates to LocalhostManager.KillByPortAsync per Phase 4 / §C7 Tier 1
+    // (previously duplicated between Penumbra + Qualia ViteManagers).
     private static async Task KillStaleListenerAsync(int port, CancellationToken ct)
     {
-        var pid = FindListenerPid(port);
-        if (pid is null) return;
-
-        Console.WriteLine($"[ViteManager(Qualia)] Port {port} held by PID {pid} — killing stale listener.");
-
-        var killPsi = new ProcessStartInfo
-        {
-            FileName = "taskkill.exe",
-            Arguments = $"/F /T /PID {pid.Value}",
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-        try
-        {
-            using var killProc = Process.Start(killPsi);
-            if (killProc is not null)
-                await killProc.WaitForExitAsync(ct).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[ViteManager(Qualia)] taskkill failed: {ex.Message}.");
-            return;
-        }
-
-        await Task.Delay(TimeSpan.FromMilliseconds(300), ct).ConfigureAwait(false);
-
-        var stillPid = FindListenerPid(port);
-        if (stillPid is not null)
-            Console.WriteLine($"[ViteManager(Qualia)] WARNING: Port {port} still held by PID {stillPid}.");
-    }
-
-    private static int? FindListenerPid(int port)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = "netstat.exe",
-            Arguments = "-ano",
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-        try
-        {
-            using var proc = Process.Start(psi);
-            if (proc is null) return null;
-            var output = proc.StandardOutput.ReadToEnd();
-            proc.WaitForExit(2000);
-
-            var portSuffix = $":{port}";
-            foreach (var line in output.Split('\n'))
-            {
-                if (!line.Contains("LISTENING")) continue;
-                var trimmed = line.Trim();
-                var parts = trimmed.Split((char[])[' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length < 5) continue;
-                if (!parts[1].EndsWith(portSuffix)) continue;
-                if (int.TryParse(parts[^1], out var pid)) return pid;
-            }
-        }
-        catch
-        {
-            // netstat failed → assume port free.
-        }
-        return null;
+        var manager = new Canary.Localhost.LocalhostManager();
+        await manager.KillByPortAsync(port, ct).ConfigureAwait(false);
     }
 
     public void Dispose()

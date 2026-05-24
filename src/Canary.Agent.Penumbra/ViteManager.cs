@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Canary.Localhost;
 
 namespace Canary.Agent.Penumbra;
 
@@ -194,9 +195,10 @@ public sealed partial class ViteManager : IDisposable
 
     /// <summary>
     /// If anything is listening on <paramref name="port"/>, kill it.
-    /// Windows-specific: shells out to `netstat -ano` to find the
-    /// owning PID, then `taskkill /F /PID`. No-op when the port is
-    /// free.
+    /// Delegates to <see cref="LocalhostManager.KillByPortAsync"/> —
+    /// the shared netstat + taskkill /F /T implementation lives there
+    /// per Phase 4 / §C7 Tier 1 of the debug-overhaul (previously this
+    /// method was duplicated between Penumbra + Qualia ViteManagers).
     ///
     /// Used by <see cref="StartAsync"/> to scrub orphaned processes
     /// from prior runs so the new Vite always serves files from the
@@ -205,94 +207,14 @@ public sealed partial class ViteManager : IDisposable
     /// </summary>
     private static async Task KillStaleListenerAsync(int port, CancellationToken ct)
     {
-        var pid = FindListenerPid(port);
-        if (pid is null) return;
-
-        Console.WriteLine($"[ViteManager] Port {port} held by PID {pid} — killing stale listener before starting fresh dev server.");
-
-        var killPsi = new ProcessStartInfo
+        var manager = new LocalhostManager();
+        var ok = await manager.KillByPortAsync(port, ct).ConfigureAwait(false);
+        if (!ok)
         {
-            FileName = "taskkill.exe",
-            Arguments = $"/F /T /PID {pid.Value}",
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-        try
-        {
-            using var killProc = Process.Start(killPsi);
-            if (killProc is not null)
-            {
-                await killProc.WaitForExitAsync(ct).ConfigureAwait(false);
-            }
+            // Either the port was free (no-op success path), or the kill failed
+            // and the port is still held. The downstream EADDRINUSE detection
+            // in StartAsync becomes the next line of defense if the latter.
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[ViteManager] taskkill failed: {ex.Message}. Vite startup may EADDRINUSE.");
-            return;
-        }
-
-        // Brief wait for the OS to release the socket. TIME_WAIT can
-        // hang for tens of seconds for a normal close but a forcibly-
-        // killed process drops the socket immediately on Windows.
-        await Task.Delay(TimeSpan.FromMilliseconds(300), ct).ConfigureAwait(false);
-
-        // Confirm. If still occupied, log + continue — Vite's own
-        // EADDRINUSE detection becomes the next line of defense.
-        var stillPid = FindListenerPid(port);
-        if (stillPid is not null)
-        {
-            Console.WriteLine($"[ViteManager] WARNING: Port {port} still held by PID {stillPid} after taskkill. Vite startup will likely fail with EADDRINUSE.");
-        }
-    }
-
-    /// <summary>
-    /// Returns the PID of the process listening on <paramref name="port"/>,
-    /// or null if the port is free. Parses `netstat -ano` output —
-    /// Windows-specific. Looks only at LISTENING sockets (ignores
-    /// ESTABLISHED / TIME_WAIT entries).
-    /// </summary>
-    private static int? FindListenerPid(int port)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = "netstat.exe",
-            Arguments = "-ano",
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-        try
-        {
-            using var proc = Process.Start(psi);
-            if (proc is null) return null;
-            var output = proc.StandardOutput.ReadToEnd();
-            proc.WaitForExit(2000);
-
-            // Lines look like:
-            //   TCP    0.0.0.0:3000           0.0.0.0:0              LISTENING       12345
-            //   TCP    [::]:3000              [::]:0                 LISTENING       12345
-            //   TCP    [::1]:3000             [::]:0                 LISTENING       12345
-            // We want the PID for any LISTENING socket on the chosen port.
-            var portSuffix = $":{port}";
-            foreach (var line in output.Split('\n'))
-            {
-                if (!line.Contains("LISTENING")) continue;
-                var trimmed = line.Trim();
-                // Local address is the second field. Match if it ends with our port.
-                var parts = trimmed.Split((char[])[' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length < 5) continue;
-                if (!parts[1].EndsWith(portSuffix)) continue;
-                if (int.TryParse(parts[^1], out var pid)) return pid;
-            }
-        }
-        catch
-        {
-            // Swallow — if netstat fails, fall through to "port appears free".
-        }
-        return null;
     }
 
     /// <inheritdoc />
