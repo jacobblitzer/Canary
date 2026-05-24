@@ -1,4 +1,5 @@
 using Canary.Localhost;
+using Canary.Settings;
 
 namespace Canary.UI.Controls;
 
@@ -18,7 +19,9 @@ public sealed class LocalhostPanel : UserControl
     private readonly System.Windows.Forms.Timer _timer;
     private readonly Button _refreshBtn;
     private readonly Button _killBtn;
+    private readonly CheckBox _tier3Toggle;
     private readonly ToolStripStatusLabel _status;
+    private bool _showTier3;
 
     public LocalhostPanel()
     {
@@ -39,6 +42,15 @@ public sealed class LocalhostPanel : UserControl
         _killBtn.Click += async (_, _) => await KillSelectedAsync().ConfigureAwait(true);
         toolbar.Controls.Add(_refreshBtn);
         toolbar.Controls.Add(_killBtn);
+
+        // Phase 8 / §C7 Tier 3 — opt-in toggle. Reads initial state from
+        // CanarySettings (operator persists via the Settings tab); also
+        // togglable inline for quick preview without leaving the panel.
+        var settings = CanarySettings.Load();
+        _showTier3 = settings.ShowTier3Processes;
+        _tier3Toggle = new CheckBox { Text = "Show all dev-server-likely processes (Tier 3 — may include false positives)", AutoSize = true, ForeColor = Color.FromArgb(220, 220, 220), Checked = _showTier3, Padding = new Padding(8, 2, 0, 0) };
+        _tier3Toggle.CheckedChanged += async (_, _) => { _showTier3 = _tier3Toggle.Checked; await RefreshAsync().ConfigureAwait(true); };
+        toolbar.Controls.Add(_tier3Toggle);
 
         _list = new ListView
         {
@@ -97,6 +109,7 @@ public sealed class LocalhostPanel : UserControl
             var entries = await _manager.EnumeratePortsAsync(LocalhostManager.DefaultPorts).ConfigureAwait(true);
             _list.BeginUpdate();
             _list.Items.Clear();
+
             foreach (var e in entries)
             {
                 var item = new ListViewItem(e.Port.ToString());
@@ -108,8 +121,32 @@ public sealed class LocalhostPanel : UserControl
                 item.Tag = e;
                 _list.Items.Add(item);
             }
+
+            int tier3Count = 0;
+            if (_showTier3)
+            {
+                // Phase 8 / §C7 Tier 3 — append heuristic processes that
+                // aren't already in the Tier 1/2 enumeration. Loud caveat
+                // via the "DevServerHeuristic" provenance label.
+                var seenPids = entries.Where(e => e.Pid.HasValue).Select(e => e.Pid!.Value).ToHashSet();
+                foreach (var h in HeuristicProcessLister.Enumerate())
+                {
+                    if (seenPids.Contains(h.Pid)) continue;
+                    var item = new ListViewItem("—");  // no port (heuristic — port unknown)
+                    item.SubItems.Add(h.Pid.ToString());
+                    item.SubItems.Add(h.Name);
+                    item.SubItems.Add(PortProvenance.DevServerHeuristic.ToString());
+                    item.SubItems.Add(h.StartTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "—");
+                    item.SubItems.Add(h.MainWindowTitle ?? "(heuristic — may be false positive)");
+                    item.ForeColor = Color.FromArgb(180, 180, 180);
+                    _list.Items.Add(item);
+                    tier3Count++;
+                }
+            }
+
             _list.EndUpdate();
-            _status.Text = $"{entries.Count} entries · refreshed {DateTime.Now:HH:mm:ss}";
+            var tier3Suffix = _showTier3 ? $" + {tier3Count} heuristic" : "";
+            _status.Text = $"{entries.Count} listening{tier3Suffix} · refreshed {DateTime.Now:HH:mm:ss}";
         }
         catch (Exception ex)
         {
