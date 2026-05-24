@@ -784,3 +784,14 @@ Phase B of the audit prompt. Doc-only; no source changes.
 - **Third-tool selection:** Sysinternals Process Explorer. Playwright + Cypress cover the test-runner-UI angle; Process Explorer covers the localhost-manager + process-tree provenance angle (§C7 Tier 1 + Tier 2) that neither Playwright nor Cypress addresses.
 - **No live web fetches required** — all conventions cited are stable canonical surfaces (Playwright Trace Viewer file format, Cypress `open` vs `run` verb model, Process Explorer kill-tree default).
 - **Status:** Phase B complete; Phase C (design proposals) next.
+
+## 2026-05-24 — Debug-overhaul audit Phase C
+
+Phase C of the audit prompt. Doc-only; no source changes.
+
+- **Output:** `docs/plans/2026-05-24-canary-debug-overhaul.md` covering nine design sections (C1 universal telemetry envelope, C2 Claude-readable REPORT.md, C3 non-headless enforcement, C4 UI overhaul, C5 sketch+annotate, C6 feedback channel, C7 tiered localhost manager, C8 live+past-runs, C9 VLM/visual-regression demotion) plus Implementation Plan appendix.
+- **Locked design decisions** from prompt §0.1 honored: file-inbox-canonical + MCP-wrapped feedback; full sketch+annotate (rects + freehand + text); tiered localhost manager (T1+T2+T3 all in v1).
+- **Headline design picks:** WinForms additive + WPF islands via WindowsFormsHost (NOT a WPF reshell); MCP server as separate csproj; voluntary spawn registry (recommended over OS hook); UI nav re-org via INavMode interface adding Past Runs / Localhost / Feedback / Telemetry / Settings tabs.
+- **First entry under new `docs/plans/`** directory in Canary (pattern borrowed from Qualia).
+- **Total effort estimate:** ~9.5–11.5 weeks across 9 phases. v1 cut recommendation: Phases 1–4 (~4.5 weeks, ~70% operator-visible value).
+- **Status:** Phase C complete; Phase D (hand-off) next.
