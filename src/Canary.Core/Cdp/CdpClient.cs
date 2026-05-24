@@ -16,6 +16,14 @@ public sealed class CdpClient : IDisposable
     private readonly ClientWebSocket _ws = new();
     private readonly ConcurrentDictionary<int, TaskCompletionSource<JsonNode>> _pending = new();
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonNode>> _eventWaiters = new();
+
+    // Continuous subscriptions (one-to-many handlers per CDP method).
+    // Separate from _eventWaiters so a one-shot WaitForEventAsync doesn't
+    // detach a long-lived telemetry subscriber. Added in Phase 2 for the
+    // C1 telemetry envelope work.
+    private readonly ConcurrentDictionary<string, List<Action<JsonNode>>> _subscribers = new();
+    private readonly object _subscribersLock = new();
+
     private readonly TimeSpan _timeout;
     private int _nextId;
     private CancellationTokenSource? _readCts;
@@ -156,6 +164,64 @@ public sealed class CdpClient : IDisposable
         if (value == null) return default;
 
         return JsonSerializer.Deserialize<T>(value.ToJsonString());
+    }
+
+    /// <summary>
+    /// Subscribe to a continuous stream of CDP events for the given method
+    /// (e.g. "Runtime.consoleAPICalled"). The handler is invoked synchronously
+    /// on the CDP read loop thread for every event — callers must marshal to
+    /// their own thread if needed and must not block.
+    ///
+    /// Returns an IDisposable that, when disposed, detaches the handler.
+    /// Multiple subscribers per method are allowed; one-shot WaitForEventAsync
+    /// callers are unaffected.
+    /// </summary>
+    public IDisposable Subscribe(string method, Action<JsonNode> handler)
+    {
+        lock (_subscribersLock)
+        {
+            if (!_subscribers.TryGetValue(method, out var list))
+            {
+                list = new List<Action<JsonNode>>();
+                _subscribers[method] = list;
+            }
+            list.Add(handler);
+        }
+        return new Subscription(this, method, handler);
+    }
+
+    private void Unsubscribe(string method, Action<JsonNode> handler)
+    {
+        lock (_subscribersLock)
+        {
+            if (_subscribers.TryGetValue(method, out var list))
+            {
+                list.Remove(handler);
+                if (list.Count == 0) _subscribers.TryRemove(method, out _);
+            }
+        }
+    }
+
+    private sealed class Subscription : IDisposable
+    {
+        private readonly CdpClient _client;
+        private readonly string _method;
+        private readonly Action<JsonNode> _handler;
+        private bool _disposed;
+
+        public Subscription(CdpClient client, string method, Action<JsonNode> handler)
+        {
+            _client = client;
+            _method = method;
+            _handler = handler;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            _client.Unsubscribe(_method, _handler);
+        }
     }
 
     /// <summary>
@@ -325,11 +391,31 @@ public sealed class CdpClient : IDisposable
                 }
                 else
                 {
-                    // This is an event
+                    // This is an event. Two destinations:
+                    //   1) one-shot waiters (TryRemove — historic behavior)
+                    //   2) continuous subscribers (added Phase 2; the same
+                    //      event payload reaches both surfaces).
                     var method = node["method"]?.GetValue<string>();
-                    if (method != null && _eventWaiters.TryRemove(method, out var eventTcs))
+                    if (method != null)
                     {
-                        eventTcs.TrySetResult(node["params"] ?? new JsonObject());
+                        var payload = node["params"] ?? new JsonObject();
+
+                        if (_eventWaiters.TryRemove(method, out var eventTcs))
+                        {
+                            eventTcs.TrySetResult(payload);
+                        }
+
+                        if (_subscribers.TryGetValue(method, out var subs))
+                        {
+                            // Snapshot under lock so a concurrent Unsubscribe
+                            // doesn't trip iteration.
+                            Action<JsonNode>[] snapshot;
+                            lock (_subscribersLock) snapshot = subs.ToArray();
+                            foreach (var handler in snapshot)
+                            {
+                                try { handler(payload); } catch { /* one bad subscriber shouldn't break the loop */ }
+                            }
+                        }
                     }
                 }
             }

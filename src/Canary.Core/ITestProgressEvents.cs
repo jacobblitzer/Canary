@@ -1,4 +1,5 @@
 using Canary.Orchestration;
+using Canary.Telemetry;
 
 namespace Canary;
 
@@ -45,6 +46,14 @@ public interface ITestProgressEvents
 
     /// <summary>Fires when a test (all its checkpoints) finishes.</summary>
     void OnTestCompleted(string testName, TestStatus status, double durationSeconds);
+
+    /// <summary>
+    /// Phase 2 / §C1: fires for every TelemetryRecord written by the
+    /// per-run sink (CDP console, network, harness logs, agent actions,
+    /// etc.). The Phase 7 Telemetry tab subscribes to render a live tail.
+    /// Default no-op so the existing GUI doesn't need to handle it yet.
+    /// </summary>
+    void OnTelemetry(TelemetryRecord record) { }
 }
 
 /// <summary>
