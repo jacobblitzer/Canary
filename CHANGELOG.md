@@ -12,6 +12,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Debug-overhaul audit (2026-05-24)
+- `docs/research/2026-05-24-canary-surface-audit.md` — full inventory of Canary's UI / CLI / agent / report / localhost / screenshot surface. Phase A output of the audit prompt `MultiVerse/prompts/canary-debug-overhaul-audit-2026-05-24.md`. Drives the debug-overhaul design (Phase C, in flight) — telemetry envelope, Claude-readable REPORT.md, non-headless enforcement, sketch+annotate feedback, tiered localhost manager.
+
 ### Added — Qualia workload (backfill May 2026; promoted from Stub → Active)
 - `spec/QUALIA_WORKLOAD.md` workload specification (2026-05-24) — promoted from `workloads/qualia/AGENT_NOTES.md` per the 2026-05-24 testing+Canary audit (`MultiVerse/audit/2026-05-24-testing-canary-audit-and-plan.md`).
 - `spec/PEERS.md` Qualia section (2026-05-24) — documents the Canary↔Qualia contract (hook stability, port co-existence with Penumbra, baseline conventions, hook-addition workflow).

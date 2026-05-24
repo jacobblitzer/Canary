@@ -765,3 +765,13 @@ instrumentation skill) are sequenced in the audit doc.
 
 No code touched. No baselines moved. Doc-only commit per R2 of the
 reconcile.
+
+---
+
+## 2026-05-24 — Debug-overhaul audit Phase A
+
+Phase A of the audit prompt `MultiVerse/prompts/canary-debug-overhaul-audit-2026-05-24.md`. Doc-only; no source changes.
+
+- **Output:** `docs/research/2026-05-24-canary-surface-audit.md` covering A1 (UI WinForms surface — 13 controls / services), A2 (CLI — `run` / `record` / `approve` / `report` + every flag), A3 (telemetry per workload — Rhino / Penumbra / Qualia + unified gap), A4 (report artifacts + result.json shape + side channels), A5 (non-headless / UI-first state — `Canary.UI.exe` is never launched by CLI), A6 (localhost-relevant infra — two `ViteManager` copies with `netstat -ano` + `taskkill /F /T`), A7 (screenshot + diff infra — pixel-diff, SSIM, composite strips, no annotation surface).
+- **Headline findings:** (1) Console + Network CDP domains are never enabled — zero JS console capture, zero network capture. (2) `--mode` CLI flag has no UI picker; GUI runs ignore `ModeOverride`. (3) Result files overwrite — no run history beyond most-recent. (4) Vite/Chrome processes bypass `ProcessManager`; can orphan on bridge-agent crash. (5) `RunCommand.RunAsync` returns void → CLI always exits 0 (regression from `spec/PHASES.md` Phase 4 spec).
+- **Status:** Phase A complete; Phase B (prior-art survey) next.
