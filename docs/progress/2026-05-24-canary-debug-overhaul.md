@@ -214,3 +214,42 @@ UI surface as a toolbar popup. Phase 7 migrates the UI to a nav tab.
 - **Deferred:** Tier 2 (SpawnRegistry) → Phase 6; Tier 3 (heuristic) →
   Phase 8; WMI command-line enrichment → Phase 8 polish; Restart action
   → Phase 6 (requires Tier 2 provenance).
+
+## Phase 5 — C5 sketch UI + C6 file-inbox half (2026-05-24)
+
+M-L effort phase. WPF island annotation surface (per operator decision
+Q4) + file-based feedback inbox (canonical layer of §C6; MCP server
+wrapper ships in Phase 6).
+
+- **Snapshot tag:** `pre-impl-phase5-2026-05-24` created; deleted on success.
+- **WPF wiring (Canary.UI.csproj):** `<UseWPF>true</UseWPF>` enables WPF
+  alongside WinForms; `<Using Include="System.IO" />` restores the
+  implicit using that UseWPF drops from defaults.
+- **AnnotationCanvas (WPF UserControl):** Pointer/Rectangle/Freehand/Text
+  tool modes, red/yellow/green colors, source-image background at native
+  resolution. RenderTargetBitmap → PNG export; JSON serialization of
+  vector shapes per §C5 schema. File-scoped aliases disambiguate
+  WPF-vs-WinForms type collisions.
+- **AnnotatedImageForm (WinForm host):** dark-themed shell with
+  ElementHost embedding the WPF canvas. Title + body text fields, Save
+  button writes the feedback triad (md + source.png + annotated.png +
+  annotations.json) via FeedbackInboxWriter.
+- **Canary.Feedback core:** FeedbackItem POCO + FeedbackSlugGenerator
+  (YYYY-MM-DD-NNN-slug with sequence counting per date) +
+  FeedbackInboxWriter (atomic per-file writes).
+- **docs/feedback/ tree:** inbox/, triaged/, resolved/ with .gitkeep +
+  README.md. CLAUDE.md "Feedback inbox" section added with session-start
+  scan rule.
+- **ImageViewerForm Annotate button:** interim launch surface; opens
+  current image in AnnotatedImageForm. Inbox root discovered by walking
+  up from AppContext.BaseDirectory.
+- **Tests:** 12 new unit tests — 7 SlugGenerator (numbering, date rollover,
+  word-clamp, punctuation, fallback, malformed-existing handling); 5
+  InboxWriter (disk triad, frontmatter content, null-ref omission,
+  ExistingSlugs).
+- **Verification:** build 0/0; Unit 164 → 176; Integration 2 unchanged;
+  CLI smoke unchanged. Visual WPF island verification deferred to
+  operator.
+- **Deferred:** AnnotationOverlayRenderingTests (needs STA test harness;
+  end-to-end covered by operator save); InkCanvas-vs-custom decision
+  already locked to custom per §C5 open question.

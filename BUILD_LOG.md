@@ -925,3 +925,77 @@ migrates to a proper Localhost nav tab.
     Tier 2).
 - **Snapshot tag `pre-impl-phase4-2026-05-24`** preserved during the work;
   deleted at commit.
+
+## 2026-05-24 — Debug-overhaul Phase 5 (C5 sketch UI + C6 file-inbox half)
+
+M-L effort phase. WPF island for annotation surface (per operator
+decision Q4) + file-based feedback inbox (canonical layer of design
+§C6; MCP server wrapper ships in Phase 6).
+
+- **Snapshot tag:** `pre-impl-phase5-2026-05-24` created; deleted on success.
+- **Canary.UI WPF wiring:** `<UseWPF>true</UseWPF>` added to
+  Canary.UI.csproj alongside the existing `<UseWindowsForms>true</UseWindowsForms>`.
+  The .NET SDK quirk: adding UseWPF drops System.IO from the default
+  implicit usings; restored via explicit `<Using Include="System.IO" />`
+  so the existing files keep working without per-file changes.
+- **AnnotationCanvas (WPF UserControl):** custom Canvas with Pointer /
+  Rectangle / Freehand / Text tool modes; red/yellow/green color picker;
+  source-image background at native pixel size. Mouse handlers translate
+  to WPF Rectangle / Polyline / TextBlock+backing-Rectangle shapes.
+  RenderAnnotatedPng forces a layout pass at source dims then renders via
+  RenderTargetBitmap + PngBitmapEncoder. SerializeAnnotationsJson emits
+  the §C5 schema (rect = {x,y,w,h,stroke,strokeWidth}; freehand =
+  {points[], stroke, strokeWidth}; text = {x,y,text,color,fontSize}).
+  Type aliases scoped to file disambiguate WPF vs WinForms collisions
+  (UserControl, Image, Brush, Brushes, Point, Size, Color, MouseEventArgs,
+  Rectangle, FontFamily, HorizontalAlignment, VerticalAlignment).
+- **AnnotatedImageForm (WinForm + ElementHost):** dark-themed shell with
+  ToolStrip (tool buttons + color picker + Clear), TextBox for title +
+  multiline body, ElementHost embedding AnnotationCanvas, FlowLayoutPanel
+  with Save + Cancel + status label. Save reads the source PNG bytes,
+  renders annotated PNG bytes, serializes JSON, generates a slug via
+  FeedbackSlugGenerator, and atomic-writes the triad via
+  FeedbackInboxWriter. WpfBrush/WpfBrushes/WpfColor/WpfSolidColorBrush
+  aliases for the few WPF brush usages in the WinForms scope.
+- **Canary.Feedback namespace (`src/Canary.Core/Feedback/`):**
+  - `FeedbackItem` — POCO with Slug + Date + Status + Project + RunRef +
+    CheckpointRef + ImageRef + Urgency + Tags + Title + Body.
+  - `FeedbackSlugGenerator.Generate(date, title, existingSlugs)` —
+    produces `YYYY-MM-DD-NNN-<slugified-title>`. NNN auto-increments past
+    the highest existing NNN for the same date; title slugifies to
+    lowercase hyphenated alpha-numeric, capped at 5 words.
+  - `FeedbackInboxWriter` — atomic per-file writes (write to .tmp +
+    rename) for the markdown body + sidecar dir with source.png +
+    annotated.png + annotations.json. ExistingSlugs() enumerates the .md
+    filenames for slug-collision avoidance.
+- **docs/feedback/ tree:** inbox/ + triaged/ + resolved/ created with
+  .gitkeep markers + README.md documenting the layout, slug format,
+  lifecycle (open → triaged → resolved), and item shape.
+- **CLAUDE.md update:** new "Feedback inbox" section + entry in the
+  Documentation Structure tree.
+- **ImageViewerForm Annotate button:** interim launch surface per
+  impl §7. Opens current image in AnnotatedImageForm with inbox root
+  discovered by walking up from AppContext.BaseDirectory.
+- **Files added:** `src/Canary.Core/Feedback/{FeedbackItem,FeedbackSlugGenerator,FeedbackInboxWriter}.cs`,
+  `src/Canary.UI/Annotation/{AnnotationCanvas,AnnotatedImageForm}.cs`,
+  `docs/feedback/{README.md, inbox/.gitkeep, triaged/.gitkeep, resolved/.gitkeep}`,
+  `tests/Canary.Tests/Feedback/{FeedbackSlugGeneratorTests,FeedbackInboxWriterTests}.cs`.
+- **Files modified:** `src/Canary.UI/Canary.UI.csproj` (UseWPF + System.IO
+  using), `src/Canary.UI/Controls/ImageViewerForm.cs` (Annotate button +
+  OpenAnnotate + FindInboxRoot helpers), `CLAUDE.md` (Feedback inbox
+  section).
+- **Verification:** `dotnet build Canary.sln` = 0/0. `dotnet test --filter
+  "Category=Unit"` = 176 Passed (was 164; +12 new). `dotnet test --filter
+  "Category=Integration"` = 2 Passed (unchanged). CLI smoke unchanged.
+  WPF island visual verification deferred to operator (requires UI launch
+  + manual annotate flow).
+- **Deferred / not in scope:**
+  - AnnotationOverlayRenderingTests (WPF RenderTargetBitmap test) — needs
+    a headless WPF render harness or a STA test thread; the
+    end-to-end behavior is exercised by the operator's first annotate
+    save. Schedule a follow-up unit test if a STA-friendly fixture
+    materializes.
+  - InkCanvas alternative — explicitly chose custom WPF Canvas per §C5
+    open question; ships as such.
+- **Snapshot tag `pre-impl-phase5-2026-05-24`** preserved during the work;
+  deleted at commit.

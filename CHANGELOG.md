@@ -12,6 +12,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Debug-overhaul Phase 5 (C5 sketch UI + C6 file-inbox half, 2026-05-24)
+- WPF + WindowsFormsHost wiring in `Canary.UI.csproj` — `<UseWPF>true</UseWPF>` enables the design §C5 WPF-island annotation surface. Restored `System.IO` to implicit usings via explicit `<Using Include="System.IO" />` (UseWPF + UseWindowsForms combo drops it from defaults).
+- `AnnotationCanvas` (`src/Canary.UI/Annotation/AnnotationCanvas.cs`) — custom WPF Canvas with Pointer / Rectangle / Freehand / Text tool modes, red/yellow/green color picker, source-image background at native resolution. Renders annotations + background to PNG via `RenderTargetBitmap`. Serializes vector annotations to JSON per the §C5 schema (shape array with rect/freehand/text discriminator).
+- `AnnotatedImageForm` (same dir) — WinForm hosting `AnnotationCanvas` via `ElementHost`. Dark-themed toolbar, title + body text boxes, Save / Cancel buttons. Save invokes `FeedbackInboxWriter` and reports the resulting slug via the status label.
+- `Canary.Feedback` namespace (`src/Canary.Core/Feedback/`): `FeedbackItem` POCO, `FeedbackSlugGenerator` (per-date sequence-counting, 3-to-5-word title slugify), `FeedbackInboxWriter` (atomic per-file writes producing `<slug>.md` + sidecar `<slug>/{source,annotated}.png` + `annotations.json`).
+- `docs/feedback/{inbox,triaged,resolved}/` tree created with `.gitkeep` markers + `docs/feedback/README.md` documenting layout, slug format, lifecycle, and item shape.
+- `CLAUDE.md` gains a "Feedback inbox" section pointing to the convention; session-start scan rule documented.
+- `ImageViewerForm` toolbar gets an Annotate button that opens the current image in `AnnotatedImageForm`. Inbox root discovered by walking up from `AppContext.BaseDirectory` looking for `docs/feedback/`.
+- 13 new unit tests: 7 `FeedbackSlugGeneratorTests` covering first-of-day numbering, sequence continuation, date rollover, max-five-words clamp, punctuation strip, empty-title fallback, malformed-existing-slug skip; 5 `FeedbackInboxWriterTests` covering disk layout, markdown frontmatter shape, null-ref omission, ExistingSlugs enumeration, empty-dir behavior.
+
 ### Added — Debug-overhaul Phase 4 (C7 Tier 1 localhost manager, 2026-05-24)
 - New `Canary.Localhost` namespace (`src/Canary.Core/Localhost/`): `PortEntry` record + `PortProvenance` enum (Unknown / DevServerHeuristic / CanarySpawn / CanaryHarness) + `LocalhostManager`. Tier 1 of design §C7 — passive port enumeration via `netstat -ano` + `Process.GetProcessById` enrichment, plus authoritative `IPGlobalProperties.GetActiveTcpListeners` for Canary's own listeners. Default port filter list: 3000, 3001, 4173, 4200, 5173, 5174, 8000, 8080, 8081, 1420. `KillByPortAsync` succeeds the duplicate `ViteManager.KillStaleListenerAsync` helpers.
 - Penumbra + Qualia `ViteManager.KillStaleListenerAsync` now delegate to `LocalhostManager.KillByPortAsync` — ~100 lines of duplicated netstat + taskkill code removed per workload.
