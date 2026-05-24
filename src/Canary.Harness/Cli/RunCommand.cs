@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.Diagnostics;
 using Canary.Agent.Penumbra;
 using Canary.Agent.Qualia;
 using Canary.Config;
@@ -46,6 +47,10 @@ public static class RunCommand
             description: "Comparison mode override: 'pixel-diff' (default — visual regression), 'vlm' (semantic correctness), or 'both' (run each checkpoint twice). Per-checkpoint mode='vlm' in test JSON still wins.",
             getDefaultValue: () => "pixel-diff");
 
+        var headlessOption = new Option<bool>(
+            "--headless",
+            "Run without launching the Canary UI. Required for CI / scripted use. Default behavior launches Canary.UI.exe with auto-run args per STANDARD.md §16 rule 8. `--quiet` implies `--headless`.");
+
         var command = new Command("run", "Run visual regression and/or VLM tests against a workload")
         {
             workloadOption,
@@ -54,7 +59,8 @@ public static class RunCommand
             verboseOption,
             quietOption,
             keepOpenOption,
-            modeOption
+            modeOption,
+            headlessOption
         };
 
         command.SetHandler(async (System.CommandLine.Invocation.InvocationContext ctx) =>
@@ -66,15 +72,67 @@ public static class RunCommand
             var quiet = ctx.ParseResult.GetValueForOption(quietOption);
             var keepOpen = ctx.ParseResult.GetValueForOption(keepOpenOption);
             var modeStr = ctx.ParseResult.GetValueForOption(modeOption) ?? "pixel-diff";
+            var headless = ctx.ParseResult.GetValueForOption(headlessOption) || quiet;
 
             Program.Verbose = verbose;
             Program.Quiet = quiet;
             var logger = new ConsoleTestLogger(verbose, quiet);
             var modeOverride = ParseModeOverride(modeStr, logger);
+
+            // STANDARD.md §16 rule 8 — every operator-triggered `canary run`
+            // launches with the Canary UI visible unless --headless. If the UI
+            // exe is locatable we hand off to it (it auto-runs + we exit 0);
+            // if not, fall through to the text-only path.
+            if (!headless && TryLaunchUi(workload, test, suite, modeStr, logger))
+            {
+                ctx.ExitCode = 0;
+                return;
+            }
+
             ctx.ExitCode = await RunAsync(workload, test, suite, logger, Program.CancellationToken, keepOpen, modeOverride).ConfigureAwait(false);
         });
 
         return command;
+    }
+
+    // Attempts to spawn Canary.UI.exe with the auto-run args, returning true
+    // on a successful spawn. Returns false (the caller falls through to the
+    // text-only path) if the UI exe can't be located or Process.Start throws.
+    private static bool TryLaunchUi(string? workload, string? test, string? suite, string? mode, ConsoleTestLogger logger)
+    {
+        if (!UiLocator.TryFindUiExe(out var uiPath))
+        {
+            logger.Log("Canary.UI.exe not found alongside canary.exe; running headless.");
+            return false;
+        }
+
+        var args = new AutoRunArgs
+        {
+            Workload = workload,
+            Test = test,
+            Suite = suite,
+            Mode = mode,
+        };
+
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = uiPath,
+                UseShellExecute = true,  // launches the WinExe in its own message loop
+                WorkingDirectory = Directory.GetCurrentDirectory(),
+            };
+            foreach (var a in args.ToArgs()) psi.ArgumentList.Add(a);
+
+            Process.Start(psi);
+            logger.Log($"Launched Canary.UI ({uiPath}) with auto-run args.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Log($"Failed to launch Canary.UI ({uiPath}): {ex.Message}. Running headless.");
+            return false;
+        }
     }
 
     // Bug 0007: 0 when no failures, 1 when any test failed or crashed. `New` (no
