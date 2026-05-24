@@ -143,13 +143,20 @@ public sealed class MainForm : Form
         // Phase 7 / §C4 — nav TabControl wrapping the existing
         // SplitContainer as the Tests tab + new tabs for past runs,
         // localhost, feedback, telemetry, settings.
+        // Phase 7 polish: FlatButtons + larger font + explicit ItemSize
+        // make the tabs visibly prominent instead of the default 9pt
+        // afterthought strip.
         _navTabControl = new TabControl
         {
             Dock = DockStyle.Fill,
             DrawMode = TabDrawMode.Normal,
-            Appearance = TabAppearance.Normal,
-            SizeMode = TabSizeMode.Normal,
+            Appearance = TabAppearance.FlatButtons,
+            SizeMode = TabSizeMode.Fixed,
+            ItemSize = new Size(140, 32),
+            Font = new Font("Segoe UI", 10.5f, FontStyle.Regular),
+            Padding = new Point(12, 6),
         };
+        _navTabControl.SelectedIndexChanged += (_, _) => UpdateToolbarVisibilityForActiveTab();
         var testsPage = new TabPage("Tests") { BackColor = Color.FromArgb(30, 30, 30) };
         testsPage.Controls.Add(_splitContainer);
         _navTabControl.TabPages.Add(testsPage);
@@ -370,51 +377,68 @@ public sealed class MainForm : Form
         };
         _closeWorkloadBtn.Click += OnCloseWorkload;
 
-        // Phase 4 introduced this Localhost toolbar entry as a popup form;
-        // Phase 7 migrates it into the Localhost nav tab. Click now jumps
-        // to that tab (handler defined below).
-        var localhostBtn = new ToolStripButton("Localhost") { ToolTipText = "Switch to the Localhost nav tab (Phase 7)." };
-        localhostBtn.Click += OnShowLocalhost;
-
         // Phase 7 / §A1 + §C4 — mode picker on the toolbar. Drives
         // TestRunnerPanel.RunAsync's modeOverride parameter at run time.
+        // Width = 140 so "pixel-diff" + chevron isn't truncated.
         var modeLabel = new ToolStripLabel("Mode:");
-        _modePicker = new ToolStripComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
+        _modePicker = new ToolStripComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 140 };
         _modePicker.Items.AddRange(new object[] { "pixel-diff", "vlm", "both" });
         _modePicker.SelectedIndex = 0;
         _modePicker.ToolTipText = "Comparison mode for the next Run Tests invocation. pixel-diff = visual regression; vlm = semantic correctness; both = run each checkpoint twice.";
 
+        // Track separators that group Tests-only items so we can hide them
+        // alongside the items when the operator switches to a non-Tests tab
+        // per §C4 polish.
+        var sep1 = new ToolStripSeparator();
+        var sep2 = new ToolStripSeparator();
+        var sep3 = new ToolStripSeparator();
+        var sep4 = new ToolStripSeparator();
+
         strip.Items.Add(openBtn);
-        strip.Items.Add(new ToolStripSeparator());
+        strip.Items.Add(sep1);
         strip.Items.Add(runBtn);
         strip.Items.Add(modeLabel);
         strip.Items.Add(_modePicker);
         strip.Items.Add(recordBtn);
-        strip.Items.Add(new ToolStripSeparator());
+        strip.Items.Add(sep2);
         strip.Items.Add(approveBtn);
         strip.Items.Add(reportBtn);
-        strip.Items.Add(new ToolStripSeparator());
+        strip.Items.Add(sep3);
         strip.Items.Add(deployBtn);
         strip.Items.Add(_closeWorkloadBtn);
-        strip.Items.Add(new ToolStripSeparator());
+        strip.Items.Add(sep4);
         strip.Items.Add(expandBtn);
-        strip.Items.Add(localhostBtn);
+
+        // Phase 7 polish — all items operate against the Tests tab; hide
+        // them when the operator switches away so the toolbar isn't
+        // dominated by inapplicable controls. Open Folder stays visible
+        // everywhere (it discovers the workloads dir all panels read).
+        _testsOnlyToolbarItems = new ToolStripItem[]
+        {
+            sep1,
+            runBtn, modeLabel, _modePicker, recordBtn,
+            sep2,
+            approveBtn, reportBtn,
+            sep3,
+            deployBtn, _closeWorkloadBtn,
+            sep4,
+            expandBtn,
+        };
 
         return strip;
     }
 
-    private void OnShowLocalhost(object? sender, EventArgs e)
+    private ToolStripItem[]? _testsOnlyToolbarItems;
+
+    // Called from AddNavTab's SelectedIndexChanged handler. Tests tab
+    // shows the full toolbar; every other tab hides the Tests-only
+    // controls so the bar stays uncluttered.
+    private void UpdateToolbarVisibilityForActiveTab()
     {
-        // Phase 7 migrated this into the Localhost nav tab. Toolbar
-        // button kept as a shortcut that simply selects that tab.
-        for (int i = 0; i < _navTabControl.TabPages.Count; i++)
-        {
-            if (_navTabControl.TabPages[i].Text == _localhostNavMode.Name)
-            {
-                _navTabControl.SelectedIndex = i;
-                return;
-            }
-        }
+        if (_testsOnlyToolbarItems == null) return;
+        var isTestsTab = _navTabControl.SelectedIndex == 0;  // Tests is index 0
+        foreach (var item in _testsOnlyToolbarItems)
+            item.Visible = isTestsTab;
     }
 
     private void AddNavTab(INavMode mode)
