@@ -106,3 +106,49 @@ already shipped).
   >5-files-or-new-csproj threshold of §0.2 rule 2).
 - **Commit shape:** three commits per the prompt's §3 suggested split —
   feat(cli), feat(ui), docs.
+
+## Phase 2 — C1 universal telemetry envelope (2026-05-24)
+
+L-effort phase. Producer side of the C1 envelope: every workload agent now
+writes a uniform `TelemetryRecord` stream to a per-suite NDJSON file. Phase
+3 will move it under `runs/<timestamp>/` and consume it for REPORT.md.
+
+- **Snapshot tag:** `pre-impl-phase2-2026-05-24` created at start; deleted on success.
+- **New namespace `Canary.Telemetry`:** `TelemetryKind`, `TelemetryRecord` (POCO +
+  shared `JsonSerializerOptions` — camelCase, null-omitted, ISO 8601, no
+  indent for NDJSON), `ITelemetrySink` + `NullTelemetrySink` +
+  `CompositeTelemetrySink`, `NdjsonFileSink` (thread-safe one-line-per-record
+  with 500 KB truncation), `EventStreamSink` (in-memory fan-out),
+  `ITelemetryAware` (agent registration interface).
+- **CDP extension:** `CdpClient.Subscribe(method, handler)` returning
+  `IDisposable`. ReadLoopAsync now fans event payloads to both the historic
+  one-shot waiters AND the new continuous subscribers.
+- **Shared producer (`CdpTelemetryStream`):** enables Runtime/Console/Log/
+  Network domains; subscribes to Runtime.consoleAPICalled +
+  Log.entryAdded + Network.requestWillBeSent/responseReceived/loadingFailed;
+  emits Console + Network kind records. Network records carry durationMs
+  via per-request Stopwatch tracking.
+- **Penumbra + Qualia bridge agents:** implement `ITelemetryAware`; both
+  init paths call `CdpTelemetryStream.EnableAndSubscribeAsync` after the
+  existing Page+Runtime enables; subscription handle disposed on agent
+  `Dispose`.
+- **TestRunner:** new `TelemetrySink` property (default Null).
+- **RunCommand:** instantiates per-suite `NdjsonFileSink` at
+  `workloads/<w>/results/[<suite>/]telemetry.ndjson`; both bridge-suite
+  paths register the sink on the agent before `InitializeAsync`.
+- **ITestProgressEvents.OnTelemetry:** default-method no-op; Phase 7 will
+  override.
+- **Tests:** 12 new unit tests (5 serialization, 7 sink behaviors including
+  8-writer concurrency without torn writes). Live CDP integration tests
+  deferred to operator-side (needs Chrome + Vite).
+- **Verification:** build 0/0; Unit 128 → 140; Integration 2 (unchanged);
+  CLI smoke unchanged.
+- **Deferrals (documented):** Rhino-side console intercept (no clean
+  RhinoCommon 8 hook in scope; queued for v2), InputReplayer event records
+  (cross-cuts Phase 7), ProcessManager.Track agent-action records
+  (deferred to Phase 6 + SpawnRegistry), live CDP integration tests
+  (operator runs).
+- **Commit shape (per prompt §4):** core types + sink, CDP+helper, Penumbra
+  agent, Qualia agent, TestRunner+RunCommand wiring, ITestProgressEvents
+  extension, tests, docs — bundled into a smaller set of logical commits
+  to keep churn legible.

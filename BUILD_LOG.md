@@ -816,3 +816,33 @@ First design-phase commit of the debug-overhaul. Implements `STANDARD.md` §16 l
 - **Tests:** 13 new Unit tests (`tests/Canary.Tests/Cli/AutoRunArgsTests.cs` × 10, `tests/Canary.Tests/Cli/HeadlessFlagTests.cs` × 3). 2 new Integration tests (`tests/Canary.Tests.Integration/SingleInstancePipeTests.cs`).
 - **Counts:** Unit 128 Passed (was 115); Integration 2 Passed (was 0); build 0/0.
 - **Smoke:** `canary run --headless` (with no workload) prints the error and exits 1; `canary run --help` advertises `--headless`. Operator-side non-headless smoke (`canary run --workload qualia --test main-pencil` → UI auto-launches and runs) deferred to operator verification.
+
+## 2026-05-24 — Debug-overhaul Phase 2 (C1 universal telemetry envelope)
+
+L-effort phase per design Implementation Plan. The data-producer side of
+debug-overhaul: every workload agent now writes a uniform `TelemetryRecord`
+stream to a per-suite NDJSON file. Phase 3 will ingest this into
+REPORT.md; Phase 7 will surface it in a Telemetry tab.
+
+- **New namespace `Canary.Telemetry` (`src/Canary.Core/Telemetry/`):**
+  - `TelemetryKind` enum (Console / Network / Input / AgentState / AgentAction / Log / Screenshot).
+  - `TelemetryRecord` POCO — JSON envelope with `t / runId / testName / checkpointName / kind / level / source / data`; serializer options shared (camelCase, null-omitted, non-indented for NDJSON).
+  - `ITelemetrySink` interface + `NullTelemetrySink` (no-op default) + `CompositeTelemetrySink` (fan-out with per-sink try/catch).
+  - `NdjsonFileSink` — thread-safe one-record-per-line writer with 500 KB per-line truncation marker on overflow; opens with `FileShare.Read` so tailers (the Phase 7 Telemetry tab) can read while the run is in flight.
+  - `EventStreamSink` — in-memory fan-out via `Action<TelemetryRecord>` event (subscriber called on writer thread; consumers marshal).
+  - `ITelemetryAware` — implemented by agents that accept a sink (registered before `InitializeAsync`).
+- **CDP extension (`Canary.Cdp.CdpClient`):** `Subscribe(method, Action<JsonNode>)` returning `IDisposable`. ReadLoopAsync now fans event payloads to both the historic `_eventWaiters` (one-shot `TryRemove`) AND the new `_subscribers` (continuous, multi-handler). Subscribers run on the read-loop thread; per-handler try/catch so one bad subscriber does not break the loop.
+- **Shared CDP telemetry helper (`Canary.Cdp.CdpTelemetryStream`):** `EnableAndSubscribeAsync(cdp, sink, source, ct)` enables Runtime + Console + Log + Network domains and registers subscribers for `Runtime.consoleAPICalled` / `Log.entryAdded` / `Network.requestWillBeSent` / `Network.responseReceived` / `Network.loadingFailed`. Network records carry a `durationMs` computed from per-request `Stopwatch.GetTimestamp` deltas (cleaned up on response/failure). Console payload shape: `{text, type, sourceUrl, lineNumber, category}`. Network payload shape: `{method, url, status, durationMs, errorText}`.
+- **Penumbra agent (`src/Canary.Agent.Penumbra/PenumbraBridgeAgent.cs`):** implements `ITelemetryAware`. Both `InitializeAsync` (fresh launch) and `InitializeFromExistingAsync` (attach) call `CdpTelemetryStream.EnableAndSubscribeAsync` after the existing Page+Runtime enables. Subscription handle stored in `_telemetrySubscriptions`, disposed on agent `Dispose`.
+- **Qualia agent (`src/Canary.Agent.Qualia/QualiaBridgeAgent.cs`):** same wiring as Penumbra; source discriminator `qualia`.
+- **TestRunner integration:** new `TelemetrySink` property (default `NullTelemetrySink.Instance`). `RunCommand.RunAsync` instantiates a per-suite `NdjsonFileSink` at `workloads/<w>/results/[<suite>/]telemetry.ndjson` before kicking off the suite; `RunQualiaSuiteAsync` and `RunPenumbraSuiteAsync` register the sink on the agent (cast to `ITelemetryAware`) before calling `InitializeAsync`. Phase 3 will move the path into `runs/<timestamp>/`.
+- **ITestProgressEvents extension:** `OnTelemetry(TelemetryRecord)` default-method (C# 8+ feature) — no-op default so existing implementers (NullTestProgressEvents + ProgressFeedPanel) need no change. Phase 7 Telemetry tab will override.
+- **Files added:** `src/Canary.Core/Telemetry/{TelemetryKind,TelemetryRecord,ITelemetrySink,NdjsonFileSink}.cs`, `src/Canary.Core/Cdp/CdpTelemetryStream.cs`, `tests/Canary.Tests/Telemetry/{TelemetryRecordSerializationTests,NdjsonFileSinkTests}.cs`.
+- **Files modified:** `src/Canary.Core/Cdp/CdpClient.cs` (Subscribe API + ReadLoop fan-out), `src/Canary.Core/ITestProgressEvents.cs` (OnTelemetry default method + using Canary.Telemetry), `src/Canary.Core/Orchestration/TestRunner.cs` (TelemetrySink property + using Canary.Telemetry), `src/Canary.Agent.Penumbra/PenumbraBridgeAgent.cs` (ITelemetryAware + sink + subs wiring + Dispose), `src/Canary.Agent.Qualia/QualiaBridgeAgent.cs` (same), `src/Canary.Harness/Cli/RunCommand.cs` (NdjsonFileSink instantiation + register-on-agent calls in both suite paths).
+- **Verification:** `dotnet build Canary.sln` = 0/0. `dotnet test --filter "Category=Unit"` = 140 Passed (was 128; +12 new). `dotnet test --filter "Category=Integration"` = 2 Passed (unchanged — the live CDP integration tests are deferred to operator-side). Smoke: `canary run --headless --workload nonexistent` exits 1 (no regression from precursor).
+- **Deferred to follow-up (documented per impl §4):**
+  - **Rhino-side console interception** — RhinoCommon 8 does not expose a clean `RhinoApp.WriteLine` event or `TextWriter` swap hook in scope; deferred to a v2 follow-up. Penumbra + Qualia coverage ships as planned.
+  - **`InputReplayer` event records** — `InputReplayer.InjectMouseMove` etc. have no sink reference; passing one through requires refactoring its construction site (TestRunner constructs it per-test). Cross-cuts Phase 7 UI work; deferred to that phase.
+  - **`ProcessManager.Track` agent-action records** — emit point is the right surface, but the records would need a SpawnRegistry consumer (Phase 6 / §C7 Tier 2). Deferred to Phase 6.
+  - **Live CDP integration tests** — require Chrome + Vite for the workload under test; operator runs them via `canary run --workload {penumbra|qualia} --test <known-test>` and inspects `workloads/<w>/results/telemetry.ndjson`.
+- **Snapshot tag `pre-impl-phase2-2026-05-24`** preserved during the work; deleted at commit.
