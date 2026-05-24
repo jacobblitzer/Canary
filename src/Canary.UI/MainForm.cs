@@ -3,6 +3,7 @@ using Canary.Cli;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.UI.Controls;
+using Canary.UI.Navigation;
 using Canary.UI.Services;
 
 namespace Canary.UI;
@@ -34,6 +35,22 @@ public sealed class MainForm : Form
     // Per design §C3 — auto-run handoff from CLI / single-instance pipe sets
     // this before invoking OnRunTests, which consumes + clears it (one-shot).
     private ModeOverride? _autoRunModeOverride;
+
+    // Phase 7 / §A1 + §C4 — operator-visible mode picker on the toolbar.
+    // Drives TestRunnerPanel.RunAsync's modeOverride parameter. Default
+    // pixel-diff per design §C9 Stabilization mode.
+    private ToolStripComboBox? _modePicker;
+
+    // Phase 7 / design §C4 — top-level nav modes. Each tab shows the
+    // mode's lazily-created Control. Tests mode wraps the existing
+    // SplitContainer (tree + content panel) so the historic flow is
+    // preserved verbatim under the new shell.
+    private readonly TabControl _navTabControl;
+    private readonly PastRunsNavMode _pastRunsNavMode = new();
+    private readonly LocalhostNavMode _localhostNavMode = new();
+    private readonly FeedbackNavMode _feedbackNavMode = new();
+    private readonly TelemetryNavMode _telemetryNavMode = new();
+    private readonly SettingsNavMode _settingsNavMode = new();
 
     public MainForm()
     {
@@ -123,8 +140,27 @@ public sealed class MainForm : Form
         // Wire load warnings to status bar
         _explorer.LoadWarning += msg => BeginInvoke(() => _statusLabel.Text = $"Warning: {msg}");
 
+        // Phase 7 / §C4 — nav TabControl wrapping the existing
+        // SplitContainer as the Tests tab + new tabs for past runs,
+        // localhost, feedback, telemetry, settings.
+        _navTabControl = new TabControl
+        {
+            Dock = DockStyle.Fill,
+            DrawMode = TabDrawMode.Normal,
+            Appearance = TabAppearance.Normal,
+            SizeMode = TabSizeMode.Normal,
+        };
+        var testsPage = new TabPage("Tests") { BackColor = Color.FromArgb(30, 30, 30) };
+        testsPage.Controls.Add(_splitContainer);
+        _navTabControl.TabPages.Add(testsPage);
+        AddNavTab(_pastRunsNavMode);
+        AddNavTab(_localhostNavMode);
+        AddNavTab(_feedbackNavMode);
+        AddNavTab(_telemetryNavMode);
+        AddNavTab(_settingsNavMode);
+
         // Layout
-        Controls.Add(_splitContainer);
+        Controls.Add(_navTabControl);
         Controls.Add(_toolStrip);
         Controls.Add(_statusStrip);
 
@@ -334,16 +370,25 @@ public sealed class MainForm : Form
         };
         _closeWorkloadBtn.Click += OnCloseWorkload;
 
-        // Phase 4 / §C7 Tier 1 — interim toolbar entry. Phase 7's INavMode
-        // refactor migrates this into a proper Localhost nav tab; for now
-        // it opens a popup form so the operator can see the data without
-        // waiting for the UI overhaul.
-        var localhostBtn = new ToolStripButton("Localhost") { ToolTipText = "Show listening dev-server ports (Tier 1 — passive netstat)" };
+        // Phase 4 introduced this Localhost toolbar entry as a popup form;
+        // Phase 7 migrates it into the Localhost nav tab. Click now jumps
+        // to that tab (handler defined below).
+        var localhostBtn = new ToolStripButton("Localhost") { ToolTipText = "Switch to the Localhost nav tab (Phase 7)." };
         localhostBtn.Click += OnShowLocalhost;
+
+        // Phase 7 / §A1 + §C4 — mode picker on the toolbar. Drives
+        // TestRunnerPanel.RunAsync's modeOverride parameter at run time.
+        var modeLabel = new ToolStripLabel("Mode:");
+        _modePicker = new ToolStripComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
+        _modePicker.Items.AddRange(new object[] { "pixel-diff", "vlm", "both" });
+        _modePicker.SelectedIndex = 0;
+        _modePicker.ToolTipText = "Comparison mode for the next Run Tests invocation. pixel-diff = visual regression; vlm = semantic correctness; both = run each checkpoint twice.";
 
         strip.Items.Add(openBtn);
         strip.Items.Add(new ToolStripSeparator());
         strip.Items.Add(runBtn);
+        strip.Items.Add(modeLabel);
+        strip.Items.Add(_modePicker);
         strip.Items.Add(recordBtn);
         strip.Items.Add(new ToolStripSeparator());
         strip.Items.Add(approveBtn);
@@ -360,17 +405,46 @@ public sealed class MainForm : Form
 
     private void OnShowLocalhost(object? sender, EventArgs e)
     {
-        var form = new Form
+        // Phase 7 migrated this into the Localhost nav tab. Toolbar
+        // button kept as a shortcut that simply selects that tab.
+        for (int i = 0; i < _navTabControl.TabPages.Count; i++)
         {
-            Text = "Canary — Localhost (Tier 1)",
-            Size = new Size(1100, 500),
-            StartPosition = FormStartPosition.CenterParent,
-            BackColor = Color.FromArgb(30, 30, 30),
-            ForeColor = Color.FromArgb(220, 220, 220),
+            if (_navTabControl.TabPages[i].Text == _localhostNavMode.Name)
+            {
+                _navTabControl.SelectedIndex = i;
+                return;
+            }
+        }
+    }
+
+    private void AddNavTab(INavMode mode)
+    {
+        var page = new TabPage(mode.Name) { BackColor = Color.FromArgb(30, 30, 30) };
+        page.Tag = mode;
+        page.ToolTipText = mode.Description;
+        // Lazy-create the content on first tab activation so panels that
+        // do background work (TelemetryPanel timer, etc) don't fire when
+        // unseen.
+        _navTabControl.SelectedIndexChanged += (_, _) =>
+        {
+            if (_navTabControl.SelectedTab == page && page.Controls.Count == 0)
+            {
+                var content = mode.CreateContent();
+                content.Dock = DockStyle.Fill;
+                page.Controls.Add(content);
+                PropagateWorkloadsDirToMode(mode);
+            }
         };
-        var panel = new LocalhostPanel { Dock = DockStyle.Fill };
-        form.Controls.Add(panel);
-        form.Show(this);
+        _navTabControl.TabPages.Add(page);
+    }
+
+    private void PropagateWorkloadsDirToMode(INavMode mode)
+    {
+        switch (mode)
+        {
+            case PastRunsNavMode pr: pr.SetWorkloadsDir(_workloadsDir); break;
+            case TelemetryNavMode tn: tn.SetWorkloadsDir(_workloadsDir); break;
+        }
     }
 
     #endregion
@@ -508,10 +582,19 @@ public sealed class MainForm : Form
         _contentPanel.Controls.Add(panel);
 
         _statusLabel.Text = $"Running {testNames}{suiteLabel} for {entry.Config.DisplayName}...";
-        var mode = _autoRunModeOverride ?? ModeOverride.PixelDiff;
+        // Mode override priority: auto-run handoff (one-shot, from CLI
+        // forward) > toolbar picker > default pixel-diff.
+        var mode = _autoRunModeOverride ?? ReadToolbarMode();
         _autoRunModeOverride = null;
         await panel.RunAsync(entry.Config, testsToRun, _workloadsDir, suiteName: suiteName, useSharedMode: useSharedMode, suiteKeepOpen: suiteKeepOpen, modeOverride: mode).ConfigureAwait(true);
     }
+
+    private ModeOverride ReadToolbarMode() => _modePicker?.SelectedItem?.ToString() switch
+    {
+        "vlm" => ModeOverride.Vlm,
+        "both" => ModeOverride.Both,
+        _ => ModeOverride.PixelDiff,
+    };
 
     private void OnCloseWorkload(object? sender, EventArgs e)
     {
@@ -1194,6 +1277,13 @@ public sealed class MainForm : Form
         _workloadsDir = dir;
         _statusLabel.Text = $"Loading workloads from {dir}...";
         _treeView.Nodes.Clear();
+
+        // Phase 7 — propagate to nav-mode panels that have been
+        // materialized (lazy-create handler also calls this on first
+        // activation, so unopened tabs catch up when the operator
+        // switches to them).
+        _pastRunsNavMode.SetWorkloadsDir(dir);
+        _telemetryNavMode.SetWorkloadsDir(dir);
 
         try
         {

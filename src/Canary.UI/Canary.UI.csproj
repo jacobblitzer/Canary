@@ -29,4 +29,8 @@
     <Using Include="System.IO" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Canary.Tests" />
+  </ItemGroup>
+
 </Project>
