@@ -12,6 +12,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Debug-overhaul Phase 1 (C3 non-headless enforcement, 2026-05-24)
+- CLI now launches `Canary.UI.exe` by default for `canary run` invocations and exits 0 — implements `STANDARD.md` §16 locked rule 8. `--headless` flag bypasses for CI / scripted use (and `--quiet` implies `--headless`). UI is located via search order: same directory as `canary.exe` → sibling solution layout (`Canary.UI/bin/{Release|Debug}/net8.0-windows/Canary.UI.exe`) → `Canary UI.lnk` shortcut. If no UI exe found, falls through to today's text-only path with a one-line warning.
+- UI single-instance behavior: a second `canary run` (or direct UI launch) detects the first via a `Global\Canary.UI.SingleInstance` mutex and forwards its auto-run args via a named pipe (`canary-ui-singleinstance-pipe`) to the running instance, which dispatches them through the same code path as a tree-click → Run Tests button press. Operator decision Q5.
+- `Canary.Cli.AutoRunArgs` POCO (in `Canary.Core`) carries the auto-run-relevant subset of CLI args (`--workload`, `--test`, `--suite`, `--mode`) with JSON + argv round-trips. Used by both the CLI-handoff path and the pipe-forwarded path.
+- `Canary.UiLocator` helper (in `Canary.Harness`) — file/COM-based search for `Canary.UI.exe` with the search order above.
+- `Canary.UI.SingleInstancePipeServer` + `SingleInstancePipeClient` — async one-shot named-pipe server + fire-and-forget client; the server raises `AutoRunRequested` on the pipe-loop thread which `Program.cs` marshals to the UI thread.
+- `MainForm.AutoRunAsync(AutoRunArgs)` — workload-tree-aware auto-run driver. Polls up to 10s for the workloads tree to populate (handles the constructor's fire-and-forget `AutoDetectWorkloadsDir`), selects the matching workload / test / suite node, sets the one-shot `_autoRunModeOverride`, then triggers the existing `OnRunTests` handler.
+- `TestRunnerPanel.RunAsync` gains an optional `modeOverride` parameter (default `PixelDiff`) — wires the mode through to `TestRunner.ModeOverride`. The corresponding UI mode picker arrives in Phase 7.
+- 13 new unit tests (`AutoRunArgsTests` × 10 round-trip / parse / IsEmpty cases; `HeadlessFlagTests` × 3 flag-accepted / help-mentions / UI-locator-contract).
+- 2 new integration tests (`SingleInstancePipeTests` — full pipe round-trip; client-without-server returns quickly without throwing).
+
 ### Fixed — Debug-overhaul implementation (2026-05-24)
 - CLI exit code: `canary run` now returns `1` when any test fails or crashes (`0` when all pass; `New` baselines count as pass). Previously `RunCommand.RunAsync` was void-returning and CLI always exited `0` — silent false-positives for any CI consumer. Regression against `spec/PHASES.md` Phase 4. Bug 0007. Precursor commit before Phase 1 of the debug-overhaul implementation (`MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`).
 
