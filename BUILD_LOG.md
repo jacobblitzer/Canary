@@ -999,3 +999,91 @@ decision Q4) + file-based feedback inbox (canonical layer of design
     open question; ships as such.
 - **Snapshot tag `pre-impl-phase5-2026-05-24`** preserved during the work;
   deleted at commit.
+
+## 2026-05-24 — Debug-overhaul Phase 6 (C6 MCP server + C7 Tier 2 spawn registry)
+
+M-effort phase. New csproj exposing 8 MCP tools over stdio JSON-RPC +
+spawn registry so the Localhost panel / MCP server / future PastRuns
+panel can attribute Canary-spawned processes.
+
+- **Snapshot tag:** `pre-impl-phase6-2026-05-24` created; deleted on success.
+- **New csproj (`src/Canary.McpServer/`):** net8.0-windows (matches
+  Canary.Core), OutputType Exe, single `ProjectReference Canary.Core`.
+  No external NuGet dependencies — protocol handler rolled in-house for
+  visibility + zero version churn. Added to Canary.sln.
+- **MCP protocol handler (`McpProtocol.cs`):** ~120-line stdio JSON-RPC
+  2.0 loop supporting `initialize`, `tools/list`, `tools/call`,
+  `notifications/*`. Internal `McpTool` abstract base with `Name`,
+  `Description`, `InputSchemaJson`, `InvokeAsync`. Per-tool exceptions
+  wrap into JSON-RPC content with `isError: true` so Claude sees the
+  error message instead of a transport failure.
+- **8 tool implementations (`src/Canary.McpServer/Tools/`):**
+  - `FeedbackTools.cs` — `list_feedback`, `get_feedback`,
+    `mark_feedback_triaged`. Walks up from `AppContext.BaseDirectory`
+    to discover `docs/feedback/`. Frontmatter parsed inline (title +
+    project + urgency for the list view).
+  - `RunsTools.cs` — `list_recent_runs`, `get_run_report`. Walks
+    `workloads/*/results/**/REPORT.md` from Phase 3. Parses verdict
+    from the first markdown header line. Optional workload + verdict
+    + limit filters.
+  - `LocalhostTools.cs` — `list_localhost_ports`, `list_running_apps`,
+    `kill_localhost_port`. Thin wrappers over LocalhostManager +
+    SpawnRegistry.
+- **SpawnRegistry (`src/Canary.Core/Telemetry/SpawnRegistry.cs`):**
+  Voluntary per operator decision Q3. Per-process JSON file at
+  `%LocalAppData%\Canary\claude-spawns\<sessionId>.json`. Static
+  `Default` singleton lazily creates a session file on first access
+  (sessionId = `canary-<pid>-<utcStamp>`). Public API: `Register`,
+  `Unregister`, `Snapshot`, `LoadAllSessions` (cross-session merge),
+  `PurgeOldSessions`. Atomic flush per change (write-to-.tmp + move).
+- **Tier 2 union in LocalhostManager:** Pass-1 netstat enrichment now
+  consults `SpawnRegistry.LoadAllSessions()` as a PID-indexed dict.
+  Matching PIDs get `Provenance = CanarySpawn` + the intent string
+  promoted into the CommandLine field (e.g. "Qualia Vite dev server
+  (port 5173, projectDir=C:\Repos\Qualia)").
+- **Producer wiring:**
+  - `Penumbra.ViteManager` — `Register(pid, "node.exe", ..., port,
+    "Penumbra Vite dev server (port N, projectDir=X)")` after
+    Process.Start; `Unregister(pid)` in `StopInternal`.
+  - `Qualia.ViteManager` — same shape with Qualia intent string.
+  - `ChromeLauncher` — `Register(pid, Path.GetFileName(chromePath),
+    ..., cdpPort, "Chrome for CDP bridge (port N)")` after
+    Process.Start; `Unregister(pid)` in `ChromeLaunchResult.Dispose`.
+- **docs/mcp-server.md:** operator-facing setup guide — tool table,
+  `.mcp.json` snippet, discovery-root behavior, spawn registry storage
+  path, stdio smoke command (printf | exe), wire-protocol note
+  explaining the self-contained choice.
+- **Files added:**
+  `src/Canary.McpServer/{Canary.McpServer.csproj, Program.cs, McpProtocol.cs}`,
+  `src/Canary.McpServer/Tools/{FeedbackTools, RunsTools, LocalhostTools}.cs`,
+  `src/Canary.Core/Telemetry/SpawnRegistry.cs`,
+  `tests/Canary.Tests/Telemetry/SpawnRegistryTests.cs`,
+  `tests/Canary.Tests/Mcp/McpServerToolDispatchTests.cs`,
+  `docs/mcp-server.md`.
+- **Files modified:**
+  `Canary.sln` (added McpServer project),
+  `src/Canary.Core/Localhost/LocalhostManager.cs` (Tier 2 overlay),
+  `src/Canary.Agent.Penumbra/ViteManager.cs` (Register + Unregister),
+  `src/Canary.Agent.Qualia/ViteManager.cs` (same),
+  `src/Canary.Core/Cdp/ChromeLauncher.cs` (Register on launch +
+    Unregister on Dispose),
+  `tests/Canary.Tests/Canary.Tests.csproj` (added McpServer reference).
+- **Verification:**
+  - `dotnet build Canary.sln` = 0/0.
+  - `dotnet test --filter "Category=Unit"` = 191 Passed (was 176; +15 new).
+  - `dotnet test --filter "Category=Integration"` = 2 Passed (unchanged).
+  - Stdio smoke: `printf '<init>\n<tools/list>\n' | Canary.McpServer.exe`
+    returns valid JSON-RPC responses listing all 8 tools.
+- **Deferred:**
+  - **McpServerStdioIntegrationTests** — would spawn `Canary.McpServer.exe`
+    as a child process from xUnit. The protocol-level tests in
+    `McpServerToolDispatchTests.McpProtocol_*` already exercise the full
+    stdio loop via `StringReader`/`StringWriter`; spawning the real
+    process adds little signal and pollutes the test runner with stdio
+    plumbing. Operator runs the printf-piped smoke for end-to-end
+    confirmation.
+  - **OS-level spawn hook** — explicitly out per operator decision Q3
+    (voluntary registration only). Non-Canary spawns fall back to
+    Tier 1 / Tier 3 (Phase 8).
+- **Snapshot tag `pre-impl-phase6-2026-05-24`** preserved during the
+  work; deleted at commit.

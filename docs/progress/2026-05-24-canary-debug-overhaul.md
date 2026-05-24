@@ -253,3 +253,39 @@ wrapper ships in Phase 6).
 - **Deferred:** AnnotationOverlayRenderingTests (needs STA test harness;
   end-to-end covered by operator save); InkCanvas-vs-custom decision
   already locked to custom per §C5 open question.
+
+## Phase 6 — C6 MCP server + C7 Tier 2 spawn registry (2026-05-24)
+
+M-effort phase. New `Canary.McpServer` csproj exposing 8 tools over
+stdio JSON-RPC + SpawnRegistry for Tier 2 localhost provenance.
+
+- **Snapshot tag:** `pre-impl-phase6-2026-05-24` created; deleted on success.
+- **New csproj `Canary.McpServer`** (net8.0-windows, ProjectReference
+  Canary.Core, no external NuGet — protocol handler rolled in-house).
+  Added to Canary.sln.
+- **MCP protocol handler:** ~120-line stdio JSON-RPC loop handling
+  initialize / tools/list / tools/call / notifications/*. McpTool base
+  class with InputSchemaJson + InvokeAsync.
+- **8 tools:** list_feedback / get_feedback / mark_feedback_triaged
+  (FeedbackTools.cs), list_recent_runs / get_run_report
+  (RunsTools.cs), list_localhost_ports / list_running_apps /
+  kill_localhost_port (LocalhostTools.cs).
+- **SpawnRegistry (Canary.Core.Telemetry):** voluntary per Q3; per-process
+  JSON files at %LocalAppData%\Canary\claude-spawns\. Register /
+  Unregister / Snapshot / LoadAllSessions / PurgeOldSessions API.
+  Default singleton for casual access.
+- **LocalhostManager Tier 2 overlay:** consults SpawnRegistry by PID
+  during enumeration; matching rows get CanarySpawn provenance + intent
+  string surfaced into CommandLine.
+- **Producer wiring:** Penumbra + Qualia ViteManagers + ChromeLauncher
+  all Register on spawn, Unregister on dispose.
+- **docs/mcp-server.md:** operator setup guide (.mcp.json snippet,
+  discovery roots, smoke command).
+- **Tests:** 15 new unit tests (5 SpawnRegistry round-trip + 10
+  McpServer dispatch/protocol).
+- **Verification:** build 0/0; Unit 176 → 191; Integration 2 unchanged.
+  Stdio smoke confirms initialize + tools/list both return valid JSON-RPC.
+- **Deferred:** McpServerStdioIntegrationTests (the in-process StringReader/
+  StringWriter test in ToolDispatchTests already exercises the full
+  protocol — spawning a real child process adds noise); OS-level spawn
+  hook (explicitly out per Q3); Tier 3 heuristic (Phase 8).
