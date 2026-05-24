@@ -334,6 +334,13 @@ public sealed class MainForm : Form
         };
         _closeWorkloadBtn.Click += OnCloseWorkload;
 
+        // Phase 4 / §C7 Tier 1 — interim toolbar entry. Phase 7's INavMode
+        // refactor migrates this into a proper Localhost nav tab; for now
+        // it opens a popup form so the operator can see the data without
+        // waiting for the UI overhaul.
+        var localhostBtn = new ToolStripButton("Localhost") { ToolTipText = "Show listening dev-server ports (Tier 1 — passive netstat)" };
+        localhostBtn.Click += OnShowLocalhost;
+
         strip.Items.Add(openBtn);
         strip.Items.Add(new ToolStripSeparator());
         strip.Items.Add(runBtn);
@@ -346,8 +353,24 @@ public sealed class MainForm : Form
         strip.Items.Add(_closeWorkloadBtn);
         strip.Items.Add(new ToolStripSeparator());
         strip.Items.Add(expandBtn);
+        strip.Items.Add(localhostBtn);
 
         return strip;
+    }
+
+    private void OnShowLocalhost(object? sender, EventArgs e)
+    {
+        var form = new Form
+        {
+            Text = "Canary — Localhost (Tier 1)",
+            Size = new Size(1100, 500),
+            StartPosition = FormStartPosition.CenterParent,
+            BackColor = Color.FromArgb(30, 30, 30),
+            ForeColor = Color.FromArgb(220, 220, 220),
+        };
+        var panel = new LocalhostPanel { Dock = DockStyle.Fill };
+        form.Controls.Add(panel);
+        form.Show(this);
     }
 
     #endregion
