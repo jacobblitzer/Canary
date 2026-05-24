@@ -23,13 +23,13 @@ internal sealed class ProgressFeedPanel : UserControl, ITestProgressEvents
         _header = new Label
         {
             Dock = DockStyle.Top,
-            Text = "Progress feed — waiting…",
-            ForeColor = Color.FromArgb(180, 180, 180),
+            Text = "PROGRESS FEED — cards appear here as each checkpoint runs",
+            ForeColor = Color.FromArgb(180, 220, 200),
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             Padding = new Padding(10, 8, 10, 6),
             AutoSize = false,
             Height = 32,
-            BackColor = Color.FromArgb(36, 36, 36),
+            BackColor = Color.FromArgb(36, 50, 44),
         };
 
         _flow = new FlowLayoutPanel
@@ -41,6 +41,23 @@ internal sealed class ProgressFeedPanel : UserControl, ITestProgressEvents
             BackColor = Color.FromArgb(24, 24, 24),
             Padding = new Padding(8),
         };
+
+        // Placeholder so the panel doesn't look broken before a run.
+        var placeholder = new Label
+        {
+            Text = "Waiting for first test to start.\n\n" +
+                   "Each checkpoint becomes a card showing:\n" +
+                   "  • the screenshot just captured\n" +
+                   "  • the VLM prompt being sent to qwen2.5vl\n" +
+                   "  • the verdict + reasoning once the model returns",
+            ForeColor = Color.FromArgb(140, 140, 140),
+            Font = new Font("Segoe UI", 9f),
+            AutoSize = false,
+            Width = 480,
+            Height = 130,
+            Padding = new Padding(10),
+        };
+        _flow.Controls.Add(placeholder);
 
         Controls.Add(_flow);
         Controls.Add(_header);

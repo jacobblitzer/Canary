@@ -105,13 +105,25 @@ internal sealed class TestRunnerPanel : UserControl
             Orientation = Orientation.Vertical,
             BackColor = Color.FromArgb(40, 40, 40),
             SplitterWidth = 6,
+            FixedPanel = FixedPanel.Panel2,  // right panel keeps its width on resize
         };
         split.Panel1.Controls.Add(_logBox);
         split.Panel2.Controls.Add(_progressFeed);
-        split.HandleCreated += (_, _) =>
+        // Defer splitter positioning until the panel has a real Width.
+        // HandleCreated fires before the layout pass on WinForms, so Width
+        // can be 0 — leaving Panel2 stretched and Panel1 (log) invisibly small.
+        // Hook SizeChanged + use the actual current width once it's non-zero.
+        var splitterSet = false;
+        split.SizeChanged += (_, _) =>
         {
-            try { split.SplitterDistance = Math.Max(200, split.Width * 4 / 10); }
-            catch { /* control re-parented before handle was up */ }
+            if (splitterSet || split.Width < 400) return;
+            try
+            {
+                // 50/50: log left, feed right. Splitter draggable from there.
+                split.SplitterDistance = split.Width / 2;
+                splitterSet = true;
+            }
+            catch { /* layout in flight */ }
         };
 
         Controls.Add(split);
