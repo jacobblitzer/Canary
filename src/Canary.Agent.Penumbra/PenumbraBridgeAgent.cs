@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Canary.Cdp;
+using Canary.Telemetry;
 
 namespace Canary.Agent.Penumbra;
 
@@ -13,7 +14,7 @@ namespace Canary.Agent.Penumbra;
 ///   - Page.captureScreenshot → pixel-perfect canvas capture
 ///   - Input.dispatchMouseEvent → mouse input in CSS coordinates (no SendInput needed)
 /// </summary>
-public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
+public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposable
 {
     private readonly PenumbraConfig _config;
     private ViteManager? _vite;
@@ -22,6 +23,17 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
     private string? _externalViteUrl;
     private bool _initialized;
     private bool _disposed;
+
+    // Phase 2 / §C1: registered by TestRunner before InitializeAsync; the
+    // helper EnableAndSubscribeAsync writes records here. Defaults to a
+    // no-op so producers can write unconditionally before registration.
+    private ITelemetrySink _telemetrySink = NullTelemetrySink.Instance;
+    private IDisposable? _telemetrySubscriptions;
+
+    public void RegisterTelemetrySink(ITelemetrySink sink)
+    {
+        _telemetrySink = sink ?? NullTelemetrySink.Instance;
+    }
 
     // Canvas position within the page — measured once after page load
     private double _canvasOffsetX;
@@ -92,6 +104,10 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
         await _cdp.EnableDomainAsync("Page", ct).ConfigureAwait(false);
         await _cdp.EnableDomainAsync("Runtime", ct).ConfigureAwait(false);
 
+        // Phase 2 / §C1: telemetry stream (console + log + network → sink).
+        _telemetrySubscriptions = await CdpTelemetryStream.EnableAndSubscribeAsync(
+            _cdp, _telemetrySink, source: "penumbra", ct).ConfigureAwait(false);
+
         // 4. Navigate to Penumbra test harness
         var url = $"{_vite.Url}?autostart=true&backend={_config.DefaultBackend}";
         await _cdp.NavigateAsync(url, TimeSpan.FromSeconds(60), ct).ConfigureAwait(false);
@@ -147,6 +163,9 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
 
         await _cdp.EnableDomainAsync("Page", ct).ConfigureAwait(false);
         await _cdp.EnableDomainAsync("Runtime", ct).ConfigureAwait(false);
+
+        _telemetrySubscriptions = await CdpTelemetryStream.EnableAndSubscribeAsync(
+            _cdp, _telemetrySink, source: "penumbra", ct).ConfigureAwait(false);
 
         // Reuse existing page — wait for harness, lock canvas, measure offset
         await WaitForPenumbraReadyAsync(ct).ConfigureAwait(false);
@@ -591,6 +610,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        try { _telemetrySubscriptions?.Dispose(); } catch { }
         _cdp?.Dispose();
         _chrome?.Dispose();
         _vite?.Dispose();
