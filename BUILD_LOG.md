@@ -1087,3 +1087,92 @@ panel can attribute Canary-spawned processes.
     Tier 1 / Tier 3 (Phase 8).
 - **Snapshot tag `pre-impl-phase6-2026-05-24`** preserved during the
   work; deleted at commit.
+
+## 2026-05-24 — Debug-overhaul Phase 7 (C4 UI overhaul)
+
+L-effort phase. Top-level nav tabs surface the surfaces Phases 2-6
+shipped without UI exposure: Past Runs (Phase 3 per-run REPORTs),
+Telemetry (Phase 2 NDJSON live tail), Feedback (Phase 5 inbox),
+Localhost (Phase 4 + 6 with Tier 2 provenance), Settings (Phase 9
+toggle stub). Plus the long-standing mode picker GUI gap (§A1).
+
+- **Snapshot tag:** `pre-impl-phase7-2026-05-24` created; deleted on success.
+- **INavMode interface (`src/Canary.UI/Navigation/INavMode.cs`):** Name +
+  Description + `Control CreateContent()`. Implementations lazy-create
+  + cache content.
+- **5 nav-mode classes (`src/Canary.UI/Navigation/NavModes.cs`):**
+  PastRunsNavMode, LocalhostNavMode, FeedbackNavMode, TelemetryNavMode,
+  SettingsNavMode. PastRuns + Telemetry expose SetWorkloadsDir for
+  MainForm to push the discovered workloads dir.
+- **MainForm wraps the existing SplitContainer inside a TabControl:**
+  Tests tab contains the historic tree + content panel (zero behavior
+  change for existing flows); 5 new tabs lazy-instantiate their nav
+  modes on first activation. The lazy-create handler also calls
+  `PropagateWorkloadsDirToMode` so panels catch up if the operator
+  opens them after the workloads dir loads.
+- **Scope choice vs §C4 ASCII:** the design shows the tab strip nested
+  below the TreeView on the LEFT pane (each mode swaps left + right
+  panes). Phase 7 ships a simpler top-level TabControl wrapping the
+  whole SplitContainer. Trade-off: less invasive refactor, ships
+  in-session; doesn't quite match the design's left-pane-mode mental
+  model. INavMode contract is unchanged so a future polish pass can
+  re-arrange placement without touching panel internals.
+- **PastRunsPanel:** SplitContainer with run list (cols: When/Workload/
+  Test/Verdict) + REPORT.md preview. Filter textbox does substring
+  match on all four columns. Refresh button re-walks
+  `workloads/*/results/.../runs/<timestamp>/REPORT.md`. Verdict parser
+  shared (made internal for tests).
+- **FeedbackPanel:** TreeView of inbox/triaged/resolved buckets, each
+  expanded by default showing .md filenames as children. Markdown
+  preview on selection. Open-inbox-folder button shells out to
+  Explorer. DiscoverFeedbackRoot walks up from
+  AppContext.BaseDirectory.
+- **TelemetryPanel:** 2s polling timer (only when Visible) finds the
+  newest `telemetry.ndjson` under `workloads/`, re-reads only on
+  LastWriteTimeUtc change. ListView with time/kind/source/level/data
+  (color-coded by level). Source-filter dropdown. Uses
+  `FileShare.ReadWrite` to coexist with an actively-writing CLI run.
+- **SettingsPanel:** Stabilization (default) / Maturation radio per
+  §C9. Placeholder labels for Tier 3 toggle + retention slider +
+  persistence (all explicitly noted as Phase 8 work).
+- **Mode picker on toolbar:** ToolStripComboBox with pixel-diff /
+  vlm / both. `MainForm.OnRunTests` reads it (after the one-shot
+  `_autoRunModeOverride` from CLI handoff) and passes through to
+  `TestRunnerPanel.RunAsync.modeOverride`. Resolves §A1 gap (GUI runs
+  used to ignore --mode).
+- **Localhost toolbar button:** Phase 4 opened a popup form; Phase 7
+  switches the click handler to select the Localhost nav tab instead.
+- **InternalsVisibleTo Canary.Tests added to Canary.UI.csproj** so
+  panel-internal helpers (PastRunsPanel.ParseVerdict,
+  FeedbackPanel.DiscoverFeedbackRoot) are unit-testable.
+- **Files added:** `src/Canary.UI/Navigation/{INavMode,NavModes}.cs`,
+  `src/Canary.UI/Panels/{PastRunsPanel,FeedbackPanel,TelemetryPanel,SettingsPanel}.cs`,
+  `tests/Canary.Tests/Navigation/NavModeTests.cs`,
+  `tests/Canary.Tests/UI/PastRunsIndexTests.cs`.
+- **Files modified:** `src/Canary.UI/MainForm.cs` (nav TabControl,
+  AddNavTab + PropagateWorkloadsDirToMode helpers, OnShowLocalhost
+  now selects tab, mode picker + ReadToolbarMode, _modePicker field,
+  using Canary.UI.Navigation, SetWorkloadsDir calls in
+  LoadWorkloadsDirAsync), `src/Canary.UI/Canary.UI.csproj`
+  (InternalsVisibleTo), `src/Canary.UI/Panels/TelemetryPanel.cs`
+  (renamed `Refresh` → `RefreshTelemetry` to avoid shadowing
+  Control.Refresh).
+- **Verification:** `dotnet build Canary.sln` = 0/0. `dotnet test
+  --filter "Category=Unit"` = 212 Passed (was 191; +21 new). `dotnet
+  test --filter "Category=Integration"` = 2 Passed (unchanged). CLI
+  smoke unchanged. UI manual smoke deferred to operator (visual sanity
+  of new tabs requires a desktop session).
+- **Deferred to Phase 8:**
+  - Settings persistence + actual UI-mode flip behavior (Stabilization
+    vs Maturation).
+  - Tier 3 toggle wiring.
+  - Retention slider.
+  - PastRuns search across REPORT.md body content + tag-based
+    filtering.
+  - PastRuns ↔ AnnotatedImageForm hand-off per §C8 (existing
+    ImageViewerForm Annotate button still works).
+  - UIOverhaulSmokeTests integration test (requires a desktop session +
+    forms-message-pump-friendly fixture; the NavModeTests cover the
+    contract; operator smokes the visual end).
+- **Snapshot tag `pre-impl-phase7-2026-05-24`** preserved during the
+  work; deleted at commit.

@@ -289,3 +289,40 @@ stdio JSON-RPC + SpawnRegistry for Tier 2 localhost provenance.
   StringWriter test in ToolDispatchTests already exercises the full
   protocol — spawning a real child process adds noise); OS-level spawn
   hook (explicitly out per Q3); Tier 3 heuristic (Phase 8).
+
+## Phase 7 — C4 UI overhaul (2026-05-24)
+
+L-effort phase. Top-level nav tabs surface Phases 2-6 work in the UI +
+mode picker resolves the §A1 GUI gap.
+
+- **Snapshot tag:** `pre-impl-phase7-2026-05-24` created; deleted on success.
+- **INavMode interface + 5 implementations** (PastRuns, Localhost,
+  Feedback, Telemetry, Settings). Lazy-create + cache content.
+- **MainForm:** existing SplitContainer wraps inside a TabControl's
+  Tests tab (preserves all historic flows verbatim); 5 new tabs added.
+  Lazy-create handler propagates _workloadsDir to PastRuns + Telemetry.
+- **Scope choice:** simpler top-level TabControl rather than the
+  design's exact nested-strip ASCII. INavMode contract unchanged; a
+  future polish pass can rearrange placement.
+- **PastRunsPanel:** run list + REPORT.md preview, substring filter,
+  refresh button. Verdict parser made internal for tests.
+- **FeedbackPanel:** TreeView of inbox/triaged/resolved + markdown
+  preview + open-in-explorer.
+- **TelemetryPanel:** 2s-poll live tail of newest telemetry.ndjson,
+  source filter, color-coded by level. FileShare.ReadWrite so doesn't
+  block CLI writes.
+- **SettingsPanel:** Stabilization/Maturation radio (Phase 8 wires
+  persistence + actual mode flip).
+- **Mode picker on toolbar:** ToolStripComboBox driving
+  TestRunnerPanel.RunAsync.modeOverride. Resolves §A1.
+- **Localhost toolbar button:** now selects the nav tab (was popup).
+- **InternalsVisibleTo Canary.Tests** added to Canary.UI for panel
+  helpers.
+- **Tests:** 21 new unit tests (16 NavMode Theory + 5 PastRuns/
+  Feedback helpers).
+- **Verification:** build 0/0; Unit 191 → 212; Integration 2
+  unchanged; CLI smoke unchanged. Visual UI smoke deferred to operator.
+- **Deferred to Phase 8:** Settings persistence + mode-flip behavior,
+  Tier 3 toggle, retention slider, PastRuns body search + tag filters,
+  PastRuns ↔ AnnotatedImageForm hand-off, UIOverhaulSmokeTests
+  integration test.
