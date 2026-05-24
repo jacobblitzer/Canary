@@ -93,11 +93,23 @@ docs/
   debug-sessions/ # Investigation journals
   decisions/      # Architecture Decision Records (MADR format)
   features/       # Feature status tracking
+  feedback/       # Operator-authored feedback inbox (see below)
   research/       # Deep-dive research reports (techniques, literature, trade-offs)
   templates/      # Reusable templates for all doc types
 CHANGELOG.md      # Keep a Changelog format
 BUILD_LOG.md      # Phase checkpoint records
 ```
+
+### Feedback inbox
+
+If `docs/feedback/inbox/` is non-empty at session start, list new items
+before proceeding with other work. Each item is a `<slug>.md` + sidecar
+`<slug>/` (source.png, annotated.png, annotations.json) authored by the
+operator via the Canary UI's Annotate button (Phase 5 / §C5). See
+`docs/feedback/README.md` for the layout, item shape, and lifecycle
+(open → triaged → resolved). Phase 6's MCP server exposes
+`list_feedback` / `get_feedback` / `mark_feedback_triaged` tools when
+configured.
 
 ### Cross-Repo Change Protocol
 
