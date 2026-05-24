@@ -4,7 +4,7 @@ date: YYYY-MM-DD
 tags:
   - bug
 status: open
-project: canary
+project: ""
 component: ""
 severity: medium
 fix-commit: ""
@@ -17,9 +17,9 @@ fix-commit: ""
 
 ## Environment
 - OS:
-- .NET SDK:
-- Browser (if applicable):
-- Penumbra version (if applicable):
+- Toolchain / SDK:
+- Host app (if applicable):
+- Project version (if applicable):
 
 ## Root Cause
 [What caused the bug. Fill in after investigation.]

@@ -4,7 +4,7 @@ date: YYYY-MM-DD
 tags:
   - debug-session
 status: resolved
-project: canary
+project: ""
 component: ""
 related-bug: ""
 ---

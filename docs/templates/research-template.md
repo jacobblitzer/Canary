@@ -4,7 +4,7 @@ date: YYYY-MM-DD
 tags:
   - research
 status: completed
-project: canary
+project: ""
 component: ""
 related-bugs: []
 related-decisions: []

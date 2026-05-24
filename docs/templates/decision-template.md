@@ -4,7 +4,7 @@ date: YYYY-MM-DD
 tags:
   - decision
 status: accepted
-project: canary
+project: ""
 ---
 
 # [Decision Title]
