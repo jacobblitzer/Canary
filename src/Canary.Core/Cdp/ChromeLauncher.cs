@@ -59,6 +59,7 @@ public sealed class ChromeLaunchResult : IDisposable
                 Process.Kill(entireProcessTree: true);
                 Process.WaitForExit(3000);
             }
+            Canary.Telemetry.SpawnRegistry.Default.Unregister(Process.Id);
         }
         catch { /* best effort */ }
         Process.Dispose();
@@ -181,6 +182,15 @@ public static class ChromeLauncher
 
         var process = Process.Start(psi)
             ?? throw new InvalidOperationException("Failed to start Chrome process");
+
+        // Phase 6 / §C7 Tier 2 — voluntary spawn registration.
+        Canary.Telemetry.SpawnRegistry.Default.Register(
+            pid: process.Id,
+            name: Path.GetFileName(chromePath),
+            commandLine: $"{chromePath} {psi.Arguments}",
+            workingDirectory: tempProfile,
+            port: options.CdpPort,
+            intent: $"Chrome for CDP bridge (port {options.CdpPort})");
 
         try
         {

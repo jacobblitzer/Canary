@@ -50,6 +50,15 @@ public sealed partial class ViteManager : IDisposable
         _process = Process.Start(psi)
             ?? throw new InvalidOperationException("Failed to start Vite dev server.");
 
+        // Phase 6 / §C7 Tier 2 — voluntary spawn registration.
+        Canary.Telemetry.SpawnRegistry.Default.Register(
+            pid: _process.Id,
+            name: "node.exe",
+            commandLine: $"{psi.FileName} {psi.Arguments}",
+            workingDirectory: _projectDir,
+            port: _port,
+            intent: $"Qualia Vite dev server (port {_port}, projectDir={_projectDir})");
+
         var ready = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         _process.OutputDataReceived += (_, e) =>
@@ -126,6 +135,7 @@ public sealed partial class ViteManager : IDisposable
                 _process.Kill(entireProcessTree: true);
                 _process.WaitForExit(3000);
             }
+            Canary.Telemetry.SpawnRegistry.Default.Unregister(_process.Id);
         }
         catch { /* best effort */ }
         _process.Dispose();

@@ -84,6 +84,16 @@ public sealed partial class ViteManager : IDisposable
         _process = Process.Start(psi)
             ?? throw new InvalidOperationException("Failed to start Vite dev server.");
 
+        // Phase 6 / §C7 Tier 2 — voluntary spawn registration so the
+        // Localhost panel / MCP server can attribute provenance.
+        Canary.Telemetry.SpawnRegistry.Default.Register(
+            pid: _process.Id,
+            name: "node.exe",
+            commandLine: $"{psi.FileName} {psi.Arguments}",
+            workingDirectory: _projectDir,
+            port: _port,
+            intent: $"Penumbra Vite dev server (port {_port}, projectDir={_projectDir})");
+
         // Watch stdout for the ready signal
         var ready = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -177,6 +187,7 @@ public sealed partial class ViteManager : IDisposable
                 _process.Kill(entireProcessTree: true);
                 _process.WaitForExit(3000);
             }
+            Canary.Telemetry.SpawnRegistry.Default.Unregister(_process.Id);
         }
         catch { /* best effort */ }
         _process.Dispose();
