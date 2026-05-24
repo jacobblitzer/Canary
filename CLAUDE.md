@@ -5,6 +5,7 @@
 ### Quick Reference
 - **Build**: `dotnet build Canary.sln` (must be 0 errors, 0 warnings)
 - **Test**: `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`
+- **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8)**: every operator-triggered `canary run` launches with `Canary.UI.exe` visible (or via the `Canary UI.lnk` shortcut). The UI's test-runner panel shows live progress + active phase + most-recent CDP/pipe result so the operator sees WHICH step is running RIGHT NOW. CLI-only `canary run` invocation is the exception — reserved for CI + scripted verification. Implementation queued (today the operator opens the UI manually + then triggers the run; future Canary work flips the CLI default to "launch UI unless `--headless`"). Applies across all workloads.
 - **Run Penumbra tests**: `canary run --workload penumbra`
 - **Run CPig tests**: `canary run --workload rhino --suite cpig` (from `C:\Repos\Canary`)
 - **Status**: see `spec/PHASES.md` for the canonical phase list and the tail of `BUILD_LOG.md` for current progress. Test counts move every commit; check `dotnet test --list-tests | wc -l` rather than trusting any number stamped here.
@@ -169,4 +170,5 @@ This repo is **infrastructure** — no formal release; milestone tags only (e.g.
 
 See [`MultiVerse/SKILLS.md`](../MultiVerse/SKILLS.md) for the canonical catalog. The `multiverse-supervisor` skill enforces [`MultiVerse/SUPERVISOR.md`](../MultiVerse/SUPERVISOR.md) at session start for any non-Conversation work.
 
-### C
+### Commit Messages
+Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`.
