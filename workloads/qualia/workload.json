@@ -1,7 +1,7 @@
 {
   "name": "qualia",
   "displayName": "Qualia (Browser)",
-  "appPath": "npm",
+  "appPath": "npm.cmd",
   "appArgs": "run dev",
   "agentType": "qualia-cdp",
   "pipeName": "canary-qualia",
