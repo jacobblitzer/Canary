@@ -92,6 +92,19 @@ internal sealed class ImageViewerForm : Form
         toolbar.Items.Add(zoomOutBtn);
         toolbar.Items.Add(fitBtn);
 
+        // Phase 5 / §C5 — interim Annotate button. Opens the currently
+        // displayed image in the WPF-island AnnotatedImageForm and writes
+        // any saved feedback into docs/feedback/inbox/ of the repo root
+        // (best-effort discovery — walks up from AppContext.BaseDirectory).
+        toolbar.Items.Add(new ToolStripSeparator());
+        var annotateBtn = new ToolStripButton("Annotate")
+        {
+            ForeColor = Color.FromArgb(150, 220, 130),
+            ToolTipText = "Open this image in the WPF annotation surface and save feedback to docs/feedback/inbox/",
+        };
+        annotateBtn.Click += (_, _) => OpenAnnotate();
+        toolbar.Items.Add(annotateBtn);
+
         Controls.Add(scrollPanel);
         Controls.Add(toolbar);
 
@@ -195,6 +208,46 @@ internal sealed class ImageViewerForm : Form
     {
         _dragging = false;
         _pictureBox.Cursor = Cursors.Hand;
+    }
+
+    private void OpenAnnotate()
+    {
+        try
+        {
+            var path = _imagePaths[_currentIndex];
+            if (!File.Exists(path))
+            {
+                MessageBox.Show(this, "Image file not found on disk.", "Canary", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            var inboxRoot = FindInboxRoot();
+            var form = new Annotation.AnnotatedImageForm(path, inboxRoot);
+            form.Show(this);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Failed to open annotate surface: {ex.Message}", "Canary", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    // Walks up from the exe directory looking for the Canary repo root
+    // (the dir containing docs/feedback/). Falls back to the exe dir.
+    private static string FindInboxRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null)
+        {
+            var candidate = Path.Combine(dir.FullName, "docs", "feedback", "inbox");
+            if (Directory.Exists(Path.Combine(dir.FullName, "docs", "feedback")))
+            {
+                Directory.CreateDirectory(candidate);
+                return candidate;
+            }
+            dir = dir.Parent;
+        }
+        var fallback = Path.Combine(AppContext.BaseDirectory, "docs", "feedback", "inbox");
+        Directory.CreateDirectory(fallback);
+        return fallback;
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
