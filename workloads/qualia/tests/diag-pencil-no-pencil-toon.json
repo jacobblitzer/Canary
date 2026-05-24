@@ -1,0 +1,21 @@
+{
+  "name": "diag-pencil-no-pencil-toon",
+  "workload": "qualia",
+  "description": "Pencil profile MINUS fx.pencil-toon — inside Papers qverse so sphere atoms are visible. Diagnostic overlay confirms fx.pencil-toon is actually disabled in the registry.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('pencil')",
+      "window.__canarySetPersonaEnabled('fx.pencil-toon', false)",
+      "window.__canarySwitchContext('ctx-papers')",
+      "window.__canaryResetAndRepel(1200)",
+      "window.__canaryDumpDiagnostics()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "diag-pencil-no-pencil-toon", "stabilizeMs": 3500, "tolerance": 0.3 }
+  ]
+}

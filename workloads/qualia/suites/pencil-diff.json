@@ -1,0 +1,18 @@
+{
+  "name": "pencil-diff",
+  "workload": "qualia",
+  "description": "Differential diagnostic suite for the Pencil profile. Each test starts from a Pencil baseline and toggles ONE thing (a persona on/off, debug-colors enable, etc.) then screenshots. Comparing adjacent screenshots isolates each layer's pixel contribution — the standard technique for figuring out which layer produces which pixels when the composed image is ambiguous. Use this when the Pencil look has artifacts and you can't tell from a single image whether they're from the shader, the grid, the halos, the sockets, or somewhere else. Compare result images side-by-side in C:/Repos/Canary/workloads/qualia/results/ after a run.",
+  "tests": [
+    "diag-pencil-mount-trace",
+    "diag-pencil-baseline",
+    "diag-pencil-no-pencil-toon",
+    "diag-pencil-no-grid",
+    "diag-pencil-no-edges",
+    "diag-pencil-no-nodes",
+    "diag-pencil-no-labels",
+    "diag-pencil-only-background",
+    "diag-pencil-debug-colors",
+    "diag-pencil-only-debug-colors",
+    "diag-pencil-standard-debug-colors"
+  ]
+}

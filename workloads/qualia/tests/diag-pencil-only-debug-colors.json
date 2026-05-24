@@ -1,0 +1,22 @@
+{
+  "name": "diag-pencil-only-debug-colors",
+  "workload": "qualia",
+  "description": "Pencil with fx.pencil-toon OFF, fx.debug-layer-colors ON — inside Papers qverse. Clean debug-palette view; spheres should show palette colors.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('pencil')",
+      "window.__canarySetPersonaEnabled('fx.pencil-toon', false)",
+      "window.__canarySetPersonaEnabled('fx.debug-layer-colors', true)",
+      "window.__canarySwitchContext('ctx-papers')",
+      "window.__canaryResetAndRepel(1200)",
+      "window.__canaryDumpDiagnostics()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "diag-pencil-only-debug-colors", "stabilizeMs": 3500, "tolerance": 0.3 }
+  ]
+}

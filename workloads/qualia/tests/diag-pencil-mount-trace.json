@@ -1,0 +1,18 @@
+{
+  "name": "diag-pencil-mount-trace",
+  "workload": "qualia",
+  "description": "Captures persona/renderer state IMMEDIATELY after applyProfile('pencil') in the Atlas qverse (no context switch). Used to verify pencil-toon actually toggles to enabled in the registry. If diagnostic overlay shows fx.pencil-toon=✗ here, the Pencil profile's enable list isn't taking effect under the Canary applyProfile flow.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('pencil')",
+      "window.__canaryDumpDiagnostics()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "diag-pencil-mount-trace", "stabilizeMs": 3000, "tolerance": 0.3 }
+  ]
+}
