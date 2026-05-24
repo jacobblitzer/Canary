@@ -128,7 +128,8 @@
       "Bash(timeout:*)",
       "Bash(ping:*)",
       "Bash(pushd:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(dotnet *)"
     ]
   }
 }
