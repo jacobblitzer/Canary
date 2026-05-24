@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using Canary.Telemetry;
 
 namespace Canary.Localhost;
 
@@ -26,6 +27,11 @@ public sealed class LocalhostManager
         var entries = new List<PortEntry>();
         var canaryPid = Process.GetCurrentProcess().Id;
 
+        // Phase 6 / §C7 Tier 2 — Canary-spawn registry, indexed by PID
+        // so the Tier 1 netstat enrichment can attach CanarySpawn
+        // provenance + intent string.
+        var registry = SpawnRegistry.LoadAllSessions().ToDictionary(s => s.Pid, s => s);
+
         // Pass 1: netstat -ano for every LISTENING socket.
         foreach (var (port, pid) in ReadNetstatListeners())
         {
@@ -49,6 +55,19 @@ public sealed class LocalhostManager
                 catch (ArgumentException)
                 {
                     // PID exited between netstat snapshot and our lookup.
+                }
+
+                // Tier 2 overlay — if the registry has this PID, prefer its
+                // intent string + mark provenance as CanarySpawn (overrides
+                // CanaryHarness for child processes; the harness itself is
+                // the parent Canary.exe / Canary.UI.exe).
+                if (registry.TryGetValue(p, out var spawn))
+                {
+                    provenance = PortProvenance.CanarySpawn;
+                    commandLine = spawn.Intent;       // surface the human-readable intent
+                    workingDir = spawn.WorkingDirectory;
+                    if (string.IsNullOrEmpty(processName)) processName = spawn.Name;
+                    if (startTime == null) startTime = spawn.SpawnedAt;
                 }
             }
 
