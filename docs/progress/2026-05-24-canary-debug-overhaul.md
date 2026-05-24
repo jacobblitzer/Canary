@@ -32,3 +32,26 @@ phases (Phase 0 pre-flight + precursor + 9 design phases).
 - Canon read: design doc (`docs/plans/2026-05-24-canary-debug-overhaul.md`),
   Phase A surface audit, Phase B prior-art, `CLAUDE.md`, `spec/SUPERVISOR.md`,
   `MultiVerse/STANDARD.md` §§ 7, 14, 16, 19, 22.
+
+## Phase Precursor — CLI exit-code regression (bug 0007) (2026-05-24)
+
+Per operator decision Q6 (locked decision §0.1) — the CLI exit-code regression
+ships as its own commit before Phase 1, NOT bundled into Phase 1.
+
+- **Bug:** `docs/bugs/0007-cli-exit-code-regression.md` (severity: high).
+- **Fix shape:** `RunCommand.RunAsync` now returns `Task<int>`. New helper
+  `internal static int ExitCodeFromSuiteResult(SuiteResult)` returning `0` when
+  no failures (Failed + Crashed == 0), else `1`. `New` baseline status counts as
+  pass — a first-run baseline creation isn't a failure. Every early-error path
+  inside `RunAsync` (missing workload, mutually-exclusive flags, missing config,
+  missing test JSON, suite not found, no tests discovered) returns `1`. The
+  System.CommandLine handler closure assigns `ctx.ExitCode = await RunAsync(...)`
+  so the int propagates out of the process.
+- **Tests added:** `tests/Canary.Tests/Cli/RunCommandExitCodeTests.cs` — 8 unit
+  tests covering the helper (no tests, all passed, one failed, one crashed, new
+  baseline only) plus three integration-ish tests of `RunAsync` directly
+  (missing workload name, mutually exclusive `--test` + `--suite`, nonexistent
+  workload).
+- **Verification:** `dotnet build Canary.sln` = 0/0; `dotnet test --filter
+  "Category=Unit"` = 115 Passed (was 107).
+- **Docs:** `CHANGELOG.md` `[Unreleased] → Fixed`; `BUILD_LOG.md` new section.

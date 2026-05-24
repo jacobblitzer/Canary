@@ -12,6 +12,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed — Debug-overhaul implementation (2026-05-24)
+- CLI exit code: `canary run` now returns `1` when any test fails or crashes (`0` when all pass; `New` baselines count as pass). Previously `RunCommand.RunAsync` was void-returning and CLI always exited `0` — silent false-positives for any CI consumer. Regression against `spec/PHASES.md` Phase 4. Bug 0007. Precursor commit before Phase 1 of the debug-overhaul implementation (`MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`).
+
 ### Added — Debug-overhaul audit (2026-05-24)
 - `docs/research/2026-05-24-canary-surface-audit.md` — full inventory of Canary's UI / CLI / agent / report / localhost / screenshot surface. Phase A output of the audit prompt `MultiVerse/prompts/canary-debug-overhaul-audit-2026-05-24.md`. Drives the debug-overhaul design (Phase C, in flight) — telemetry envelope, Claude-readable REPORT.md, non-headless enforcement, sketch+annotate feedback, tiered localhost manager.
 - `docs/research/2026-05-24-test-harness-prior-art.md` — Phase B prior-art survey. Three references (Playwright Inspector + Trace Viewer, Cypress App + Cloud, Sysinternals Process Explorer) with steal / skip per reference and a cross-tool synthesis table mapping conventions to Canary's §C design sections.

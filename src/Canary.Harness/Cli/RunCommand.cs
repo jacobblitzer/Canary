@@ -71,11 +71,17 @@ public static class RunCommand
             Program.Quiet = quiet;
             var logger = new ConsoleTestLogger(verbose, quiet);
             var modeOverride = ParseModeOverride(modeStr, logger);
-            await RunAsync(workload, test, suite, logger, Program.CancellationToken, keepOpen, modeOverride).ConfigureAwait(false);
+            ctx.ExitCode = await RunAsync(workload, test, suite, logger, Program.CancellationToken, keepOpen, modeOverride).ConfigureAwait(false);
         });
 
         return command;
     }
+
+    // Bug 0007: 0 when no failures, 1 when any test failed or crashed. `New` (no
+    // baseline yet) is not a failure — the first run of a new test creates the
+    // baseline and is expected to count as pass.
+    internal static int ExitCodeFromSuiteResult(SuiteResult result)
+        => (result.Failed + result.Crashed) == 0 ? 0 : 1;
 
     /// <summary>
     /// Parse the <c>--mode</c> flag string into a <see cref="ModeOverride"/>.
@@ -163,21 +169,21 @@ public static class RunCommand
         }
     }
 
-    private static async Task RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct, bool keepOpen = false, ModeOverride modeOverride = ModeOverride.PixelDiff)
+    internal static async Task<int> RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct, bool keepOpen = false, ModeOverride modeOverride = ModeOverride.PixelDiff)
     {
         var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
 
         if (workloadName == null)
         {
             logger.Log("Error: --workload is required.  Press Ctrl+C to abort");
-            return;
+            return 1;
         }
 
         // Validate mutual exclusion of --test and --suite
         if (testName != null && suiteName != null)
         {
             logger.Log("Error: --test and --suite are mutually exclusive. Use one or the other.");
-            return;
+            return 1;
         }
 
         // Load workload config
@@ -185,7 +191,7 @@ public static class RunCommand
         if (!File.Exists(configPath))
         {
             logger.Log($"Error: Workload config not found: {configPath}");
-            return;
+            return 1;
         }
 
         var workload = await WorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
@@ -211,7 +217,7 @@ public static class RunCommand
                 if (!File.Exists(testPath))
                 {
                     logger.Log($"Error: Test definition not found: {testPath}");
-                    return;
+                    return 1;
                 }
                 tests = new List<TestDefinition> { await TestDefinition.LoadAsync(testPath).ConfigureAwait(false) };
             }
@@ -229,7 +235,7 @@ public static class RunCommand
                 catch (FileNotFoundException ex)
                 {
                     logger.Log($"Error: {ex.Message}");
-                    return;
+                    return 1;
                 }
             }
             else
@@ -240,7 +246,7 @@ public static class RunCommand
             if (tests.Count == 0)
             {
                 logger.Log("No tests found.");
-                return;
+                return 1;
             }
 
             var runLabel = suiteName != null
@@ -289,6 +295,8 @@ public static class RunCommand
 
             if (!Program.Quiet)
                 logger.Log($"Reports saved: {htmlPath}");
+
+            return ExitCodeFromSuiteResult(suiteResult);
         }
         finally
         {

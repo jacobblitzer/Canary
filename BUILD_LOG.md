@@ -795,3 +795,10 @@ Phase C of the audit prompt. Doc-only; no source changes.
 - **First entry under new `docs/plans/`** directory in Canary (pattern borrowed from Qualia).
 - **Total effort estimate:** ~9.5–11.5 weeks across 9 phases. v1 cut recommendation: Phases 1–4 (~4.5 weeks, ~70% operator-visible value).
 - **Status:** Phase C complete; Phase D (hand-off) next.
+
+## 2026-05-24 — Debug-overhaul implementation: Phase 0 + Precursor (bug 0007 CLI exit code)
+
+Phase 0 pre-flight + precursor fix for the debug-overhaul implementation prompt `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`.
+
+- **Phase 0 (pre-flight):** snapshot tag `pre-impl-debug-overhaul-2026-05-24` created at HEAD `4993c53`. Baseline: 107 Unit tests / 0 Integration tests / 0 warnings / 0 errors. Canon read: design doc, surface audit, prior-art, CLAUDE.md, SUPERVISOR.md, STANDARD.md §§ 7/14/16/19/22. Progress log: `docs/progress/2026-05-24-canary-debug-overhaul.md`.
+- **Precursor (bug 0007):** `RunCommand.RunAsync` refactored to return `Task<int>`. Helper `ExitCodeFromSuiteResult` maps SuiteResult to exit code (0 = no failures, 1 = any failed or crashed; `New` baselines count as pass). Every early-error path inside `RunAsync` now returns `1`. Handler closure sets `ctx.ExitCode`. Bug doc: `docs/bugs/0007-cli-exit-code-regression.md`. 8 new unit tests in `tests/Canary.Tests/Cli/RunCommandExitCodeTests.cs`. Tests now: 115 Unit (was 107), all green; 0/0 warnings/errors.
