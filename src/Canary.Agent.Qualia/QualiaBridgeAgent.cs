@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Canary.Cdp;
+using Canary.Telemetry;
 
 namespace Canary.Agent.Qualia;
 
@@ -36,7 +37,7 @@ namespace Canary.Agent.Qualia;
 ///     <item><c>ClearStorage</c> — clear localStorage for the dev origin.</item>
 ///   </list>
 /// </summary>
-public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
+public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposable
 {
     private readonly QualiaConfig _config;
     private ViteManager? _vite;
@@ -47,6 +48,15 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
 
     private int _canvasWidth;
     private int _canvasHeight;
+
+    // Phase 2 / §C1: registered by TestRunner before InitializeAsync.
+    private ITelemetrySink _telemetrySink = NullTelemetrySink.Instance;
+    private IDisposable? _telemetrySubscriptions;
+
+    public void RegisterTelemetrySink(ITelemetrySink sink)
+    {
+        _telemetrySink = sink ?? NullTelemetrySink.Instance;
+    }
 
     public QualiaBridgeAgent(QualiaConfig config)
     {
@@ -82,6 +92,10 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
         await _cdp.ConnectAsync(_chrome.WebSocketUrl, ct).ConfigureAwait(false);
         await _cdp.EnableDomainAsync("Page", ct).ConfigureAwait(false);
         await _cdp.EnableDomainAsync("Runtime", ct).ConfigureAwait(false);
+
+        // Phase 2 / §C1: telemetry stream (console + log + network → sink).
+        _telemetrySubscriptions = await CdpTelemetryStream.EnableAndSubscribeAsync(
+            _cdp, _telemetrySink, source: "qualia", ct).ConfigureAwait(false);
 
         // 4. Optional clean-state: clear localStorage for the dev origin BEFORE the
         //    page loads so first-launch behavior (LandingScreen visible, default
@@ -471,6 +485,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        try { _telemetrySubscriptions?.Dispose(); } catch { }
         _cdp?.Dispose();
         _chrome?.Dispose();
         _vite?.Dispose();
