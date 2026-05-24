@@ -189,3 +189,28 @@ proves needed.
   (substantial refactor; PastRuns can revisit), per-test telemetry slicing
   (boundaries ambiguous in shared-suite mode), auto-wiring retention
   (operator decides cadence).
+
+## Phase 4 — C7 Tier 1 localhost manager (2026-05-24)
+
+M-effort phase. Passive port enumeration + ViteManager dedupe + interim
+UI surface as a toolbar popup. Phase 7 migrates the UI to a nav tab.
+
+- **Snapshot tag:** `pre-impl-phase4-2026-05-24` created; deleted on success.
+- **New `Canary.Localhost`:** `PortEntry` + `PortProvenance` enum +
+  `LocalhostManager` with `EnumeratePorts(filter)` / `KillByPortAsync(port)`.
+  Combines netstat-derived listeners with `IPGlobalProperties` self-listeners
+  (CanaryHarness provenance).
+- **ViteManager dedupe:** Penumbra + Qualia `KillStaleListenerAsync` now
+  one-liner delegates to `LocalhostManager.KillByPortAsync`; ~100 lines
+  removed per workload.
+- **LocalhostPanel (interim):** UserControl with ListView + kill action;
+  2s polling when visible, `SetSlowPolling` API for host to flip to 30s.
+  Wired via new "Localhost" toolbar button on MainForm opening a popup
+  form. Phase 7's nav-tab refactor migrates.
+- **Tests:** 9 unit tests — ParseNetstat for IPv4 / IPv6 / ESTABLISHED /
+  TIME_WAIT / UDP / malformed-line skips; DefaultPorts shape; PortProvenance
+  default; real-machine `EnumeratePorts` smoke.
+- **Verification:** build 0/0; Unit 155 → 164; Integration 2 unchanged.
+- **Deferred:** Tier 2 (SpawnRegistry) → Phase 6; Tier 3 (heuristic) →
+  Phase 8; WMI command-line enrichment → Phase 8 polish; Restart action
+  → Phase 6 (requires Tier 2 provenance).

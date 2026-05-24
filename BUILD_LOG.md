@@ -867,3 +867,61 @@ dual-shape scan + retention helper.
   - **Per-test telemetry slicing** — telemetry.ndjson stays at the per-suite level (Phase 2 location). REPORT.md links via `../../../telemetry.ndjson` (relative). Per-test slicing in shared-suite mode is ambiguous (no crisp boundaries on console message arrival); revisit if needed.
   - **Wiring `ResultRetention.PurgeOlderThan` into TestRunner startup** — helper is available; auto-invocation deferred until operator decides cadence (run-start, daily, manual?).
 - **Snapshot tag `pre-impl-phase3-2026-05-24`** preserved during the work; deleted at commit.
+
+## 2026-05-24 — Debug-overhaul Phase 4 (C7 Tier 1 localhost manager)
+
+M-effort phase. Tier 1 of design §C7 — passive port enumeration via
+netstat + ProcessManager-equivalent enrichment. Deduplicates the
+ViteManager.KillStaleListenerAsync helpers across Penumbra + Qualia.
+Interim UI surface ships as a toolbar-launched popup form; Phase 7
+migrates to a proper Localhost nav tab.
+
+- **New namespace `Canary.Localhost` (`src/Canary.Core/Localhost/`):**
+  - `PortEntry` — sealed record holding Port + Pid + ProcessName +
+    CommandLine + WorkingDirectory + StartTime + Provenance.
+  - `PortProvenance` — enum (Unknown / DevServerHeuristic / CanarySpawn /
+    CanaryHarness). Phase 4 populates Unknown + CanaryHarness; Phase 6
+    fills CanarySpawn via SpawnRegistry; Phase 8 fills DevServerHeuristic.
+  - `LocalhostManager` — `EnumeratePorts(filter)` / `EnumeratePortsAsync`
+    (synchronous netstat + IPGlobalProperties for Canary self-listeners)
+    + `KillByPortAsync(port, ct)` (the dedup target for ViteManager).
+    Internal `ParseNetstat(string)` exposed for unit-testing through
+    InternalsVisibleTo. `DefaultPorts` array per §0.3.
+- **ViteManager dedupe:** both Penumbra + Qualia `ViteManager.KillStaleListenerAsync`
+  collapsed to a one-liner delegate to `LocalhostManager.KillByPortAsync`.
+  ~100 lines of duplicated netstat-parse + taskkill code removed per
+  workload. `FindListenerPid` deleted in both.
+- **Interim UI surface (`src/Canary.UI/Controls/LocalhostPanel.cs`):**
+  UserControl with toolbar (Refresh + Kill selected), 6-column ListView,
+  StatusStrip footer. Polling timer at 2s when visible; flips to 30s via
+  the `SetSlowPolling()` API the host can call on form-deactivate. Kill
+  confirmation modal is louder for `Provenance == CanaryHarness` rows.
+  Auto-refresh on selection + after each kill.
+- **MainForm wiring:** new "Localhost" toolbar button opens the panel in
+  a 1100×500 popup form (`OnShowLocalhost`). Per impl §6 + design
+  Implementation Plan deviation #2 — interim placement; Phase 7 nav-tab
+  refactor migrates.
+- **Files added:** `src/Canary.Core/Localhost/{PortEntry,LocalhostManager}.cs`,
+  `src/Canary.UI/Controls/LocalhostPanel.cs`,
+  `tests/Canary.Tests/Localhost/LocalhostManagerTests.cs`.
+- **Files modified:** `src/Canary.Agent.Penumbra/ViteManager.cs` (dedupe,
+  removed FindListenerPid + inline kill body), `src/Canary.Agent.Qualia/ViteManager.cs`
+  (same), `src/Canary.UI/MainForm.cs` (Localhost toolbar button +
+  OnShowLocalhost popup handler).
+- **Verification:** `dotnet build Canary.sln` = 0/0. `dotnet test --filter
+  "Category=Unit"` = 164 Passed (was 155; +9 new). `dotnet test --filter
+  "Category=Integration"` = 2 Passed (unchanged). The `EnumeratePorts`
+  real-machine smoke test runs as a unit test — it shells out to netstat
+  for real but asserts only shape, not specific ports.
+- **Deferred to subsequent phases:**
+  - Tier 2 (SpawnRegistry — Canary-spawn provenance) → Phase 6 with the
+    MCP server.
+  - Tier 3 (name-heuristic listing) → Phase 8.
+  - WMI command-line enrichment — current LocalhostManager uses
+    `Process.MainModule?.FileName` which captures the exe path but not
+    the full command line. WMI Win32_Process is slower (cache needed) and
+    not blocking the Tier 1 deliverable; can land in Phase 8 polish.
+  - Restart action on CanarySpawn rows (no provenance available until
+    Tier 2).
+- **Snapshot tag `pre-impl-phase4-2026-05-24`** preserved during the work;
+  deleted at commit.
