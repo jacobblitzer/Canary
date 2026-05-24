@@ -152,3 +152,40 @@ writes a uniform `TelemetryRecord` stream to a per-suite NDJSON file. Phase
   agent, Qualia agent, TestRunner+RunCommand wiring, ITestProgressEvents
   extension, tests, docs — bundled into a smaller set of logical commits
   to keep churn legible.
+
+## Phase 3 — C2 REPORT.md + per-run dir layout (2026-05-24)
+
+M-effort phase. Each test run gets its own `runs/<timestamp>/` dir with
+`result.json` + `REPORT.md`. Baselines/candidates/diffs stay flat at
+the test level for this phase (overwriting per run) — keeps refactor
+scope manageable; future phase can deepen if PastRuns image history
+proves needed.
+
+- **Snapshot tag:** `pre-impl-phase3-2026-05-24` created; deleted on success.
+- **MarkdownReportGenerator:** new `Canary.Reporting.MarkdownReportGenerator`
+  generates the per-§C2 REPORT.md (header / verdict / checkpoints table /
+  errors / VLM / files). Relative links to images via `../<dir>/`. Optional
+  telemetry footer link to `../../../telemetry.ndjson` (per-suite location
+  from Phase 2).
+- **TestRunner.SavePerRunArtifactsAsync:** writes result.json + REPORT.md to
+  `<testDir>/runs/<yyyyMMdd-HHmmss-xxxx>/`. Called at end of both
+  RunTestAsync (HarnessClient) and RunAgentTestAsync (CDP bridge). Failures
+  logged but do NOT flip test verdict. CLI parity — previously CLI never
+  wrote per-test result.json (only UI did).
+- **ResultsHistory dual-shape scan:** recursive walk picks up both
+  `<test>/result.json` (legacy) and `<test>/runs/<timestamp>/result.json`
+  (new). No dedup at this layer.
+- **ResultRetention.PurgeOlderThan:** new helper in `Canary.Maintenance`;
+  walks runs/<timestamp>/ dirs and deletes those older than threshold
+  (default 14 days, matches STANDARD.md §16). Returns PurgeReport. Not
+  auto-wired into TestRunner — operator decides cadence.
+- **TestRunnerPanel cleanup:** removed per-test result.json save loop —
+  TestRunner owns it now.
+- **Tests:** 15 new unit tests (8 MarkdownReportGenerator, 3 ResultsHistory
+  dual-shape, 4 ResultRetention).
+- **Verification:** build 0/0; Unit 140 → 155; Integration 2 unchanged;
+  CLI smoke unchanged.
+- **Deferred:** moving candidates/diffs/composite into per-run dirs
+  (substantial refactor; PastRuns can revisit), per-test telemetry slicing
+  (boundaries ambiguous in shared-suite mode), auto-wiring retention
+  (operator decides cadence).
