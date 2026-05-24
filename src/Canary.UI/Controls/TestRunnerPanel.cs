@@ -173,7 +173,8 @@ internal sealed class TestRunnerPanel : UserControl
         string? workloadJsonPath = null,
         string? suiteName = null,
         bool useSharedMode = false,
-        bool suiteKeepOpen = false)
+        bool suiteKeepOpen = false,
+        ModeOverride modeOverride = ModeOverride.PixelDiff)
     {
         _logBox.Clear();
         _progressBar.Value = 0;
@@ -242,6 +243,7 @@ internal sealed class TestRunnerPanel : UserControl
             var runner = new TestRunner(_pm, workloadsDir, logger)
             {
                 Progress = _progressFeed,
+                ModeOverride = modeOverride,
             };
 
             // Show overlay when target window is found

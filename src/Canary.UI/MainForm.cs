@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Canary.Cli;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.UI.Controls;
@@ -29,6 +30,10 @@ public sealed class MainForm : Form
     private ToolStripButton? _closeWorkloadBtn;
 
     private string? _workloadsDir;
+
+    // Per design §C3 — auto-run handoff from CLI / single-instance pipe sets
+    // this before invoking OnRunTests, which consumes + clears it (one-shot).
+    private ModeOverride? _autoRunModeOverride;
 
     public MainForm()
     {
@@ -480,7 +485,9 @@ public sealed class MainForm : Form
         _contentPanel.Controls.Add(panel);
 
         _statusLabel.Text = $"Running {testNames}{suiteLabel} for {entry.Config.DisplayName}...";
-        await panel.RunAsync(entry.Config, testsToRun, _workloadsDir, suiteName: suiteName, useSharedMode: useSharedMode, suiteKeepOpen: suiteKeepOpen).ConfigureAwait(true);
+        var mode = _autoRunModeOverride ?? ModeOverride.PixelDiff;
+        _autoRunModeOverride = null;
+        await panel.RunAsync(entry.Config, testsToRun, _workloadsDir, suiteName: suiteName, useSharedMode: useSharedMode, suiteKeepOpen: suiteKeepOpen, modeOverride: mode).ConfigureAwait(true);
     }
 
     private void OnCloseWorkload(object? sender, EventArgs e)
@@ -1314,6 +1321,99 @@ public sealed class MainForm : Form
             return;
         base.WndProc(ref m);
     }
+
+    // Per design §C3 + impl §3: walks the same code path as a tree-click +
+    // Run Tests button press but driven by AutoRunArgs forwarded from the CLI
+    // or from a second `canary run` invocation via the single-instance pipe.
+    //
+    // Called from Program.cs on startup (if args carried auto-run flags) AND
+    // from SingleInstancePipeServer.AutoRunRequested (forwarded second-process
+    // invocation). The pipe-forwarded call is marshalled to the UI thread by
+    // Program.cs before calling here.
+    public async Task AutoRunAsync(AutoRunArgs args)
+    {
+        if (args.IsEmpty) return;
+
+        if (string.IsNullOrEmpty(args.Workload))
+        {
+            _statusLabel.Text = "AutoRun ignored: --workload is required.";
+            return;
+        }
+
+        // The workloads tree may still be loading from the constructor's
+        // AutoDetectWorkloadsDir. Poll briefly until it appears, up to 10s.
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (DateTime.UtcNow < deadline && (_workloadsDir == null || _treeView.Nodes.Count == 0))
+        {
+            await Task.Delay(100).ConfigureAwait(true);
+        }
+        if (_workloadsDir == null || _treeView.Nodes.Count == 0)
+        {
+            _statusLabel.Text = "AutoRun failed: workloads directory did not load within 10 seconds.";
+            return;
+        }
+
+        var target = FindAutoRunNode(args);
+        if (target == null)
+        {
+            _statusLabel.Text = $"AutoRun failed: no node matched workload='{args.Workload}' test='{args.Test}' suite='{args.Suite}'.";
+            return;
+        }
+
+        _treeView.SelectedNode = target;
+        target.EnsureVisible();
+
+        _autoRunModeOverride = ParseAutoRunMode(args.Mode);
+
+        OnRunTests(this, EventArgs.Empty);
+    }
+
+    private TreeNode? FindAutoRunNode(AutoRunArgs args)
+    {
+        foreach (TreeNode workloadNode in _treeView.Nodes)
+        {
+            if (workloadNode.Tag is not WorkloadExplorer.WorkloadEntry entry) continue;
+            if (!string.Equals(entry.Config.Name, args.Workload, StringComparison.OrdinalIgnoreCase)) continue;
+
+            if (!string.IsNullOrEmpty(args.Test))
+            {
+                foreach (TreeNode group in workloadNode.Nodes)
+                {
+                    foreach (TreeNode child in group.Nodes)
+                    {
+                        if (child.Tag is TestDefinition td &&
+                            string.Equals(td.Name, args.Test, StringComparison.OrdinalIgnoreCase))
+                            return child;
+                    }
+                }
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(args.Suite))
+            {
+                foreach (TreeNode group in workloadNode.Nodes)
+                {
+                    foreach (TreeNode child in group.Nodes)
+                    {
+                        if (child.Tag is SuiteDefinition sd &&
+                            string.Equals(sd.Name, args.Suite, StringComparison.OrdinalIgnoreCase))
+                            return child;
+                    }
+                }
+                return null;
+            }
+
+            return workloadNode;
+        }
+        return null;
+    }
+
+    private static ModeOverride ParseAutoRunMode(string? raw) => (raw?.ToLowerInvariant()) switch
+    {
+        "vlm" or "semantic" or "correctness" => ModeOverride.Vlm,
+        "both" or "all" => ModeOverride.Both,
+        _ => ModeOverride.PixelDiff,
+    };
 
     private sealed class DarkToolStripRenderer : ToolStripProfessionalRenderer
     {

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Canary.Harness\Canary.Harness.csproj" />
+    <ProjectReference Include="..\..\src\Canary.UI\Canary.UI.csproj" />
   </ItemGroup>
 
 </Project>
