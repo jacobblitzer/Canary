@@ -96,6 +96,7 @@ All hooks return `{ ok, value | reason }` envelopes for failure paths.
 | `RunCommand` | Evaluate an arbitrary JS expression — the catch-all for anything not covered by a named action. |
 | `WaitForReady` | Poll `__canaryWaitForReady` until app reports ready or timeout. |
 | `WaitForStable` | `Task.Delay(ms)`. |
+| `Reload` | Re-navigate to the current Vite URL + re-wait for `__canaryHooksReady`. Preserves localStorage (intentionally — the calling test seeded it via `setup.commands` and needs the new state to survive React's re-mount). Mirrors steps 5-7 of `InitializeAsync` minus the storage clear. Use this in `actions` (NOT `setup.commands`) to retrigger GRAPH_LOAD or other on-mount logic mid-test. Added 2026-05-25 to unblock the eager-L3 cold-launch / warm-launch / provider-swap fixtures whose pure-JS `window.location.reload()` was killing the CDP execution context ("Inspected target navigated or closed"). |
 | `SetCanvasSize` | Set `documentElement` size — used to control screenshot dimensions. |
 | `HideUI` | Toggle the chrome-hide CSS class via `__canaryHideUI`. |
 | `ApplyProfile` | `__canaryApplyProfile(name)`. |

@@ -1,0 +1,25 @@
+{
+  "name": "eager-l3-reload-smoke",
+  "workload": "qualia",
+  "description": "Phase M1 follow-up — verifies the new Canary `Reload` action (added 2026-05-25 to QualiaBridgeAgent.cs) survives mid-test page navigation. Seeds a localStorage sentinel, triggers `Reload` via the bridge agent's CDP NavigateAsync + WaitForReadyInternalAsync flow, then asserts: (a) the sentinel persists across the reload (localStorage preserved by design), AND (b) `__canaryHooksReady` is true post-reload (proves the bridge re-waited for the new execution context). Throws (CRASH outcome) if either assertion fails; renders a green PASS badge otherwise. This is the foundational smoke for the three eager-L3 fixtures that depend on mid-test reload.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(() => { localStorage.setItem('canary.reload-smoke.sentinel', 'pre-reload-' + Date.now()); return 'sentinel set'; })()"
+    ]
+  },
+  "actions": [
+    { "type": "Reload" },
+    { "type": "RunCommand", "command": "(() => { const sentinel = localStorage.getItem('canary.reload-smoke.sentinel'); if (!sentinel || !sentinel.startsWith('pre-reload-')) { throw new Error('reload-smoke: sentinel lost across reload — got ' + JSON.stringify(sentinel)); } if (window.__canaryHooksReady !== true) { throw new Error('reload-smoke: hooks not ready post-reload — bridge agent did not re-establish properly'); } return 'survived: ' + sentinel; })()" },
+    { "type": "RunCommand", "command": "(() => { const b = document.createElement('div'); b.id = 'canary-reload-smoke-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS reload action survived'; document.body.appendChild(b); return true; })()" }
+  ],
+  "checkpoints": [
+    {
+      "name": "reload-smoke-badge",
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}

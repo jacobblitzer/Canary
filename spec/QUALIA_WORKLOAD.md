@@ -222,6 +222,7 @@ screenshot:
 | `RunCommand` | Evaluate an arbitrary JS expression. Catch-all for anything not covered by a named action. |
 | `WaitForReady` | Poll `__canaryWaitForReady` until app reports ready or timeout. |
 | `WaitForStable` | `Task.Delay(ms)`. |
+| `Reload` | Re-navigate to the current Vite URL + re-wait for `__canaryHooksReady`. Preserves localStorage (intentionally — the calling test's `setup.commands` seed survives the React re-mount). Mirrors steps 5-7 of `InitializeAsync` minus the storage clear. Use in `actions[]` (NOT `setup.commands`) to retrigger GRAPH_LOAD mid-test. Added 2026-05-25 to unblock the eager-L3 cold-launch / warm-launch / provider-swap fixtures; the pure-JS `window.location.reload()` alternative kills the CDP execution context ("Inspected target navigated or closed"). |
 | `SetCanvasSize` | Set `documentElement` size — used to control screenshot dimensions. |
 | `HideUI` | Toggle the chrome-hide CSS class via `__canaryHideUI`. |
 | `ApplyProfile` | `__canaryApplyProfile(name)`. |
@@ -319,7 +320,7 @@ update) plus a one-line entry in `MultiVerse/BUILD_LOG.md`.
 | `pencil-diff.json` | Pencil profile debugging (mount trace, no-X variants, only-X variants, standard+debug overlay) |
 | `playground.json` | Wave 0.B Playground — one test per scenario (random / grid / tree / scale-free / stress-1k) + snapshot round-trip |
 | `qualia-v4-ui.json` | Pointer / qverse / RAG UI fixtures (pointers empty/populated/add-form-open, cross-qverse badge, dead-node prompt, breadcrumb-nested, ghost-node, qverse-navigator, refresh-toolbar/enabled, perfpanel-rag-section) |
-| `eager-l3.json` | Phase M1 (2026-05-25) — RAG eager-L3 extraction structural port from `Qualia/scripts/smoke-eager-l3.mjs`. **Partial port:** only 1 of 4 originally-scoped fixtures lands today (`no-provider-noop` — silent-no-op path per ADR 0031). Asserts via `__qualiaRunDevTests()` markdown report match; renders a visible PASS badge; checkpoint is pixel-diff (NEW until baseline approval). The cold-launch + warm-launch + provider-swap fixtures are blocked on mid-test `location.reload()` crashing the bridge agent's CDP target ("Inspected target navigated or closed"). Unblock by extending QualiaBridgeAgent with a `Reload` action OR by adding a `__canaryRetriggerEagerSweep` Qualia hook. Wall clock ~10s. |
+| `eager-l3.json` | RAG eager-L3 extraction (Phase M1 + Move 2 follow-up — 2026-05-25). Four fixtures: `reload-smoke` (validates the new `Reload` action preserves localStorage + re-establishes hooks), `no-provider-noop` (silent-no-op per ADR 0031), `cold-launch` (sweep enqueues N > 0 with Ollama provider seeded; ~95s incl. one extraction), `warm-launch` (idempotency check — sweep log shows skip counts from cold-launch's cache side-effect; ~30s). Cold/warm pair has an intentional dependency. Provider-swap fixture queued (Phase 2 v2 — needs `eagerL3MaxContentBytes` + sweep telemetry to make the assertion testable). |
 
 The above suites cover most fixtures; a `diag-*` diagnostic family
 (~25 tests) is used for ad-hoc debugging arcs and doesn't yet belong
@@ -334,25 +335,18 @@ to a parent suite — queued for cleanup.
 - **Diag-* test family suiting.** ~25 `diag-*` tests have no parent
   suite. Either bundle into a `diag.json` suite or promote
   individual tests into the suites that own their feature area.
-- **Eager L3 extraction suite — partially shipped 2026-05-25 (Phase M1).**
-  Suite at `suites/eager-l3.json` lands today with the single
-  `eager-l3-no-provider-noop` fixture; the originally-scoped
-  `cold-launch`, `warm-launch`, and `provider-swap` fixtures are
-  deferred because they require mid-test page reload. **The
-  blocker:** Canary's bridge agent (`QualiaBridgeAgent.cs`) only
-  handles navigation during `InitializeAsync` via the private
-  `_cdp.NavigateAsync` path; setup.commands evaluating
-  `window.location.reload()` mid-test crashes the next
-  `Runtime.evaluate` with `CDP error: Inspected target navigated
-  or closed`. Two clean unblocks: (a) extend the bridge agent
-  with a `Reload` action that calls `_cdp.NavigateAsync(_vite.Url)`
-  + re-waits readiness — single ~15-line method, fully consistent
-  with the existing init flow; (b) add a Qualia hook
-  `__canaryRetriggerEagerSweep` that dispatches a GRAPH_LOAD or
-  exposes `RagOrchestrator._enqueueEagerL3()` (private today) via
-  a small public method. Either path unblocks not just M1 but
-  any future Qualia test that needs to re-mount React from a
-  changed localStorage seed.
+- **Eager L3 extraction suite — Move 2 closed 2026-05-25.** The
+  `Reload` action was added to `QualiaBridgeAgent.cs` (~25 LoC
+  incl. doc-comment) per the roadmap's Move 2 path (a). It calls
+  `_cdp.NavigateAsync(_vite.Url, 60s)` + re-runs
+  `WaitForReadyInternalAsync` — exactly the flow `InitializeAsync`
+  uses, minus the localStorage clear. The three deferred fixtures
+  now ship: `reload-smoke` (foundational infra check),
+  `cold-launch` (sweep enqueues N > 0), `warm-launch`
+  (idempotency via cache-skip). The provider-swap fixture
+  remains queued for Phase 2 v2 — it needs the `eagerL3MaxContentBytes`
+  ceiling + sweep telemetry surface to make the
+  swap-affects-extraction assertion testable.
 - **Dev-test harness as Canary checkpoint type.** Per the same
   audit doc Phase M2: add `"source": "dev-test"` checkpoint type
   that ingests `__qualiaRunDevTests()` markdown alongside the

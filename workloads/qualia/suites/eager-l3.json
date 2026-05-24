@@ -1,7 +1,10 @@
 {
   "name": "eager-l3",
-  "description": "Phase M1 (2026-05-25) — RAG eager L3 extraction Canary suite. Partial port of `Qualia/scripts/smoke-eager-l3.mjs`: only the no-provider-noop fixture lands today, because the originally-scoped cold-launch + warm-launch + provider-swap fixtures all require either mid-test `location.reload()` (which crashes the bridge agent's CDP target — 'Inspected target navigated or closed') OR a sweep-retrigger hook that doesn't exist yet. Unblock the rest by: (a) extending QualiaBridgeAgent with a `Reload` action that calls `_cdp.NavigateAsync(_vite.Url)` + re-waits for readiness — single ~15-line method; OR (b) adding a `__canaryRetriggerEagerSweep` hook on the Qualia side that dispatches a GRAPH_LOAD or directly calls `RagOrchestrator._enqueueEagerL3()` (private — needs a public surface). Either path is small but expands beyond M1's Canary-only scope. Tracked under `MultiVerse/audit/2026-05-24-testing-canary-audit-and-plan.md` Phase M1 follow-ups + the move to Phase M2 dev-test-source checkpoint type which would collapse these fixtures to one-liners.",
+  "description": "RAG eager L3 extraction Canary suite. Started as a partial port of `Qualia/scripts/smoke-eager-l3.mjs` (Phase M1, 2026-05-25). The Move-2 Canary `Reload` action (added 2026-05-25 to `QualiaBridgeAgent.cs` per the LLM observability roadmap) unblocks the reload-dependent fixtures; this suite now also covers cold-launch + warm-launch. Order is cheapest-first: `reload-smoke` (foundational infra check — verifies the bridge agent's Reload action preserves localStorage + re-establishes hooks) -> `no-provider-noop` (silent-no-op path per ADR 0031) -> `cold-launch` (sweep enqueues N > 0 with provider seeded) -> `warm-launch` (idempotency via cache-skip + skip-on-empty-derived). The cold/warm pair has an intentional dependency: cold-launch populates the on-disk behavior cache at `examples/sample/.qualia.rag/behavior-cache.json` which warm-launch's skip-detection relies on. Provider-swap fixture queued for Phase 2 v2 (needs the maxContentBytes ceiling shipped + the sweep telemetry surface so the assertion can read which model fired which extraction).",
   "tests": [
-    "eager-l3-no-provider-noop"
+    "eager-l3-reload-smoke",
+    "eager-l3-no-provider-noop",
+    "eager-l3-cold-launch",
+    "eager-l3-warm-launch"
   ]
 }

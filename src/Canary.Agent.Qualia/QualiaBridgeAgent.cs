@@ -14,6 +14,13 @@ namespace Canary.Agent.Qualia;
 ///     <item><c>RunCommand</c> — evaluate a JS expression (the catch-all).</item>
 ///     <item><c>WaitForReady</c> — poll <c>__canaryWaitForReady</c>.</item>
 ///     <item><c>WaitForStable</c> — sleep N ms.</item>
+///     <item><c>Reload</c> — re-navigate to the current Vite URL + re-wait
+///         for <c>__canaryHooksReady</c>. Used by tests that mutate
+///         localStorage mid-test and need React to re-mount against the
+///         new state (e.g., eager-L3 cold-launch / warm-launch / provider-swap
+///         fixtures). Mirrors the navigation+ready flow of
+///         <see cref="InitializeAsync"/> but preserves localStorage so the
+///         test's setup.commands seed survives.</item>
 ///     <item><c>SetCanvasSize</c> — resize browser window.</item>
 ///     <item><c>HideUI</c> — call <c>__canaryHideUI(bool)</c>.</item>
 ///     <item><c>ApplyProfile</c> — call <c>__canaryApplyProfile(name)</c>.</item>
@@ -118,6 +125,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
             "RunCommand"           => await RunCommandAsync(parameters).ConfigureAwait(false),
             "WaitForReady"         => await WaitForReadyAsync(parameters).ConfigureAwait(false),
             "WaitForStable"        => await WaitForStableAsync(parameters).ConfigureAwait(false),
+            "Reload"               => await ReloadAsync().ConfigureAwait(false),
             "SetCanvasSize"        => await SetCanvasSizeAsync(parameters).ConfigureAwait(false),
             "HideUI"               => await HideUiAsync(parameters).ConfigureAwait(false),
             "ApplyProfile"         => await ApplyProfileAsync(parameters).ConfigureAwait(false),
@@ -140,7 +148,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
             "PlaygroundGetState"   => await EvaluateOkAsync("window.__canaryPlaygroundGetState()").ConfigureAwait(false),
             _ => Fail(
                 $"Unknown action: {action}. Supported: RunCommand, WaitForReady, WaitForStable, " +
-                "SetCanvasSize, HideUI, ApplyProfile, SetModuleEnabled, ShowLandingScreen, " +
+                "Reload, SetCanvasSize, HideUI, ApplyProfile, SetModuleEnabled, ShowLandingScreen, " +
                 "CloseLandingScreen, ClickProfilePill, ToggleLandingModule, ClickLandingApply, " +
                 "ClickLandingCancel, ClearStorage, PlaygroundOpen, PlaygroundClose, " +
                 "PlaygroundLoadScenario, PlaygroundSetParam, PlaygroundSaveSnapshot, " +
@@ -231,6 +239,33 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, IDisposable
             ms = parsed;
         await Task.Delay(ms).ConfigureAwait(false);
         return Ok($"Waited {ms}ms.");
+    }
+
+    /// <summary>
+    /// Re-navigate to the current Vite URL and re-wait for app readiness.
+    /// Preserves localStorage (intentionally — the calling test seeded it
+    /// via <c>setup.commands</c> and needs the new state to survive the
+    /// React re-mount). Mirrors steps 5-7 of <see cref="InitializeAsync"/>
+    /// minus the storage clear.
+    ///
+    /// Unblocks any test that wants to re-mount after mutating
+    /// localStorage (eager-L3 cold-launch / warm-launch / provider-swap
+    /// fixtures; future "switch profile and re-mount" scenarios). The
+    /// alternative — calling <c>window.location.reload()</c> from
+    /// <c>setup.commands</c> — crashes the next <c>Runtime.evaluate</c>
+    /// with "Inspected target navigated or closed" because the CDP
+    /// execution context dies without an explicit wait for the new one;
+    /// this action wraps the right CDP-level navigation primitives that
+    /// do wait.
+    /// </summary>
+    private async Task<AgentResponse> ReloadAsync()
+    {
+        if (_vite is null) return Fail("Reload requires Vite to be running.");
+        await _cdp!.NavigateAsync(_vite.Url, TimeSpan.FromSeconds(60))
+            .ConfigureAwait(false);
+        await WaitForReadyInternalAsync(_config.ReadyTimeoutSec * 1000, default)
+            .ConfigureAwait(false);
+        return Ok($"Reloaded {_vite.Url}.");
     }
 
     private async Task<AgentResponse> SetCanvasSizeAsync(Dictionary<string, string> parameters)

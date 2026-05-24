@@ -1,0 +1,26 @@
+{
+  "name": "eager-l3-warm-launch",
+  "workload": "qualia",
+  "description": "Phase M1 follow-up (post Move 2 — 2026-05-25). Verifies the warm-path L3 cache survives across Canary test boots: seeds provider, triggers `Reload`, then asserts (a) the eager-L3 sweep ran post-reload AND (b) the on-disk `behavior-cache.json` has > 0 entries (via the `sidecar.behavior-cache` dev test's summary). The cache must already have entries — either from a prior `cold-launch` run in the same suite, OR from any earlier manual smoke. Note on the sweep gate: the sweep itself can't surface cache hits in its skip breakdown because `ptr.lastKnownHash` isn't populated on cold boot (the embedding extractor stamps it asynchronously); the cache short-circuit instead fires inside `BehaviorExtractor._processOne` — invisible to the sweep log. This fixture's assertion goes through the dev-test report's `sidecar.behavior-cache` summary instead, which reads the cache file directly.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(() => { localStorage.setItem('qualia.landingShown', 'true'); localStorage.setItem('qualia.extraction.provider', JSON.stringify({ id: 'ollama', config: { baseUrl: 'http://localhost:11434', model: 'gemma4:e4b' } })); return 'seeded'; })()"
+    ]
+  },
+  "actions": [
+    { "type": "Reload" },
+    { "type": "WaitForStable", "ms": "8000" },
+    { "type": "RunCommand", "command": "(async () => { const r = await window.__qualiaRunDevTests(); const sweepLine = (r.match(/\\[RagOrchestrator\\] eager L3 sweep:[^\\n]+/g) || []).pop(); if (!sweepLine) { throw new Error('warm-launch: no eager L3 sweep log post-reload — sweep did not fire'); } const cacheMatch = r.match(/(\\d+) L3 cache entr/); if (!cacheMatch) { const excerpt = r.length > 800 ? r.slice(0, 800) + '...' : r; throw new Error('warm-launch: sidecar.behavior-cache test result not found in dev-test report. excerpt: ' + excerpt); } const cacheEntries = Number(cacheMatch[1]); if (cacheEntries === 0) { throw new Error('warm-launch: behavior-cache.json has 0 entries — neither cold-launch nor any prior session populated the cache. Run cold-launch first, or pre-populate manually.'); } return 'warm-launch verified: sweep fired (' + sweepLine.substring(0, 80) + '...) AND cache has ' + cacheEntries + ' entries'; })()" },
+    { "type": "RunCommand", "command": "(() => { const b = document.createElement('div'); b.id = 'canary-eager-l3-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS warm-launch (cache loaded)'; document.body.appendChild(b); return true; })()" }
+  ],
+  "checkpoints": [
+    {
+      "name": "warm-launch-cache-badge",
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}
