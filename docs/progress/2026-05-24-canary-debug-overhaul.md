@@ -353,3 +353,37 @@ persistence + PastRuns quick-date filters.
 - **Verification:** build 0/0; Unit 212 → 220; Integration 2 unchanged.
 - **Deferred:** WMI command-line filtering (Tier 3 polish), Maturation
   panels (out per §C9), retention auto-wiring, PastRuns body search.
+
+## Phase 9 — Cross-repo doc pass (2026-05-24)
+
+S-effort final phase.
+
+- **Canary side:** CLAUDE.md Quick Reference updated to point at the
+  new debug-overhaul surfaces (mode picker, nav tabs, per-run dir,
+  telemetry NDJSON, MCP server, feedback inbox). FEATURE_STATUS.md
+  gains a Debug-overhaul section table + consolidated deferral list.
+  Design doc `docs/plans/2026-05-24-canary-debug-overhaul.md`
+  frontmatter flipped in-progress → shipped + retrospective appended.
+- **Cross-repo:** Penumbra/CLAUDE.md + Qualia/CLAUDE.md each gain a
+  "Canary integration (debug-overhaul shipped 2026-05-24)" section
+  documenting telemetry capture + per-run REPORT.md + MCP server +
+  spawn registry + feedback inbox. No code changes needed in either
+  child repo.
+- **MultiVerse:** BUILD_LOG.md gains one consolidated cross-repo entry
+  summarising the implementation outcome + deferrals. The
+  implementation prompt
+  (`MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`)
+  frontmatter flipped READY → EXECUTED + banner appended mirroring the
+  design doc retrospective.
+- **No Rhino update:** Rhino-side console interception was deferred in
+  Phase 2 and there's no Rhino-specific CLAUDE.md to update.
+- **No verification step** — docs-only phase. Phase 8's 220 Unit / 2
+  Integration green state carries forward.
+
+## Implementation complete (2026-05-24)
+
+All 10 phases (Phase 0 + precursor + Phases 1–9) landed in this
+session. The driving prompt's frontmatter is flipped to EXECUTED. The
+master snapshot tag `pre-impl-debug-overhaul-2026-05-24` is preserved
+for operator review / rollback; per the prompt's §11 final step it
+deletes once the operator confirms everything is good.

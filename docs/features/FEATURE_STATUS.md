@@ -96,6 +96,37 @@ Living tracker for all Canary features. Updated as work progresses.
 | Mixed-mode tests | Done | pixel-diff + VLM checkpoints in same test |
 | Unit tests (26) | Done | Serialization, parsing, configuration, Ollama provider |
 
+## Debug-overhaul (2026-05-24, shipped Phases 0-9)
+
+Implementation of `docs/plans/2026-05-24-canary-debug-overhaul.md` driven
+by `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`.
+9 design phases (C1–C9) over 10 implementation phases (0 + precursor + 1–9).
+
+| Feature | Status | Phase | Notes |
+|---------|--------|-------|-------|
+| CLI exit code propagation (bug 0007 fix) | Done | Precursor | RunCommand.RunAsync returns int; 1 on any test fail or crash. |
+| Non-headless enforcement (`--headless` flag + UI auto-launch) | Done | 1 (C3) | STANDARD.md §16 rule 8. Single-instance pipe forwards args. |
+| Universal telemetry envelope | Done | 2 (C1) | `Canary.Telemetry.TelemetryRecord` + NDJSON sink. CDP Console + Log + Network captured by Penumbra + Qualia agents. |
+| Claude-readable REPORT.md per run | Done | 3 (C2) | `MarkdownReportGenerator` + per-run dir `runs/<timestamp>/`. ResultsHistory dual-shape scan. |
+| Tiered localhost manager (T1 + T2 + T3) | Done | 4 + 6 + 8 (C7) | Passive netstat + Canary spawn registry + name heuristic. Inline Tier 3 toggle. |
+| Sketch + annotate feedback surface | Done | 5 (C5) | WPF `AnnotationCanvas` via ElementHost; FeedbackInboxWriter at `docs/feedback/inbox/`. |
+| MCP server | Done | 6 (C6) | `Canary.McpServer.exe`, 8 tools, self-contained stdio JSON-RPC. |
+| UI overhaul (nav tabs + mode picker) | Done | 7 (C4) | INavMode + TabControl wrapping the SplitContainer. Tests/PastRuns/Localhost/Feedback/Telemetry/Settings tabs. Toolbar mode picker resolves §A1 gap. |
+| Settings persistence | Done | 8 (C9) | `CanarySettings` at `%LocalAppData%\Canary\settings.json`. UI mode + Tier 3 + retention. Maturation-mode panels not built per §C9. |
+| Cross-repo doc pass | Done | 9 | Penumbra + Qualia CLAUDE.mds + MultiVerse BUILD_LOG updated. |
+
+**Deferred follow-ups** (documented in BUILD_LOG.md phase entries):
+- Rhino-side `RhinoApp.WriteLine` interception (Phase 2 — no clean RhinoCommon 8 hook found in scope; queued v2).
+- InputReplayer event records (cross-cuts Phase 7 UI work).
+- Per-test telemetry slicing in shared-suite mode (boundaries ambiguous).
+- Moving candidates/diffs/composite into per-run dirs (current Phase 3 keeps them flat — overwrites per run).
+- WMI command-line filtering for Tier 3 (name-only ships).
+- Maturation-mode panels — explicit out per §C9 (toggle only).
+- ResultRetention auto-wiring (helper available; operator decides cadence).
+- PastRuns body search across REPORT.md content (metadata-only filter today).
+- McpServerStdioIntegrationTests (in-process StringReader/Writer covers the protocol).
+- UIOverhaulSmokeTests integration test (NavModeTests cover the contract).
+
 ## Documentation System
 
 | Feature | Status | Notes |

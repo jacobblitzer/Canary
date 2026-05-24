@@ -12,6 +12,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed — Debug-overhaul Phase 9 (cross-repo doc pass, 2026-05-24)
+- `CLAUDE.md` Quick Reference rewritten to point operators at the new debug-overhaul surfaces: toolbar mode picker, 6 nav tabs, per-run dir layout, telemetry NDJSON path, MCP server, feedback inbox. The §16 rule 8 line updated to reflect Phase 1 having shipped (no longer "queued").
+- `docs/features/FEATURE_STATUS.md` gains a Debug-overhaul section table mapping each shipped feature to its phase number plus the consolidated deferred follow-ups list.
+- `docs/plans/2026-05-24-canary-debug-overhaul.md` status flipped `in-progress → shipped`; retrospective appended (what shipped exactly as designed, scope deviations, deferred items table, counts, operator-visible deltas).
+- Child repo updates: `C:/Repos/Penumbra/CLAUDE.md` and `C:/Repos/Qualia/CLAUDE.md` each gain a "Canary integration (debug-overhaul shipped 2026-05-24)" section documenting telemetry capture + per-run REPORT.md + MCP server + spawn registry + feedback inbox. No Penumbra/Qualia-side code changes needed.
+- `C:/Repos/MultiVerse/BUILD_LOG.md` gains one consolidated cross-repo entry summarising the implementation outcome + deferral list.
+- `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md` frontmatter flipped `status: READY → EXECUTED` + `executed: 2026-05-24` + banner mirroring the design doc retrospective.
+
 ### Added — Debug-overhaul Phase 8 (C7 Tier 3 + C8 polish + C9 settings, 2026-05-24)
 - `Canary.Localhost.HeuristicProcessLister` — Tier 3 of design §C7. `Enumerate()` returns Process.GetProcesses() filtered by the default dev-server-likely name list (node, deno, bun, npm/npx/yarn/pnpm, python, dotnet, cargo, tauri, ruby/rails, go). Custom name filter accepted. WMI command-line filtering deliberately deferred — name-only ships with a "may be false positive" caveat.
 - `LocalhostPanel` gains a "Show all dev-server-likely processes" inline CheckBox (initial state from `CanarySettings.ShowTier3Processes`). When checked, heuristic processes not already in the Tier 1/2 enumeration append below with `Provenance = DevServerHeuristic` and a dimmer row color. Status footer shows e.g. "5 listening + 12 heuristic".

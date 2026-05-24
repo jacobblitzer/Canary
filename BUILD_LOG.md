@@ -1238,3 +1238,84 @@ polish.
   - **PastRuns body search across REPORT.md content** — current filter
     is metadata-only (workload/test/verdict/runId). Body search would
     need lazy-load + index; future polish.
+
+## 2026-05-24 — Debug-overhaul Phase 9 (cross-repo doc pass)
+
+S-effort phase. Final phase of the debug-overhaul implementation.
+
+- **Canary/CLAUDE.md Quick Reference** rewritten to point operators at
+  the new debug-overhaul surfaces (toolbar mode picker, 6 nav tabs,
+  per-run dir layout, telemetry NDJSON path, MCP server, feedback
+  inbox). The §16 rule 8 line updated to reflect Phase 1 shipped (no
+  longer "queued").
+- **Canary/docs/features/FEATURE_STATUS.md** gains a Debug-overhaul
+  section table mapping each shipped feature → phase number + the
+  consolidated deferred follow-ups list (10 items).
+- **Canary/docs/plans/2026-05-24-canary-debug-overhaul.md** frontmatter
+  flipped `in-progress → shipped`; retrospective section appended (what
+  shipped exactly as designed, scope deviations table, deferred items,
+  counts, operator-visible deltas).
+- **C:/Repos/Penumbra/CLAUDE.md** gains a "Canary integration
+  (debug-overhaul shipped 2026-05-24)" section after Quick Reference,
+  documenting telemetry capture + per-run REPORT.md + MCP server +
+  spawn registry + feedback inbox. Notes that no Penumbra-side code
+  changes were needed.
+- **C:/Repos/Qualia/CLAUDE.md** gains the same section (Qualia-relevant
+  highlights focus on toolbar mode picker for VLM oracle tests +
+  spawn-registry attribution).
+- **C:/Repos/MultiVerse/BUILD_LOG.md** gains one consolidated cross-repo
+  entry summarising the full debug-overhaul outcome + deferral list.
+- **MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md**
+  frontmatter flipped `status: READY → EXECUTED` + `executed: 2026-05-24`
+  + banner mirroring the design doc retrospective (10 phases landed,
+  ~30 commits, build 0/0, Unit 107 → 220, Integration 0 → 2; headline
+  outcomes; pragmatic deviations; deferred follow-ups).
+- **No Rhino-side CLAUDE.md update** — Rhino-side telemetry interception
+  was deferred in Phase 2 (no clean RhinoCommon 8 hook); the repo
+  layout has no separate Rhino/ CLAUDE.md (RhinoIfc is unrelated).
+- **Files modified (this session, this phase):**
+  - `CLAUDE.md`, `docs/features/FEATURE_STATUS.md`,
+    `docs/plans/2026-05-24-canary-debug-overhaul.md` (Canary).
+  - `C:/Repos/Penumbra/CLAUDE.md`,
+    `C:/Repos/Qualia/CLAUDE.md`,
+    `C:/Repos/MultiVerse/BUILD_LOG.md`,
+    `C:/Repos/MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`
+    (cross-repo).
+- **Per §0.3 item 12 + 13 of the implementation prompt: status flip +
+  prompt frontmatter EXECUTED — both done.**
+- **No verification step (docs-only).** Existing build + test green
+  state from Phase 8 carries forward (220 Unit + 2 Integration; 0/0).
+
+## 2026-05-24 — Debug-overhaul implementation COMPLETE
+
+All 9 design phases (C1-C9) + Phase 0 pre-flight + precursor shipped
+across one agentic session. ~30 commits on master past the
+`pre-impl-debug-overhaul-2026-05-24` snapshot tag. Build 0/0 throughout.
+Unit tests 107 → 220 (+113); integration tests 0 → 2.
+
+Snapshot tag preserved as the rollback anchor; per the implementation
+prompt §11 "Delete the master snapshot tag (only if you confirm
+everything is pushed)", the tag is kept for the operator's review and
+deletion. Final operator-facing summary appended to this log per the
+prompt's §11 final-summary step.
+
+**Final summary:**
+- Total commits: ~30 past `pre-impl-debug-overhaul-2026-05-24`.
+- Per-phase commit counts (approx): Phase 0 = 1; Precursor = 2;
+  Phase 1 = 3; Phase 2 = 5; Phase 3 = 5; Phase 4 = 4; Phase 5 = 5;
+  Phase 6 = 5; Phase 7 = 4; Phase 8 = 4; Phase 9 = 1.
+- Tests added: +113 Unit, +2 Integration.
+- Cross-repo updates: Penumbra CLAUDE.md, Qualia CLAUDE.md, MultiVerse
+  BUILD_LOG.md, MultiVerse implementation prompt frontmatter.
+- Deviations from design: 5 documented in the retrospective (UI
+  layout, mode picker placement, candidates/diffs flatness, MCP
+  transport, Tier 3 filter scope).
+- Follow-up bugs filed: bug 0007 (CLI exit code) shipped its own fix
+  inside Phase Precursor; no new bugs filed by the implementation.
+- Cross-repo work that surfaced needing a separate prompt: none.
+  Penumbra + Qualia integrations Just Worked through the existing
+  hooks contract; no contract changes required.
+- VLM + pixel-diff functional check: deferred to operator-side smoke
+  on hardware-bearing machine. The Phase 8 build + test run completes
+  green; no code path was modified in ways that would break the
+  existing VLM/pixel-diff verdict generation.

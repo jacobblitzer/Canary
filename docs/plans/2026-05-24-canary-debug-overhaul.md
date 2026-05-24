@@ -1,15 +1,15 @@
 ---
 date: 2026-05-24
 tags: [plan, canary, debug, ui, telemetry, debug-overhaul]
-status: in-progress
+status: shipped
 project: canary
 component: full-surface
 ---
 
-> **Implementation in flight (started 2026-05-24).** Driving prompt:
-> `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`. Progress
-> log: `docs/progress/2026-05-24-canary-debug-overhaul.md`. Status flips to
-> `shipped` after Phase 9 (cross-repo doc pass) lands.
+> **Shipped 2026-05-24.** All 9 design phases landed across ~30 commits.
+> Driving prompt: `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md`.
+> Progress log with per-phase detail: `docs/progress/2026-05-24-canary-debug-overhaul.md`.
+> Retrospective appended below.
 
 
 # Canary debug-overhaul — design proposal
@@ -738,3 +738,99 @@ Sum of S=0.5, M=1, L=2, XL=3 weeks (rough):
 ## Frontmatter for future readers
 
 This plan is `status: proposed`. After operator review (Phase D), the operator's resolved open-question answers feed into the implementation prompt. Once the implementation prompt is written, this plan's status flips to `status: in-progress`. Once Phases 1–9 (or the agreed v1 cut) ship, status flips to `status: shipped` + a retrospective section is appended.
+
+---
+
+## Retrospective (shipped 2026-05-24)
+
+All 9 design phases (C1–C9) landed across 10 implementation phases (Phase 0
+pre-flight + precursor + Phases 1–9). ~30 commits. Build 0/0 throughout.
+Unit tests grew 107 → 220 (+113 new); integration tests 0 → 2.
+
+### What shipped exactly as designed
+
+- **C1 telemetry envelope** — `Canary.Telemetry.TelemetryRecord` shape +
+  `NdjsonFileSink` + CDP `Console` + `Log` + `Network` capture for
+  Penumbra + Qualia via shared `Canary.Cdp.CdpTelemetryStream` helper.
+- **C2 REPORT.md + per-run dir** — `MarkdownReportGenerator` writing
+  the §C2 spec template; per-run dir lives at
+  `<test>/runs/<yyyyMMdd-HHmmss-xxxx>/`. CLI + GUI parity (both
+  paths route through `TestRunner.SavePerRunArtifactsAsync`).
+- **C3 non-headless enforcement** — `--headless` flag, UI auto-launch,
+  single-instance mutex + named-pipe forwarding per operator decision Q5.
+- **C5 sketch + annotate** — custom WPF `AnnotationCanvas` (not InkCanvas
+  per §C5 open question) hosted in WinForms via `ElementHost`;
+  rect / freehand / text tools; PNG + JSON sidecar storage.
+- **C6 file inbox + MCP server** — `Canary.Feedback.FeedbackInboxWriter`
+  produces `docs/feedback/{inbox,triaged,resolved}/<slug>.md` + sidecar.
+  `Canary.McpServer` exposes 8 tools over stdio.
+- **C7 tiered localhost** — Tier 1 + Tier 2 (SpawnRegistry voluntary
+  per Q3) + Tier 3 (name heuristic) all shipped; LocalhostManager
+  unions in `EnumeratePorts`.
+- **C9 demotion path** — `CanarySettings.UiMode` toggle persists;
+  Maturation-mode panels deliberately NOT built per §C9.
+
+### Scope choices that deviated pragmatically
+
+- **C4 UI overhaul layout** — design ASCII showed the tab strip nested
+  below the TreeView on the LEFT pane (each mode swaps left + right).
+  Shipped a simpler top-level `TabControl` wrapping the existing
+  `SplitContainer` as the Tests tab. INavMode contract unchanged; the
+  placement can be rearranged in future polish without touching panels.
+- **C4 toolbar mode picker** — placed on `MainForm`'s toolbar rather
+  than inside `TestRunnerPanel` because the panel is constructed lazily
+  per-run, so an internal picker can't influence its own run.
+- **C2 candidates/diffs flatness** — `runs/<timestamp>/` holds only
+  `result.json` + `REPORT.md` for this phase. Baselines, candidates,
+  diffs, composite.png stay flat at the test level (overwriting per
+  run). The `MarkdownReportGenerator` uses `../<dir>/` relative links
+  to compensate. Moving images per-run is a polish follow-up.
+- **C6 MCP transport** — self-contained ~120-line MCP 2024-11-05
+  stdio JSON-RPC handler rolled in-house instead of the
+  `ModelContextProtocol` NuGet package. Zero external dep; wire shape
+  visible from source.
+- **C7 Tier 3 filter scope** — name-only filter ships; WMI Win32_Process
+  command-line keyword filtering deferred. False positives surfaced with
+  the explicit "may be false positive" UI caveat.
+
+### Deferred to a v2 follow-up (intentional + documented)
+
+| Deferral | Why | Where tracked |
+|---|---|---|
+| Rhino-side `RhinoApp.WriteLine` interception | No clean RhinoCommon 8 hook in scope | Phase 2 BUILD_LOG entry |
+| `InputReplayer` event records | Refactor cross-cuts Phase 7 territory | Phase 2 BUILD_LOG entry |
+| Per-test telemetry slicing in shared-suite mode | Boundaries ambiguous | Phase 2 BUILD_LOG entry |
+| Moving candidates/diffs/composite into per-run dirs | Substantial refactor | Phase 3 BUILD_LOG entry |
+| Per-test telemetry route (vs per-suite) | Phase 2 ships per-suite location | Phase 3 BUILD_LOG entry |
+| WMI command-line filtering for Tier 3 | Name-only ships; if noisy, polish | Phase 8 BUILD_LOG entry |
+| Maturation-mode UI panels | Explicit out per §C9 | Phase 8 BUILD_LOG entry |
+| `ResultRetention` auto-wiring | Helper available; operator decides cadence | Phase 3 BUILD_LOG entry |
+| PastRuns body-content search across REPORT.md | Metadata-only filter today | Phase 8 BUILD_LOG entry |
+| `McpServerStdioIntegrationTests` | In-process StringReader/Writer covers the protocol | Phase 6 BUILD_LOG entry |
+| `UIOverhaulSmokeTests` integration test | `NavModeTests` cover the contract | Phase 7 BUILD_LOG entry |
+
+### Counts
+
+- Commits past pre-impl tag: ~30 (`git log pre-impl-debug-overhaul-2026-05-24..HEAD --oneline | wc -l`)
+- Unit tests: 107 → 220 (+113)
+- Integration tests: 0 → 2 (SingleInstancePipeTests)
+- New files: ~40 (Telemetry namespace, Reporting, Localhost, Feedback, Navigation, Panels, McpServer csproj + tools, Settings, ResultRetention, tests)
+- New csproj: 1 (`Canary.McpServer`)
+- Build: 0/0 warnings/errors throughout
+
+### Operator-visible deltas
+
+- `canary run` launches Canary.UI by default; `--headless` for CI.
+- `canary run` returns exit code 1 on any failure (was 0 → bug 0007).
+- Toolbar mode picker drives `--mode` from the GUI.
+- 6 nav tabs above the workload tree: Tests / Past Runs / Localhost /
+  Feedback / Telemetry / Settings.
+- Per-run REPORT.md + result.json under
+  `workloads/<w>/results/[<suite>/]<test>/runs/<timestamp>/`.
+- Per-suite telemetry.ndjson under `workloads/<w>/results/[<suite>/]`.
+- Operator Annotate flow on `ImageViewerForm`.
+- `Canary.McpServer.exe` ready to register in `.mcp.json`.
+- LocalhostPanel shows Tier 1 + Tier 2 (Canary-spawn intent strings) +
+  Tier 3 (opt-in heuristic).
+- `%LocalAppData%\Canary\settings.json` persists UI mode + retention +
+  Tier 3 toggle.
