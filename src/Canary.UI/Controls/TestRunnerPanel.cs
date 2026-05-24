@@ -312,21 +312,11 @@ internal sealed class TestRunnerPanel : UserControl
                 AddLog($"Warning: Could not save report \u2014 {ex.Message}");
             }
 
-            // Persist result JSON for each test (feeds ResultsHistory.ScanAsync)
-            foreach (var result in suite.TestResults)
-            {
-                try
-                {
-                    var resultDir = Path.Combine(workloadsDir, workload.Name, "results", result.TestName);
-                    Directory.CreateDirectory(resultDir);
-                    var resultPath = Path.Combine(resultDir, "result.json");
-                    await TestResultSerializer.SaveAsync(result, resultPath).ConfigureAwait(true);
-                }
-                catch (Exception ex)
-                {
-                    AddLog($"Warning: Could not save result for '{result.TestName}' \u2014 {ex.Message}");
-                }
-            }
+            // Per Phase 3 / \u00a7C2: TestRunner now writes per-test per-run
+            // artifacts (result.json + REPORT.md) into
+            // `<test>/runs/<timestamp>/` during each RunTestAsync /
+            // RunAgentTestAsync call. ResultsHistory dual-scans both the
+            // legacy flat layout and the new per-run layout.
 
             RunCompleted?.Invoke(suite);
         }

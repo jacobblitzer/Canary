@@ -3,6 +3,7 @@ using Canary.Agent;
 using Canary.Comparison;
 using Canary.Config;
 using Canary.Input;
+using Canary.Reporting;
 using Canary.Telemetry;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -100,12 +101,14 @@ public sealed class TestRunner
         string? suiteName = null)
     {
         var sw = Stopwatch.StartNew();
+        var startedUtc = DateTime.UtcNow;
         var result = new TestResult
         {
             TestName = testDef.Name,
             Workload = workload.Name,
             Status = TestStatus.Passed
         };
+        string? testDirSaved = null;
 
         Process? appProcess = null;
         HarnessClient? client = null;
@@ -185,6 +188,7 @@ public sealed class TestRunner
             // 6. Process checkpoints (capture + compare)
             var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
             Directory.CreateDirectory(testDir);
+            testDirSaved = testDir;
 
             // Default capture size from WindowPositioner; updated after positioning
             var captureWidth = WindowPositioner.TargetWidth;
@@ -363,6 +367,8 @@ public sealed class TestRunner
         }
 
         result.Duration = sw.Elapsed;
+        if (testDirSaved != null)
+            await SavePerRunArtifactsAsync(result, workload, testDirSaved, startedUtc, DateTime.UtcNow).ConfigureAwait(false);
         return result;
     }
 
@@ -661,6 +667,8 @@ public sealed class TestRunner
         string? suiteName = null)
     {
         var sw = Stopwatch.StartNew();
+        var startedUtc = DateTime.UtcNow;
+        string? testDirSaved = null;
         var result = new TestResult
         {
             TestName = testDef.Name,
@@ -721,6 +729,7 @@ public sealed class TestRunner
             // 3. Process checkpoints with camera positioning
             var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
             Directory.CreateDirectory(testDir);
+            testDirSaved = testDir;
 
             var captureWidth = testDef.Setup?.Canvas?.Width ?? 960;
             var captureHeight = testDef.Setup?.Canvas?.Height ?? 540;
@@ -796,6 +805,8 @@ public sealed class TestRunner
         }
 
         result.Duration = sw.Elapsed;
+        if (testDirSaved != null)
+            await SavePerRunArtifactsAsync(result, workload, testDirSaved, startedUtc, DateTime.UtcNow).ConfigureAwait(false);
         Progress.OnTestCompleted(testDef.Name, result.Status, sw.Elapsed.TotalSeconds);
         return result;
     }
@@ -1504,6 +1515,64 @@ public sealed class TestRunner
         if (suiteName != null)
             return Path.Combine(_workloadsDir, workloadName, "results", suiteName, testName);
         return Path.Combine(_workloadsDir, workloadName, "results", testName);
+    }
+
+    // Phase 3 / §C2 — per-run dir layout. Writes the run's result.json +
+    // REPORT.md into `<testDir>/runs/<timestamp>/`. Baselines, candidates,
+    // diffs, composite stay at the test level (overwriting per run) for
+    // this phase; a future phase can deepen if past-runs image preservation
+    // becomes required.
+    //
+    // Errors are swallowed + logged — a failed report write must not flip
+    // the test verdict.
+    private async Task SavePerRunArtifactsAsync(
+        TestResult result,
+        WorkloadConfig workload,
+        string testDir,
+        DateTime startedUtc,
+        DateTime finishedUtc)
+    {
+        try
+        {
+            var runId = GenerateRunId(startedUtc);
+            var runDir = Path.Combine(testDir, "runs", runId);
+            Directory.CreateDirectory(runDir);
+
+            await TestResultSerializer.SaveAsync(result, Path.Combine(runDir, "result.json")).ConfigureAwait(false);
+
+            await MarkdownReportGenerator.SaveAsync(
+                result,
+                new MarkdownReportGenerator.ReportOptions
+                {
+                    RunId = runId,
+                    WorkloadDisplayName = workload.DisplayName,
+                    WorkloadAgentType = workload.AgentType,
+                    Mode = ModeOverride switch
+                    {
+                        ModeOverride.Vlm => "vlm",
+                        ModeOverride.Both => "both",
+                        _ => "pixel-diff",
+                    },
+                    StartedUtc = startedUtc,
+                    FinishedUtc = finishedUtc,
+                    // From <test>/runs/<timestamp>/REPORT.md, the per-suite
+                    // telemetry sink sits three levels up.
+                    TelemetryNdjsonRelativePath = "../../../telemetry.ndjson",
+                },
+                Path.Combine(runDir, "REPORT.md")).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Warning: failed to write per-run artifacts for '{result.TestName}': {ex.Message}");
+        }
+    }
+
+    private static string GenerateRunId(DateTime startedUtc)
+    {
+        // Timestamp + 4 hex chars to avoid same-second collisions in suite
+        // mode (multiple tests starting within the same second window).
+        var rand = (uint)Random.Shared.Next();
+        return $"{startedUtc:yyyyMMdd-HHmmss}-{rand:x4}";
     }
 
     /// <summary>
