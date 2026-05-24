@@ -7,6 +7,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- Phase 5 / design §C5 + operator decision Q4: WPF island for the
+         annotation surface (custom WPF Canvas embedded via ElementHost).
+         Keeps the WinForms shell + dark theme; WPF only where it pulls
+         its weight. -->
+    <UseWPF>true</UseWPF>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
@@ -15,6 +20,13 @@
     <ProjectReference Include="..\Canary.Agent\Canary.Agent.csproj" />
     <ProjectReference Include="..\Canary.Agent.Penumbra\Canary.Agent.Penumbra.csproj" />
     <ProjectReference Include="..\Canary.Agent.Qualia\Canary.Agent.Qualia.csproj" />
+  </ItemGroup>
+
+  <!-- Phase 5: turning on UseWPF removes System.IO from the default
+       implicit usings (.NET SDK quirk). Restore it explicitly so the
+       existing WinForms files keep working without per-file changes. -->
+  <ItemGroup>
+    <Using Include="System.IO" />
   </ItemGroup>
 
 </Project>
