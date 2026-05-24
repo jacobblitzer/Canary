@@ -5,6 +5,7 @@ using Canary.Agent.Qualia;
 using Canary.Config;
 using Canary.Orchestration;
 using Canary.Reporting;
+using Canary.Telemetry;
 
 namespace Canary.Cli;
 
@@ -176,6 +177,11 @@ public static class RunCommand
         var qualiaConfig = await QualiaWorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
         using var agent = new QualiaBridgeAgent(qualiaConfig.QualiaConfig);
 
+        // Phase 2 / §C1: register the per-suite telemetry sink before
+        // InitializeAsync so the CDP subscribers it sets up start writing
+        // immediately.
+        if (agent is Canary.Telemetry.ITelemetryAware ta) ta.RegisterTelemetrySink(runner.TelemetrySink);
+
         ct.Register(() =>
         {
             try { agent.AbortAsync().Wait(3000); } catch { }
@@ -207,6 +213,9 @@ public static class RunCommand
 
         var penumbraConfig = await PenumbraWorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
         using var agent = new PenumbraBridgeAgent(penumbraConfig.PenumbraConfig);
+
+        // Phase 2 / §C1: see RunQualiaSuiteAsync — same wiring.
+        if (agent is Canary.Telemetry.ITelemetryAware ta) ta.RegisterTelemetrySink(runner.TelemetrySink);
 
         // Register Ctrl+C abort
         ct.Register(() =>
@@ -266,6 +275,17 @@ public static class RunCommand
             };
             if (modeOverride != ModeOverride.PixelDiff)
                 logger.Log($"Mode override: {modeOverride}");
+
+            // Phase 2 / §C1: per-suite telemetry sink. Writes to
+            // results/[<suite>/]telemetry.ndjson alongside the existing
+            // result.json. Phase 3 will move both into runs/<timestamp>/.
+            var telemetryDir = suiteName != null
+                ? Path.Combine(workloadsDir, workloadName, "results", suiteName)
+                : Path.Combine(workloadsDir, workloadName, "results");
+            Directory.CreateDirectory(telemetryDir);
+            var telemetryPath = Path.Combine(telemetryDir, "telemetry.ndjson");
+            using var telemetrySink = new NdjsonFileSink(telemetryPath);
+            runner.TelemetrySink = telemetrySink;
 
             List<TestDefinition> tests;
             if (testName != null)

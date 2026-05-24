@@ -3,6 +3,7 @@ using Canary.Agent;
 using Canary.Comparison;
 using Canary.Config;
 using Canary.Input;
+using Canary.Telemetry;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -71,6 +72,16 @@ public sealed class TestRunner
     /// <see cref="ModeOverride.PixelDiff"/> override (explicit beats implicit).
     /// </summary>
     public ModeOverride ModeOverride { get; set; } = ModeOverride.None;
+
+    /// <summary>
+    /// Phase 2 / §C1: per-run telemetry sink. Defaults to a no-op so
+    /// callers that don't care can ignore it. RunCommand sets this to a
+    /// per-suite NdjsonFileSink. CDP bridge agents that implement
+    /// <see cref="ITelemetryAware"/> get the same sink registered before
+    /// their InitializeAsync so console + network + log records flow
+    /// through the same file.
+    /// </summary>
+    public ITelemetrySink TelemetrySink { get; set; } = NullTelemetrySink.Instance;
 
     public TestRunner(ProcessManager processManager, string workloadsDir, ITestLogger logger)
     {
