@@ -18,6 +18,10 @@
 - **Status**: see `spec/PHASES.md` for the canonical phase list and the tail of `BUILD_LOG.md` for current progress. Test counts move every commit; check `dotnet test --list-tests | wc -l` rather than trusting any number stamped here.
 
 
+### Asks queue (docs/asks/)
+
+When Canary needs work from a peer (a new hook, baseline regeneration, contract change), file the ask at `docs/asks/<peer>/<NNNN>-slug.md` per the convention in [`docs/asks/README.md`](docs/asks/README.md). To spawn coordinated peer-side work, instantiate `MultiVerse/prompts/_template-canary-coordinated-work.md` parameterized by `(peer, ask-id)`. The Canary MCP server will expose `list_consumer_asks` + `get_consumer_ask` for live queries — these are queued as a §8.1 addendum to `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md` Phase 6 (the 8-tool Phase 6 already shipped 2026-05-24; the 2 asks-queue tools await a follow-up session). Per-peer workflow docs live at each peer's `spec/CANARY.md` (CPig, Penumbra, Qualia today; Rhino queued as `docs/asks/rhino/0001-create-canary-md.md`).
+
 ### Active Penumbra integration initiatives
 
 For each multi-session Penumbra-side initiative driven through Canary, see the matching progress log per STANDARD.md §19:
