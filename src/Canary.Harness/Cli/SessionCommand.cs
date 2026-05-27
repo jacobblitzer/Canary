@@ -76,6 +76,8 @@ public static class SessionCommand
             Console.WriteLine();
             Console.WriteLine($"[supervised session armed] sessionId={session.SessionId} workload={workload} url={session.Url ?? "(unknown)"}");
             Console.WriteLine("   c = capture     a = capture + open in viewer     n = capture with note     q = end + write report");
+            if (Console.IsInputRedirected)
+                Console.WriteLine("   (stdin is redirected — line-mode REPL: one command character per line)");
             Console.WriteLine($"   dir: {session.Directory}");
             Console.WriteLine();
 
@@ -96,6 +98,17 @@ public static class SessionCommand
 
     private static async Task RunReplAsync(SupervisedSession session, CancellationToken ct)
     {
+        // Console.KeyAvailable / Console.ReadKey throw InvalidOperationException
+        // when stdin is redirected from a file or pipe (CI scripts, smoke
+        // tests, `printf "c\nq\n" | canary session start`, etc). Detect
+        // up front and fall back to a line-mode REPL: one command character
+        // per line.
+        if (Console.IsInputRedirected)
+        {
+            await RunLineModeReplAsync(session, ct).ConfigureAwait(false);
+            return;
+        }
+
         while (!ct.IsCancellationRequested)
         {
             if (!Console.KeyAvailable)
@@ -105,6 +118,33 @@ public static class SessionCommand
             }
             var k = Console.ReadKey(intercept: true);
             switch (char.ToLowerInvariant(k.KeyChar))
+            {
+                case 'c':
+                    await DoCaptureAsync(session, openInViewer: false, withNote: false, ct).ConfigureAwait(false);
+                    break;
+                case 'a':
+                    await DoCaptureAsync(session, openInViewer: true, withNote: false, ct).ConfigureAwait(false);
+                    break;
+                case 'n':
+                    await DoCaptureAsync(session, openInViewer: false, withNote: true, ct).ConfigureAwait(false);
+                    break;
+                case 'q':
+                    return;
+            }
+        }
+    }
+
+    private static async Task RunLineModeReplAsync(SupervisedSession session, CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            string? line;
+            try { line = await Console.In.ReadLineAsync(ct).ConfigureAwait(false); }
+            catch (OperationCanceledException) { return; }
+            if (line == null) return;
+            var trimmed = line.Trim().ToLowerInvariant();
+            if (trimmed.Length == 0) continue;
+            switch (trimmed[0])
             {
                 case 'c':
                     await DoCaptureAsync(session, openInViewer: false, withNote: false, ct).ConfigureAwait(false);

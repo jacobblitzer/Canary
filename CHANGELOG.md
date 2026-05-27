@@ -12,6 +12,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed — bug 0008: `canary session start` REPL crashed on redirected stdin (2026-05-27)
+- `SessionCommand.RunReplAsync` now detects `Console.IsInputRedirected` and branches to a line-mode REPL using `Console.In.ReadLineAsync` when stdin is piped or file-redirected. The original single-key `Console.ReadKey` path remains for interactive terminals. Found during the Phase 1 verification smoke (the smoke itself was the repro); fix verified by re-running the smoke with `printf "c\nq\nclose-out\n" | canary session start --workload qualia` and confirming a real PNG capture + clean exit code 0. See `docs/bugs/0008-session-repl-crashes-on-redirected-stdin.md`.
+
 ### Added — Supervised session mode Phase 3 (2026-05-27)
 - Two new MCP tools in `Canary.McpServer` bringing the total from 8 to 10:
   - `list_sessions [--workload <w>] [--limit <n>]` — enumerates supervised sessions across workloads (row per `workloads/<w>/sessions/<id>/session.json`).
