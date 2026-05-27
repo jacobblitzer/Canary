@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             xmlns:cfg="using:Canary.Config"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.RecordingView"
+             x:DataType="vm:RecordingViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="16">
+      <Grid ColumnDefinitions="130,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Workload:" Foreground="#B4B4B4" VerticalAlignment="Center" />
+        <ComboBox Grid.Row="0" Grid.Column="1"
+                  ItemsSource="{Binding Workloads}"
+                  SelectedItem="{Binding SelectedWorkload, Mode=TwoWay}"
+                  Width="300" HorizontalAlignment="Left">
+          <ComboBox.ItemTemplate>
+            <DataTemplate x:DataType="cfg:WorkloadConfig">
+              <TextBlock Text="{Binding Name}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Test name:" Foreground="#B4B4B4" VerticalAlignment="Center" Margin="0,6,0,0" />
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TestName, Mode=TwoWay}" Width="300" HorizontalAlignment="Left" Margin="0,6,0,0" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Target app:" Foreground="#B4B4B4" Margin="0,6,0,0" />
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding TargetAppDescription}"
+                   Foreground="#B4B4B4" TextWrapping="Wrap" Margin="0,6,0,0" />
+
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,12,0,0">
+          <Button Content="Launch App &amp; Record" Background="#B43232" Foreground="White" Command="{Binding StartCommand}" />
+          <Button Content="Stop &amp; Save" Command="{Binding StopCommand}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Spacing="20" Margin="0,12,0,0">
+          <TextBlock Text="{Binding EventCount, StringFormat='Events: {0}'}"
+                     Foreground="#DCB432" FontWeight="Bold" />
+          <TextBlock Text="{Binding StatusText}" Foreground="#B4B4B4" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <ScrollViewer Grid.Row="1" Background="#141414">
+      <ItemsControl ItemsSource="{Binding LogLines}" Padding="8">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <SelectableTextBlock Text="{Binding}" FontFamily="Consolas, Menlo, monospace" FontSize="12" Foreground="#B4B4B4" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </Grid>
+</UserControl>
