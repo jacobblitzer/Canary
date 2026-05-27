@@ -7,7 +7,10 @@ namespace Canary.UI.Avalonia;
 
 internal static class Program
 {
-    private const string SingleInstanceMutexName = @"Global\Canary.UI.SingleInstance.Avalonia";
+    // Phase 6 cutover: mutex name unified with the legacy WinForms one
+    // so CLI `canary run` invocations that forward via the pipe find the
+    // running Avalonia exe under the same Global\... lock.
+    private const string SingleInstanceMutexName = @"Global\Canary.UI.SingleInstance";
 
     [STAThread]
     public static int Main(string[] args)

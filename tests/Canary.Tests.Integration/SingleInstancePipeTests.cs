@@ -1,5 +1,5 @@
 using Canary.Cli;
-using Canary.UI;
+using Canary.UI.Avalonia.Services;
 using Xunit;
 
 namespace Canary.Tests.Integration;

@@ -4,7 +4,11 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>Canary.UI.Avalonia</RootNamespace>
-    <AssemblyName>Canary.UI.Avalonia</AssemblyName>
+    <!-- Phase 6 cutover: AssemblyName flipped to Canary.UI so the produced
+         exe matches the legacy filename. UiLocator + every desktop
+         shortcut + `start "" Canary.UI.exe` invocation that existed
+         before the migration keeps working without changes. -->
+    <AssemblyName>Canary.UI</AssemblyName>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
