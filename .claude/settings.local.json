@@ -129,7 +129,13 @@
       "Bash(ping:*)",
       "Bash(pushd:*)",
       "Bash(cd:*)",
-      "Bash(dotnet *)"
+      "Bash(dotnet *)",
+      "Bash(git tag *)",
+      "Bash(./src/Canary.Harness/bin/Debug/net8.0-windows/canary.exe --help)",
+      "Bash(./src/Canary.Harness/bin/Debug/net8.0-windows/canary.exe session *)",
+      "Read(//c/Repos/MultiVerse/**)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "Bash(git check-ignore *)"
     ]
   }
 }
