@@ -14,6 +14,7 @@ public class NavModeTests
         new PastRunsNavMode(),
         new LocalhostNavMode(),
         new FeedbackNavMode(),
+        new SessionsNavMode(),
         new TelemetryNavMode(),
         new SettingsNavMode(),
     }.Select(m => new object[] { m });
