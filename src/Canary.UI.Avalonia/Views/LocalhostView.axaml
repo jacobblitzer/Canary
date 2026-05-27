@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.LocalhostView"
+             x:DataType="vm:LocalhostViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
+      <WrapPanel Orientation="Horizontal">
+        <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
+        <Button Content="Kill selected" Command="{Binding KillSelectedCommand}" Margin="0,0,12,0" />
+        <CheckBox IsChecked="{Binding ShowTier3, Mode=TwoWay}"
+                  Content="Show all dev-server-likely processes (Tier 3 — may include false positives)"
+                  VerticalAlignment="Center" />
+      </WrapPanel>
+    </Border>
+
+    <DataGrid Grid.Row="1"
+              ItemsSource="{Binding Rows}"
+              SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              GridLinesVisibility="Horizontal"
+              HeadersVisibility="Column"
+              Background="#252526">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="70" />
+        <DataGridTextColumn Header="PID" Binding="{Binding Pid}" Width="80" />
+        <DataGridTextColumn Header="Process" Binding="{Binding ProcessName}" Width="200" />
+        <DataGridTextColumn Header="Provenance" Binding="{Binding Provenance}" Width="140" />
+        <DataGridTextColumn Header="Started (UTC)" Binding="{Binding StartedDisplay}" Width="170" />
+        <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="*" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <Border Grid.Row="2" Background="#007ACC" Padding="8,4">
+      <TextBlock Text="{Binding StatusText}" Foreground="White" />
+    </Border>
+  </Grid>
+</UserControl>
