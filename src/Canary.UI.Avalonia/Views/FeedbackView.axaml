@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.FeedbackView"
+             x:DataType="vm:FeedbackViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
+      <WrapPanel Orientation="Horizontal">
+        <Button Content="Refresh" Command="{Binding ReloadCommand}" Margin="0,0,8,0" />
+        <Button Content="Open inbox folder" Command="{Binding OpenInboxFolderCommand}" />
+      </WrapPanel>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="2*,4,5*">
+      <TreeView Grid.Column="0"
+                ItemsSource="{Binding Buckets}"
+                SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                Background="#252526">
+        <TreeView.ItemTemplate>
+          <TreeDataTemplate ItemsSource="{Binding Children}" DataType="vm:FeedbackNode">
+            <TextBlock Text="{Binding Label}" />
+          </TreeDataTemplate>
+        </TreeView.ItemTemplate>
+      </TreeView>
+
+      <GridSplitter Grid.Column="1" Background="#404040" />
+
+      <TextBox Grid.Column="2"
+               Text="{Binding Preview, Mode=OneWay}"
+               IsReadOnly="True"
+               AcceptsReturn="True"
+               TextWrapping="NoWrap"
+               FontFamily="Consolas, Menlo, monospace"
+               FontSize="13"
+               Background="#141414"
+               Foreground="#C8C8C8" />
+    </Grid>
+
+    <Border Grid.Row="2" Background="#007ACC" Padding="8,4">
+      <TextBlock Text="{Binding StatusText}" Foreground="White" />
+    </Border>
+  </Grid>
+</UserControl>
