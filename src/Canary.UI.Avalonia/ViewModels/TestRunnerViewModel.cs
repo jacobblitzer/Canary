@@ -60,6 +60,11 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     public Func<IntPtr?>? GetMainWindowHandleAsync { get; set; }
     public Func<SuiteResult, Task>? OnRunCompletedAsync { get; set; }
 
+    // Phase 5: set by MainWindow so AbortHotkey can arm against the
+    // main window HWND for the duration of a run.
+    public Action? OnRunStarted { get; set; }
+    public Action? OnRunFinished { get; set; }
+
     public bool HasActiveProcesses => _pm != null;
 
     [RelayCommand]
@@ -79,6 +84,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         _cts = new CancellationTokenSource();
         _pm = new ProcessManager();
         _keepOpenAfterRun = false;
+        OnRunStarted?.Invoke();
 
         var logger = new AvaloniaTestLogger(verbose: true);
         logger.MessageLogged += msg => Append(msg);
@@ -162,6 +168,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             }
             _cts?.Dispose();
             _cts = null;
+            OnRunFinished?.Invoke();
         }
     }
 
