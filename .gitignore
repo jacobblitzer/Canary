@@ -1,6 +1,7 @@
 bin/
 obj/
 results/
+sessions/
 *.user
 *.suo
 .vs/
