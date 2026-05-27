@@ -26,6 +26,7 @@ public sealed class MainForm : Form
     private readonly ContextMenuStrip _suiteContextMenu;
     private readonly WorkloadExplorer _explorer = new();
     private readonly ResultsHistory _resultsHistory = new();
+    private IReadOnlyList<WorkloadExplorer.WorkloadEntry> _loadedWorkloads = Array.Empty<WorkloadExplorer.WorkloadEntry>();
     private AbortHotkey? _abortHotkey;
     private TestRunnerPanel? _activeRunnerPanel;
     private ToolStripButton? _closeWorkloadBtn;
@@ -49,6 +50,7 @@ public sealed class MainForm : Form
     private readonly PastRunsNavMode _pastRunsNavMode = new();
     private readonly LocalhostNavMode _localhostNavMode = new();
     private readonly FeedbackNavMode _feedbackNavMode = new();
+    private readonly SessionsNavMode _sessionsNavMode = new();
     private readonly TelemetryNavMode _telemetryNavMode = new();
     private readonly SettingsNavMode _settingsNavMode = new();
 
@@ -163,6 +165,7 @@ public sealed class MainForm : Form
         AddNavTab(_pastRunsNavMode);
         AddNavTab(_localhostNavMode);
         AddNavTab(_feedbackNavMode);
+        AddNavTab(_sessionsNavMode);
         AddNavTab(_telemetryNavMode);
         AddNavTab(_settingsNavMode);
 
@@ -468,6 +471,7 @@ public sealed class MainForm : Form
         {
             case PastRunsNavMode pr: pr.SetWorkloadsDir(_workloadsDir); break;
             case TelemetryNavMode tn: tn.SetWorkloadsDir(_workloadsDir); break;
+            case SessionsNavMode sn: sn.SetWorkloads(_workloadsDir, _loadedWorkloads.Select(w => w.Config)); break;
         }
     }
 
@@ -1312,6 +1316,8 @@ public sealed class MainForm : Form
         try
         {
             var workloads = await _explorer.LoadWorkloadsAsync(dir).ConfigureAwait(true);
+            _loadedWorkloads = workloads;
+            _sessionsNavMode.SetWorkloads(dir, workloads.Select(w => w.Config));
 
             // Collect history for status coloring
             var historyByWorkload = new Dictionary<string, Dictionary<string, TestStatus>>();
@@ -1455,6 +1461,8 @@ public sealed class MainForm : Form
     protected override void WndProc(ref Message m)
     {
         if (_abortHotkey?.ProcessMessage(ref m) == true)
+            return;
+        if (_sessionsNavMode.ProcessHotkeyMessage(ref m))
             return;
         base.WndProc(ref m);
     }

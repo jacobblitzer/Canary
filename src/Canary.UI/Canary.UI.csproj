@@ -20,6 +20,12 @@
     <ProjectReference Include="..\Canary.Agent\Canary.Agent.csproj" />
     <ProjectReference Include="..\Canary.Agent.Penumbra\Canary.Agent.Penumbra.csproj" />
     <ProjectReference Include="..\Canary.Agent.Qualia\Canary.Agent.Qualia.csproj" />
+    <!-- Phase 2 (supervised-session): SessionsLiveSubPanel uses
+         Canary.Harness.Session.SessionAgentFactory to construct the
+         workload-specific bridge agent + dispatch on AgentType. The
+         factory's logic mirrors RunCommand.cs and is single-sourced
+         here rather than duplicated. -->
+    <ProjectReference Include="..\Canary.Harness\Canary.Harness.csproj" />
   </ItemGroup>
 
   <!-- Phase 5: turning on UseWPF removes System.IO from the default

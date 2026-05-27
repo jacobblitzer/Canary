@@ -1,3 +1,4 @@
+using Canary.Config;
 using Canary.UI.Controls;
 using Canary.UI.Panels;
 
@@ -87,3 +88,23 @@ public sealed class SettingsNavMode : INavMode
         return _panel;
     }
 }
+
+public sealed class SessionsNavMode : INavMode
+{
+    public string Name => "Sessions";
+    public string Description => "Supervised sessions — operator-driven debugging with on-demand capture (Phase 2 / supervised-session feature).";
+
+    private SessionsPanel? _panel;
+
+    public Control CreateContent()
+    {
+        _panel ??= new SessionsPanel { Dock = DockStyle.Fill };
+        return _panel;
+    }
+
+    public void SetWorkloads(string? workloadsDir, IEnumerable<WorkloadConfig> workloads)
+        => _panel?.SetWorkloads(workloadsDir, workloads);
+
+    public bool ProcessHotkeyMessage(ref Message m) => _panel?.ProcessHotkeyMessage(ref m) ?? false;
+}
+
