@@ -1,7 +1,7 @@
 ---
 date: 2026-05-27
 tags: [feature, ui, avalonia, migration, canary]
-status: in-progress
+status: shipped
 project: canary
 component: ui
 ---
@@ -51,8 +51,8 @@ Driving artifacts:
 - **Phase 2 — Tests tab (shipped, 2026-05-27)** — workload tree + Welcome/TestRunner/ResultsViewer/Recording sub-panels + Tests-only toolbar items + F5 keybinding.
 - **Phase 3 — editors (shipped, 2026-05-27)** — TestEditor / SuiteEditor / WorkloadEditor with JSON round-trip property tests. Editors are orphan ViewModels/Views; wire-in via tree context menus lands in Phase 5.
 - **Phase 4 — annotation polish (shipped, 2026-05-27)** — undo stack (Ctrl+Z), tool-palette ToggleButton group, AnnotateWindowViewModel extracted from code-behind, feedback-inbox parity (inbox-mode constructor + FeedbackInboxWriter wiring).
-- **Phase 5 — services + glue (in-progress, 2026-05-27)** — AbortHotkey (Pause) armed during runs; AutoRunRequestHandler + `HandleAutoRunAsync` route pipe-forwarded `canary run` invocations to a tree-driven run; tree drag-and-drop accepts `.input.json` recordings → creates tests; tree context menus (Run / Edit / Approve / Create test from recording / Open in Explorer) wire the Phase 3 editors into the operator workflow via `EditorHostWindow`.
-- **Phase 6 — cutover (queued)** — flip default UI, delete `src/Canary.UI/`, full smoke matrix.
+- **Phase 5 — services + glue (shipped, 2026-05-27)** — AbortHotkey (Pause) armed during runs; AutoRunRequestHandler + `HandleAutoRunAsync` route pipe-forwarded `canary run` invocations to a tree-driven run; tree drag-and-drop + context menus; Phase 3 editors wired in via `EditorHostWindow`.
+- **Phase 6 — cutover (shipped, 2026-05-27)** — `Canary.UI.Avalonia.csproj` `<AssemblyName>` flipped to `Canary.UI` so the produced exe matches the legacy filename; `Canary.Harness/UiLocator.cs` repointed to the Avalonia sibling; `src/Canary.UI/` deleted entirely; WinForms-coupled tests removed; `Canary.Tests.Integration` repointed to the Avalonia `SingleInstancePipeServer`; cross-repo doc pass. Migration shipped.
 
 Operator review at every phase boundary; no push until Phase 6.
 

@@ -1,5 +1,87 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 6 (cutover) — SHIPPED
+
+- **Date**: 2026-05-27
+- **Commits**: pending (single Phase 6 cutover commit + docs commit).
+- **Scope**: Final phase of the 7-phase Avalonia migration. The
+  Avalonia project becomes the sole UI project; the WinForms shell is
+  deleted; the cross-repo doc pass aligns Canary CLAUDE.md +
+  README.md + the MultiVerse cross-repo BUILD_LOG to the new
+  reality.
+- **Files edited**:
+  - `src/Canary.UI.Avalonia/Canary.UI.Avalonia.csproj` —
+    `<AssemblyName>` flipped to `Canary.UI` so the produced exe
+    keeps the legacy filename (UiLocator + every shortcut keeps
+    working).
+  - `src/Canary.UI.Avalonia/Program.cs` — single-instance mutex
+    name unified with the legacy WinForms one
+    (`Global\Canary.UI.SingleInstance`) so CLI pipe forwards land
+    on the running Avalonia exe.
+  - `src/Canary.Harness/UiLocator.cs` — sibling-solution path
+    walks to `Canary.UI.Avalonia/bin/.../Canary.UI.exe` rather than
+    the retired `Canary.UI/bin/...` directory.
+  - `tests/Canary.Tests/Canary.Tests.csproj` — drops the Canary.UI
+    ProjectReference + the `<UseWindowsForms>` flag.
+  - `tests/Canary.Tests.Integration/Canary.Tests.Integration.csproj`
+    — repointed to the Avalonia project.
+  - `tests/Canary.Tests.Integration/SingleInstancePipeTests.cs` —
+    `using Canary.UI;` → `using Canary.UI.Avalonia.Services;`.
+  - `CLAUDE.md` — Quick Reference repro pattern path + Framework
+    line + spec/PHASES_UI reference updated to flag the Avalonia
+    migration.
+  - `README.md` — Features bullet + Project Structure tree now
+    reference `Canary.UI.Avalonia/` (outputs Canary.UI.exe).
+  - `docs/features/canary-ui-avalonia.md` — status `in-progress` →
+    `shipped`; Phase 6 row updated.
+  - `docs/plans/2026-05-24-canary-debug-overhaul.md` — § C4 marked
+    SUPERSEDED 2026-05-27 with a pointer to the Avalonia migration.
+  - `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` —
+    Phase 6 section appended.
+  - `CHANGELOG.md` — new `### Changed` block prepended; final
+    unit-test landing recorded.
+  - `Canary.sln` — Canary.UI project removed (`dotnet sln remove`).
+- **Files deleted**:
+  - `src/Canary.UI/` — entire WinForms project tree (~30 files).
+  - `tests/Canary.Tests/UI/` — 8 WinForms-coupled test files
+    (SessionsPanelTests, GuiTestLoggerTests, IntegrationTests,
+    PastRunsIndexTests, ResultsHistoryTests,
+    ResultsHistoryDualShapeTests, WorkloadExplorerTests). Each
+    behavior either has Avalonia VM coverage or was tied to a
+    surface that isn't part of this migration (PastRuns panel was
+    never ported).
+  - `tests/Canary.Tests/Navigation/` — NavModeTests.cs (INavMode
+    was the WinForms lazy-nav abstraction; Avalonia uses a
+    NavigationView + selected-item binding instead).
+- **Tests**:
+  - Pre-Phase-6: 330 unit tests (peak across the build phases).
+  - Post-Phase-6: 283 unit tests (47 WinForms-only tests removed).
+  - vs Pre-migration baseline (258): +25 net, all Avalonia VM
+    coverage.
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors.
+  Single UI project, single produced `Canary.UI.exe`.
+- **Cross-repo touches** (per the prompt §0.3 + Canary
+  CLAUDE.md Cross-Repo Change Protocol):
+  - `C:/Repos/Canary/CLAUDE.md` — Avalonia framework note +
+    Quick Reference path update.
+  - `C:/Repos/MultiVerse/BUILD_LOG.md` — cross-repo entry
+    flagging the migration shipped (Canary → operator workflow
+    surfaces).
+  - **Peer repos (`C:/Repos/Qualia/CLAUDE.md`,
+    `C:/Repos/Penumbra/CLAUDE.md`)**: NOT TOUCHED. Their references
+    to `Canary.UI.exe` continue to work — same filename at the
+    same shortcut surface; only the producing project moved.
+- **Verification gates (Phase 6)**: see Phase 6 smoke matrix in
+  `docs/progress/2026-05-27-canary-ui-avalonia-migration.md`.
+- **Snapshot tag**: `pre-impl-ui-avalonia-2026-05-27` deleted
+  after the smoke matrix passed (rollback anchor no longer needed).
+- **Status**: ✅ Migration shipped. 7 phases over one session;
+  330 → 283 unit-test final count (net +25 vs pre-migration);
+  build 0/0 throughout; pushed at the Phase 5 boundary plus the
+  Phase 6 cutover commit.
+
+---
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 5 (services + glue)
 
 - **Date**: 2026-05-27

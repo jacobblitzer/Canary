@@ -18,7 +18,7 @@ canary.exe (harness)  <-- Named Pipe IPC -->  Agent inside Rhino (.rhp plugin)
 
 ## Features
 
-- **CLI + GUI**: Command-line harness and WinForms GUI with dark theme
+- **CLI + GUI**: Command-line harness and Avalonia 11 GUI (FluentAvalonia dark theme) — migrated from WinForms 2026-05-27, see `docs/features/canary-ui-avalonia.md`
 - **Pixel diff + SSIM**: Configurable tolerance, composite diff images
 - **HTML reports**: Self-contained with embedded images, status badges
 - **JUnit XML**: CI-compatible test output
@@ -66,7 +66,7 @@ Canary.sln
 src/
   Canary.Core/           # Shared library (comparison, config, orchestration, reporting)
   Canary.Harness/        # CLI entry point
-  Canary.UI/             # WinForms GUI
+  Canary.UI.Avalonia/    # Avalonia 11 + FluentAvalonia + CommunityToolkit.Mvvm GUI (outputs Canary.UI.exe)
   Canary.Agent/          # Shared agent interface (net8.0 + net48)
   Canary.Agent.Rhino/    # Rhino plugin (net48, outputs .rhp)
   Canary.Agent.Penumbra/ # CDP bridge for browser testing

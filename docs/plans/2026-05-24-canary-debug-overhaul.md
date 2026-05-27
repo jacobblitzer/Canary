@@ -251,6 +251,8 @@ static void Main(string[] args) {
 
 ## C4 — UI overhaul
 
+> **SUPERSEDED 2026-05-27.** Canary.UI has been migrated to **Avalonia 11 + FluentAvaloniaUI + CommunityToolkit.Mvvm** — see [`docs/features/canary-ui-avalonia.md`](../features/canary-ui-avalonia.md) and [`docs/progress/2026-05-27-canary-ui-avalonia-migration.md`](../progress/2026-05-27-canary-ui-avalonia-migration.md). The "WinForms additive + WPF island" approach below shipped through Phase 7 of this overhaul and ran into the recurring layout-regression pattern (clipped buttons, overlapping tabs, hidden status lines) the Avalonia migration was designed to eliminate. The nav structure (workloads tree + per-tab content swap + Sessions / Localhost / Feedback / Telemetry / Settings tabs) carried forward; the WinForms control implementations were replaced. The WPF annotation island is gone — `AnnotationCanvas` is now an Avalonia control.
+
 ### Problem
 
 Per §A1, the current UI is a workload-and-test-centric tree with a content-panel-replacement model. Reasonable for "manage tests + view results"; insufficient for "see live console + network + past runs + localhost ports + feedback inbox at-a-glance." The operator (ask #6) wants this evaluated.

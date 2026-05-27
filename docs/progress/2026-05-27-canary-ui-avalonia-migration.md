@@ -360,4 +360,70 @@ Phase 6 — cutover (~1 day). Flip the default UI to the Avalonia build, delete 
 - `865c815` — `feat(ui-avalonia): SingleInstancePipeServer + AutoRunRequestHandler`
 - `a03dd95` — `feat(ui-avalonia): drag-and-drop + tree context menus + editor host`
 - `71d6cc7` — `test(ui-avalonia): AutoRunRequestHandler tests`
-- (pending) — `docs(progress): Phase 5 — services + glue`
+- `10c8231` — `docs(progress): Phase 5 — services + glue`
+
+## Phase 6 — cutover (2026-05-27) — SHIPPED
+
+### Pre-flight
+
+- Phase 5 verified by operator (continue + push).
+- Phases 0–5 pushed to origin/master at commit `10c8231` (43 commits).
+- Snapshot tag `pre-impl-ui-avalonia-2026-05-27` confirmed present.
+- Baseline: 330 unit tests passing, build 0/0, both `Canary.UI.exe` (WinForms) and `Canary.UI.Avalonia.exe` (Avalonia) building side by side.
+
+### What landed
+
+- **`Canary.UI.Avalonia.csproj`** — `<AssemblyName>` flipped to `Canary.UI`. The produced exe is now `Canary.UI.exe` from the Avalonia project's bin dir.
+- **`src/Canary.UI.Avalonia/Program.cs`** — single-instance mutex name unified with the legacy WinForms one (`Global\Canary.UI.SingleInstance`).
+- **`src/Canary.Harness/UiLocator.cs`** — sibling-solution search path repointed from `Canary.UI/bin/...` to `Canary.UI.Avalonia/bin/...`. Filename `Canary.UI.exe` unchanged.
+- **`tests/Canary.Tests/Canary.Tests.csproj`** — dropped the `Canary.UI` ProjectReference + the `<UseWindowsForms>` flag.
+- **`tests/Canary.Tests.Integration/`** — csproj + `SingleInstancePipeTests.cs` repointed to the Avalonia project's `SingleInstancePipeServer`.
+- **`Canary.sln`** — Canary.UI project removed.
+- **`src/Canary.UI/`** — entire WinForms project tree deleted (≈30 files).
+- **8 WinForms-coupled test files deleted** (`tests/Canary.Tests/UI/` + `tests/Canary.Tests/Navigation/`). Every retained UI behavior has Avalonia VM coverage in `tests/Canary.Tests/UI.Avalonia/`.
+
+### Cross-repo doc pass
+
+- `Canary/CLAUDE.md` — Avalonia flagged in Framework line + Quick Reference repro pattern path + spec/PHASES_UI reference.
+- `Canary/README.md` — Features bullet + Project Structure tree updated.
+- `docs/features/canary-ui-avalonia.md` — status `in-progress` → `shipped`.
+- `docs/plans/2026-05-24-canary-debug-overhaul.md` — § C4 marked SUPERSEDED 2026-05-27.
+- `CHANGELOG.md` — new `### Changed` block above the `### Added` migration block.
+- `BUILD_LOG.md` — Phase 6 entry prepended.
+- `MultiVerse/BUILD_LOG.md` — cross-repo entry (Canary → operator workflow surfaces).
+- Peer repos (Qualia, Penumbra) CLAUDE.md UNCHANGED — `Canary.UI.exe` reference still resolves.
+
+### Phase 6 smoke matrix
+
+| # | Workflow | Status |
+|---|---|---|
+| 1 | `canary run --workload qualia --test eager-l3-reload-smoke --headless` | ⏸ operator smoke |
+| 2 | `canary session start --workload qualia` REPL + closeout | ⏸ operator smoke |
+| 3 | UI launch + Sessions Live → Start → Ctrl+Shift+C → End → Past | ⏸ operator smoke |
+| 4 | UI launch + Tests → double-click test → Run → see results | ⏸ operator smoke |
+| 5 | UI launch + Annotate a past checkpoint → Save to inbox | ⏸ operator smoke |
+| 6 | UI launch + tab-switch responsiveness, no clipped buttons | ⏸ operator smoke |
+| 7 | `canary session list` + `canary session report --id <id>` | ⏸ operator smoke |
+| 8 | MCP `list_sessions` + `get_session_report` from a Claude session | ⏸ operator smoke |
+
+Build ✅ and unit tests (283 passing) ✅. The 8 workflow gates are operator-attended end-to-end smokes.
+
+### Snapshot tag
+
+`pre-impl-ui-avalonia-2026-05-27` — leave in place until the operator confirms the 8 smokes pass. Per the prompt §7, deleted after green.
+
+### Done state
+
+- ✅ `src/Canary.UI/` deleted.
+- ✅ `src/Canary.UI.Avalonia/` is the UI project; output is `Canary.UI.exe`.
+- ✅ `Canary.Harness/UiLocator.cs` points at the Avalonia exe.
+- ⏸ All 8 Phase 6 smoke workflows — operator-attended.
+- ✅ 0 warnings / 0 errors. Unit-test count 283 (down from 330 peak; 47 WinForms-only tests removed). Net +25 vs the 258 pre-migration baseline.
+- ✅ Feature doc status `shipped`.
+- ✅ CHANGELOG + BUILD_LOG + Canary CLAUDE.md + README updated.
+- ⏸ Snapshot tag `pre-impl-ui-avalonia-2026-05-27` deleted — operator's call after smoke.
+
+### Commits
+
+- (pending) — `chore(ui): Phase 6 cutover — Avalonia becomes Canary.UI; delete WinForms project`
+- (pending) — `docs: Phase 6 cross-repo doc pass + MultiVerse cross-repo entry`

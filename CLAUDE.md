@@ -84,7 +84,7 @@ Read `spec/SUPERVISOR.md` — single source of truth for build decisions.
 1. `spec/SUPERVISOR.md` — Orchestration, constraints, gate checklists, dependency matrix
 2. `spec/ARCHITECTURE.md` — System design, IPC protocol, comparison engine, two-process model
 3. `spec/PHASES.md` — Build phases with checkpoints (0–7)
-4. `spec/PHASES_UI.md` — Build phases with checkpoints (8–13: Core extraction + WinForms GUI + CPig workload)
+4. `spec/PHASES_UI.md` — Build phases with checkpoints (8–13: Core extraction + GUI + CPig workload). UI was migrated to Avalonia 11 + FluentAvalonia + CommunityToolkit.Mvvm 2026-05-27 — see [`docs/features/canary-ui-avalonia.md`](docs/features/canary-ui-avalonia.md).
 5. `spec/TESTS.md` — Unit and integration test specifications (0–7)
 6. `spec/TESTS_UI.md` — Test specifications (8–12)
 7. `spec/CPIG_WORKLOAD.md` — Conventions for the CPig regression workload (Phase 13). Peer doc: `C:\Repos\CPig\spec\CANARY.md`.
@@ -92,7 +92,7 @@ Read `spec/SUPERVISOR.md` — single source of truth for build decisions.
 
 ### Key Rules
 - **Namespace**: `Canary` (core + harness), `Canary.Agent` (shared), `Canary.Agent.*` (per-app)
-- **Framework**: `net8.0-windows` (Core, Harness, UI), `net8.0;net48` (Agent), `net48` (Rhino)
+- **Framework**: `net8.0-windows` (Core, Harness, UI), `net8.0;net48` (Agent), `net48` (Rhino). UI is **Avalonia 11.2 + FluentAvaloniaUI 2.2 + CommunityToolkit.Mvvm 8.3** (since 2026-05-27 cutover — see `docs/features/canary-ui-avalonia.md`).
 - **IPC**: Named pipes + JSON-RPC only — no HTTP, no sockets
 - **Screenshots**: Captured by agent inside the app, not by the harness
 - **Ctrl+C**: Must always work. Display "Press Ctrl+C to abort" in status output
@@ -184,7 +184,7 @@ This repo is **infrastructure** — no formal release; milestone tags only (e.g.
   ```bash
   taskkill //IM Canary.UI.exe //F
   cd C:/Repos/Canary && dotnet build Canary.sln --configuration Release
-  start "" "src/Canary.UI/bin/Release/net8.0-windows/Canary.UI.exe"
+  start "" "src/Canary.UI.Avalonia/bin/Release/net8.0-windows/Canary.UI.exe"
   ```
 - **Repro harness:** workload-scoped — `workloads/rhino/`, `workloads/penumbra/`, `workloads/qualia/`. Test definitions at `workloads/<w>/tests/*.json`, suites at `workloads/<w>/suites/*.json`, fixtures at `workloads/<w>/fixtures/*.gh` (Rhino) or programmatic (Penumbra/Qualia). Run a single test: `canary run --workload rhino --test cpig-NN-slug --mode pixel-diff|vlm|both`.
 - **Environment:** Rhino 8 installed and licensed for Rhino-workload tests; a WebGPU-capable GPU + Vite dev server reachable for Penumbra workload; Ollama running locally (`ollama serve`) with the configured VLM model pulled.
