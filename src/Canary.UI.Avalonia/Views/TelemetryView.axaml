@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.TelemetryView"
+             x:DataType="vm:TelemetryViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <TextBlock Grid.Column="0" Text="Tailing:" VerticalAlignment="Center" Margin="0,0,6,0" />
+        <TextBlock Grid.Column="1" Text="{Binding TailingPath}" TextTrimming="CharacterEllipsis"
+                   Foreground="#96C8FF" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="Source:" VerticalAlignment="Center" Margin="12,0,6,0" />
+        <ComboBox Grid.Column="3"
+                  ItemsSource="{Binding SourceFilters}"
+                  SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                  MinWidth="140" />
+      </Grid>
+    </Border>
+
+    <DataGrid Grid.Row="1"
+              ItemsSource="{Binding Rows}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              GridLinesVisibility="Horizontal"
+              HeadersVisibility="Column"
+              FontFamily="Consolas, Menlo, monospace"
+              Background="#141414">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Time" Binding="{Binding Time}" Width="120" />
+        <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="100" />
+        <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="110" />
+        <DataGridTextColumn Header="Level" Binding="{Binding Level}" Width="70" />
+        <DataGridTextColumn Header="Data" Binding="{Binding Data}" Width="*" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>
