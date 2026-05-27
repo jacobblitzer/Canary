@@ -14,32 +14,73 @@
 
   <Window.Resources>
     <DataTemplate x:Key="SessionsTemplate" x:DataType="vm:SessionsViewModel">
-      <views:SessionsView DataContext="{Binding}" />
+      <views:SessionsView />
+    </DataTemplate>
+    <DataTemplate x:Key="LocalhostTemplate" x:DataType="vm:LocalhostViewModel">
+      <views:LocalhostView />
+    </DataTemplate>
+    <DataTemplate x:Key="FeedbackTemplate" x:DataType="vm:FeedbackViewModel">
+      <views:FeedbackView />
+    </DataTemplate>
+    <DataTemplate x:Key="TelemetryTemplate" x:DataType="vm:TelemetryViewModel">
+      <views:TelemetryView />
+    </DataTemplate>
+    <DataTemplate x:Key="SettingsTemplate" x:DataType="vm:SettingsViewModel">
+      <views:SettingsView />
     </DataTemplate>
   </Window.Resources>
 
-  <ui:NavigationView IsBackButtonVisible="False"
-                     IsSettingsVisible="False"
-                     PaneDisplayMode="Left"
-                     OpenPaneLength="220"
-                     MenuItemsSource="{Binding NavItems}"
-                     SelectedItem="{Binding SelectedNavItem, Mode=TwoWay}">
-    <ui:NavigationView.MenuItemTemplate>
-      <DataTemplate x:DataType="vm:NavItem">
-        <ui:NavigationViewItem Content="{Binding Title}">
-          <ui:NavigationViewItem.IconSource>
-            <ui:FontIconSource Glyph="{Binding IconGlyph}" />
-          </ui:NavigationViewItem.IconSource>
-        </ui:NavigationViewItem>
-      </DataTemplate>
-    </ui:NavigationView.MenuItemTemplate>
+  <Grid RowDefinitions="Auto,*">
+    <!-- Top toolbar — Open Folder is always-visible; Tests-only items
+         show up in Phase 2 with visibility bindings against the Tests
+         nav-item selection. -->
+    <Border Grid.Row="0" Background="#252526" Padding="8,4" BorderBrush="#3F3F46" BorderThickness="0,0,0,1">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="Open workloads folder…"
+                Command="{Binding OpenWorkloadsFolderCommand}" />
+        <TextBlock Text="{Binding WorkloadsDir, StringFormat='workloads: {0}'}"
+                   VerticalAlignment="Center"
+                   Foreground="#96C8FF"
+                   TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+    </Border>
 
-    <ContentControl Content="{Binding SelectedNavItem.ViewModel}">
-      <ContentControl.ContentTemplate>
-        <DataTemplate x:DataType="vm:SessionsViewModel">
-          <views:SessionsView />
+    <ui:NavigationView Grid.Row="1"
+                       IsBackButtonVisible="False"
+                       IsSettingsVisible="False"
+                       PaneDisplayMode="Left"
+                       OpenPaneLength="220"
+                       MenuItemsSource="{Binding NavItems}"
+                       SelectedItem="{Binding SelectedNavItem, Mode=TwoWay}">
+      <ui:NavigationView.MenuItemTemplate>
+        <DataTemplate x:DataType="vm:NavItem">
+          <ui:NavigationViewItem Content="{Binding Title}">
+            <ui:NavigationViewItem.IconSource>
+              <ui:FontIconSource Glyph="{Binding IconGlyph}" />
+            </ui:NavigationViewItem.IconSource>
+          </ui:NavigationViewItem>
         </DataTemplate>
-      </ContentControl.ContentTemplate>
-    </ContentControl>
-  </ui:NavigationView>
+      </ui:NavigationView.MenuItemTemplate>
+
+      <ContentControl Content="{Binding SelectedNavItem.ViewModel}">
+        <ContentControl.DataTemplates>
+          <DataTemplate x:DataType="vm:SessionsViewModel">
+            <views:SessionsView />
+          </DataTemplate>
+          <DataTemplate x:DataType="vm:LocalhostViewModel">
+            <views:LocalhostView />
+          </DataTemplate>
+          <DataTemplate x:DataType="vm:FeedbackViewModel">
+            <views:FeedbackView />
+          </DataTemplate>
+          <DataTemplate x:DataType="vm:TelemetryViewModel">
+            <views:TelemetryView />
+          </DataTemplate>
+          <DataTemplate x:DataType="vm:SettingsViewModel">
+            <views:SettingsView />
+          </DataTemplate>
+        </ContentControl.DataTemplates>
+      </ContentControl>
+    </ui:NavigationView>
+  </Grid>
 </Window>
