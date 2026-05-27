@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels.Editors"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+             x:Class="Canary.UI.Avalonia.Views.WorkloadEditorView"
+             x:DataType="vm:WorkloadEditorViewModel">
+
+  <Grid RowDefinitions="*,Auto">
+    <ScrollViewer Grid.Row="0" Padding="16">
+      <StackPanel Spacing="8" MaxWidth="800">
+        <Grid ColumnDefinitions="200,*,200,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" Margin="0,0,12,4" />
+          <TextBlock Grid.Row="0" Grid.Column="2" Text="Display name" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding DisplayName, Mode=TwoWay}" Margin="0,0,0,4" />
+
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Agent type" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AgentTypes}"
+                    SelectedItem="{Binding AgentType, Mode=TwoWay}" Margin="0,0,12,4" />
+          <TextBlock Grid.Row="1" Grid.Column="2" Text="Pipe name" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding PipeName, Mode=TwoWay}" Margin="0,0,0,4" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="App path" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding AppPath, Mode=TwoWay}" Margin="0,0,0,4" />
+
+          <TextBlock Grid.Row="3" Grid.Column="0" Text="App args" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding AppArgs, Mode=TwoWay}" Margin="0,0,0,4" />
+
+          <TextBlock Grid.Row="4" Grid.Column="0" Text="Window title" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding WindowTitle, Mode=TwoWay}" Margin="0,0,12,4" />
+          <TextBlock Grid.Row="4" Grid.Column="2" Text="Viewport class" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding ViewportClass, Mode=TwoWay}" Margin="0,0,0,4" />
+
+          <TextBlock Grid.Row="5" Grid.Column="0" Text="Startup timeout (ms)" Foreground="#B4B4B4" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Row="5" Grid.Column="1" Minimum="1000" Maximum="600000" Increment="1000" FormatString="0"
+                         Value="{Binding StartupTimeoutMs, Mode=TwoWay}" Margin="0,0,12,4" />
+        </Grid>
+
+        <TextBlock Text="Setup commands" Foreground="#B4B4B4" Margin="0,10,0,0" />
+        <Button Content="Add command" Command="{Binding AddSetupCommandCommand}" HorizontalAlignment="Left" />
+        <ItemsControl ItemsSource="{Binding SetupCommands}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:SetupCommandRow">
+              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+                <TextBox Grid.Column="0" Text="{Binding Value, Mode=TwoWay}" />
+                <Button Grid.Column="1" Content="✕" Margin="6,0,0,0"
+                        Command="{Binding $parent[ItemsControl].((vm:WorkloadEditorViewModel)DataContext).RemoveSetupCommandCommand}"
+                        CommandParameter="{Binding}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="{Binding ValidationError}"
+                   Foreground="#FFB4B4"
+                   TextWrapping="Wrap"
+                   IsVisible="{Binding ValidationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Grid.Row="1" Background="#252526" Padding="16,8" BorderBrush="#3F3F46" BorderThickness="0,1,0,0">
+      <Button Content="Save workload config" Background="#007ACC" Foreground="White"
+              HorizontalAlignment="Right" Command="{Binding SaveCommand}" />
+    </Border>
+  </Grid>
+</UserControl>
