@@ -30,12 +30,28 @@ public sealed class AnnotatedImageForm : Form
     private readonly string? _checkpointRef;
     private readonly string _inboxRoot;
 
+    // Phase 2 (supervised-session): when set, OnSave writes via this
+    // callback instead of FeedbackInboxWriter. Used by
+    // SessionsLiveSubPanel to push the annotated triad into the
+    // session's captures/ dir rather than the global feedback inbox.
+    private readonly Action<byte[], byte[], string>? _sessionSink;
+
     public AnnotatedImageForm(string sourceImagePath, string inboxRoot, string? runRef = null, string? checkpointRef = null)
+        : this(sourceImagePath, inboxRoot, runRef, checkpointRef, sessionSink: null) { }
+
+    // Phase 2 overload — sessionSink fires with (sourcePng, annotatedPng,
+    // annotationsJson) when the operator clicks Save. inboxRoot is
+    // unused in this mode (caller owns the destination paths).
+    public AnnotatedImageForm(string sourceImagePath, Action<byte[], byte[], string> sessionSink)
+        : this(sourceImagePath, string.Empty, runRef: null, checkpointRef: null, sessionSink: sessionSink) { }
+
+    private AnnotatedImageForm(string sourceImagePath, string inboxRoot, string? runRef, string? checkpointRef, Action<byte[], byte[], string>? sessionSink)
     {
         _sourceImagePath = sourceImagePath;
         _inboxRoot = inboxRoot;
         _runRef = runRef;
         _checkpointRef = checkpointRef;
+        _sessionSink = sessionSink;
 
         Text = "Canary — Annotate";
         Size = new Size(1280, 900);
@@ -175,6 +191,18 @@ public sealed class AnnotatedImageForm : Form
     {
         try
         {
+            var sourcePng = File.ReadAllBytes(_sourceImagePath);
+            var annotatedPng = _canvas.RenderAnnotatedPng();
+            var json = _canvas.SerializeAnnotationsJson("source.png");
+
+            if (_sessionSink != null)
+            {
+                _sessionSink(sourcePng, annotatedPng, json);
+                _statusLabel.Text = "Saved into session.";
+                Close();
+                return;
+            }
+
             var title = string.IsNullOrWhiteSpace(_titleBox.Text)
                 ? Path.GetFileNameWithoutExtension(_sourceImagePath)
                 : _titleBox.Text;
@@ -182,10 +210,6 @@ public sealed class AnnotatedImageForm : Form
             var writer = new FeedbackInboxWriter(_inboxRoot);
             var existingSlugs = writer.ExistingSlugs();
             var slug = FeedbackSlugGenerator.Generate(DateTime.UtcNow, title, existingSlugs);
-
-            var sourcePng = File.ReadAllBytes(_sourceImagePath);
-            var annotatedPng = _canvas.RenderAnnotatedPng();
-            var json = _canvas.SerializeAnnotationsJson("source.png");
 
             var item = new FeedbackItem
             {
