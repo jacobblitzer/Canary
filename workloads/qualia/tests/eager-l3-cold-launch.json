@@ -7,7 +7,8 @@
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
-      "(() => { localStorage.setItem('qualia.landingShown', 'true'); localStorage.setItem('qualia.extraction.provider', JSON.stringify({ id: 'ollama', config: { baseUrl: 'http://localhost:11434', model: 'gemma4:e4b' } })); return 'seeded'; })()"
+      "(() => { localStorage.setItem('qualia.landingShown', 'true'); localStorage.setItem('qualia.extraction.provider', JSON.stringify({ id: 'ollama', config: { baseUrl: 'http://localhost:11434', model: 'gemma4:e4b' } })); return 'seeded'; })()",
+      "(() => { const r = window.__canarySetPersonaEnabled('compute.rag.eager-l3', true); if (!r || r.ok !== true) throw new Error('failed to enable compute.rag.eager-l3 persona: ' + JSON.stringify(r)); return 'persona on'; })()"
     ]
   },
   "actions": [

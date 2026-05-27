@@ -68,6 +68,12 @@ UI surface for VLM testing — see `suites/qualia-v4-ui.json`):
 - `__canaryGetQverseNavigator()` — context count + active label.
 - `__canaryGetBreadcrumb()` — `{ nested, labels[], activeLabel }`.
 - `__canaryGetRagIndicator()` — top-center pill state.
+- `__canaryGetProgressBadgeState()` — bottom-right EagerExtractionProgressBadge
+  state. Returns `{ visible, inFlight, queueDepth, model, text }`. Added
+  2026-05-27 (Qualia Move 3, eager-L3 Phase 3) to drive the
+  `eager-l3-progress-badge` fixture. Reads `data-in-flight` /
+  `data-queue-depth` / `data-model` attributes off
+  `.qualia-eager-extraction-badge`.
 
 **Editing VLM prompts.** Every `mode: "vlm"` checkpoint's `description`
 field is the prompt sent to Gemma — that's the *editable expectation
