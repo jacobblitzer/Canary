@@ -204,4 +204,51 @@ Phase 3 — editors (~2 days). Port `TestEditorControl`, `SuiteEditorControl`, `
 - `1bb481a` — `feat(ui-avalonia): port RecordingView (input record + save)`
 - `fc803f7` — `feat(ui-avalonia): TestsView shell + Tests-only toolbar wiring`
 - `c45a501` — `test(ui-avalonia): TestRunner + WorkloadTree + ResultsViewer VM tests`
-- (pending) — `docs(progress): Phase 2 — Tests tab`
+- `f4bc39f` — `docs(progress): Phase 2 — Tests tab`
+
+## Phase 3 — editors (2026-05-27)
+
+### Pre-flight
+
+- Phase 2 verified by operator (continue).
+- Baseline: 299 unit tests passing, build 0/0.
+- Read the 811-line TestEditorControl, 167-line SuiteEditorControl, 494-line WorkloadEditorControl + the schema POCOs (`TestDefinition`, `SuiteDefinition`, `WorkloadConfig`).
+
+### Goals
+
+Port the three editors at JSON-round-trip-faithful shape — Load(definition) → BuildDefinition() produces byte-identical JSON to the input. **Unmanaged fields** (Penumbra-specific `Setup.Scene/Canvas/DisplayPreset/Commands`, VLM provider config, per-`TestAction` `Extra` JsonExtensionData) round-trip untouched because the VM mutates the underlying POCO instead of building a fresh one — this is the protection against silent data loss on save.
+
+### What landed
+
+**Commit 1 — `feat(ui-avalonia): port TestEditorView + VM`** (3e74731): `TestEditorViewModel` + `CheckpointRow` + `AssertRow`; tabbed View (Basic / Checkpoints / Actions+Asserts) with DataGrid editing for checkpoints + asserts. Actions remain a raw-JSON TextBox so `TestAction.Extra` JsonExtensionData round-trips.
+
+**Commit 2 — `feat(ui-avalonia): port SuiteEditorView + VM`** (e4995ae): `SuiteEditorViewModel` + `TestPickRow`; scrolling CheckBox list of available tests with `IsSelected` bound TwoWay.
+
+**Commit 3 — `feat(ui-avalonia): port WorkloadEditorView + VM`** (37a0f0a): `WorkloadEditorViewModel` + `SetupCommandRow`; 4-column form layout for related fields, list of `SetupCommands` with per-row remove.
+
+**Commit 4 — `test(ui-avalonia): editor VM tests`** (bbe05d5): 15 new tests covering JSON round-trip idempotence (the core Phase 3 contract), Load/BuildDefinition equivalence, Add/Remove command mutation, Save validation, and — critically — **unmanaged-field preservation** (Penumbra `Scene/Canvas/DisplayPreset/Commands` survive a Load → BuildDefinition cycle even though the editor doesn't surface them).
+
+**Commit 5 — `docs(progress): Phase 3`** (pending): this section + CHANGELOG + BUILD_LOG.
+
+### Verification gates
+
+1. ✅ `dotnet build Canary.sln` — 0 warnings, 0 errors. Both exes build.
+2. ✅ Edit-and-save round-trip — covered by `RoundTrip_*_IsIdempotent` unit tests (one per editor) + `UnmanagedFields_RoundTripUntouched` for the Penumbra/VLM/Setup.Commands fields the editor doesn't surface. Manual diff against a WinForms-saved JSON is operator's call.
+3. ✅ ViewModel tests — 299 → 314 (+15), all passing.
+4. ✅ CLI regression smoke — CLI untouched.
+
+### Wire-in status
+
+Editors are **orphan ViewModels/Views** in Phase 3 — created and tested but not yet routed from the Tests tab. The WinForms shell exposed them via tree-node context menus + double-click; the Avalonia equivalents land in **Phase 5** with `DragDropHandlers` + context-menu wiring. This matches the prompt's phase split (Phase 5 owns "drag-and-drop + tree context menus").
+
+### Next phase
+
+Phase 4 — annotation polish (~2 days). Continue from the Phase 0 `AnnotationCanvas` + `AnnotateWindow` baseline: tighten hit-testing on existing shapes (so the Pointer tool can select / move them), add an undo stack, polish the tool palette + color picker, and make sure the annotate-to-feedback-inbox path has parity with the WPF version.
+
+### Commits
+
+- `3e74731` — `feat(ui-avalonia): port TestEditorView + VM`
+- `e4995ae` — `feat(ui-avalonia): port SuiteEditorView + VM`
+- `37a0f0a` — `feat(ui-avalonia): port WorkloadEditorView + VM`
+- `bbe05d5` — `test(ui-avalonia): editor VM tests (Test / Suite / Workload)`
+- (pending) — `docs(progress): Phase 3 — editors`

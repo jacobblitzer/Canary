@@ -14,7 +14,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added — Canary.UI Avalonia migration (2026-05-27)
 
-Phases 0–2 — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**, beginning with the Sessions panel (most layout-pained surface), expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings), then porting the **Tests tab** (workload tree + TestRunner + ResultsViewer + Recording). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+Phases 0–3 — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**. Beginning with the Sessions panel (most layout-pained surface), expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings), then the **Tests tab** (workload tree + TestRunner + ResultsViewer + Recording), then the **editors** (Test / Suite / Workload) with JSON round-trip property tests. New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+
+Phase 3 (shipped 2026-05-27):
+- Three new editors — `TestEditorView` (tabbed: Basic / Checkpoints / Actions+Asserts), `SuiteEditorView` (test-picker checklist), `WorkloadEditorView` (4-column form + setup-commands list). All three wrap an underlying POCO so unmanaged fields (Penumbra `Setup.Scene/Canvas/DisplayPreset/Commands`, VLM provider config, `TestAction.Extra` JsonExtensionData) round-trip byte-identical when Save re-serializes.
+- 15 new unit tests under `tests/Canary.Tests/UI.Avalonia/Editors/` covering Load → BuildDefinition idempotence, validation, Add/Remove command mutation, and unmanaged-field preservation. 299 → 314 total.
+- Editors are **orphan code** in Phase 3 — wire-in via tree context menus lands in Phase 5 with `DragDropHandlers`.
+
+
 
 Phase 2 (shipped 2026-05-27):
 - **Tests tab** is now the lead nav item — workload tree on the left (Workloads → Suites / All Tests / Recordings hierarchy with kind-tagged WorkloadNode rows), content swap on the right (Welcome / TestRunner / ResultsViewer / Recording).
@@ -38,7 +45,7 @@ Phase 0 (shipped 2026-05-27):
 - 12 new unit tests under `tests/Canary.Tests/UI.Avalonia/` (`SessionsLiveViewModelTests` × 9, `SessionsPastViewModelTests` × 3) — 258 → 270 total.
 - Plan + feature doc + per-phase progress log: `docs/plans/2026-05-27-canary-ui-avalonia-migration.md` + `docs/features/canary-ui-avalonia.md` + `docs/progress/2026-05-27-canary-ui-avalonia-migration.md`.
 
-Combined Phase 0 + 1 + 2 unit test delta: 258 → 299 (+41 net new). All remaining phases queue after operator review at each phase boundary; no push until Phase 6.
+Combined Phase 0 + 1 + 2 + 3 unit test delta: 258 → 314 (+56 net new). All remaining phases queue after operator review at each phase boundary; no push until Phase 6.
 
 ### Fixed — bug 0008: `canary session start` REPL crashed on redirected stdin (2026-05-27)
 - `SessionCommand.RunReplAsync` now detects `Console.IsInputRedirected` and branches to a line-mode REPL using `Console.In.ReadLineAsync` when stdin is piped or file-redirected. The original single-key `Console.ReadKey` path remains for interactive terminals. Found during the Phase 1 verification smoke (the smoke itself was the repro); fix verified by re-running the smoke with `printf "c\nq\nclose-out\n" | canary session start --workload qualia` and confirming a real PNG capture + clean exit code 0. See `docs/bugs/0008-session-repl-crashes-on-redirected-stdin.md`.

@@ -1,5 +1,67 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 3 (editors)
+
+- **Date**: 2026-05-27
+- **Commits** (5 total):
+  - `3e74731` `feat(ui-avalonia): port TestEditorView + VM`
+  - `e4995ae` `feat(ui-avalonia): port SuiteEditorView + VM`
+  - `37a0f0a` `feat(ui-avalonia): port WorkloadEditorView + VM`
+  - `bbe05d5` `test(ui-avalonia): editor VM tests (Test / Suite / Workload)`
+  - pending `docs(progress): Phase 3 — editors`
+- **Scope**: Phase 3 of the 7-phase Avalonia migration. Port the three
+  editors (TestEditor / SuiteEditor / WorkloadEditor) at
+  JSON-round-trip-faithful shape — Load → BuildDefinition →
+  re-serialize is byte-identical to the input, including for fields
+  the editor doesn't surface (Penumbra Setup.Scene/Canvas/
+  DisplayPreset/Commands, VLM provider config, TestAction.Extra
+  JsonExtensionData). The protection against silent data loss is
+  the underlying-POCO-mutation pattern + a dedicated test
+  (UnmanagedFields_RoundTripUntouched).
+- **Files added** (9 src + 3 tests):
+  - `ViewModels/Editors/TestEditorViewModel.cs`,
+    `SuiteEditorViewModel.cs`, `WorkloadEditorViewModel.cs` (with
+    row-VMs: `CheckpointRow`, `AssertRow`, `TestPickRow`,
+    `SetupCommandRow`).
+  - `Views/TestEditorView.axaml` (+ `.cs`),
+    `SuiteEditorView.axaml` (+ `.cs`),
+    `WorkloadEditorView.axaml` (+ `.cs`).
+  - `tests/Canary.Tests/UI.Avalonia/Editors/TestEditorViewModelTests.cs`,
+    `SuiteEditorViewModelTests.cs`,
+    `WorkloadEditorViewModelTests.cs`.
+- **Files edited**:
+  - `docs/features/canary-ui-avalonia.md` — Phase 2 → shipped,
+    Phase 3 → in-progress.
+  - `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` —
+    Phase 3 section + commits + wire-in status (orphan until
+    Phase 5).
+  - `CHANGELOG.md` — Phase 3 detail prepended; combined test delta
+    258 → 314 (+56 across phases 0–3).
+- **Tests**:
+  - Pre-Phase-3: 299 unit tests, 0 failed.
+  - Post-Phase-3: 314 unit tests, 0 failed (+15 net new — Test
+    editor 6, Suite editor 4, Workload editor 5).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors. Both
+  exes build green.
+- **Verification gates (Phase 3)**: 1) build 0/0 ✅; 2) edit-and-save
+  round-trip covered by unit tests including the unmanaged-fields
+  guard ✅; 3) VM tests ✅; 4) CLI regression smoke — CLI untouched
+  ✅.
+- **Status**: 🟡 Phase 3 code + tests + docs shipped locally.
+  Operator review at the phase boundary before Phase 4.
+- **Wire-in status**: editors are orphan ViewModels/Views — created
+  and tested but not yet routed from the Tests tab. Tree-node context
+  menus (edit test / edit suite / edit workload) land in Phase 5
+  with `DragDropHandlers`.
+- **Next phase**: Phase 4 — annotation polish (~2 days). Build on
+  the Phase 0 `AnnotationCanvas` + `AnnotateWindow` baseline:
+  tighten hit-testing for the Pointer tool, add an undo stack,
+  polish the tool palette + color picker, verify the
+  annotate-to-feedback-inbox path matches the WPF version
+  byte-for-byte.
+
+---
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 2 (Tests tab)
 
 - **Date**: 2026-05-27
