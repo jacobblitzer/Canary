@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels.Editors"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
+             x:Class="Canary.UI.Avalonia.Views.SuiteEditorView"
+             x:DataType="vm:SuiteEditorViewModel">
+
+  <Grid RowDefinitions="*,Auto">
+    <ScrollViewer Grid.Row="0" Padding="16">
+      <StackPanel Spacing="10" MaxWidth="700">
+        <TextBlock Text="Name" Foreground="#B4B4B4" />
+        <TextBox Text="{Binding Name, Mode=TwoWay}" />
+        <TextBlock Text="Description" Foreground="#B4B4B4" />
+        <TextBox Text="{Binding Description, Mode=TwoWay}" AcceptsReturn="True" Height="80" TextWrapping="Wrap" />
+        <CheckBox IsChecked="{Binding KeepOpen, Mode=TwoWay}" Content="Keep app open after run for inspection" />
+        <TextBlock Text="Tests" Foreground="#B4B4B4" Margin="0,10,0,0" />
+        <Border BorderBrush="#404040" BorderThickness="1" MinHeight="280">
+          <ItemsControl ItemsSource="{Binding AvailableTests}" Padding="6">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:TestPickRow">
+                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Content="{Binding TestName}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Border>
+        <TextBlock Text="{Binding ValidationError}"
+                   Foreground="#FFB4B4"
+                   TextWrapping="Wrap"
+                   IsVisible="{Binding ValidationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Grid.Row="1" Background="#252526" Padding="16,8" BorderBrush="#3F3F46" BorderThickness="0,1,0,0">
+      <Button Content="Save suite definition" Background="#007ACC" Foreground="White"
+              HorizontalAlignment="Right" Command="{Binding SaveCommand}" />
+    </Border>
+  </Grid>
+</UserControl>
