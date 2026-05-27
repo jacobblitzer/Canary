@@ -12,6 +12,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Supervised session mode Phase 3 (2026-05-27)
+- Two new MCP tools in `Canary.McpServer` bringing the total from 8 to 10:
+  - `list_sessions [--workload <w>] [--limit <n>]` — enumerates supervised sessions across workloads (row per `workloads/<w>/sessions/<id>/session.json`).
+  - `get_session_report --sessionId <id>` — returns the full `SESSION_REPORT.md`.
+- Cross-repo doc pass: Canary CLAUDE.md Quick Reference + nav-tab list updated; Canary README.md features list updated; `docs/mcp-server.md` tool table bumped to 10; `MultiVerse/BUILD_LOG.md` cross-repo entry; `Qualia/CLAUDE.md` Canary integration section gains the supervised-session pointer.
+- 5 new unit tests (`SessionsToolsTests`).
+
 ### Added — Supervised session mode Phase 2 (2026-05-27)
 - New **Sessions** nav tab in `Canary.UI` (between Feedback and Telemetry). `SessionsPanel` hosts two sub-tabs:
   - **Live**: workload picker, Start/Capture/Capture+Annotate/Capture+Note/End buttons, live thumbnail strip, status line, hotkey hint. Constructs a `SupervisedSession` via `Canary.Harness.Session.SessionAgentFactory` so the same factory used by the CLI also serves the UI.

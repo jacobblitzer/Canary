@@ -25,6 +25,8 @@ Phase 6 of the debug-overhaul implementation (design §C6).
 | `list_localhost_ports` | TCP listeners on common dev-server ports (Tier 1 netstat + Tier 2 spawn registry overlay). |
 | `list_running_apps` | Canary-spawned processes from the cross-session spawn registry. |
 | `kill_localhost_port` | Tree-kill the holder of a TCP port. |
+| `list_sessions` | Supervised sessions (one row per `workloads/<w>/sessions/<id>/session.json`). Filter by `workload`, `limit`. Added 2026-05-27 with the supervised-session feature. |
+| `get_session_report` | Full `SESSION_REPORT.md` contents for a specific `sessionId`. Added 2026-05-27. |
 
 ## Setup
 

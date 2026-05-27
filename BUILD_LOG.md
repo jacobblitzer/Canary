@@ -1,5 +1,63 @@
 # Build Log — Canary
 
+## 2026-05-27 — Supervised session mode Phase 3 (MCP + cross-repo doc pass)
+
+- **Date**: 2026-05-27
+- **Commit**: pending
+- **Scope**: ship the Claude-Code-visible half — MCP tools so Claude
+  can enumerate + read supervised sessions like it does test runs and
+  feedback items, plus the cross-repo doc pass so the next agent
+  session in any of the three repos sees the new surface.
+- **Files added** (2):
+  - `src/Canary.McpServer/Tools/SessionsTools.cs` —
+    `ListSessionsTool` (filter by workload + limit, sorted newest
+    first) and `GetSessionReportTool` (looks up a session by id +
+    returns the full SESSION_REPORT.md). Mirrors RunsTools.cs.
+  - `tests/Canary.Tests/Mcp/SessionsToolsTests.cs` — 5 unit tests.
+- **Files edited**:
+  - `src/Canary.McpServer/Program.cs` — registers the two new
+    tools in the dispatch array (8 → 10).
+  - `CLAUDE.md` — Quick Reference gains the supervised-session
+    line; nav-tab list updated to include "Sessions"; MCP tool
+    count bumped to 10.
+  - `README.md` — features list gains a supervised-sessions
+    bullet; test count line updated.
+  - `docs/mcp-server.md` — tool table gains
+    `list_sessions` + `get_session_report` rows.
+  - `docs/features/supervised-session.md` — Phase 3 status
+    flipped to shipped.
+  - `docs/progress/2026-05-27-supervised-session.md` — Phase 3
+    section + final commit shape.
+  - `CHANGELOG.md` — Unreleased Phase 3 entry above the Phase 2
+    block.
+- **Cross-repo touches** (per CLAUDE.md § Cross-Repo Change Protocol):
+  - `C:/Repos/MultiVerse/BUILD_LOG.md` — one-line cross-repo entry
+    flagging supervised-session shipped (Canary → operator workflow
+    surfaces; no Penumbra/Qualia/CPig code changes needed).
+  - `C:/Repos/Qualia/CLAUDE.md` — Canary integration section gains
+    a supervised-session pointer ("for exploratory debugging of
+    Qualia outside a suite, use the Sessions tab or
+    `canary session start --workload qualia`").
+- **Tests**:
+  - Pre-Phase-3: 253 unit tests, 0 failed.
+  - Post-Phase-3: 258 unit tests, 0 failed (5 net new —
+    SessionsToolsTests: ListSessionsTool returns valid JSON,
+    GetSessionReportTool nonexistent id → not-found message,
+    GetSessionReportTool missing sessionId arg → throws,
+    Name + schema shape for both tools).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors.
+- **Snapshot tag**: `pre-impl-supervised-session-2026-05-27`
+  preserved as the rollback anchor through the three-phase
+  implementation; deleted at the end of this session per the
+  driving prompt's instruction ("Delete the snapshot tag once
+  everything's green").
+- **Status**: ✅ shipped (three phases). 12 new tests + 12 new
+  files + 10 commits across the three phases. Working tree clean
+  at session end (except `.claude/settings.local.json` which is
+  the harness's allowlist append, not part of this work).
+
+---
+
 ## 2026-05-27 — Supervised session mode Phase 2 (UI nav tab + hotkeys)
 
 - **Date**: 2026-05-27

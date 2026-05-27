@@ -24,7 +24,8 @@ canary.exe (harness)  <-- Named Pipe IPC -->  Agent inside Rhino (.rhp plugin)
 - **JUnit XML**: CI-compatible test output
 - **Input recording**: Win32 hooks (mouse/keyboard) or CDP mouse events
 - **Programmatic camera**: Deterministic camera positioning via scripted coordinates
-- **72+ unit tests** across 12 build phases
+- **Supervised sessions**: operator-driven debugging mode (`canary session start` or the Sessions nav tab) — boot a workload's target app under Canary supervision and capture screenshots on demand with Ctrl+Shift+C / Ctrl+Shift+A. See `docs/features/supervised-session.md`.
+- **258+ unit tests** across 13+ build phases
 
 ## Quick Start
 

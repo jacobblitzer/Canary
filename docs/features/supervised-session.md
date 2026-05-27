@@ -61,7 +61,7 @@ workloads/<workload>/sessions/
 
 - **Phase 1 (CLI + storage, shipped 2026-05-27)** — `canary session start/list/report` subcommands, `SupervisedSession` orchestrator, `SessionReportWriter`, telemetry NDJSON wiring. CLI-only; annotation in this phase opens the PNG in the default image viewer.
 - **Phase 2 (UI, shipped 2026-05-27)** — Sessions nav tab in `Canary.UI` with Live + Past sub-panels, global Ctrl+Shift+C / Ctrl+Shift+A hotkeys, `AnnotatedImageForm` overload that writes the annotated triad into the session's `captures/` dir (not the global feedback inbox).
-- **Phase 3 (MCP + docs, pending)** — `list_sessions` + `get_session_report` MCP tools.
+- **Phase 3 (MCP + cross-repo docs, shipped 2026-05-27)** — `list_sessions` + `get_session_report` MCP tools in `Canary.McpServer` (total tools 8 → 10). Canary CLAUDE.md + README + mcp-server.md updated; MultiVerse BUILD_LOG.md cross-repo entry; Qualia CLAUDE.md gains a supervised-session pointer in the Canary integration section.
 
 ## UI workflow (Phase 2)
 

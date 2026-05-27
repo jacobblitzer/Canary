@@ -82,9 +82,41 @@ Created in the order specified by the driving prompt's commit shape:
 
 ### Commits (Phase 2)
 
-To be created at the Phase 2 gate, per the driving prompt's commit shape:
-- `feat(ui): Sessions nav tab — Live + Past sub-panels`
-- `feat(ui): Ctrl+Shift+C / Ctrl+Shift+A hotkeys for in-session capture`
-- `feat(ui): AnnotatedImageForm overload — direct capture pipe-through`
-- `test(ui): SessionsPanel tests + NavMode coverage`
-- `docs: supervised-session Phase 2 + progress entry`
+Created in the following order (the prompt's 5-commit shape was collapsed to 4 because cleanly splitting "panels" from "hotkeys" would have required interactive staging of MainForm.cs; the two are functionally one feature):
+- `21a7802` feat(ui): AnnotatedImageForm overload — direct capture pipe-through
+- `c3dd344` feat(ui): Sessions nav tab + Ctrl+Shift+C/A hotkeys — Live + Past sub-panels
+- `a8a1c5c` test(ui): SessionsPanel tests + NavMode coverage
+- `c4f35ea` docs: supervised-session Phase 2 + progress entry
+
+## Phase 3 — MCP + cross-repo doc pass (2026-05-27)
+
+### Shipped
+
+- **`src/Canary.McpServer/Tools/SessionsTools.cs`** — `ListSessionsTool` + `GetSessionReportTool`. Mirrors `RunsTools.cs` but reads `workloads/<w>/sessions/` (and the session.json + SESSION_REPORT.md within) rather than `results/`. Filter by workload + limit (default 25, sorted newest first). The list tool returns sessionId / workload / startedAt / endedAt / durationSeconds / captureCount / annotatedCount / sessionDir / reportPath for each row.
+- **`src/Canary.McpServer/Program.cs`** — registers the two new tools, bringing the total from 8 to 10.
+- **`tests/Canary.Tests/Mcp/SessionsToolsTests.cs`** — 5 unit tests: list returns valid JSON; get with a nonexistent id returns the not-found message; get with missing sessionId arg throws ArgumentException; both tools have correct Name + InputSchemaJson shape.
+
+### Cross-repo doc pass (per CLAUDE.md § Cross-Repo Change Protocol)
+
+- **Canary CLAUDE.md** — Quick Reference gains the supervised-session bullet (CLI + GUI invocation paths + storage layout); nav-tab list updated to include "Sessions"; MCP tool count bumped from 8 to 10 with the two new tool names listed.
+- **Canary README.md** — features list gains a supervised-sessions bullet pointing at the feature doc; test count line updated to 258+.
+- **Canary docs/mcp-server.md** — tool table gains rows for `list_sessions` and `get_session_report`.
+- **MultiVerse/BUILD_LOG.md** — one-line cross-repo entry noting that the supervised-session feature shipped in Canary; no Penumbra/Qualia/CPig code changes needed.
+- **Qualia/CLAUDE.md** — Canary integration section gains a supervised-session pointer.
+
+### Verification gates (Phase 3)
+
+- ✅ `dotnet build Canary.sln` — 0 warnings, 0 errors.
+- ✅ `dotnet test --filter "Category=Unit"` — 258 Passed, 0 Failed (253 baseline + 5 net new SessionsToolsTests).
+- ⏳ **Hardware-bearing follow-up for operator**: register `Canary.McpServer.exe` in `.mcp.json` (or use the existing registration), restart Claude Code, exercise `list_sessions` + `get_session_report` from a Claude session — the most recent supervised session(s) the operator created during the Phase 1/2 smokes should appear.
+
+### Commits (Phase 3)
+
+To be created at the Phase 3 gate, per the driving prompt's commit shape:
+- `feat(mcp): list_sessions + get_session_report tools`
+- `docs: CLAUDE.md / README / mcp-server.md / CHANGELOG — supervised-session shipping`
+- `docs(multiverse + qualia): cross-repo entries for supervised-session`
+
+### Snapshot tag
+
+`pre-impl-supervised-session-2026-05-27` at `da9357b` preserved the pre-implementation HEAD as a rollback anchor through all three phases. Per the driving prompt's instruction ("Delete the snapshot tag once everything's green"), the tag is deleted at the end of this session. The Phase 1/2/3 commits are individually meaningful and can be reverted independently if needed.

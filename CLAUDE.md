@@ -8,12 +8,13 @@
 - **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8)**: every operator-triggered `canary run` launches with `Canary.UI.exe` visible. Implemented in Phase 1 of the debug-overhaul (shipped 2026-05-24). `--headless` bypasses for CI; `--quiet` implies `--headless`. Second `canary run` while UI is up forwards args to the existing instance via named pipe.
 - **Run Penumbra tests**: `canary run --workload penumbra`
 - **Run CPig tests**: `canary run --workload rhino --suite cpig` (from `C:\Repos\Canary`)
+- **Supervised session (shipped 2026-05-27)** — `canary session start --workload qualia` boots the target app under supervision (visible Chrome, no automated tests) and enters a capture REPL (`c` / `a` / `n` / `q`); or click the **Sessions** nav tab in `Canary.UI` for the GUI flow with Ctrl+Shift+C / Ctrl+Shift+A hotkeys. Sessions live at `workloads/<w>/sessions/<yyyyMMdd-HHmmss-xxxx>/` with `SESSION_REPORT.md` + `session.json` + `telemetry.ndjson` + `captures/`. See [`docs/features/supervised-session.md`](docs/features/supervised-session.md). MCP: `list_sessions` / `get_session_report` (bringing the total to 10).
 - **Debug-overhaul (shipped 2026-05-24)** — see [`docs/plans/2026-05-24-canary-debug-overhaul.md`](docs/plans/2026-05-24-canary-debug-overhaul.md) for the design + [`docs/progress/2026-05-24-canary-debug-overhaul.md`](docs/progress/2026-05-24-canary-debug-overhaul.md) for the per-phase log. Headline surfaces operators interact with:
   - **Toolbar mode picker** (pixel-diff / vlm / both) drives `TestRunnerPanel.RunAsync.modeOverride` (resolves the §A1 GUI gap).
-  - **Nav tabs** (Tests / Past Runs / Localhost / Feedback / Telemetry / Settings) above the existing tree.
+  - **Nav tabs** (Tests / Past Runs / Localhost / Feedback / Sessions / Telemetry / Settings) above the existing tree. Sessions tab added 2026-05-27.
   - **Per-run dir** `workloads/<w>/results/[<suite>/]<test>/runs/<yyyyMMdd-HHmmss-xxxx>/REPORT.md` + `result.json` per Phase 3.
   - **Telemetry NDJSON** at `workloads/<w>/results/[<suite>/]telemetry.ndjson` per Phase 2 (CDP Console + Log + Network from Penumbra/Qualia agents).
-  - **MCP server** `src/Canary.McpServer/bin/.../Canary.McpServer.exe` exposing 8 tools — see [`docs/mcp-server.md`](docs/mcp-server.md) for `.mcp.json` setup.
+  - **MCP server** `src/Canary.McpServer/bin/.../Canary.McpServer.exe` exposing 10 tools (8 from debug-overhaul + `list_sessions` / `get_session_report` from supervised-session 2026-05-27) — see [`docs/mcp-server.md`](docs/mcp-server.md) for `.mcp.json` setup.
   - **Feedback inbox** at `docs/feedback/{inbox,triaged,resolved}/` — operator Annotate flow + Claude session-start scan.
 - **Status**: see `spec/PHASES.md` for the canonical phase list and the tail of `BUILD_LOG.md` for current progress. Test counts move every commit; check `dotnet test --list-tests | wc -l` rather than trusting any number stamped here.
 
