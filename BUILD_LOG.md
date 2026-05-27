@@ -1,5 +1,24 @@
 # Build Log — Canary
 
+## 2026-05-27 — Qualia eager-L3 Move 4 follow-up
+
+- **Date**: 2026-05-27
+- **Commit**: `e237503`
+- **Scope**: new `eager-l3-provider-swap.json` fixture (asserts the
+  Move 4 provider-aware cache short-circuit + the per-provider
+  breakdown in the `sidecar.behavior-cache` dev test). Uses
+  OpenAI-compat-at-Ollama as the swap target so the fixture is
+  hermetic to the local machine; doesn't require Anthropic
+  credentials. ~150s wall clock.
+- **Coordinated with**: Qualia commits `4b1389e` → `5eee39a`
+  (Move 4 — Phase 2 v2 closeout: byte-cap gate + provider id on
+  cache entries + provider-aware freshness key).
+- **Tests added**: 1 fixture (`eager-l3-provider-swap`).
+- **Suite count**: `eager-l3.json` now 6 fixtures (was 5).
+- **Status**: Pending operator baseline approval via `Canary.UI.exe`.
+
+---
+
 ## 2026-05-27 — Qualia eager-L3 Move 3 follow-up
 
 - **Date**: 2026-05-27
