@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <ScrollViewer Padding="24">
+    <StackPanel Spacing="16" MaxWidth="800">
+      <TextBlock Text="Canary — Settings" FontSize="20" FontWeight="Bold" />
+
+      <Border Background="#252526" CornerRadius="4" Padding="16">
+        <StackPanel Spacing="8">
+          <TextBlock Text="UI mode (design §C9)" FontWeight="SemiBold" />
+          <RadioButton GroupName="UiMode"
+                       IsChecked="{Binding IsStabilization, Mode=TwoWay}"
+                       Content="Stabilization — debugging-focused; VLM and pixel-diff under Past Runs" />
+          <RadioButton GroupName="UiMode"
+                       IsChecked="{Binding IsMaturation, Mode=TwoWay}"
+                       Content="Maturation — regression-focused; VLM and pixel-diff in main nav (panels NOT in v1 — toggle only)" />
+        </StackPanel>
+      </Border>
+
+      <Border Background="#252526" CornerRadius="4" Padding="16">
+        <StackPanel Spacing="12">
+          <TextBlock Text="Localhost + retention" FontWeight="SemiBold" />
+          <CheckBox IsChecked="{Binding ShowTier3, Mode=TwoWay}"
+                    Content="Tier 3 heuristic: show all dev-server-likely processes (node/deno/bun/python/dotnet/cargo/tauri/...)" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Per-run dir retention (days):" VerticalAlignment="Center" />
+            <NumericUpDown Value="{Binding RetentionDays, Mode=TwoWay}"
+                           Minimum="1" Maximum="365" Increment="1"
+                           FormatString="0"
+                           Width="100" />
+          </StackPanel>
+          <TextBlock Text="{Binding SettingsFilePath, StringFormat='Settings file: {0}'}"
+                     Foreground="#969696" FontSize="12" />
+        </StackPanel>
+      </Border>
+
+      <TextBlock Text="{Binding StatusText}" Foreground="#96DC82" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
