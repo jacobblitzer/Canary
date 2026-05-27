@@ -47,8 +47,8 @@ Driving artifacts:
 ## Phase status
 
 - **Phase 0 — spike (shipped, 2026-05-27)** — Sessions panel + annotation canvas + global hotkeys ported to Avalonia. Layout reflow + functional smoke confirmed by operator; go/no-go decision: GO.
-- **Phase 1 — shell + simple panels (in-progress, 2026-05-27)** — Localhost / Feedback / Telemetry / Settings nav items + Open workloads folder toolbar. All four panels + full nav shell shipped; verification gates 1-2 ✅, manual smokes ⏸ pending operator.
-- **Phase 2 — Tests tab (queued)** — workload tree + TestRunnerView + ResultsViewerView + RecordingView.
+- **Phase 1 — shell + simple panels (shipped, 2026-05-27)** — Localhost / Feedback / Telemetry / Settings nav items + Open workloads folder toolbar.
+- **Phase 2 — Tests tab (in-progress, 2026-05-27)** — workload tree + Welcome/TestRunner/ResultsViewer/Recording sub-panels + Tests-only toolbar items (Run Tests + Mode picker + Record) + F5 keybinding. Verification gates 1, 6 ✅; gates 2–5, 7 ⏸ pending operator smoke.
 - **Phase 3 — editors (queued)** — TestEditor / SuiteEditor / WorkloadEditor.
 - **Phase 4 — annotation polish (queued)** — hit-testing, undo, tool palette polish.
 - **Phase 5 — services + glue (queued)** — Abort hotkey, drag-and-drop, context menus, AutoRun forwarding.

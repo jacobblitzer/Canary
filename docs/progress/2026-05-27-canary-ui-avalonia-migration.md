@@ -143,5 +143,65 @@ Phase 2 — Tests tab (~4 days). Workload tree (workloads / suites / tests / rec
 - `7221a50` — `feat(ui-avalonia): port TelemetryView to Avalonia`
 - `896f34f` — `feat(ui-avalonia): port SettingsView to Avalonia`
 - `e56aada` — `feat(ui-avalonia): full NavigationView shell + Open Folder toolbar`
-- (pending) — `test(ui-avalonia): Phase 1 panel ViewModel tests`
-- (pending) — `docs(progress): Phase 1 — shell + simple panels`
+- `b4d1972` — `test(ui-avalonia): Phase 1 panel ViewModel tests (+TelemetryVM fix)`
+- `1df807c` — `docs(progress): Phase 1 — shell + simple panels`
+
+## Phase 2 — Tests tab (2026-05-27)
+
+### Pre-flight
+
+- Phase 1 verified by operator (continue).
+- Baseline: 287 unit tests passing, build 0/0.
+- Read existing TestRunnerPanel (431 lines), ResultsViewerControl (804 lines), RecordingPanel (446 lines), WelcomePanel (67 lines), MainForm tree-loading code.
+
+### Goals
+
+Port the Tests tab — workload tree + content swap into Welcome / TestRunner / ResultsViewer / Recording. This is "the meat" — most operator workflow lives here.
+
+### What landed
+
+**Commit 1 — `feat(ui-avalonia): port WorkloadTree + Welcome`**: `WorkloadExplorer` (verbatim port), `WorkloadTreeViewModel` (Workload → Suites/Tests/Recordings hierarchy), `WelcomeView` (idle landing pane).
+
+**Commit 2 — `feat(ui-avalonia): port TestRunnerView`**: `AvaloniaTestLogger` (Dispatcher-marshaled ITestLogger), `TestRunnerViewModel` (state machine + RunRequest dispatch on AgentType + ITestProgressEvents implementation), `TestRunnerView` (live log + progress card strip). The orchestrator paths (`RunQualiaAsync` / `RunPenumbraAsync` / `RunSharedSuiteAsync` / `RunSuiteAsync`) port verbatim from the WinForms version.
+
+**Commit 3 — `feat(ui-avalonia): port ResultsViewerView`**: `ResultsViewerViewModel` (`LoadResult` / `LoadSuiteResult` + Approve/Reject/ApproveAll commands wired to `BaselineManager`), `ResultsViewerView` (scrolling list of checkpoint cards with baseline/candidate/diff thumbnails + Approve/Reject buttons). Simpler shape than the 804-line WinForms control — pass-rate bars + expandable test sections deferred to Phase 4 polish.
+
+**Commit 4 — `feat(ui-avalonia): port RecordingView`**: `RecordingViewModel` (Idle/Launching/Recording state machine + Start/Stop commands + DispatcherTimer event-count refresh), `RecordingView` (workload combo + test name + target description + Launch/Stop buttons + log). AbortOverlayForm deferred to Phase 4 polish.
+
+**Commit 5 — `feat(ui-avalonia): TestsView shell + Tests-only toolbar wiring`**: `TestsViewModel` (owns Tree + the four sub-VMs + ActiveContent slot for content swap), `TestsView` (TreeView left + GridSplitter + ContentControl right with per-VM DataTemplates), `MainWindowViewModel` (Tests prepended as first nav item + IsTestsActive + RunSelected/RecordNew commands), `MainWindow.axaml` (Run Tests + Mode picker + Record buttons visible only when IsTestsActive; F5 KeyBinding registers globally).
+
+**Commit 6 — `test(ui-avalonia): Phase 2 VM tests`**: 12 new tests across `WorkloadTreeViewModelTests` (3), `TestRunnerViewModelTests` (4), `ResultsViewerViewModelTests` (5). 287 → 299 total.
+
+**Commit 7 — `docs(progress): Phase 2`**: this section + CHANGELOG + BUILD_LOG.
+
+### Verification gates
+
+1. ✅ `dotnet build Canary.sln` — 0 warnings, 0 errors. Both `Canary.UI.exe` and `Canary.UI.Avalonia.exe` build.
+2. ⏸ **End-to-end Run Tests against qualia smoke** — pending operator. Click Tests → expand qualia → All Tests → select `eager-l3-reload-smoke` → Run Tests (or F5). Expect TestRunner pane swap with live log + progress card + final ResultsViewer.
+3. ⏸ **Abort hotkey (Pause)** — Pause hotkey wiring lives in Phase 5 (AbortHotkey port). Phase 2's Stop button still works.
+4. ⏸ **ResultsViewer Approve/Reject** — covered by unit tests (gate 6) for the disk side; needs operator smoke for the UI side.
+5. ⏸ **Drag-and-drop recording** — drag-and-drop wiring is a Phase 5 item; manual recording flow (Record button → workload pick → Launch + Record → Stop & Save) ships in Phase 2.
+6. ✅ ViewModel tests — 287 → 299, +12 net new, all passing.
+7. ⏸ **CLI regression smoke** — pending; CLI untouched.
+
+### Operator smoke checklist (gates 2 + 3 + 4 + 5)
+
+1. Click the **Tests** nav item; the workload tree loads in the left pane.
+2. Expand a workload (e.g. qualia) and double-check the Suites / All Tests / Recordings groups populated.
+3. Select a single test → click **Run Tests** (or F5). Expect: ActiveContent switches to TestRunner; status text + progress bar + live log + progress cards populate; on completion ActiveContent switches to ResultsViewer.
+4. From ResultsViewer, try **Approve** / **Reject** on a checkpoint card; confirm the candidate→baseline copy (or deletion) happened on disk.
+5. Click **Record** in the toolbar; the right pane swaps to RecordingView. Pick a workload, name a test, Launch & Record; the target app should boot + accept input; Stop & Save writes `workloads/<w>/recordings/<test>.input.json` and the tree refreshes.
+
+### Next phase
+
+Phase 3 — editors (~2 days). Port `TestEditorControl`, `SuiteEditorControl`, `WorkloadEditorControl`. Form-heavy, two-way data binding against `Canary.Core` POCOs wrapped in `INotifyPropertyChanged` adapter ViewModels. Bytes-identical edit-and-save round-trip is the bar.
+
+### Commits
+
+- `088b0bd` — `feat(ui-avalonia): port WorkloadTree + Welcome to Avalonia`
+- `c12c7d5` — `feat(ui-avalonia): port TestRunnerView (live log + progress feed)`
+- `748609c` — `feat(ui-avalonia): port ResultsViewerView (approve / reject flows)`
+- `1bb481a` — `feat(ui-avalonia): port RecordingView (input record + save)`
+- `fc803f7` — `feat(ui-avalonia): TestsView shell + Tests-only toolbar wiring`
+- `c45a501` — `test(ui-avalonia): TestRunner + WorkloadTree + ResultsViewer VM tests`
+- (pending) — `docs(progress): Phase 2 — Tests tab`

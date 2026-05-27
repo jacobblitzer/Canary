@@ -1,5 +1,56 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 2 (Tests tab)
+
+- **Date**: 2026-05-27
+- **Commits** (7 total):
+  - `088b0bd` `feat(ui-avalonia): port WorkloadTree + Welcome to Avalonia`
+  - `c12c7d5` `feat(ui-avalonia): port TestRunnerView (live log + progress feed)`
+  - `748609c` `feat(ui-avalonia): port ResultsViewerView (approve / reject flows)`
+  - `1bb481a` `feat(ui-avalonia): port RecordingView (input record + save)`
+  - `fc803f7` `feat(ui-avalonia): TestsView shell + Tests-only toolbar wiring`
+  - `c45a501` `test(ui-avalonia): TestRunner + WorkloadTree + ResultsViewer VM tests`
+  - pending `docs(progress): Phase 2 — Tests tab`
+- **Scope**: Phase 2 of the 7-phase Avalonia migration — the meat of
+  the port. Tests tab gets a workload tree on the left + a content-
+  swap pane on the right (Welcome / TestRunner / ResultsViewer /
+  Recording). Tests-only toolbar items (Run Tests + Mode picker +
+  Record) become visible only when Tests is selected. F5 keybinding
+  + click handlers drive RunSelection through the Tests VM.
+- **Files added** (16): WorkloadExplorer + AvaloniaTestLogger +
+  WorkloadTree / Welcome / TestRunner / ResultsViewer / Recording /
+  Tests ViewModels + matching Views + 3 VM-test files.
+- **Files edited**: `Views/MainWindow.axaml` +
+  `ViewModels/MainWindowViewModel.cs` (Tests prepended as first nav
+  item; Run Tests / Mode picker / Record toolbar items + F5
+  keybinding); docs/features/canary-ui-avalonia.md (Phase 1 →
+  shipped, Phase 2 → in-progress); progress log; CHANGELOG.
+- **Tests**:
+  - Pre-Phase-2: 287 unit tests, 0 failed.
+  - Post-Phase-2: 299 unit tests, 0 failed (+12 net new — Tree 3,
+    Runner 4, Results 5).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors. Both
+  exes build green.
+- **Verification gates (Phase 2)**: 1) build 0/0 ✅; 2) end-to-end Run
+  Tests against qualia smoke — pending operator; 3) abort hotkey —
+  deferred to Phase 5 (AbortHotkey port; Stop button works in Phase
+  2); 4) Approve/Reject disk side covered by unit tests, UI side
+  pending operator; 5) drag-and-drop recording — deferred to Phase 5
+  (DragDropHandlers); manual Record flow ships in Phase 2; 6) VM
+  tests ✅; 7) CLI regression smoke — pending (CLI untouched).
+- **Status**: 🟡 Phase 2 code + tests + docs shipped locally.
+  Operator review at the phase boundary before Phase 3.
+- **Deferred to later phases**: AbortOverlayForm visual overlay
+  (Phase 4 polish); Pause-key abort hotkey (Phase 5); drag-and-drop +
+  context menus (Phase 5); pass-rate bars + expandable per-test
+  sections in ResultsViewer (Phase 4 polish).
+- **Next phase**: Phase 3 — editors (~2 days). Port
+  `TestEditorControl`, `SuiteEditorControl`, `WorkloadEditorControl`
+  with two-way binding against Canary.Core POCO wrappers; goal is
+  bytes-identical edit-and-save round-trip.
+
+---
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 1 (shell + simple panels)
 
 - **Date**: 2026-05-27

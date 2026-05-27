@@ -14,7 +14,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added — Canary.UI Avalonia migration (2026-05-27)
 
-Phase 0 spike + Phase 1 shell — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**, beginning with the Sessions panel (most layout-pained surface) and expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+Phases 0–2 — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**, beginning with the Sessions panel (most layout-pained surface), expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings), then porting the **Tests tab** (workload tree + TestRunner + ResultsViewer + Recording). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+
+Phase 2 (shipped 2026-05-27):
+- **Tests tab** is now the lead nav item — workload tree on the left (Workloads → Suites / All Tests / Recordings hierarchy with kind-tagged WorkloadNode rows), content swap on the right (Welcome / TestRunner / ResultsViewer / Recording).
+- **TestRunnerViewModel** drives the existing orchestrator paths (`RunQualiaAsync` / `RunPenumbraAsync` / `RunSharedSuiteAsync` / `RunSuiteAsync`) unchanged; implements `ITestProgressEvents` with one progress card per checkpoint (status + status color + VLM prompt + reasoning + screenshot path). `AvaloniaTestLogger` marshals to the UI thread via `Dispatcher.UIThread.Post`.
+- **ResultsViewerViewModel** ships `LoadResult` / `LoadSuiteResult` + Approve/Reject/ApproveAll commands wired to `BaselineManager`. View shows checkpoint cards with baseline/candidate/diff thumbnails.
+- **RecordingViewModel** ports the InputRecorder + AppLauncher launch-record-save flow.
+- **Tests-only toolbar items** — Run Tests (F5), Mode picker (None/PixelDiff/Vlm/Both), Record — bind `IsVisible` to `IsTestsActive` so they appear only on the Tests tab. F5 KeyBinding registers globally on `MainWindow`.
+- 12 new unit tests across `WorkloadTreeViewModelTests` (3), `TestRunnerViewModelTests` (4), `ResultsViewerViewModelTests` (5). 287 → 299 total.
+
+
 
 Phase 1 (shipped 2026-05-27):
 - Four nav-panel ports — `LocalhostViewModel` + `FeedbackViewModel` + `TelemetryViewModel` + `SettingsViewModel` with matching Views. Each panel uses Avalonia layout primitives (Grid + WrapPanel + GridSplitter + DataGrid) so it reflows on narrow widths instead of clipping.
@@ -28,7 +38,7 @@ Phase 0 (shipped 2026-05-27):
 - 12 new unit tests under `tests/Canary.Tests/UI.Avalonia/` (`SessionsLiveViewModelTests` × 9, `SessionsPastViewModelTests` × 3) — 258 → 270 total.
 - Plan + feature doc + per-phase progress log: `docs/plans/2026-05-27-canary-ui-avalonia-migration.md` + `docs/features/canary-ui-avalonia.md` + `docs/progress/2026-05-27-canary-ui-avalonia-migration.md`.
 
-Combined Phase 0 + 1 unit test delta: 258 → 287 (+29 net new). All remaining phases queue after operator review at each phase boundary; no push until Phase 6.
+Combined Phase 0 + 1 + 2 unit test delta: 258 → 299 (+41 net new). All remaining phases queue after operator review at each phase boundary; no push until Phase 6.
 
 ### Fixed — bug 0008: `canary session start` REPL crashed on redirected stdin (2026-05-27)
 - `SessionCommand.RunReplAsync` now detects `Console.IsInputRedirected` and branches to a line-mode REPL using `Console.In.ReadLineAsync` when stdin is piped or file-redirected. The original single-key `Console.ReadKey` path remains for interactive terminals. Found during the Phase 1 verification smoke (the smoke itself was the repro); fix verified by re-running the smoke with `printf "c\nq\nclose-out\n" | canary session start --workload qualia` and confirming a real PNG capture + clean exit code 0. See `docs/bugs/0008-session-repl-crashes-on-redirected-stdin.md`.
