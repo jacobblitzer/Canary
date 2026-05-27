@@ -20,6 +20,8 @@ var tools = new McpTool[]
     new ListLocalhostPortsTool(),
     new ListRunningAppsTool(),
     new KillLocalhostPortTool(),
+    new ListSessionsTool(),
+    new GetSessionReportTool(),
 };
 
 var protocol = new McpProtocol(tools);
