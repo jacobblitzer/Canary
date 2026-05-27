@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+             x:Class="Canary.UI.Avalonia.Views.TestRunnerView"
+             x:DataType="vm:TestRunnerViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
+      <WrapPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding StatusText}" Foreground="#DCDCDC" VerticalAlignment="Center" Margin="0,0,12,0" />
+        <TextBlock Text="{Binding SuiteLabel}" Foreground="#96DC82" VerticalAlignment="Center" Margin="0,0,12,0"
+                   IsVisible="{Binding SuiteLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <Button Content="Stop (Pause)" Command="{Binding StopCommand}" Background="#B43232" Foreground="White" />
+      </WrapPanel>
+    </Border>
+
+    <ProgressBar Grid.Row="1" Minimum="0" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}" Height="8" />
+
+    <Grid Grid.Row="2" ColumnDefinitions="*,4,*">
+      <ScrollViewer Grid.Column="0" Background="#141414">
+        <ItemsControl ItemsSource="{Binding LogLines}" Padding="8">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <SelectableTextBlock Text="{Binding}"
+                                   FontFamily="Consolas, Menlo, monospace"
+                                   FontSize="12"
+                                   Foreground="#C8C8C8" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+      <GridSplitter Grid.Column="1" Background="#404040" />
+
+      <ScrollViewer Grid.Column="2" Background="#181818">
+        <ItemsControl ItemsSource="{Binding ProgressCards}" Padding="8">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ProgressCard">
+              <Border BorderBrush="#404040" BorderThickness="1" Margin="0,0,0,8" Padding="8" Background="#252526" CornerRadius="3">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{Binding CheckpointName}" FontWeight="Bold" Foreground="#DCDCDC" />
+                  <TextBlock Text="{Binding TestName}" Foreground="#9696C8" FontSize="11" />
+                  <TextBlock Text="{Binding Status}" Foreground="{Binding StatusColor}" />
+                  <TextBlock Text="{Binding VlmPrompt}" Foreground="#A0A0A0" TextWrapping="Wrap" FontSize="11"
+                             IsVisible="{Binding VlmPrompt, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <TextBlock Text="{Binding VlmReasoning}" Foreground="#82B496" TextWrapping="Wrap" FontSize="11"
+                             IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</UserControl>
