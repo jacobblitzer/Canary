@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.WelcomeView"
+             x:DataType="vm:WelcomeViewModel">
+
+  <ScrollViewer Padding="40,60,40,40">
+    <StackPanel Spacing="12" MaxWidth="800">
+      <TextBlock Text="{Binding Title}" FontSize="36" FontWeight="Bold" Foreground="#FFC832" />
+      <TextBlock Text="{Binding Subtitle}" FontSize="14" Foreground="#B4B4B4" />
+      <TextBlock Text="{Binding Instructions}"
+                 FontSize="13"
+                 Foreground="#8C8C8C"
+                 TextWrapping="Wrap"
+                 Margin="0,24,0,0" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
