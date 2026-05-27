@@ -1,0 +1,11 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="mc"
+        x:Class="Canary.UI.Avalonia.Views.EditorHostWindow"
+        Title="Editor"
+        Width="900" Height="800"
+        MinWidth="600" MinHeight="500"
+        WindowStartupLocation="CenterOwner">
+  <ContentControl Name="HostContent" />
+</Window>

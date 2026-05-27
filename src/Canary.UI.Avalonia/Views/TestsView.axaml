@@ -9,12 +9,23 @@
              x:DataType="vm:TestsViewModel">
 
   <Grid ColumnDefinitions="320,4,*">
-    <!-- Left: workload tree -->
     <Grid Grid.Column="0" RowDefinitions="*,Auto">
       <TreeView Grid.Row="0"
+                Name="WorkloadTree"
                 ItemsSource="{Binding Tree.Roots}"
                 SelectedItem="{Binding Tree.SelectedNode, Mode=TwoWay}"
-                Background="#252526">
+                Background="#252526"
+                DragDrop.AllowDrop="True">
+        <TreeView.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="Run" Command="{Binding RunSelectionCommand}" />
+            <MenuItem Header="Edit" Command="{Binding EditSelectionCommand}" />
+            <MenuItem Header="Approve" Command="{Binding ApproveSelectionCommand}" />
+            <MenuItem Header="Create test from recording" Command="{Binding CreateTestFromRecordingCommand}" />
+            <Separator />
+            <MenuItem Header="Open in Explorer" Command="{Binding OpenInExplorerCommand}" />
+          </ContextMenu>
+        </TreeView.ContextMenu>
         <TreeView.ItemTemplate>
           <TreeDataTemplate ItemsSource="{Binding Children}" DataType="vm:WorkloadNode">
             <TextBlock Text="{Binding Label}" Foreground="{Binding Color}" />
@@ -28,7 +39,6 @@
 
     <GridSplitter Grid.Column="1" Background="#404040" />
 
-    <!-- Right: content swap -->
     <ContentControl Grid.Column="2" Content="{Binding ActiveContent}">
       <ContentControl.DataTemplates>
         <DataTemplate x:DataType="vm:WelcomeViewModel">
