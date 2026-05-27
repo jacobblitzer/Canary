@@ -23,6 +23,9 @@ public sealed class AnnotationCanvas : UserControl
     private readonly Image _background;
     private readonly List<Shape> _shapes = new();
     private readonly List<TextRecord> _textRecords = new();
+    // Each push is the inverse of a single user action (Rectangle add /
+    // Freehand add / Text add). Undo pops + invokes. Cleared on Clear().
+    private readonly Stack<Action> _undoStack = new();
 
     private ToolMode _tool = ToolMode.Rectangle;
     private IBrush _strokeBrush = Brushes.Red;
@@ -34,6 +37,10 @@ public sealed class AnnotationCanvas : UserControl
 
     public int SourceWidth { get; private set; }
     public int SourceHeight { get; private set; }
+    public int UndoCount => _undoStack.Count;
+    public int ShapeCount => _shapes.Count;
+
+    public event Action? StateChanged;
 
     public Func<Task<string?>>? TextPromptAsync { get; set; }
 
@@ -89,9 +96,51 @@ public sealed class AnnotationCanvas : UserControl
 
     public void Clear()
     {
-        foreach (var s in _shapes) _canvas.Children.Remove(s);
+        // Snapshot for undo so Ctrl+Z restores the cleared shapes (and the
+        // associated TextBlock siblings — text shapes live on the canvas
+        // as a Rectangle+TextBlock pair, only the Rectangle is in
+        // _shapes; pair the TextBlock via the same TextRecord lookup).
+        var snapshot = new List<(Shape Shape, Control? Sibling, TextRecord? Text)>();
+        foreach (var s in _shapes)
+        {
+            Control? sibling = null;
+            var tr = _textRecords.FirstOrDefault(t => ReferenceEquals(t.Shape, s));
+            if (tr != null)
+            {
+                // Find the TextBlock at the same position the canvas added.
+                sibling = _canvas.Children.OfType<TextBlock>()
+                    .FirstOrDefault(tb => ReferenceEquals(tb.Tag, s));
+            }
+            snapshot.Add((s, sibling, tr));
+            _canvas.Children.Remove(s);
+            if (sibling != null) _canvas.Children.Remove(sibling);
+        }
+        var clearedShapes = _shapes.ToList();
+        var clearedText = _textRecords.ToList();
         _shapes.Clear();
         _textRecords.Clear();
+
+        _undoStack.Push(() =>
+        {
+            foreach (var entry in snapshot)
+            {
+                _canvas.Children.Add(entry.Shape);
+                if (entry.Sibling != null) _canvas.Children.Add(entry.Sibling);
+            }
+            _shapes.AddRange(clearedShapes);
+            _textRecords.AddRange(clearedText);
+            StateChanged?.Invoke();
+        });
+        StateChanged?.Invoke();
+    }
+
+    public bool Undo()
+    {
+        if (_undoStack.Count == 0) return false;
+        var undo = _undoStack.Pop();
+        undo();
+        StateChanged?.Invoke();
+        return true;
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -114,6 +163,7 @@ public sealed class AnnotationCanvas : UserControl
                 _shapes.Add(rect);
                 _activeShape = rect;
                 _drawing = true;
+                PushSimpleUndo(rect);
                 break;
             case ToolMode.Freehand:
                 var poly = new Polyline
@@ -128,6 +178,7 @@ public sealed class AnnotationCanvas : UserControl
                 _shapes.Add(poly);
                 _activeShape = poly;
                 _drawing = true;
+                PushSimpleUndo(poly);
                 break;
             case ToolMode.Text:
                 _ = AddTextAtAsync(_dragStart);
@@ -136,6 +187,21 @@ public sealed class AnnotationCanvas : UserControl
                 _drawing = false;
                 break;
         }
+    }
+
+    // Push an undo that removes a single non-text shape (Rectangle /
+    // Polyline) from both the canvas + _shapes. Used for the Rectangle
+    // + Freehand tools. Text gets a paired undo (see AddTextAtAsync) so
+    // both the background Rectangle and the TextBlock label go together.
+    private void PushSimpleUndo(Shape shape)
+    {
+        _undoStack.Push(() =>
+        {
+            _canvas.Children.Remove(shape);
+            _shapes.Remove(shape);
+            StateChanged?.Invoke();
+        });
+        StateChanged?.Invoke();
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
@@ -194,10 +260,24 @@ public sealed class AnnotationCanvas : UserControl
         Canvas.SetTop(bg, p.Y);
         Canvas.SetLeft(tb, p.X);
         Canvas.SetTop(tb, p.Y);
+        // Tag the TextBlock with its owning Rectangle so Clear() can pair
+        // them up when building the snapshot undo entry.
+        tb.Tag = bg;
         _canvas.Children.Add(bg);
         _canvas.Children.Add(tb);
         _shapes.Add(bg);
-        _textRecords.Add(new TextRecord { Shape = bg, Text = input, X = p.X, Y = p.Y, Color = ColorToHex(_strokeBrush), FontSize = 14 });
+        var rec = new TextRecord { Shape = bg, Text = input, X = p.X, Y = p.Y, Color = ColorToHex(_strokeBrush), FontSize = 14 };
+        _textRecords.Add(rec);
+
+        _undoStack.Push(() =>
+        {
+            _canvas.Children.Remove(bg);
+            _canvas.Children.Remove(tb);
+            _shapes.Remove(bg);
+            _textRecords.Remove(rec);
+            StateChanged?.Invoke();
+        });
+        StateChanged?.Invoke();
     }
 
     public byte[] RenderAnnotatedPng()

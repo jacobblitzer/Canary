@@ -2,35 +2,76 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="using:Canary.UI.Avalonia.Controls"
+        xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
         mc:Ignorable="mc"
         x:Class="Canary.UI.Avalonia.Views.AnnotateWindow"
+        x:DataType="vm:AnnotateWindowViewModel"
         Title="Canary — Annotate"
         Width="1280" Height="900"
         WindowStartupLocation="CenterOwner">
+  <Window.Styles>
+    <!-- Active-tool indicator: when the bound tool name matches CurrentTool,
+         the ToggleButton's IsChecked is true → use the accent palette. -->
+    <Style Selector="ToggleButton.tool:checked">
+      <Setter Property="Background" Value="#007ACC" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="ToggleButton.tool">
+      <Setter Property="MinWidth" Value="80" />
+      <Setter Property="Margin" Value="0,0,4,0" />
+    </Style>
+  </Window.Styles>
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+Z" Command="{Binding UndoCommand}" />
+  </Window.KeyBindings>
+
   <DockPanel>
     <Border DockPanel.Dock="Top" Background="#2D2D30" Padding="8,4">
       <WrapPanel Orientation="Horizontal">
-        <Button Name="PointerBtn" Content="Pointer" Click="OnPointer" Margin="0,0,4,0" />
-        <Button Name="RectBtn" Content="Rectangle" Click="OnRect" Margin="0,0,4,0" />
-        <Button Name="FreehandBtn" Content="Freehand" Click="OnFreehand" Margin="0,0,4,0" />
-        <Button Name="TextBtn" Content="Text" Click="OnText" Margin="0,0,12,0" />
-        <Button Content="Red" Click="OnRed" Margin="0,0,4,0" />
-        <Button Content="Yellow" Click="OnYellow" Margin="0,0,4,0" />
-        <Button Content="Green" Click="OnGreen" Margin="0,0,12,0" />
-        <Button Content="Clear" Click="OnClear" />
+        <ToggleButton Classes="tool"
+                      Content="Pointer"
+                      IsChecked="{Binding CurrentTool, Converter={x:Static vm:ToolModeConverter.Pointer}}"
+                      Command="{Binding PickToolCommand}" CommandParameter="Pointer" />
+        <ToggleButton Classes="tool"
+                      Content="Rectangle"
+                      IsChecked="{Binding CurrentTool, Converter={x:Static vm:ToolModeConverter.Rectangle}}"
+                      Command="{Binding PickToolCommand}" CommandParameter="Rectangle" />
+        <ToggleButton Classes="tool"
+                      Content="Freehand"
+                      IsChecked="{Binding CurrentTool, Converter={x:Static vm:ToolModeConverter.Freehand}}"
+                      Command="{Binding PickToolCommand}" CommandParameter="Freehand" />
+        <ToggleButton Classes="tool"
+                      Content="Text"
+                      IsChecked="{Binding CurrentTool, Converter={x:Static vm:ToolModeConverter.Text}}"
+                      Command="{Binding PickToolCommand}" CommandParameter="Text" />
+
+        <Border Width="1" Background="#3F3F46" Margin="12,4,12,4" />
+
+        <Button Content="Red" Command="{Binding PickColorCommand}" CommandParameter="Red"
+                Background="#E04040" Foreground="White" Margin="0,0,4,0" />
+        <Button Content="Yellow" Command="{Binding PickColorCommand}" CommandParameter="Yellow"
+                Background="#FBBF24" Foreground="Black" Margin="0,0,4,0" />
+        <Button Content="Green" Command="{Binding PickColorCommand}" CommandParameter="Green"
+                Background="#10B981" Foreground="White" Margin="0,0,12,0" />
+
+        <Border Width="1" Background="#3F3F46" Margin="0,4,12,4" />
+
+        <Button Content="Undo (Ctrl+Z)" Command="{Binding UndoCommand}" Margin="0,0,4,0" />
+        <Button Content="Clear" Command="{Binding ClearCommand}" />
       </WrapPanel>
     </Border>
 
     <Border DockPanel.Dock="Bottom" Background="#2D2D30" Padding="8">
       <StackPanel Spacing="6">
-        <TextBlock Text="Title:" />
-        <TextBox Name="TitleBox" />
-        <TextBlock Text="Notes:" Margin="0,4,0,0" />
-        <TextBox Name="BodyBox" Height="80" AcceptsReturn="True" TextWrapping="Wrap" />
+        <TextBlock Text="Title:" Foreground="#B4B4B4" />
+        <TextBox Text="{Binding Title, Mode=TwoWay}" />
+        <TextBlock Text="Notes:" Margin="0,4,0,0" Foreground="#B4B4B4" />
+        <TextBox Text="{Binding Body, Mode=TwoWay}" Height="80" AcceptsReturn="True" TextWrapping="Wrap" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
-          <TextBlock Name="StatusLabel" Foreground="#96DC82" VerticalAlignment="Center" />
-          <Button Content="Cancel" Click="OnCancel" />
-          <Button Content="Save" Classes="accent" Click="OnSave" />
+          <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusColor}" VerticalAlignment="Center" />
+          <Button Content="Cancel" Command="{Binding CancelCommand}" />
+          <Button Content="Save" Background="#007ACC" Foreground="White" Command="{Binding SaveCommand}" />
         </StackPanel>
       </StackPanel>
     </Border>
