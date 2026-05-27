@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\src\Canary.Harness\Canary.Harness.csproj" />
     <ProjectReference Include="..\..\src\Canary.Core\Canary.Core.csproj" />
     <ProjectReference Include="..\..\src\Canary.UI\Canary.UI.csproj" />
+    <ProjectReference Include="..\..\src\Canary.UI.Avalonia\Canary.UI.Avalonia.csproj" />
     <ProjectReference Include="..\..\src\Canary.McpServer\Canary.McpServer.csproj" />
   </ItemGroup>
 
