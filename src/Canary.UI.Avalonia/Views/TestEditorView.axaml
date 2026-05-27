@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels.Editors"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="800"
+             x:Class="Canary.UI.Avalonia.Views.TestEditorView"
+             x:DataType="vm:TestEditorViewModel">
+
+  <Grid RowDefinitions="*,Auto">
+    <ScrollViewer Grid.Row="0" Padding="16">
+      <StackPanel Spacing="14" MaxWidth="900">
+        <TabControl>
+          <TabItem Header="Basic">
+            <StackPanel Spacing="8" Margin="8">
+              <TextBlock Text="Name" Foreground="#B4B4B4" />
+              <TextBox Text="{Binding Name, Mode=TwoWay}" />
+              <TextBlock Text="Workload" Foreground="#B4B4B4" />
+              <TextBox Text="{Binding Workload, Mode=TwoWay}" />
+              <TextBlock Text="Description" Foreground="#B4B4B4" />
+              <TextBox Text="{Binding Description, Mode=TwoWay}" AcceptsReturn="True" Height="80" TextWrapping="Wrap" />
+              <Grid ColumnDefinitions="200,*,200,*">
+                <TextBlock Grid.Column="0" Text="Run mode" Foreground="#B4B4B4" VerticalAlignment="Center" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding RunModes}" SelectedItem="{Binding RunMode, Mode=TwoWay}" />
+                <CheckBox Grid.Column="3" IsChecked="{Binding KeepOpenOnFailure, Mode=TwoWay}"
+                          Content="Keep app open on failure" />
+              </Grid>
+              <TextBlock Text="Setup file" Foreground="#B4B4B4" />
+              <TextBox Text="{Binding SetupFile, Mode=TwoWay}" />
+              <TextBlock Text="Recording" Foreground="#B4B4B4" />
+              <TextBox Text="{Binding Recording, Mode=TwoWay}" />
+              <Grid ColumnDefinitions="200,*,200,*">
+                <TextBlock Grid.Column="0" Text="Viewport width" Foreground="#B4B4B4" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Column="1" Minimum="1" Maximum="10000" FormatString="0"
+                               Value="{Binding ViewportWidth, Mode=TwoWay}" />
+                <TextBlock Grid.Column="2" Text="Viewport height" Foreground="#B4B4B4" VerticalAlignment="Center" Margin="12,0,0,0" />
+                <NumericUpDown Grid.Column="3" Minimum="1" Maximum="10000" FormatString="0"
+                               Value="{Binding ViewportHeight, Mode=TwoWay}" />
+              </Grid>
+              <Grid ColumnDefinitions="200,*,200,*">
+                <TextBlock Grid.Column="0" Text="Projection" Foreground="#B4B4B4" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Text="{Binding ViewportProjection, Mode=TwoWay}" />
+                <TextBlock Grid.Column="2" Text="Display mode" Foreground="#B4B4B4" VerticalAlignment="Center" Margin="12,0,0,0" />
+                <TextBox Grid.Column="3" Text="{Binding ViewportDisplayMode, Mode=TwoWay}" />
+              </Grid>
+            </StackPanel>
+          </TabItem>
+
+          <TabItem Header="Checkpoints">
+            <StackPanel Spacing="6" Margin="8">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Content="Add checkpoint" Command="{Binding AddCheckpointCommand}" />
+              </StackPanel>
+              <DataGrid ItemsSource="{Binding Checkpoints}"
+                        AutoGenerateColumns="False"
+                        CanUserResizeColumns="True"
+                        MinHeight="240">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" />
+                  <DataGridTemplateColumn Header="Mode" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="vm:CheckpointRow">
+                        <ComboBox ItemsSource="{Binding $parent[DataGrid].((vm:TestEditorViewModel)DataContext).CheckpointModes}"
+                                  SelectedItem="{Binding Mode, Mode=TwoWay}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="At time (ms)" Binding="{Binding AtTimeMs}" Width="120" />
+                  <DataGridTextColumn Header="Tolerance" Binding="{Binding Tolerance}" Width="100" />
+                  <DataGridTemplateColumn Header="Source" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="vm:CheckpointRow">
+                        <ComboBox ItemsSource="{Binding $parent[DataGrid].((vm:TestEditorViewModel)DataContext).CheckpointSources}"
+                                  SelectedItem="{Binding Source, Mode=TwoWay}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Panel nickname" Binding="{Binding PanelNickname}" Width="160" />
+                  <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" />
+                  <DataGridTemplateColumn Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="vm:CheckpointRow">
+                        <Button Content="✕"
+                                Command="{Binding $parent[DataGrid].((vm:TestEditorViewModel)DataContext).RemoveCheckpointCommand}"
+                                CommandParameter="{Binding}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+            </StackPanel>
+          </TabItem>
+
+          <TabItem Header="Actions / Asserts">
+            <StackPanel Spacing="10" Margin="8">
+              <TextBlock Text="Actions (raw JSON array)" Foreground="#B4B4B4" />
+              <TextBox Text="{Binding ActionsJson, Mode=TwoWay}"
+                       AcceptsReturn="True" Height="160" TextWrapping="NoWrap"
+                       FontFamily="Consolas, Menlo, monospace" />
+
+              <TextBlock Text="Asserts" Foreground="#B4B4B4" Margin="0,10,0,0" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Content="Add assert" Command="{Binding AddAssertCommand}" />
+              </StackPanel>
+              <DataGrid ItemsSource="{Binding Asserts}" AutoGenerateColumns="False" MinHeight="180">
+                <DataGrid.Columns>
+                  <DataGridTemplateColumn Header="Type" Width="160">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="vm:AssertRow">
+                        <ComboBox ItemsSource="{Binding $parent[DataGrid].((vm:TestEditorViewModel)DataContext).AssertTypes}"
+                                  SelectedItem="{Binding Type, Mode=TwoWay}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Nickname" Binding="{Binding Nickname}" Width="200" />
+                  <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="*" />
+                  <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="200" />
+                  <DataGridTemplateColumn Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="vm:AssertRow">
+                        <Button Content="✕"
+                                Command="{Binding $parent[DataGrid].((vm:TestEditorViewModel)DataContext).RemoveAssertCommand}"
+                                CommandParameter="{Binding}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+            </StackPanel>
+          </TabItem>
+        </TabControl>
+
+        <TextBlock Text="{Binding ValidationError}"
+                   Foreground="#FFB4B4"
+                   TextWrapping="Wrap"
+                   IsVisible="{Binding ValidationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Grid.Row="1" Background="#252526" Padding="16,8" BorderBrush="#3F3F46" BorderThickness="0,1,0,0">
+      <Button Content="Save test definition" Background="#007ACC" Foreground="White"
+              HorizontalAlignment="Right" Command="{Binding SaveCommand}" />
+    </Border>
+  </Grid>
+</UserControl>
