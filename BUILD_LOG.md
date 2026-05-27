@@ -1,5 +1,72 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 5 (services + glue)
+
+- **Date**: 2026-05-27
+- **Commits** (5 total):
+  - `7ed215f` `feat(ui-avalonia): AbortHotkey ported against Avalonia HWND`
+  - `865c815` `feat(ui-avalonia): SingleInstancePipeServer + AutoRunRequestHandler`
+  - `a03dd95` `feat(ui-avalonia): drag-and-drop + tree context menus + editor host`
+  - `71d6cc7` `test(ui-avalonia): AutoRunRequestHandler tests`
+  - pending `docs(progress): Phase 5 — services + glue`
+- **Scope**: Phase 5 of the 7-phase Avalonia migration. The last
+  build phase before cutover. Lights up the operator-glue surfaces
+  the earlier phases prepared but didn't wire — AbortHotkey, AutoRun
+  pipe forwarding, tree drag-and-drop, tree context menus, and the
+  editor wire-in that brings the Phase 3 editors out of orphan state.
+- **Files added** (4 src + 1 test):
+  - `Hotkeys/AbortHotkey.cs` — Win32 Pause hotkey via Comctl32
+    SetWindowSubclass.
+  - `Services/AutoRunRequestHandler.cs` — pure FindNode + ParseMode
+    helpers.
+  - `Views/EditorHostWindow.axaml` (+ `.cs`) — wraps editor Views in a
+    standalone modal window for context-menu-launched editing.
+  - `tests/Canary.Tests/UI.Avalonia/AutoRunRequestHandlerTests.cs`
+    — 7 tests.
+- **Files edited**:
+  - `ViewModels/TestRunnerViewModel.cs` — OnRunStarted /
+    OnRunFinished lifecycle hooks for the AbortHotkey wire-in.
+  - `ViewModels/TestsViewModel.cs` — Edit / Approve / OpenInExplorer
+    / CreateTestFromRecording RelayCommands + delegate slots.
+  - `Views/TestsView.axaml` + `.cs` — TreeView ContextMenu + drag-
+    drop handlers.
+  - `Views/MainWindow.axaml.cs` — AbortHotkey lifecycle, editor +
+    prompt delegate wiring, PersistAndRefreshAsync.
+  - `ViewModels/MainWindowViewModel.cs` — HandleAutoRunAsync routing.
+  - `docs/features/canary-ui-avalonia.md` — Phase 4 → shipped,
+    Phase 5 → in-progress.
+  - `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` —
+    Phase 5 section + commits + verification gates + wire-in
+    completeness summary.
+  - `CHANGELOG.md` — Phase 5 detail prepended; combined test delta
+    258 → 330 (+72 across phases 0–5).
+- **Tests**:
+  - Pre-Phase-5: 323 unit tests, 0 failed.
+  - Post-Phase-5: 330 unit tests, 0 failed (+7 net new — FindNode
+    coverage 5, ParseMode 1, CreateTestFromRecording integration 1).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors. Both
+  exes build green.
+- **Verification gates (Phase 5)**: 1) build 0/0 ✅; 2) pipe
+  forwarding — pending operator smoke; 3) Pause hotkey — pending;
+  4) drag-and-drop recording — pending; 5) tree context menus —
+  pending; 6) VM tests ✅.
+- **Status**: 🟡 Phase 5 code + tests + docs shipped locally. All
+  build phases complete. Operator review at the phase boundary
+  before Phase 6 cutover.
+- **Wire-in summary after Phase 5**:
+  - Phase 3 editors — wired via context-menu Edit + EditorHostWindow.
+  - Phase 4 AnnotateWindow inbox-mode — still dormant (Past Runs
+    tab not in this migration; the constructor is available for
+    any future caller).
+  - AbortHotkey — armed on run start, disarmed on run end.
+  - AutoRun pipe forwarding — end-to-end functional.
+- **Next phase**: Phase 6 — cutover (~1 day). Flip the default UI
+  to the Avalonia build, delete `src/Canary.UI/`, update
+  `UiLocator.cs`, run the 8-workflow smoke matrix from the prompt
+  §7. Delete the snapshot tag once all 8 are green.
+
+---
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 4 (annotation surface)
 
 - **Date**: 2026-05-27

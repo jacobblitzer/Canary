@@ -14,7 +14,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added — Canary.UI Avalonia migration (2026-05-27)
 
-Phases 0–4 — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**. Beginning with the Sessions panel (most layout-pained surface), expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings), then the **Tests tab** (workload tree + TestRunner + ResultsViewer + Recording), then the **editors** (Test / Suite / Workload), then **annotation polish** (undo + tool palette + feedback-inbox parity). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+Phases 0–5 — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**. Beginning with the Sessions panel (most layout-pained surface), expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings), then the **Tests tab** (workload tree + TestRunner + ResultsViewer + Recording), then the **editors** (Test / Suite / Workload), then **annotation polish** (undo + tool palette + feedback-inbox parity), and finally **services + glue** (AbortHotkey + AutoRun forwarding + drag-drop + context menus + editor wire-in). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+
+Phase 5 (shipped 2026-05-27):
+- **`AbortHotkey` (Pause)** — Win32 RegisterHotKey via Comctl32 `SetWindowSubclass`. `TestRunnerViewModel.OnRunStarted` / `OnRunFinished` lifecycle hooks; `MainWindow.axaml.cs` arms the hotkey on run start, disarms on run end, fires `Tests.Runner.StopCommand` on AbortRequested.
+- **`AutoRunRequestHandler`** — pure helpers (`FindNode` + `ParseMode`) mirroring `MainForm.FindAutoRunNode` exactly. `MainWindowViewModel.HandleAutoRunAsync` switches to Tests → polls tree load up to 10s → locates node → sets selection + mode → runs. A second `canary run --workload x --test y` from a CLI while the Avalonia exe is up now drives a real auto-run via the existing single-instance pipe (wired at Phase 0).
+- **Tree drag-and-drop** — `DragDrop.AllowDrop=True` on the workload TreeView accepts `.input.json` files; handler walks two parents up to find the workload dir, prompts for a test name, writes `workloads/<w>/tests/<name>.json` with the recording reference, reloads the tree.
+- **Tree context menus** — Run / Edit / Approve / Create test from recording / Open in Explorer commands on `TestsViewModel`. Right-click any tree node fires the appropriate one.
+- **Editor wire-in** — the Phase 3 editors (TestEditor / SuiteEditor / WorkloadEditor) come out of orphan state. Edit context-menu command opens the editor in a new `EditorHostWindow`; Save persists to disk + reloads the tree.
+- 7 new unit tests under `tests/Canary.Tests/UI.Avalonia/AutoRunRequestHandlerTests.cs` — FindNode coverage, ParseMode mapping, CreateTestFromRecording integration. 323 → 330 total.
 
 Phase 4 (shipped 2026-05-27):
 - **Undo stack** on `AnnotationCanvas` — each Rectangle / Freehand / Text addition pushes an inverse delegate; `Undo()` pops + invokes; `Clear()` pushes a snapshot-restore so a single Ctrl+Z brings back everything cleared in one motion. `Ctrl+Z` keybinding on `AnnotateWindow`.
@@ -51,7 +59,7 @@ Phase 0 (shipped 2026-05-27):
 - 12 new unit tests under `tests/Canary.Tests/UI.Avalonia/` (`SessionsLiveViewModelTests` × 9, `SessionsPastViewModelTests` × 3) — 258 → 270 total.
 - Plan + feature doc + per-phase progress log: `docs/plans/2026-05-27-canary-ui-avalonia-migration.md` + `docs/features/canary-ui-avalonia.md` + `docs/progress/2026-05-27-canary-ui-avalonia-migration.md`.
 
-Combined Phase 0 + 1 + 2 + 3 + 4 unit test delta: 258 → 323 (+65 net new). All remaining phases queue after operator review at each phase boundary; no push until Phase 6.
+Combined Phase 0 + 1 + 2 + 3 + 4 + 5 unit test delta: 258 → 330 (+72 net new). All build phases shipped. Phase 6 (cutover) follows after operator review.
 
 ### Fixed — bug 0008: `canary session start` REPL crashed on redirected stdin (2026-05-27)
 - `SessionCommand.RunReplAsync` now detects `Console.IsInputRedirected` and branches to a line-mode REPL using `Console.In.ReadLineAsync` when stdin is piped or file-redirected. The original single-key `Console.ReadKey` path remains for interactive terminals. Found during the Phase 1 verification smoke (the smoke itself was the repro); fix verified by re-running the smoke with `printf "c\nq\nclose-out\n" | canary session start --workload qualia` and confirming a real PNG capture + clean exit code 0. See `docs/bugs/0008-session-repl-crashes-on-redirected-stdin.md`.

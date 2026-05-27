@@ -302,4 +302,62 @@ Phase 5 — services + glue (~2 days). AbortHotkey (Pause) port for run aborts; 
 
 - `cf5d1ed` — `feat(ui-avalonia): annotation polish — undo + tool palette + inbox parity`
 - `2b1c0c9` — `test(ui-avalonia): AnnotateWindowViewModel tests`
-- (pending) — `docs(progress): Phase 4 — annotation surface`
+- `06ced62` — `docs(progress): Phase 4 — annotation surface`
+
+## Phase 5 — services + glue (2026-05-27)
+
+### Pre-flight
+
+- Phase 4 verified by operator (continue).
+- Baseline: 323 unit tests passing, build 0/0.
+- Read WinForms `AbortHotkey.cs`, `MainForm.AutoRunAsync` + `FindAutoRunNode`, `MainForm.OnTreeDragDrop`, the four `BuildXxxContextMenu` builders.
+
+### Goals
+
+The last build phase before cutover. Lights up the operator-glue surfaces that the Phase 2 + 3 + 4 work created but didn't wire:
+1. **AbortHotkey (Pause)** — global hotkey that fires `Tests.Runner.StopCommand` during a run.
+2. **AutoRunRequestHandler** — fills in `MainWindowViewModel.HandleAutoRun` so `canary run --workload x --test y` forwarded over the single-instance pipe drives a real test run in the running UI.
+3. **Tree drag-and-drop** — drop a `.input.json` recording → prompt for test name → write `workloads/<w>/tests/<name>.json` referencing the recording → reload tree.
+4. **Tree context menus** — right-click any node shows Run / Edit / Approve / Create test from recording / Open in Explorer.
+5. **Editor wire-in** — the Phase 3 editors come out of orphan state. Edit context-menu command opens the editor in an `EditorHostWindow`; Save persists + reloads.
+
+### What landed
+
+**Commit 1 — `feat(ui-avalonia): AbortHotkey ported against Avalonia HWND`** (7ed215f): `Hotkeys/AbortHotkey.cs` (Win32 RegisterHotKey for VK_PAUSE, Comctl32 `SetWindowSubclass` intercepts WM_HOTKEY) + `TestRunnerViewModel.OnRunStarted` / `OnRunFinished` lifecycle hooks.
+
+**Commit 2 — `feat(ui-avalonia): SingleInstancePipeServer + AutoRunRequestHandler`** (865c815): `Services/AutoRunRequestHandler.cs` (pure helpers — `FindNode` mirrors `MainForm.FindAutoRunNode` exactly; `ParseMode` maps strings to `ModeOverride`) + `MainWindowViewModel.HandleAutoRunAsync` (Tests-nav switch → tree-load poll up to 10s → node lookup → mode set → run).
+
+**Commit 3 — `feat(ui-avalonia): drag-and-drop + tree context menus + editor host`** (a03dd95): `TestsViewModel` context-menu commands + view-supplied async delegates; `TestsView` ContextMenu + drag-drop handlers; `EditorHostWindow` for hosting Phase 3 editor Views; `MainWindow.axaml.cs` wires the AbortHotkey lifecycle + the editor + prompt callbacks + `PersistAndRefreshAsync` to write each editor's JSON back to disk.
+
+**Commit 4 — `test(ui-avalonia): AutoRunRequestHandler tests`** (71d6cc7): 7 new tests — FindNode coverage (workload-only / +test / +suite / unknown test / unknown workload), ParseMode mapping, plus a CreateTestFromRecording integration test that drives a real recording-to-test-JSON write. 323 → 330 total.
+
+**Commit 5 — `docs(progress): Phase 5`** (pending): this section + CHANGELOG + BUILD_LOG.
+
+### Verification gates
+
+1. ✅ `dotnet build Canary.sln` — 0 warnings, 0 errors. Both exes build.
+2. ⏸ **Pipe forwarding from a second `canary run` invocation** — pending operator. Launch `Canary.UI.Avalonia.exe`; from a second shell run `canary run --workload qualia --test eager-l3-reload-smoke` → the running UI switches to Tests → selects the test → starts running.
+3. ⏸ **Pause hotkey aborts a running test** — pending operator. Start a run, press Pause anywhere → Stop fires.
+4. ⏸ **Drag-and-drop a `.input.json` recording** — pending operator. Drag a file from Explorer onto the workload tree → name prompt → new test JSON.
+5. ⏸ **Tree context menus** — pending operator. Right-click any tree node.
+6. ✅ VM tests — 323 → 330 (+7), all passing.
+
+### Wire-in completeness
+
+After Phase 5:
+- **Phase 3 editors** — wired via context-menu Edit + EditorHostWindow.
+- **Phase 4 AnnotateWindow inbox-mode constructor** — still dormant (Past Runs tab itself isn't part of this migration). The constructor is available for any future caller.
+- **AbortHotkey** — armed on run start, disarmed on run end.
+- **AutoRun pipe forwarding** — end-to-end functional.
+
+### Next phase
+
+Phase 6 — cutover (~1 day). Flip the default UI to the Avalonia build, delete `src/Canary.UI/`, update `UiLocator.cs` to point at the renamed exe, run the 8-workflow smoke matrix from the prompt §7. Delete the snapshot tag once all 8 are green.
+
+### Commits
+
+- `7ed215f` — `feat(ui-avalonia): AbortHotkey ported against Avalonia HWND`
+- `865c815` — `feat(ui-avalonia): SingleInstancePipeServer + AutoRunRequestHandler`
+- `a03dd95` — `feat(ui-avalonia): drag-and-drop + tree context menus + editor host`
+- `71d6cc7` — `test(ui-avalonia): AutoRunRequestHandler tests`
+- (pending) — `docs(progress): Phase 5 — services + glue`

@@ -50,8 +50,8 @@ Driving artifacts:
 - **Phase 1 — shell + simple panels (shipped, 2026-05-27)** — Localhost / Feedback / Telemetry / Settings nav items + Open workloads folder toolbar.
 - **Phase 2 — Tests tab (shipped, 2026-05-27)** — workload tree + Welcome/TestRunner/ResultsViewer/Recording sub-panels + Tests-only toolbar items + F5 keybinding.
 - **Phase 3 — editors (shipped, 2026-05-27)** — TestEditor / SuiteEditor / WorkloadEditor with JSON round-trip property tests. Editors are orphan ViewModels/Views; wire-in via tree context menus lands in Phase 5.
-- **Phase 4 — annotation polish (in-progress, 2026-05-27)** — undo stack (Ctrl+Z), tool-palette ToggleButton group with accent-colored active-tool indicator, AnnotateWindowViewModel extracted from code-behind, **feedback-inbox parity** (inbox-mode constructor + FeedbackInboxWriter wiring). Phase 5 wires the Past Runs Annotate button to the inbox-mode flow.
-- **Phase 5 — services + glue (queued)** — Abort hotkey, drag-and-drop, context menus, AutoRun forwarding.
+- **Phase 4 — annotation polish (shipped, 2026-05-27)** — undo stack (Ctrl+Z), tool-palette ToggleButton group, AnnotateWindowViewModel extracted from code-behind, feedback-inbox parity (inbox-mode constructor + FeedbackInboxWriter wiring).
+- **Phase 5 — services + glue (in-progress, 2026-05-27)** — AbortHotkey (Pause) armed during runs; AutoRunRequestHandler + `HandleAutoRunAsync` route pipe-forwarded `canary run` invocations to a tree-driven run; tree drag-and-drop accepts `.input.json` recordings → creates tests; tree context menus (Run / Edit / Approve / Create test from recording / Open in Explorer) wire the Phase 3 editors into the operator workflow via `EditorHostWindow`.
 - **Phase 6 — cutover (queued)** — flip default UI, delete `src/Canary.UI/`, full smoke matrix.
 
 Operator review at every phase boundary; no push until Phase 6.
