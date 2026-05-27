@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+        xmlns:views="using:Canary.UI.Avalonia.Views"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900"
+        x:Class="Canary.UI.Avalonia.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Canary"
+        Width="1280" Height="900"
+        MinWidth="1024" MinHeight="768">
+
+  <Window.Resources>
+    <DataTemplate x:Key="SessionsTemplate" x:DataType="vm:SessionsViewModel">
+      <views:SessionsView DataContext="{Binding}" />
+    </DataTemplate>
+  </Window.Resources>
+
+  <ui:NavigationView IsBackButtonVisible="False"
+                     IsSettingsVisible="False"
+                     PaneDisplayMode="Left"
+                     OpenPaneLength="220"
+                     MenuItemsSource="{Binding NavItems}"
+                     SelectedItem="{Binding SelectedNavItem, Mode=TwoWay}">
+    <ui:NavigationView.MenuItemTemplate>
+      <DataTemplate x:DataType="vm:NavItem">
+        <ui:NavigationViewItem Content="{Binding Title}">
+          <ui:NavigationViewItem.IconSource>
+            <ui:FontIconSource Glyph="{Binding IconGlyph}" />
+          </ui:NavigationViewItem.IconSource>
+        </ui:NavigationViewItem>
+      </DataTemplate>
+    </ui:NavigationView.MenuItemTemplate>
+
+    <ContentControl Content="{Binding SelectedNavItem.ViewModel}">
+      <ContentControl.ContentTemplate>
+        <DataTemplate x:DataType="vm:SessionsViewModel">
+          <views:SessionsView />
+        </DataTemplate>
+      </ContentControl.ContentTemplate>
+    </ContentControl>
+  </ui:NavigationView>
+</Window>

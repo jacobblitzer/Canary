@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="using:Canary.UI.Avalonia.Controls"
+        mc:Ignorable="mc"
+        x:Class="Canary.UI.Avalonia.Views.AnnotateWindow"
+        Title="Canary — Annotate"
+        Width="1280" Height="900"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="#2D2D30" Padding="8,4">
+      <WrapPanel Orientation="Horizontal">
+        <Button Name="PointerBtn" Content="Pointer" Click="OnPointer" Margin="0,0,4,0" />
+        <Button Name="RectBtn" Content="Rectangle" Click="OnRect" Margin="0,0,4,0" />
+        <Button Name="FreehandBtn" Content="Freehand" Click="OnFreehand" Margin="0,0,4,0" />
+        <Button Name="TextBtn" Content="Text" Click="OnText" Margin="0,0,12,0" />
+        <Button Content="Red" Click="OnRed" Margin="0,0,4,0" />
+        <Button Content="Yellow" Click="OnYellow" Margin="0,0,4,0" />
+        <Button Content="Green" Click="OnGreen" Margin="0,0,12,0" />
+        <Button Content="Clear" Click="OnClear" />
+      </WrapPanel>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Background="#2D2D30" Padding="8">
+      <StackPanel Spacing="6">
+        <TextBlock Text="Title:" />
+        <TextBox Name="TitleBox" />
+        <TextBlock Text="Notes:" Margin="0,4,0,0" />
+        <TextBox Name="BodyBox" Height="80" AcceptsReturn="True" TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
+          <TextBlock Name="StatusLabel" Foreground="#96DC82" VerticalAlignment="Center" />
+          <Button Content="Cancel" Click="OnCancel" />
+          <Button Content="Save" Classes="accent" Click="OnSave" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+      <controls:AnnotationCanvas Name="Canvas" />
+    </ScrollViewer>
+  </DockPanel>
+</Window>

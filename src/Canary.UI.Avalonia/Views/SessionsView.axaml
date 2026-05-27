@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             xmlns:views="using:Canary.UI.Avalonia.Views"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="Canary.UI.Avalonia.Views.SessionsView"
+             x:DataType="vm:SessionsViewModel">
+
+  <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+    <TabItem Header="Live">
+      <views:SessionsLiveView DataContext="{Binding Live}" />
+    </TabItem>
+    <TabItem Header="Past sessions">
+      <views:SessionsPastView DataContext="{Binding Past}" />
+    </TabItem>
+  </TabControl>
+</UserControl>

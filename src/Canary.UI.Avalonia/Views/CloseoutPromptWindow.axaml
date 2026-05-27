@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="mc"
+        x:Class="Canary.UI.Avalonia.Views.CloseoutPromptWindow"
+        Title="Closeout notes (optional)"
+        SizeToContent="WidthAndHeight"
+        MinWidth="520"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+  <StackPanel Margin="12" Spacing="6">
+    <TextBlock Text="What did you find? (embedded in SESSION_REPORT.md)" />
+    <TextBox Name="BodyBox" Width="480" Height="160" AcceptsReturn="True" TextWrapping="Wrap" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+      <Button Content="End + save" Classes="accent" Click="OnOk" />
+      <Button Content="Skip" Click="OnCancel" />
+    </StackPanel>
+  </StackPanel>
+</Window>

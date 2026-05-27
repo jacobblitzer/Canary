@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="600"
+             x:Class="Canary.UI.Avalonia.Views.SessionsPastView"
+             x:DataType="vm:SessionsPastViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <TextBlock Grid.Column="0" Text="Filter:" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBox Grid.Column="1" Text="{Binding Filter, Mode=TwoWay}" />
+        <Button Grid.Column="2" Content="Refresh" Command="{Binding ReloadCommand}" Margin="8,0,0,0" />
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="2*,4,3*">
+      <DataGrid Grid.Column="0"
+                ItemsSource="{Binding Rows}"
+                SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="Column">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Started (UTC)" Binding="{Binding StartedDisplay}" Width="160" />
+          <DataGridTextColumn Header="Workload" Binding="{Binding Workload}" Width="90" />
+          <DataGridTextColumn Header="Session" Binding="{Binding SessionId}" Width="*" />
+          <DataGridTextColumn Header="Caps" Binding="{Binding Captures}" Width="50" />
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <GridSplitter Grid.Column="1" Background="#404040" />
+
+      <TextBox Grid.Column="2"
+               Text="{Binding Preview, Mode=OneWay}"
+               IsReadOnly="True"
+               AcceptsReturn="True"
+               TextWrapping="NoWrap"
+               FontFamily="Consolas, Menlo, monospace"
+               FontSize="13"
+               Background="#141414"
+               Foreground="#C8C8C8" />
+    </Grid>
+
+    <Border Grid.Row="2" Background="#007ACC" Padding="8,4">
+      <TextBlock Text="{Binding StatusText}" Foreground="White" />
+    </Border>
+  </Grid>
+</UserControl>
