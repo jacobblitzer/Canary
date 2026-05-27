@@ -46,8 +46,8 @@ Driving artifacts:
 
 ## Phase status
 
-- **Phase 0 — spike (in-progress, 2026-05-27)** — Sessions panel + annotation canvas + global hotkeys ported to Avalonia as the go/no-go gate. Decision gate at Phase 0 verification: if layout reflow works + functional smoke passes, proceed; if dealbreaker surfaces, abandon migration + fall back to defensive WinForms cleanup.
-- **Phase 1 — shell + simple panels (queued)** — Localhost, Feedback, Telemetry, Settings nav items + full toolbar.
+- **Phase 0 — spike (shipped, 2026-05-27)** — Sessions panel + annotation canvas + global hotkeys ported to Avalonia. Layout reflow + functional smoke confirmed by operator; go/no-go decision: GO.
+- **Phase 1 — shell + simple panels (in-progress, 2026-05-27)** — Localhost / Feedback / Telemetry / Settings nav items + Open workloads folder toolbar. All four panels + full nav shell shipped; verification gates 1-2 ✅, manual smokes ⏸ pending operator.
 - **Phase 2 — Tests tab (queued)** — workload tree + TestRunnerView + ResultsViewerView + RecordingView.
 - **Phase 3 — editors (queued)** — TestEditor / SuiteEditor / WorkloadEditor.
 - **Phase 4 — annotation polish (queued)** — hit-testing, undo, tool palette polish.

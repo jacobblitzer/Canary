@@ -80,4 +80,68 @@ Phase 1 — shell + simple panels. Localhost, Feedback, Telemetry, Settings + th
 
 - `768d259` — `feat(ui-avalonia): Phase 0 spike — Sessions panel in Avalonia`
 - `21ca293` — `test(ui-avalonia): SessionsLive + Past ViewModel tests`
-- (pending) — `docs(features): canary-ui-avalonia feature + Phase 0 progress`
+- `190718e` — `docs: canary-ui-avalonia feature + Phase 0 progress + CHANGELOG + BUILD_LOG`
+
+## Phase 1 — shell + simple panels (2026-05-27)
+
+### Pre-flight
+
+- `git status` clean (modulo `.claude/settings.local.json`).
+- Phase 0 verified by operator (layout reflow + functional smoke confirmed).
+- Baseline: 270 unit tests passing, build 0/0.
+
+### Goals
+
+Stand up the full nav shell + port the four read-only panels (Localhost / Feedback / Telemetry / Settings). Mechanical AXAML conversions — no new architectural decisions.
+
+### What landed
+
+**Commit 1 — `feat(ui-avalonia): port LocalhostView to Avalonia`** (52ad6f8):
+- `Views/LocalhostView.axaml` + `.cs` + `ViewModels/LocalhostViewModel.cs`.
+- DataGrid-backed port-entry list with Refresh + Kill commands; Tier 3 toggle persisted to `CanarySettings`. Polling driven by `DispatcherTimer` (start on `AttachedToVisualTree`, stop on detach — no more `VisibleChanged` hack).
+
+**Commit 2 — `feat(ui-avalonia): port FeedbackView to Avalonia`** (77cb8f7):
+- `Views/FeedbackView.axaml` + `.cs` + `ViewModels/FeedbackViewModel.cs`.
+- TreeView with three buckets (inbox / triaged / resolved) populated from `docs/feedback/<bucket>/*.md`. `OpenInboxFolder` command launches the shell.
+
+**Commit 3 — `feat(ui-avalonia): port TelemetryView to Avalonia`** (7221a50):
+- `Views/TelemetryView.axaml` + `.cs` + `ViewModels/TelemetryViewModel.cs`.
+- DataGrid tailing the most recent `telemetry.ndjson` under `workloads/<w>/results/`. Source filter combo + 2s polling.
+
+**Commit 4 — `feat(ui-avalonia): port SettingsView to Avalonia`** (896f34f):
+- `Views/SettingsView.axaml` + `.cs` + `ViewModels/SettingsViewModel.cs`.
+- UI mode RadioButton pair + Tier3 CheckBox + RetentionDays NumericUpDown, all bound TwoWay to `CanarySettings`. Each change persists immediately.
+
+**Commit 5 — `feat(ui-avalonia): full NavigationView shell + Open Folder toolbar`** (e56aada):
+- `MainWindow.axaml` populates `NavigationView.MenuItemsSource` with all five Phase 1 nav items.
+- Top toolbar row (Grid Row 0) with **Open workloads folder…** button + workloads-dir indicator. The picker uses Avalonia's `StorageProvider.OpenFolderPickerAsync`.
+- `ContentControl.DataTemplates` maps each VM type to its View so `SelectedNavItem.ViewModel` renders automatically.
+- `ApplyWorkloadsDir` routes the picked dir into Sessions + Telemetry VMs.
+
+**Commit 6 — `test(ui-avalonia): Phase 1 panel ViewModel tests`** (pending):
+- 17 new tests across `LocalhostViewModelTests` (4), `FeedbackViewModelTests` (4), `TelemetryViewModelTests` (3), `SettingsViewModelTests` (6).
+- The TelemetryViewModelTests `SourceFilter_NarrowsRowsToSelectedSource` test caught a real bug — the VM's Refresh path short-circuited on unchanged file mtime even when the source filter changed. Fix: invalidate `_currentFile` / `_lastSeenWriteUtc` in `OnSelectedSourceChanged`.
+
+**Commit 7 — `docs(progress): Phase 1`** (pending): this section + CHANGELOG + BUILD_LOG.
+
+### Verification gates
+
+1. ✅ `dotnet build Canary.sln` — 0 warnings, 0 errors. Both `Canary.UI.exe` and `Canary.UI.Avalonia.exe` build.
+2. ✅ Unit tests — 270 → 287 (+17 new), all passing.
+3. ⏸ **Manual panel-render smoke** — pending operator. Launch the Avalonia exe, click each nav item, confirm each panel renders cleanly on first activation. Click **Open workloads folder…**, pick `C:\Repos\Canary\workloads`, confirm Sessions + Telemetry pick up the new dir.
+4. ⏸ **Toolbar visibility smoke** — Open Folder stays visible everywhere. Tests-only buttons defer to Phase 2.
+5. ⏸ **CLI regression smoke** — pending; CLI path unaffected.
+
+### Next phase
+
+Phase 2 — Tests tab (~4 days). Workload tree (workloads / suites / tests / recordings hierarchical view), TestRunnerView (live log + per-test status grid + abort hotkey), ResultsViewerView (approve/reject flows), RecordingView. The TestRunnerViewModel is the most stateful — porting `MainForm.OnRunTests` + `TestRunnerPanel.RunAsync` carefully.
+
+### Commits
+
+- `52ad6f8` — `feat(ui-avalonia): port LocalhostView to Avalonia`
+- `77cb8f7` — `feat(ui-avalonia): port FeedbackView to Avalonia`
+- `7221a50` — `feat(ui-avalonia): port TelemetryView to Avalonia`
+- `896f34f` — `feat(ui-avalonia): port SettingsView to Avalonia`
+- `e56aada` — `feat(ui-avalonia): full NavigationView shell + Open Folder toolbar`
+- (pending) — `test(ui-avalonia): Phase 1 panel ViewModel tests`
+- (pending) — `docs(progress): Phase 1 — shell + simple panels`

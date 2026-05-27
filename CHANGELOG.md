@@ -14,14 +14,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added — Canary.UI Avalonia migration (2026-05-27)
 
-Phase 0 spike — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**, beginning with the Sessions panel (most layout-pained surface). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+Phase 0 spike + Phase 1 shell — migration from WinForms to **Avalonia 11.2 + FluentAvaloniaUI + CommunityToolkit.Mvvm**, beginning with the Sessions panel (most layout-pained surface) and expanding to the full nav shell + four read-only panels (Localhost / Feedback / Telemetry / Settings). New project `src/Canary.UI.Avalonia/` builds alongside the existing `src/Canary.UI/` through phases 0–5; cutover at Phase 6.
+
+Phase 1 (shipped 2026-05-27):
+- Four nav-panel ports — `LocalhostViewModel` + `FeedbackViewModel` + `TelemetryViewModel` + `SettingsViewModel` with matching Views. Each panel uses Avalonia layout primitives (Grid + WrapPanel + GridSplitter + DataGrid) so it reflows on narrow widths instead of clipping.
+- Full `NavigationView` shell wired in `MainWindow.axaml` — Sessions / Localhost / Feedback / Telemetry / Settings — plus a top toolbar row with **Open workloads folder…** + a workloads-dir indicator. Folder picker via Avalonia's `StorageProvider.OpenFolderPickerAsync`.
+- 17 new unit tests under `tests/Canary.Tests/UI.Avalonia/` (Localhost × 4, Feedback × 4, Telemetry × 3, Settings × 6). One real bug caught + fixed: `TelemetryViewModel` was short-circuiting source-filter changes when the underlying NDJSON file's mtime hadn't moved.
+
+Phase 0 (shipped 2026-05-27):
 
 - New `Canary.UI.Avalonia` csproj (net8.0-windows, WinExe): FluentAvalonia `NavigationView` shell, Sessions panel (Live + Past sub-views), Avalonia port of `AnnotationCanvas` + `AnnotateWindow`, Win32 hotkey hook via Comctl32 `SetWindowSubclass`, single-instance pipe forwarder copied verbatim from the WinForms project.
 - ViewModels use `[ObservableProperty]` + `[RelayCommand(CanExecute=...)]` source generators; the four Sessions-Live button gates fall out of `CanStart` / `CanCapture` / `CanEnd` predicates instead of manual `Enabled = false`.
 - 12 new unit tests under `tests/Canary.Tests/UI.Avalonia/` (`SessionsLiveViewModelTests` × 9, `SessionsPastViewModelTests` × 3) — 258 → 270 total.
 - Plan + feature doc + per-phase progress log: `docs/plans/2026-05-27-canary-ui-avalonia-migration.md` + `docs/features/canary-ui-avalonia.md` + `docs/progress/2026-05-27-canary-ui-avalonia-migration.md`.
 
-Phase 0 is a go/no-go gate; remaining phases queue after operator review of the layout smoke and Sessions round-trip.
+Combined Phase 0 + 1 unit test delta: 258 → 287 (+29 net new). All remaining phases queue after operator review at each phase boundary; no push until Phase 6.
 
 ### Fixed — bug 0008: `canary session start` REPL crashed on redirected stdin (2026-05-27)
 - `SessionCommand.RunReplAsync` now detects `Console.IsInputRedirected` and branches to a line-mode REPL using `Console.In.ReadLineAsync` when stdin is piped or file-redirected. The original single-key `Console.ReadKey` path remains for interactive terminals. Found during the Phase 1 verification smoke (the smoke itself was the repro); fix verified by re-running the smoke with `printf "c\nq\nclose-out\n" | canary session start --workload qualia` and confirming a real PNG capture + clean exit code 0. See `docs/bugs/0008-session-repl-crashes-on-redirected-stdin.md`.

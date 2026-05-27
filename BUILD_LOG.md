@@ -1,5 +1,65 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 1 (shell + simple panels)
+
+- **Date**: 2026-05-27
+- **Commits** (7 total):
+  - `52ad6f8` `feat(ui-avalonia): port LocalhostView to Avalonia`
+  - `77cb8f7` `feat(ui-avalonia): port FeedbackView to Avalonia`
+  - `7221a50` `feat(ui-avalonia): port TelemetryView to Avalonia`
+  - `896f34f` `feat(ui-avalonia): port SettingsView to Avalonia`
+  - `e56aada` `feat(ui-avalonia): full NavigationView shell + Open Folder toolbar`
+  - pending `test(ui-avalonia): Phase 1 panel ViewModel tests`
+  - pending `docs(progress): Phase 1 — shell + simple panels`
+- **Scope**: Phase 1 of the 7-phase Avalonia migration. Stand up the
+  full nav shell + port the four read-only panels (Localhost,
+  Feedback, Telemetry, Settings) — mechanical AXAML conversions, no
+  new architectural decisions. The toolbar gains an
+  Open-workloads-folder action that re-routes both Sessions + Telemetry
+  to the picked directory.
+- **Files added** (12):
+  - `Views/LocalhostView.axaml` + `.cs` + `ViewModels/LocalhostViewModel.cs`.
+  - `Views/FeedbackView.axaml` + `.cs` + `ViewModels/FeedbackViewModel.cs`.
+  - `Views/TelemetryView.axaml` + `.cs` + `ViewModels/TelemetryViewModel.cs`.
+  - `Views/SettingsView.axaml` + `.cs` + `ViewModels/SettingsViewModel.cs`.
+- **Files added (tests, 4)**: `LocalhostViewModelTests.cs`,
+  `FeedbackViewModelTests.cs`, `TelemetryViewModelTests.cs`,
+  `SettingsViewModelTests.cs`.
+- **Files edited**:
+  - `Views/MainWindow.axaml` + `.cs` — full NavigationView wiring +
+    top toolbar + StorageProvider folder picker.
+  - `ViewModels/MainWindowViewModel.cs` — eagerly constructs all five
+    Phase 1 ViewModels; `OpenWorkloadsFolderCommand`;
+    `ApplyWorkloadsDir` routes the picked dir into Sessions +
+    Telemetry.
+  - `ViewModels/TelemetryViewModel.cs` — test-driven fix:
+    `OnSelectedSourceChanged` invalidates the path/mtime cache so the
+    source-filter combo actually re-filters rows instead of
+    short-circuiting on unchanged mtime.
+  - `docs/features/canary-ui-avalonia.md` — Phase 0 status → shipped,
+    Phase 1 status → in-progress.
+  - `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` — Phase 1
+    section + commits + verification gate status + next-phase preview.
+  - `CHANGELOG.md` — Phase 1 detail prepended above the Phase 0 block.
+- **Tests**:
+  - Pre-Phase-1: 270 unit tests, 0 failed.
+  - Post-Phase-1: 287 unit tests, 0 failed (+17 net new — Localhost
+    4, Feedback 4, Telemetry 3, Settings 6).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors. Both
+  `Canary.UI.exe` and `Canary.UI.Avalonia.exe` build.
+- **Verification gates (Phase 1)**: 1) build 0/0 both exes ✅;
+  2) unit tests green ✅; 3) manual panel-render smoke — pending
+  operator; 4) toolbar visibility smoke — pending operator (Open
+  Folder visible everywhere; Tests-only items deferred to Phase 2);
+  5) CLI regression smoke — pending (CLI unaffected).
+- **Status**: 🟡 Phase 1 code + tests + docs shipped locally.
+  Operator review at the phase boundary before Phase 2.
+- **Next phase**: Phase 2 — Tests tab (~4 days). Workload tree +
+  TestRunnerView + ResultsViewerView + RecordingView; the
+  TestRunnerViewModel is the most stateful piece.
+
+---
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 0 (spike — Sessions panel)
 
 - **Date**: 2026-05-27
