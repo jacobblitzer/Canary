@@ -94,9 +94,31 @@ public partial class MainWindowViewModel : ObservableObject
         Telemetry.SetWorkloadsDir(dir);
     }
 
-    public void HandleAutoRun(AutoRunArgs args)
+    public async Task HandleAutoRunAsync(AutoRunArgs args)
     {
-        // Phase 5 will route this to Tests' RunSelection equivalent
-        // (parse args, locate the test in the tree, trigger Run).
+        if (args.IsEmpty) return;
+        if (string.IsNullOrEmpty(args.Workload)) return;
+
+        // Switch to the Tests tab so the run is visible.
+        var testsItem = NavItems.FirstOrDefault(n => n.ViewModel is TestsViewModel);
+        if (testsItem != null) SelectedNavItem = testsItem;
+
+        // Tree may still be loading from the constructor's auto-detect; poll
+        // briefly (up to ~10s) until it appears.
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (DateTime.UtcNow < deadline && (WorkloadsDir == null || Tests.Tree.Roots.Count == 0))
+        {
+            await Task.Delay(100).ConfigureAwait(true);
+        }
+        if (WorkloadsDir == null || Tests.Tree.Roots.Count == 0) return;
+
+        var target = AutoRunRequestHandler.FindNode(Tests.Tree, args);
+        if (target == null) return;
+
+        Tests.Tree.SelectedNode = target;
+        Tests.ModeOverride = AutoRunRequestHandler.ParseMode(args.Mode);
+        await Tests.RunSelectionAsync().ConfigureAwait(true);
     }
+
+    public void HandleAutoRun(AutoRunArgs args) => _ = HandleAutoRunAsync(args);
 }
