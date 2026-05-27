@@ -75,6 +75,17 @@ UI surface for VLM testing — see `suites/qualia-v4-ui.json`):
   `data-queue-depth` / `data-model` attributes off
   `.qualia-eager-extraction-badge`.
 
+**Move 4 dev-test extensions (2026-05-27):**
+
+The `rag.extraction-queue` dev test now surfaces a `skipped(byteCap)=N`
+fragment when extractions are skipped by the new
+`eagerL3MaxContentBytes` extractor-side gate. The `sidecar.behavior-cache`
+dev test summary now appends `provider[ollama=N,openai-compat=M,...]`
+with per-provider entry counts (pre-Move-4 entries with no provider
+field bucket as `legacy`). The `provider-swap` fixture parses this
+fragment to assert post-swap re-extraction landed under the new
+provider id.
+
 **Editing VLM prompts.** Every `mode: "vlm"` checkpoint's `description`
 field is the prompt sent to Gemma — that's the *editable expectation
 surface*. Tweak the description text to refine pass/fail criteria as

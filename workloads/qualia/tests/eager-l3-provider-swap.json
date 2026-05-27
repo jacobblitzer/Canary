@@ -1,0 +1,31 @@
+{
+  "name": "eager-l3-provider-swap",
+  "workload": "qualia",
+  "description": "Move 4 (eager-L3 Phase 2 v2 closeout, 2026-05-27) — verifies a mid-session provider swap re-extracts under the new provider id and tags cache entries accordingly. Strategy: configure Ollama, let one extraction land (cache gains provider='ollama' entry), then swap to OpenAI-compat pointed at the same Ollama backend (different provider id, same underlying model, same content_hash), Reload, wait for re-extraction. Asserts the dev-test sidecar.behavior-cache report shows both `ollama=N` AND `openai-compat=M` in the provider breakdown — proves the Move 4 cache-key change (commit 5eee39a) correctly invalidates entries on provider-only changes without requiring different model strings. ~150s wall clock (one cold-load + one warm Ollama call). Requires Ollama running with gemma4:e4b loaded + OLLAMA_ORIGINS=* configured. Does NOT require Anthropic credentials — uses OpenAI-compat-at-Ollama to keep the swap target hermetic to the local machine.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(() => { localStorage.setItem('qualia.landingShown', 'true'); localStorage.setItem('qualia.extraction.provider', JSON.stringify({ id: 'ollama', config: { baseUrl: 'http://localhost:11434', model: 'gemma4:e4b' } })); return 'seeded ollama'; })()",
+      "(() => { const r = window.__canarySetPersonaEnabled('compute.rag.eager-l3', true); if (!r || r.ok !== true) throw new Error('failed to enable compute.rag.eager-l3 persona: ' + JSON.stringify(r)); return 'persona on'; })()"
+    ]
+  },
+  "actions": [
+    { "type": "Reload" },
+    { "type": "WaitForStable", "ms": "75000" },
+    { "type": "RunCommand", "command": "(async () => { const r = await window.__qualiaRunDevTests(); const m = r.match(/provider\\[([^\\]]+)\\]/); if (!m) { const excerpt = r.length > 800 ? r.slice(0, 800) + '...' : r; throw new Error('phase 1 (ollama): no provider breakdown in sidecar.behavior-cache report. excerpt: ' + excerpt); } if (!m[1].includes('ollama=')) throw new Error('phase 1 (ollama): expected ollama=N in breakdown but got: ' + m[1]); return 'phase 1 verified: ' + m[1]; })()" },
+    { "type": "RunCommand", "command": "(() => { window.__qualiaSetExtractionProvider('openai-compat', { baseUrl: 'http://localhost:11434/v1', model: 'gemma4:e4b' }); return 'swapped to openai-compat'; })()" },
+    { "type": "Reload" },
+    { "type": "WaitForStable", "ms": "60000" },
+    { "type": "RunCommand", "command": "(async () => { const r = await window.__qualiaRunDevTests(); const m = r.match(/provider\\[([^\\]]+)\\]/); if (!m) { const excerpt = r.length > 800 ? r.slice(0, 800) + '...' : r; throw new Error('phase 2 (openai-compat): no provider breakdown in report. excerpt: ' + excerpt); } const seen = m[1]; if (!seen.includes('ollama=')) throw new Error('phase 2: lost ollama entries from phase 1, got: ' + seen); if (!seen.includes('openai-compat=')) throw new Error('phase 2: expected openai-compat=N after swap, got: ' + seen); return 'phase 2 verified: ' + seen; })()" },
+    { "type": "RunCommand", "command": "(() => { const b = document.createElement('div'); b.id = 'canary-provider-swap-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS provider swap re-extracted under new id'; document.body.appendChild(b); return true; })()" }
+  ],
+  "checkpoints": [
+    {
+      "name": "provider-swap-success",
+      "stabilizeMs": 500,
+      "tolerance": 0.02
+    }
+  ]
+}

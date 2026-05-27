@@ -320,7 +320,7 @@ update) plus a one-line entry in `MultiVerse/BUILD_LOG.md`.
 | `pencil-diff.json` | Pencil profile debugging (mount trace, no-X variants, only-X variants, standard+debug overlay) |
 | `playground.json` | Wave 0.B Playground — one test per scenario (random / grid / tree / scale-free / stress-1k) + snapshot round-trip |
 | `qualia-v4-ui.json` | Pointer / qverse / RAG UI fixtures (pointers empty/populated/add-form-open, cross-qverse badge, dead-node prompt, breadcrumb-nested, ghost-node, qverse-navigator, refresh-toolbar/enabled, perfpanel-rag-section) |
-| `eager-l3.json` | RAG eager-L3 extraction (Phase M1 + Move 2 + Move 3 — 2026-05-25 → 2026-05-27). Five fixtures: `reload-smoke` (validates the `Reload` action preserves localStorage + re-establishes hooks), `no-provider-noop` (silent-no-op per ADR 0031), `progress-badge` (Move 3 — asserts the EagerExtractionProgressBadge becomes visible during a live sweep; ~10s), `cold-launch` (sweep enqueues N > 0 with Ollama provider seeded; ~95s incl. one extraction), `warm-launch` (idempotency check — sweep log shows skip counts from cold-launch's cache side-effect; ~30s). Cold/warm pair has an intentional dependency. Sweep-dependent fixtures explicitly enable the `compute.rag.eager-l3` persona via `__canarySetPersonaEnabled` before the Reload — required after Move 3 added the persona gate. Provider-swap fixture still queued (Phase 2 v2 — needs `eagerL3MaxContentBytes` + sweep-source telemetry to make the assertion testable). |
+| `eager-l3.json` | RAG eager-L3 extraction (Phase M1 + Moves 2-4 — 2026-05-25 → 2026-05-27). Six fixtures: `reload-smoke` (validates the `Reload` action preserves localStorage + re-establishes hooks), `no-provider-noop` (silent-no-op per ADR 0031), `progress-badge` (Move 3 — asserts the EagerExtractionProgressBadge becomes visible during a live sweep; ~10s), `cold-launch` (sweep enqueues N > 0 with Ollama provider seeded; ~95s incl. one extraction), `warm-launch` (idempotency check; ~30s), `provider-swap` (Move 4 — Ollama extraction lands then swaps to OpenAI-compat-at-Ollama and re-extracts under the new provider id; asserts cache gains entries under both providers via the new `provider[ollama=N,openai-compat=M]` breakdown in the sidecar.behavior-cache dev test; ~150s). Cold/warm pair has an intentional dependency. Sweep-dependent fixtures explicitly enable the `compute.rag.eager-l3` persona via `__canarySetPersonaEnabled` before the Reload — required after Move 3 added the persona gate. |
 
 The above suites cover most fixtures; a `diag-*` diagnostic family
 (~25 tests) is used for ad-hoc debugging arcs and doesn't yet belong
@@ -335,21 +335,21 @@ to a parent suite — queued for cleanup.
 - **Diag-* test family suiting.** ~25 `diag-*` tests have no parent
   suite. Either bundle into a `diag.json` suite or promote
   individual tests into the suites that own their feature area.
-- **Eager L3 extraction suite — Move 2 + Move 3 closed (2026-05-25 → 2026-05-27).** The
+- **Eager L3 extraction suite — Moves 2-4 closed (2026-05-25 → 2026-05-27).** The
   `Reload` action was added to `QualiaBridgeAgent.cs` per Move 2's
   path (a); the three deferred fixtures (`reload-smoke`,
   `cold-launch`, `warm-launch`) shipped. Move 3 added the
   `progress-badge` fixture asserting the EagerExtractionProgressBadge
-  surfaces during a live sweep via the new
-  `__canaryGetProgressBadgeState` hook, and updated the existing
-  sweep-dependent fixtures to enable the new `compute.rag.eager-l3`
-  persona before the Reload (Move 3's gate is off by default in
-  the standard profile; the no-provider-noop fixture didn't need
-  the update because the gate's behavior — sweep stays silent — is
-  what it asserts). The provider-swap fixture remains queued for
-  Phase 2 v2 — it needs the `eagerL3MaxContentBytes` ceiling + a
-  per-extraction provider-id telemetry surface to make the
-  swap-affects-extraction assertion testable.
+  surfaces during a live sweep via the `__canaryGetProgressBadgeState`
+  hook, and updated the existing sweep-dependent fixtures to enable
+  the new `compute.rag.eager-l3` persona before the Reload. Move 4
+  closed Phase 2 v2 with the `provider-swap` fixture — exercises
+  the new provider-id-aware cache key by swapping Ollama →
+  OpenAI-compat-at-Ollama (same underlying model, different
+  provider id) and asserting the cache file's provider breakdown
+  shows both providers' entries via the extended `sidecar.behavior-cache`
+  dev test's `provider[ollama=N,openai-compat=M]` summary
+  fragment.
 - **Dev-test harness as Canary checkpoint type.** Per the same
   audit doc Phase M2: add `"source": "dev-test"` checkpoint type
   that ingests `__qualiaRunDevTests()` markdown alongside the
