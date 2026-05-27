@@ -12,6 +12,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Supervised session mode Phase 1 (2026-05-27)
+- New `canary session` subcommand family: `start --workload <w>` launches the workload's target app under Canary supervision (no automated tests) and enters a single-key REPL for on-demand screen captures; `list` enumerates past sessions; `report --id <id>` prints the matching `SESSION_REPORT.md`. Closes the gap where exploratory debugging required running a suite first.
+- New per-session storage at `workloads/<w>/sessions/<yyyyMMdd-HHmmss-xxxx>/` containing `SESSION_REPORT.md` (markdown bundle), `session.json` (machine-readable), `telemetry.ndjson` (same envelope as test runs), and `captures/NNN-<hh-mm-ss>[-slug].png`.
+- `Canary.Core.Session` namespace: `SupervisedSession` orchestrator (`IAsyncDisposable`), `SessionPaths`, `CaptureSlugGenerator`, `SessionReportWriter` (atomic frontmatter + capture rows), `ISessionAgentFactory` interface keeping the orchestrator agent-agnostic.
+- `Canary.Harness.Session.SessionAgentFactory` dispatches on `WorkloadConfig.AgentType` to `qualia-cdp` → `QualiaBridgeAgent` or `penumbra-cdp` → `PenumbraBridgeAgent` (v1 scope — Rhino workload deferred to v2).
+- 24 new unit tests in `tests/Canary.Tests/Session/` covering id format, slug rules, markdown shape, file round-trip, and end-to-end orchestration via a stub agent.
+- Phase 2 (UI nav tab + hotkeys + annotate-into-session) and Phase 3 (MCP `list_sessions` / `get_session_report` tools + cross-repo doc pass) are queued follow-ups.
+
 ### Changed — Debug-overhaul polish (post-Phase 9, 2026-05-24)
 - **Toolbar mode picker** widened (110 → 140 px) so "pixel-diff" + the dropdown chevron fits without truncation.
 - **Nav tabs** upgraded from default styling to `TabAppearance.FlatButtons` + fixed `ItemSize(140, 32)` + Segoe UI 10.5pt + `Padding(12, 6)`. Now visually the primary surface rather than an easy-to-miss strip.

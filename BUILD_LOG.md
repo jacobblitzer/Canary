@@ -1,5 +1,52 @@
 # Build Log — Canary
 
+## 2026-05-27 — Supervised session mode Phase 1 (CLI + storage)
+
+- **Date**: 2026-05-27
+- **Commit**: pending
+- **Scope**: ship the no-tests-running mode operators have been wanting
+  — boot a workload's target app under Canary supervision, drive it
+  manually in the visible window, hit a single key to capture, close
+  out with a bundled `SESSION_REPORT.md`. Phase 1 is CLI-only + storage
+  layer; UI nav tab + hotkeys (Phase 2) and MCP tools (Phase 3) follow.
+- **Files added** (10):
+  - `src/Canary.Core/Session/{SessionPaths, CaptureSlugGenerator,
+    SessionTypes, SessionReportWriter, ISessionAgentFactory,
+    SupervisedSession}.cs`
+  - `src/Canary.Harness/Session/SessionAgentFactory.cs`
+  - `src/Canary.Harness/Cli/SessionCommand.cs`
+  - `tests/Canary.Tests/Session/{SessionPathsTests,
+    CaptureSlugGeneratorTests, SessionReportWriterTests,
+    SupervisedSessionTests}.cs`
+  - `docs/features/supervised-session.md`
+  - `docs/progress/2026-05-27-supervised-session.md`
+- **Files edited**: `src/Canary.Harness/Program.cs` (register
+  `SessionCommand`); `CHANGELOG.md` (Unreleased entry).
+- **Snapshot tag**: `pre-impl-supervised-session-2026-05-27` at
+  `da9357b` — rollback anchor for the three-phase implementation.
+- **Tests**:
+  - Baseline at start of session: 220 unit tests, 0 failed.
+  - Phase 1 end: 244 unit tests, 0 failed (24 new — 8 SessionPaths, 7
+    CaptureSlugGenerator, 5 SessionReportWriter, 4 SupervisedSession
+    end-to-end with stub agent).
+  - Integration tests count unchanged (the live Qualia/Penumbra smoke
+    is deferred to operator on a machine with the dev env ready).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors.
+- **CLI smoke**: `canary --help` shows `session`; `canary session
+  --help` shows `start`/`list`/`report`; `canary session list`
+  returns "(no sessions found)" cleanly against empty state.
+- **Hardware-bearing follow-up for operator**: run
+  `canary session start --workload qualia` in `C:\Repos\Canary\`,
+  press `c` once Qualia mounts, press `q` to end, type a one-line
+  close-out at the prompt, then open
+  `workloads/qualia/sessions/<id>/SESSION_REPORT.md` to confirm the
+  embedded screenshot renders + `telemetry.ndjson` contains the
+  `Screenshot` envelope.
+- **Status**: Phase 1 ✅ ready for review. Phase 2 (UI nav tab) and
+  Phase 3 (MCP + cross-repo docs) queued.
+
+---
+
 ## 2026-05-27 — Qualia eager-L3 Move 4 follow-up
 
 - **Date**: 2026-05-27
