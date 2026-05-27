@@ -1,5 +1,27 @@
 # Build Log — Canary
 
+## 2026-05-27 — Qualia eager-L3 Move 3 follow-up
+
+- **Date**: 2026-05-27
+- **Commit**: `3ab6c08`
+- **Scope**: new `eager-l3-progress-badge.json` fixture (asserts the Qualia
+  EagerExtractionProgressBadge surfaces during a live sweep via the new
+  `__canaryGetProgressBadgeState()` hook); updated `cold-launch.json` +
+  `warm-launch.json` to enable the new `compute.rag.eager-l3` persona
+  before Reload (Qualia Move 3 added a persona gate; default-off in the
+  standard profile would otherwise regress these fixtures); suite +
+  AGENT_NOTES + `spec/QUALIA_WORKLOAD.md` updated to reflect the 5-fixture
+  roster.
+- **Coordinated with**: Qualia commits `e2503b6` → `1f97a84` (Move 3 +
+  Phase 2 v2 interface extension).
+- **Tests added**: 1 fixture (`eager-l3-progress-badge`).
+- **Suite count**: `eager-l3.json` now 5 fixtures (was 4).
+- **Status**: Pending operator baseline approval for the 5 fixtures via
+  `Canary.UI.exe` (cold/warm may need re-shoot per persona-enable timing
+  shift).
+
+---
+
 ## Phase 0: Solution Scaffold + CLI Shell
 
 ### Checkpoint 0.1: Solution Structure
