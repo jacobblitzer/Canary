@@ -1,5 +1,83 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 0 (spike — Sessions panel)
+
+- **Date**: 2026-05-27
+- **Commits**:
+  - `768d259` `feat(ui-avalonia): Phase 0 spike — Sessions panel in Avalonia`
+  - `21ca293` `test(ui-avalonia): SessionsLive + Past ViewModel tests`
+  - pending `docs(features): canary-ui-avalonia feature + Phase 0 progress`
+- **Scope**: Phase 0 spike of the 7-phase migration from WinForms to
+  Avalonia 11 + FluentAvalonia + CommunityToolkit.Mvvm. New project
+  `src/Canary.UI.Avalonia/` lives alongside `src/Canary.UI/` for the
+  parallel period (phases 0–5). Sessions panel is the layout-pained
+  spike target — if it reflows cleanly in Avalonia, the rest of the
+  migration is mechanical.
+- **Files added** (30, all under `src/Canary.UI.Avalonia/` unless noted):
+  - `Canary.UI.Avalonia.csproj` + `app.manifest` — net8.0-windows +
+    WinExe + Avalonia 11.2.5 + FluentAvaloniaUI 2.2.0 +
+    CommunityToolkit.Mvvm 8.3.2.
+  - `Program.cs` + `App.axaml` + `App.axaml.cs` — AppBuilder, dark
+    theme, single-instance mutex (distinct from the WinForms one so
+    both exes can run in parallel).
+  - `Views/MainWindow.axaml` (+ .cs) + `ViewModels/MainWindowViewModel.cs`
+    — FluentAvalonia `NavigationView` shell with the Sessions item only
+    for the spike.
+  - `Views/SessionsView` + `SessionsLiveView` + `SessionsPastView` (+
+    .cs each) + matching ViewModels — `TabControl` wrapping Live + Past
+    sub-views; Live uses `Grid` + `WrapPanel` so buttons reflow on
+    narrow widths.
+  - `Views/AnnotateWindow` + `TextInputWindow` + `NotePromptWindow` +
+    `CloseoutPromptWindow` (+ .cs each) — modal dialogs sized via
+    `SizeToContent=WidthAndHeight`.
+  - `Controls/AnnotationCanvas.cs` — Avalonia port of the WPF island;
+    same four tool modes + same annotations.json v1 shape.
+  - `Hotkeys/SessionHotkeyHook.cs` — Win32 RegisterHotKey against the
+    main window HWND via Comctl32 `SetWindowSubclass` (intercepts
+    WM_HOTKEY because Avalonia doesn't expose a WndProc message
+    filter).
+  - `Services/SingleInstancePipeServer.cs` — copied verbatim from
+    `src/Canary.UI/SingleInstancePipeServer.cs`.
+  - `Services/WorkloadsLocator.cs` — Sessions-scoped subset of
+    `MainForm.AutoDetectWorkloadsDir`.
+  - `tests/Canary.Tests/UI.Avalonia/SessionsLiveViewModelTests.cs` (9
+    tests) + `SessionsPastViewModelTests.cs` (3 tests).
+- **Files edited**:
+  - `Canary.sln` — adds the new project under the `src` solution
+    folder.
+  - `tests/Canary.Tests/Canary.Tests.csproj` — adds
+    `Canary.UI.Avalonia` project reference.
+  - `docs/plans/2026-05-27-canary-ui-avalonia-migration.md` —
+    committed alongside the implementation prompt as the parent design
+    doc (was untracked at session start).
+- **Files created (docs)**:
+  - `docs/features/canary-ui-avalonia.md` (status: in-progress).
+  - `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` (per-
+    phase log).
+  - `CHANGELOG.md` Unreleased entry above the bug 0008 entry.
+  - This `BUILD_LOG.md` entry.
+- **Tests**:
+  - Pre-Phase-0: 258 unit tests, 0 failed.
+  - Post-Phase-0: 270 unit tests, 0 failed (+12 net new — 9
+    SessionsLive + 3 SessionsPast).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors. Both
+  `Canary.UI.exe` and `Canary.UI.Avalonia.exe` produced.
+- **Snapshot tag**: `pre-impl-ui-avalonia-2026-05-27` created at HEAD
+  (`d393e04` at the time, before this phase landed). Preserved as the
+  rollback anchor through Phase 6.
+- **Verification gates (Phase 0)**: 1) build 0/0 both exes ✅; 2) unit
+  tests green ✅; 3) manual layout smoke — pending operator review;
+  4) functional smoke (Sessions round-trip) — pending operator review;
+  5) CLI regression smoke — pending; 6) decision gate — pending.
+- **Status**: 🟡 Phase 0 code + tests + docs shipped locally. Operator
+  review at the phase boundary before Phase 1 begins. **Not pushed**
+  per the prompt rule (no push until Phase 6).
+- **Next phase**: Phase 1 — shell + simple panels (Localhost, Feedback,
+  Telemetry, Settings) + full nav toolbar with Tests-only visibility
+  bindings.
+
+---
+
 ## 2026-05-27 — Supervised session mode Phase 3 (MCP + cross-repo doc pass)
 
 - **Date**: 2026-05-27
