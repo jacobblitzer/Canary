@@ -38,7 +38,15 @@ public partial class TelemetryViewModel : ObservableObject, IDisposable
         _timer.Tick += (_, _) => RefreshTelemetry();
     }
 
-    partial void OnSelectedSourceChanged(string value) => RefreshTelemetry();
+    partial void OnSelectedSourceChanged(string value)
+    {
+        // Filter change must always re-filter — invalidate the cache so
+        // RefreshTelemetry doesn't short-circuit on the unchanged file
+        // path / mtime.
+        _currentFile = null;
+        _lastSeenWriteUtc = DateTime.MinValue;
+        RefreshTelemetry();
+    }
 
     public void SetWorkloadsDir(string? workloadsDir)
     {
