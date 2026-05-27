@@ -1,5 +1,61 @@
 # Build Log — Canary
 
+## 2026-05-27 — Supervised session mode Phase 2 (UI nav tab + hotkeys)
+
+- **Date**: 2026-05-27
+- **Commit**: pending
+- **Scope**: ship the GUI half of the supervised-session feature so the
+  operator never has to touch the CLI for an exploratory debug session.
+  Click Sessions nav tab → pick workload → Start → Chrome opens visibly
+  → Ctrl+Shift+C anywhere captures → End writes the report.
+- **Files added** (5):
+  - `src/Canary.UI/Hotkeys/SessionHotkeyHook.cs` — registers
+    Ctrl+Shift+C (capture) + Ctrl+Shift+A (annotate) against
+    MainForm's HWND. Mirrors the AbortHotkey pattern.
+  - `src/Canary.UI/Panels/SessionsLiveSubPanel.cs` — armed-state
+    machine (idle / starting / armed / ending), workload picker,
+    capture buttons, thumbnail strip, note + closeout modal dialogs,
+    AnnotatedImageForm integration.
+  - `src/Canary.UI/Panels/SessionsPastSubPanel.cs` — list + report
+    preview mirroring PastRunsPanel. Filter on workload/session id.
+    `ScanRows` is static + testable.
+  - `src/Canary.UI/Panels/SessionsPanel.cs` — TabControl wrapping
+    Live + Past sub-tabs; routes hotkey messages to the live panel.
+  - `tests/Canary.Tests/UI/SessionsPanelTests.cs` — 6 unit tests.
+- **Files edited**:
+  - `src/Canary.UI/Navigation/NavModes.cs` — adds
+    `SessionsNavMode`.
+  - `src/Canary.UI/MainForm.cs` — registers the new tab between
+    Feedback and Telemetry; tracks loaded workloads for propagation;
+    routes WM_HOTKEY through the SessionsNavMode hook.
+  - `src/Canary.UI/Annotation/AnnotatedImageForm.cs` — new
+    constructor overload taking a sink callback so the session can
+    own the destination paths instead of FeedbackInboxWriter.
+  - `src/Canary.UI/Canary.UI.csproj` — adds Canary.Harness project
+    reference so SessionsLiveSubPanel can use SessionAgentFactory
+    (single-sourced agent dispatch).
+  - `tests/Canary.Tests/Navigation/NavModeTests.cs` — adds
+    SessionsNavMode to the AllNavModes theory member.
+  - `docs/features/supervised-session.md` — Phase 2 UI workflow
+    section + status flip.
+- **Tests**:
+  - Pre-Phase-2: 244 unit tests, 0 failed.
+  - Post-Phase-2: 253 unit tests, 0 failed (9 net new: 6
+    SessionsPanelTests, 3 NavModeTests theory rows for
+    SessionsNavMode).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors.
+- **Hardware-bearing follow-up for operator**: open
+  `src/Canary.UI/bin/Debug/net8.0-windows/Canary.UI.exe`, click the
+  new **Sessions** tab → **Live** → pick `qualia` → **Start session**
+  → wait for Chrome → press **Ctrl+Shift+C** to capture →
+  **Ctrl+Shift+A** to capture + annotate → **End session** → enter
+  closeout → switch to **Past sessions** tab and confirm the entry
+  appears with the just-written report embedded.
+- **Status**: Phase 2 ✅ ready for review. Phase 3 (MCP +
+  cross-repo docs) next.
+
+---
+
 ## 2026-05-27 — Supervised session mode Phase 1 (CLI + storage)
 
 - **Date**: 2026-05-27

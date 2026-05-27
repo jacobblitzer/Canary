@@ -12,6 +12,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Supervised session mode Phase 2 (2026-05-27)
+- New **Sessions** nav tab in `Canary.UI` (between Feedback and Telemetry). `SessionsPanel` hosts two sub-tabs:
+  - **Live**: workload picker, Start/Capture/Capture+Annotate/Capture+Note/End buttons, live thumbnail strip, status line, hotkey hint. Constructs a `SupervisedSession` via `Canary.Harness.Session.SessionAgentFactory` so the same factory used by the CLI also serves the UI.
+  - **Past sessions**: SplitContainer with session list (Started / Workload / SessionId / Caps) and `SESSION_REPORT.md` preview pane. Filter box + Refresh.
+- Global hotkeys (while a session is armed): **Ctrl+Shift+C** = capture; **Ctrl+Shift+A** = capture + open annotation surface. Registered against MainForm's HWND on Start, unregistered on End — mirrors the existing `AbortHotkey` pattern; MainForm.WndProc routes WM_HOTKEY through both hooks.
+- `AnnotatedImageForm` gains a constructor overload that takes a sink callback `Action<sourcePng, annotatedPng, annotationsJson>`. SessionsLiveSubPanel uses it to write the annotated triad into the session's `captures/` dir (not the global feedback inbox) and calls `SupervisedSession.AttachAnnotation` so the report's image embed switches to the annotated PNG.
+- `Canary.UI` now references `Canary.Harness` (single-sourced agent dispatch in `SessionAgentFactory`).
+- 9 new unit tests (`SessionsPanelTests` covering NavMode identity, panel construction, `ScanRows` against a temp dir with multiple workloads, missing-json skip, null/missing dir → empty) + 3 added `NavModeTests` theory rows for `SessionsNavMode`.
+
 ### Added — Supervised session mode Phase 1 (2026-05-27)
 - New `canary session` subcommand family: `start --workload <w>` launches the workload's target app under Canary supervision (no automated tests) and enters a single-key REPL for on-demand screen captures; `list` enumerates past sessions; `report --id <id>` prints the matching `SESSION_REPORT.md`. Closes the gap where exploratory debugging required running a suite first.
 - New per-session storage at `workloads/<w>/sessions/<yyyyMMdd-HHmmss-xxxx>/` containing `SESSION_REPORT.md` (markdown bundle), `session.json` (machine-readable), `telemetry.ndjson` (same envelope as test runs), and `captures/NNN-<hh-mm-ss>[-slug].png`.

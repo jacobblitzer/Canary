@@ -60,8 +60,23 @@ workloads/<workload>/sessions/
 ## Phase status
 
 - **Phase 1 (CLI + storage, shipped 2026-05-27)** — `canary session start/list/report` subcommands, `SupervisedSession` orchestrator, `SessionReportWriter`, telemetry NDJSON wiring. CLI-only; annotation in this phase opens the PNG in the default image viewer.
-- **Phase 2 (UI, pending)** — Sessions nav tab in `Canary.UI` with Live + Past sub-panels, `Ctrl+Shift+C` / `Ctrl+Shift+A` hotkeys, `AnnotatedImageForm` overload that writes the triad into the session dir instead of the global inbox.
+- **Phase 2 (UI, shipped 2026-05-27)** — Sessions nav tab in `Canary.UI` with Live + Past sub-panels, global Ctrl+Shift+C / Ctrl+Shift+A hotkeys, `AnnotatedImageForm` overload that writes the annotated triad into the session's `captures/` dir (not the global feedback inbox).
 - **Phase 3 (MCP + docs, pending)** — `list_sessions` + `get_session_report` MCP tools.
+
+## UI workflow (Phase 2)
+
+Open Canary.UI, click the **Sessions** nav tab (between Feedback and Telemetry).
+
+**Live sub-tab:**
+1. Pick a workload from the dropdown (only `qualia-cdp` / `penumbra-cdp` workloads appear).
+2. Click **Start session**. Vite + Chrome boot visibly (~10–30s); the panel transitions to the armed state with Capture / Capture+Annotate / Capture+Note / End buttons enabled.
+3. Drive the app in the visible Chrome window. Hit a capture button (or **Ctrl+Shift+C** anywhere) when you want a screenshot. Each capture appears as a thumbnail in the strip; click a thumbnail to open the PNG.
+4. **Ctrl+Shift+A** captures and immediately opens the annotation surface (`AnnotatedImageForm`). Save writes the annotated PNG + annotations.json into the session's `captures/` dir and refreshes the thumbnail.
+5. **End session** prompts for one-line close-out notes, writes `SESSION_REPORT.md`, finalizes telemetry, tears down Vite + Chrome.
+
+**Past sessions sub-tab:** read-only list (Started / Workload / SessionId / Caps) with a right-pane `SESSION_REPORT.md` preview. Filter by workload or session id.
+
+The hotkeys are registered globally only while a session is armed and unregistered on End, so they don't compete with Chrome's own Ctrl+Shift+C (DevTools inspect) outside of an active session.
 
 ## Implementation pointers
 
