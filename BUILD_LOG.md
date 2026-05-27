@@ -1,5 +1,72 @@
 # Build Log — Canary
 
+## 2026-05-27 — Canary.UI Avalonia migration Phase 4 (annotation surface)
+
+- **Date**: 2026-05-27
+- **Commits** (3 total):
+  - `cf5d1ed` `feat(ui-avalonia): annotation polish — undo + tool palette + inbox parity`
+  - `2b1c0c9` `test(ui-avalonia): AnnotateWindowViewModel tests`
+  - pending `docs(progress): Phase 4 — annotation surface`
+- **Scope**: Phase 4 builds on the Phase 0 AnnotationCanvas +
+  AnnotateWindow baseline. Adds the undo stack (Ctrl+Z), refactors
+  AnnotateWindow's code-behind into a testable AnnotateWindowViewModel
+  with TWO constructors (session-sink mode + feedback-inbox mode),
+  and ships a tool-palette ToggleButton group with an accent-colored
+  active-tool indicator. Brings the inbox-write path to byte-parity
+  with the WinForms AnnotatedImageForm so Phase 5's Past Runs
+  Annotate wire-in only has to hook the constructor.
+- **Files added** (2 src + 1 test):
+  - `ViewModels/AnnotateWindowViewModel.cs`,
+    `ViewModels/ToolModeConverter.cs`.
+  - `tests/Canary.Tests/UI.Avalonia/AnnotateWindowViewModelTests.cs`.
+- **Files edited**:
+  - `Controls/AnnotationCanvas.cs` — undo stack + UndoCount /
+    ShapeCount / StateChanged + Clear() snapshot-restore + Text
+    shape sibling pairing via tb.Tag.
+  - `Views/AnnotateWindow.axaml` — ToggleButton group with
+    Classes=\"tool:checked\" style, colored Color buttons, Undo
+    button, Ctrl+Z Window.KeyBinding.
+  - `Views/AnnotateWindow.axaml.cs` — refactored to construct
+    AnnotateWindowViewModel + wire callbacks; three constructors
+    expose preview / session-sink / feedback-inbox modes.
+  - `docs/features/canary-ui-avalonia.md` — Phase 3 → shipped,
+    Phase 4 → in-progress.
+  - `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` —
+    Phase 4 section + commits + verification gates + next-phase
+    preview.
+  - `CHANGELOG.md` — Phase 4 detail prepended; combined test delta
+    258 → 323 (+65 across phases 0–4).
+- **Tests**:
+  - Pre-Phase-4: 314 unit tests, 0 failed.
+  - Post-Phase-4: 323 unit tests, 0 failed (+9 net new — both
+    save modes, error path, tool/color picker, undo/clear
+    delegation, ToolModeConverter).
+- **Build**: `dotnet build Canary.sln` = 0 warnings, 0 errors. Both
+  exes build green.
+- **Verification gates (Phase 4)**: 1) build 0/0 ✅; 2) annotation
+  round-trip parity with WPF — annotations.json shape unchanged
+  (Phase 0 covered); PNG rendering via Avalonia RenderTargetBitmap
+  is visually equivalent but not bit-identical to WPF
+  PngBitmapEncoder; operator smoke confirms visual correctness;
+  3) both flows (session capture + feedback inbox) — session flow
+  shipped Phase 0, inbox flow unit-tested + awaits Phase 5 wire-in;
+  4) VM tests ✅.
+- **Status**: 🟡 Phase 4 code + tests + docs shipped locally.
+  Operator review at the phase boundary before Phase 5.
+- **Wire-in status**: feedback-inbox mode is **dormant** — the
+  AnnotateWindow ctor that accepts (sourcePath, inboxRoot,
+  runRef?, checkpointRef?) is unused in Phase 4 because the
+  Past Runs Annotate button hasn't been wired into TestsViewModel
+  yet. Phase 5 hooks that wire.
+- **Next phase**: Phase 5 — services + glue (~2 days). AbortHotkey
+  (Pause) port; SingleInstancePipeServer wired into MainWindow +
+  AutoRunRequestHandler; drag-and-drop for workload JSON +
+  recordings; right-click context menus on tree nodes (which finally
+  route to the Phase 3 editors + the Phase 4 inbox-mode
+  AnnotateWindow).
+
+---
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 3 (editors)
 
 - **Date**: 2026-05-27

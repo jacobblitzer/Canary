@@ -251,4 +251,55 @@ Phase 4 — annotation polish (~2 days). Continue from the Phase 0 `AnnotationCa
 - `e4995ae` — `feat(ui-avalonia): port SuiteEditorView + VM`
 - `37a0f0a` — `feat(ui-avalonia): port WorkloadEditorView + VM`
 - `bbe05d5` — `test(ui-avalonia): editor VM tests (Test / Suite / Workload)`
-- (pending) — `docs(progress): Phase 3 — editors`
+- `9fd6490` — `docs(progress): Phase 3 — editors`
+
+## Phase 4 — annotation surface (2026-05-27)
+
+### Pre-flight
+
+- Phase 3 verified by operator (continue).
+- Baseline: 314 unit tests passing, build 0/0.
+- Re-read the Phase 0 `AnnotationCanvas` + `AnnotateWindow` + the WPF `AnnotatedImageForm` for parity-comparison. Identified `Canary.Feedback.FeedbackInboxWriter` + `FeedbackSlugGenerator` + `FeedbackItem` as the inbox-mode writer surface.
+
+### Goals
+
+Build on the Phase 0 annotation baseline:
+1. Undo stack — every Rectangle / Freehand / Text addition pushes an inverse delegate; `Undo()` pops + invokes; `Clear()` snapshots-and-restores so a single Ctrl+Z brings back everything cleared in one motion.
+2. Tool palette polish — toolbar buttons become `ToggleButton`s with an `accent`-colored selected state so the operator can see which tool is active.
+3. Color buttons that visually preview their stroke color.
+4. Refactor `AnnotateWindow` out of code-behind into an `AnnotateWindowViewModel` with two constructors (session-sink mode and feedback-inbox mode), bringing **parity** with the WinForms `AnnotatedImageForm` so the Past Runs Annotate flow lands cleanly in Phase 5.
+
+### What landed
+
+**Commit 1 — `feat(ui-avalonia): annotation polish — undo + tool palette + inbox parity`** (cf5d1ed):
+- `Controls/AnnotationCanvas.cs` — `Stack<Action> _undoStack` + `Undo()` + `UndoCount` + `ShapeCount` + `StateChanged` event. Rectangle / Freehand / Text additions push a one-shot inverse. Clear() pushes a snapshot-restore. Text shapes pair Rectangle + TextBlock via `tb.Tag = bg`.
+- `ViewModels/AnnotateWindowViewModel.cs` — two constructors (session-sink mode mirroring Phase 0, inbox mode wiring `FeedbackInboxWriter` + `FeedbackSlugGenerator` + `FeedbackItem`). Delegate callbacks (`GetAnnotatedPngBytes` / `GetAnnotationsJson` / `RequestUndo` / `RequestClear` / `RequestClose`) keep the VM testable.
+- `ViewModels/ToolModeConverter.cs` — static `IValueConverter` instances for each `ToolMode`; toolbar `ToggleButton.IsChecked` binds through them.
+- `Views/AnnotateWindow.axaml` — toolbar refactored to `ToggleButton`s + colored Color buttons + Undo (Ctrl+Z) button + `Window.KeyBindings` entry.
+- `Views/AnnotateWindow.axaml.cs` — refactored to construct the VM + wire callbacks; three public constructors (preview, session-sink, inbox).
+
+**Commit 2 — `test(ui-avalonia): AnnotateWindowViewModel tests`** (2b1c0c9): 9 new tests covering both modes (session-sink dispatch + inbox markdown+sidecar write), the empty-title fallback, Save-error surfacing, PickTool / PickColor command behavior, Undo / Clear delegate plumbing, and the `ToolModeConverter` true-only-for-matching-target property. 314 → 323 total.
+
+**Commit 3 — `docs(progress): Phase 4`** (pending): this section + CHANGELOG + BUILD_LOG.
+
+### Verification gates
+
+1. ✅ `dotnet build Canary.sln` — 0 warnings, 0 errors. Both exes build.
+2. ⏸ **Annotation round-trip parity with WPF** — pending operator. The annotations.json shape is unchanged from Phase 0 (covered by Phase 0 implementation). PNG rendering uses Avalonia's `RenderTargetBitmap` — visually equivalent but not bit-identical with the WPF `PngBitmapEncoder`. The annotations.json IS bit-identical (deterministic serialization).
+3. ⏸ **Both flows work — supervised-session Past tab + feedback inbox** — supervised-session flow has shipped since Phase 0. Feedback-inbox flow is unit-tested but operator smoke happens after Phase 5 wires the Past Runs Annotate button to the new inbox-mode constructor.
+4. ✅ ViewModel tests — 314 → 323 (+9), all passing.
+
+### Operator smoke checklist
+
+1. From Sessions Live, run a session → Capture+Annotate → draw a rectangle → click Rectangle button (visible-active) → click Freehand (visible-active flips) → press Ctrl+Z (rectangle disappears) → Ctrl+Z again (freehand disappears) → Save → confirm annotated PNG + annotations.json land in the session's `captures/` dir.
+2. Sanity check: Clear after drawing two shapes → Ctrl+Z restores both → save normally.
+
+### Next phase
+
+Phase 5 — services + glue (~2 days). AbortHotkey (Pause) port for run aborts; SingleInstancePipeServer wired to MainWindow + AutoRunRequestHandler; drag-and-drop for workload JSON + recordings; right-click context menus on tree nodes (which finally route to the Phase 3 editors).
+
+### Commits
+
+- `cf5d1ed` — `feat(ui-avalonia): annotation polish — undo + tool palette + inbox parity`
+- `2b1c0c9` — `test(ui-avalonia): AnnotateWindowViewModel tests`
+- (pending) — `docs(progress): Phase 4 — annotation surface`

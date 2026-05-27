@@ -49,8 +49,8 @@ Driving artifacts:
 - **Phase 0 — spike (shipped, 2026-05-27)** — Sessions panel + annotation canvas + global hotkeys ported to Avalonia. Layout reflow + functional smoke confirmed by operator; go/no-go decision: GO.
 - **Phase 1 — shell + simple panels (shipped, 2026-05-27)** — Localhost / Feedback / Telemetry / Settings nav items + Open workloads folder toolbar.
 - **Phase 2 — Tests tab (shipped, 2026-05-27)** — workload tree + Welcome/TestRunner/ResultsViewer/Recording sub-panels + Tests-only toolbar items + F5 keybinding.
-- **Phase 3 — editors (in-progress, 2026-05-27)** — TestEditor / SuiteEditor / WorkloadEditor with JSON round-trip property tests. Unmanaged fields (Penumbra Setup.Scene/Canvas/DisplayPreset/Commands) preserved via underlying POCO mutation. Editors are **orphan code** in Phase 3 — wire-in via tree context menus lands in Phase 5.
-- **Phase 4 — annotation polish (queued)** — hit-testing, undo, tool palette polish.
+- **Phase 3 — editors (shipped, 2026-05-27)** — TestEditor / SuiteEditor / WorkloadEditor with JSON round-trip property tests. Editors are orphan ViewModels/Views; wire-in via tree context menus lands in Phase 5.
+- **Phase 4 — annotation polish (in-progress, 2026-05-27)** — undo stack (Ctrl+Z), tool-palette ToggleButton group with accent-colored active-tool indicator, AnnotateWindowViewModel extracted from code-behind, **feedback-inbox parity** (inbox-mode constructor + FeedbackInboxWriter wiring). Phase 5 wires the Past Runs Annotate button to the inbox-mode flow.
 - **Phase 5 — services + glue (queued)** — Abort hotkey, drag-and-drop, context menus, AutoRun forwarding.
 - **Phase 6 — cutover (queued)** — flip default UI, delete `src/Canary.UI/`, full smoke matrix.
 
