@@ -12,37 +12,33 @@
         Width="1280" Height="900"
         MinWidth="1024" MinHeight="768">
 
-  <Window.Resources>
-    <DataTemplate x:Key="SessionsTemplate" x:DataType="vm:SessionsViewModel">
-      <views:SessionsView />
-    </DataTemplate>
-    <DataTemplate x:Key="LocalhostTemplate" x:DataType="vm:LocalhostViewModel">
-      <views:LocalhostView />
-    </DataTemplate>
-    <DataTemplate x:Key="FeedbackTemplate" x:DataType="vm:FeedbackViewModel">
-      <views:FeedbackView />
-    </DataTemplate>
-    <DataTemplate x:Key="TelemetryTemplate" x:DataType="vm:TelemetryViewModel">
-      <views:TelemetryView />
-    </DataTemplate>
-    <DataTemplate x:Key="SettingsTemplate" x:DataType="vm:SettingsViewModel">
-      <views:SettingsView />
-    </DataTemplate>
-  </Window.Resources>
-
   <Grid RowDefinitions="Auto,*">
-    <!-- Top toolbar — Open Folder is always-visible; Tests-only items
-         show up in Phase 2 with visibility bindings against the Tests
-         nav-item selection. -->
+    <!-- Top toolbar. Open Folder is always visible; the Tests-only items
+         (Run Tests + Mode picker + Record) bind their IsVisible to the
+         IsTestsActive computed property so they appear only when the
+         Tests nav item is selected. -->
     <Border Grid.Row="0" Background="#252526" Padding="8,4" BorderBrush="#3F3F46" BorderThickness="0,0,0,1">
-      <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button Content="Open workloads folder…"
+      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+        <Button Grid.Column="0" Content="Open workloads folder…"
                 Command="{Binding OpenWorkloadsFolderCommand}" />
-        <TextBlock Text="{Binding WorkloadsDir, StringFormat='workloads: {0}'}"
+        <Button Grid.Column="1" Content="Run Tests (F5)"
+                Margin="8,0,0,0"
+                Background="#3CC850" Foreground="White"
+                Command="{Binding RunSelectedCommand}"
+                IsVisible="{Binding IsTestsActive}" />
+        <ComboBox Grid.Column="2" Margin="8,0,0,0"
+                  ItemsSource="{Binding ModeOverrides}"
+                  SelectedItem="{Binding Tests.ModeOverride, Mode=TwoWay}"
+                  IsVisible="{Binding IsTestsActive}" />
+        <Button Grid.Column="3" Content="Record"
+                Margin="8,0,0,0"
+                Command="{Binding RecordNewCommand}"
+                IsVisible="{Binding IsTestsActive}" />
+        <TextBlock Grid.Column="5" Text="{Binding WorkloadsDir, StringFormat='workloads: {0}'}"
                    VerticalAlignment="Center"
                    Foreground="#96C8FF"
                    TextTrimming="CharacterEllipsis" />
-      </StackPanel>
+      </Grid>
     </Border>
 
     <ui:NavigationView Grid.Row="1"
@@ -64,6 +60,9 @@
 
       <ContentControl Content="{Binding SelectedNavItem.ViewModel}">
         <ContentControl.DataTemplates>
+          <DataTemplate x:DataType="vm:TestsViewModel">
+            <views:TestsView />
+          </DataTemplate>
           <DataTemplate x:DataType="vm:SessionsViewModel">
             <views:SessionsView />
           </DataTemplate>
@@ -83,4 +82,8 @@
       </ContentControl>
     </ui:NavigationView>
   </Grid>
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="F5" Command="{Binding RunSelectedCommand}" />
+  </Window.KeyBindings>
 </Window>

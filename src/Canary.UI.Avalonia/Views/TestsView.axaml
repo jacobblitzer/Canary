@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             xmlns:views="using:Canary.UI.Avalonia.Views"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
+             x:Class="Canary.UI.Avalonia.Views.TestsView"
+             x:DataType="vm:TestsViewModel">
+
+  <Grid ColumnDefinitions="320,4,*">
+    <!-- Left: workload tree -->
+    <Grid Grid.Column="0" RowDefinitions="*,Auto">
+      <TreeView Grid.Row="0"
+                ItemsSource="{Binding Tree.Roots}"
+                SelectedItem="{Binding Tree.SelectedNode, Mode=TwoWay}"
+                Background="#252526">
+        <TreeView.ItemTemplate>
+          <TreeDataTemplate ItemsSource="{Binding Children}" DataType="vm:WorkloadNode">
+            <TextBlock Text="{Binding Label}" Foreground="{Binding Color}" />
+          </TreeDataTemplate>
+        </TreeView.ItemTemplate>
+      </TreeView>
+      <Border Grid.Row="1" Background="#1F1F1F" Padding="8,4">
+        <TextBlock Text="{Binding Tree.StatusText}" Foreground="#969696" FontSize="11" TextTrimming="CharacterEllipsis" />
+      </Border>
+    </Grid>
+
+    <GridSplitter Grid.Column="1" Background="#404040" />
+
+    <!-- Right: content swap -->
+    <ContentControl Grid.Column="2" Content="{Binding ActiveContent}">
+      <ContentControl.DataTemplates>
+        <DataTemplate x:DataType="vm:WelcomeViewModel">
+          <views:WelcomeView />
+        </DataTemplate>
+        <DataTemplate x:DataType="vm:TestRunnerViewModel">
+          <views:TestRunnerView />
+        </DataTemplate>
+        <DataTemplate x:DataType="vm:ResultsViewerViewModel">
+          <views:ResultsViewerView />
+        </DataTemplate>
+        <DataTemplate x:DataType="vm:RecordingViewModel">
+          <views:RecordingView />
+        </DataTemplate>
+      </ContentControl.DataTemplates>
+    </ContentControl>
+  </Grid>
+</UserControl>

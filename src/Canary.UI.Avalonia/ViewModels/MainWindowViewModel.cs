@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Canary.Cli;
+using Canary.Orchestration;
 using Canary.UI.Avalonia.Services;
 
 namespace Canary.UI.Avalonia.ViewModels;
@@ -19,42 +20,46 @@ public partial class MainWindowViewModel : ObservableObject
     public ObservableCollection<NavItem> NavItems { get; } = new();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsTestsActive))]
     private NavItem? _selectedNavItem;
 
     [ObservableProperty]
     private string? _workloadsDir;
 
+    public TestsViewModel Tests { get; }
     public SessionsViewModel Sessions { get; }
     public LocalhostViewModel Localhost { get; }
     public FeedbackViewModel Feedback { get; }
     public TelemetryViewModel Telemetry { get; }
     public SettingsViewModel Settings { get; }
 
-    // Set by the View at construction time so OpenWorkloadsFolderCommand
-    // can show an Avalonia folder picker (the picker needs a TopLevel).
+    public IReadOnlyList<ModeOverride> ModeOverrides { get; } = new[] { ModeOverride.None, ModeOverride.PixelDiff, ModeOverride.Vlm, ModeOverride.Both };
+
     public Func<Task<string?>>? PickWorkloadsDirAsync { get; set; }
+
+    public bool IsTestsActive => SelectedNavItem?.ViewModel is TestsViewModel;
 
     public MainWindowViewModel()
     {
+        Tests = new TestsViewModel();
         Sessions = new SessionsViewModel();
         Localhost = new LocalhostViewModel();
         Feedback = new FeedbackViewModel();
         Telemetry = new TelemetryViewModel();
         Settings = new SettingsViewModel();
 
-        // Phase 1 full nav set. Phase 2 prepends Tests + Past Runs items.
-        NavItems.Add(new NavItem { Title = "Sessions",  IconGlyph = "", ViewModel = Sessions });
-        NavItems.Add(new NavItem { Title = "Localhost", IconGlyph = "", ViewModel = Localhost });
-        NavItems.Add(new NavItem { Title = "Feedback",  IconGlyph = "", ViewModel = Feedback });
-        NavItems.Add(new NavItem { Title = "Telemetry", IconGlyph = "", ViewModel = Telemetry });
-        NavItems.Add(new NavItem { Title = "Settings",  IconGlyph = "", ViewModel = Settings });
+        // Phase 2 full nav set. Tests is the operator's primary work
+        // surface so it leads the rail.
+        NavItems.Add(new NavItem { Title = "Tests",     IconGlyph = "", ViewModel = Tests });
+        NavItems.Add(new NavItem { Title = "Sessions",  IconGlyph = "", ViewModel = Sessions });
+        NavItems.Add(new NavItem { Title = "Localhost", IconGlyph = "", ViewModel = Localhost });
+        NavItems.Add(new NavItem { Title = "Feedback",  IconGlyph = "", ViewModel = Feedback });
+        NavItems.Add(new NavItem { Title = "Telemetry", IconGlyph = "", ViewModel = Telemetry });
+        NavItems.Add(new NavItem { Title = "Settings",  IconGlyph = "", ViewModel = Settings });
         SelectedNavItem = NavItems[0];
 
         var detected = WorkloadsLocator.AutoDetect();
-        if (detected != null)
-        {
-            ApplyWorkloadsDir(detected);
-        }
+        if (detected != null) ApplyWorkloadsDir(detected);
     }
 
     [RelayCommand]
@@ -68,16 +73,30 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task RunSelectedAsync()
+    {
+        await Tests.RunSelectionAsync().ConfigureAwait(true);
+    }
+
+    [RelayCommand]
+    private void RecordNew()
+    {
+        SelectedNavItem = NavItems.FirstOrDefault(n => n.ViewModel is TestsViewModel) ?? SelectedNavItem;
+        Tests.ShowRecording();
+    }
+
     private void ApplyWorkloadsDir(string dir)
     {
         WorkloadsDir = dir;
         _ = Sessions.LoadWorkloadsAsync(dir);
+        _ = Tests.LoadWorkloadsAsync(dir);
         Telemetry.SetWorkloadsDir(dir);
     }
 
     public void HandleAutoRun(AutoRunArgs args)
     {
-        // Phase 0 spike: just bring the window forward; full --workload /
-        // --test routing lands in Phase 5 with AutoRunRequestHandler.
+        // Phase 5 will route this to Tests' RunSelection equivalent
+        // (parse args, locate the test in the tree, trigger Run).
     }
 }
