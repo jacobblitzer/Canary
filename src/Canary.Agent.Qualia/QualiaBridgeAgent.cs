@@ -170,6 +170,9 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
             "SetCameraState"       => await SetCameraStateAsync(parameters).ConfigureAwait(false),
             "FitToView"            => await FitToViewAsync(parameters).ConfigureAwait(false),
             "SetPlanarSettings"    => await SetPlanarSettingsAsync(parameters).ConfigureAwait(false),
+            // Wave 1b-ii-a (2026-05-28): hooks now exist for §G and §L.
+            "SimStep"              => await SimStepAsync(parameters).ConfigureAwait(false),
+            "LoadPenumbraPreset"   => await LoadPenumbraPresetAsync(parameters).ConfigureAwait(false),
             _ => Fail(
                 $"Unknown action: {action}. Supported: RunCommand, WaitForReady, WaitForStable, " +
                 "Reload, SetCanvasSize, HideUI, ApplyProfile, SetModuleEnabled, ShowLandingScreen, " +
@@ -178,7 +181,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
                 "PlaygroundLoadScenario, PlaygroundSetParam, PlaygroundSaveSnapshot, " +
                 "PlaygroundRestoreSnapshot, PlaygroundDeleteSnapshot, PlaygroundListSnapshots, " +
                 "PlaygroundGetState, DispatchZoom, DispatchPan, DispatchOrbit, AimAtFacet, " +
-                "SetCameraState, FitToView, SetPlanarSettings")
+                "SetCameraState, FitToView, SetPlanarSettings, SimStep, LoadPenumbraPreset")
         };
     }
 
@@ -535,6 +538,26 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
         var result = await _cdp!.EvaluateAsync($"window.__canarySetPlanarSettings({paramsJson})")
             .ConfigureAwait(false);
         return Ok($"Set planar settings. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> SimStepAsync(Dictionary<string, string> parameters)
+    {
+        string arg = "";
+        if (parameters.TryGetValue("dt", out var dStr) && double.TryParse(dStr, System.Globalization.CultureInfo.InvariantCulture, out var dt))
+            arg = dt.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var result = await _cdp!.EvaluateAsync($"window.__canarySimStep({arg})")
+            .ConfigureAwait(false);
+        return Ok($"Sim stepped. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> LoadPenumbraPresetAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("name", out var name) || string.IsNullOrWhiteSpace(name))
+            return Fail("LoadPenumbraPreset requires 'name' parameter.");
+        var jsName = JsonSerializer.Serialize(name);
+        var result = await _cdp!.EvaluateAsync($"window.__canaryLoadPenumbraPreset({jsName})")
+            .ConfigureAwait(false);
+        return Ok($"Loaded Penumbra preset '{name}'. Result: {result ?? "undefined"}");
     }
 
     // ──────────────────────────────────────────────────────────────────────
