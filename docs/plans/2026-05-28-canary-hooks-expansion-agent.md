@@ -461,3 +461,17 @@ After both repos land their changes, append to
    headline path under `--mode both`.
 4. **Backfill.** Move existing diag-* tests off `dumpDiagnostics` onto
    the typed readers where it makes their assertions sharper.
+
+## Wave 1a resolution (2026-05-28)
+
+Landed as a 1a/1b split (see `MultiVerse/prompts/canary-hooks-expansion-2026-05-28.md`). Wave 1a adds 7 of 12 planned named actions — the camera + planar set whose Qualia hooks land in 1a (`DispatchZoom`, `DispatchPan`, `DispatchOrbit`, `AimAtFacet`, `SetCameraState`, `FitToView`, `SetPlanarSettings`). Wave 1b will add the remaining 5 once the matching Qualia hooks land: `DispatchClick`, `DispatchDoubleClick`, `DispatchHover`, `DispatchDrag`, `DispatchKey` (waiting on §J), `SimStep` (waiting on §G), `LoadPenumbraPreset` (waiting on §L).
+
+`TryParseVec3` helper landed in the Helpers region (`InvariantCulture` parse so locale-sensitive test JSON reads correctly). `HeartbeatAsync` upgrade landed and unwraps `__canaryGetFullSnapshot()`'s `{ok,value}` envelope before consuming the inner object — the bare `r.value ?? r` form sketched in the plan doc would have flat-stringified the envelope into telemetry; the actual landed form is `(function(){if(window.__canaryGetFullSnapshot){var r=window.__canaryGetFullSnapshot();return r&&r.ok?r.value:r;}if(window.__canaryGetAppInfo){return window.__canaryGetAppInfo();}return null;})()`.
+
+Landed commits:
+- Canary agent (7 actions + heartbeat + AGENT_NOTES appendix): `38d0528`
+- Canary smoke test `diag-canary-hooks-1a-smoke`: `c490e9f`
+
+The first test as authored is a **smoke test**, not the headline `diag-context-zoom-pan-planar` regression test. The regression test defers to wave 1b — it needs a perspective-context fixture, which neither the demo workspace nor the minimal sample carries and which `__canarySpawnChildContext` doesn't yet build (a 1b `facet` extension to that hook is the cleanest path).
+
+Status stays `proposed` because 5 actions remain unbuilt and the headline test is deferred. See the Qualia-side plan doc's Wave 1a resolution section for the full 1a/1b split.
