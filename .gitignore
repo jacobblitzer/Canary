@@ -16,3 +16,6 @@ TestResults/
 
 # Accidental Windows redirects
 nul
+
+# Per-machine Windows shortcuts (bake absolute paths — per-clone state)
+*.lnk
