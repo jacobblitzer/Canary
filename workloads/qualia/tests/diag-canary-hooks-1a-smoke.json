@@ -1,0 +1,33 @@
+{
+  "name": "diag-canary-hooks-1a-smoke",
+  "workload": "qualia",
+  "description": "Smoke test for the wave-1a __canary* hook expansion (camera + planar + composite snapshot + dispatch). Runs against Qualia's default demo workspace (load-time data; the minimal-sample loader has a pre-existing trailing-content bug filed as a follow-up), logs the new typed envelopes via console.log so they land in the telemetry NDJSON, dispatches zoom + pan through the new named agent actions, and pixel-diffs the resulting view. Does not exercise the perspective-lock path — that requires a perspective context fixture which the demo workspace doesn't carry and __canarySpawnChildContext doesn't yet build (deferred to wave 1b alongside the §J input-dispatch + perspective-fixture hooks). See workloads/qualia/AGENT_NOTES.md 'Debug-info hook expansion (2026-05-28, wave 1a)' for the surface inventory.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 800 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "window.__canarySetTheme('dark')",
+      "window.__canaryApplyProfile('standard')",
+      "(async () => { await new Promise(r => setTimeout(r, 1000)); return true; })()",
+      "console.log('[1a-smoke] camera:', JSON.stringify(window.__canaryGetCameraState()))",
+      "console.log('[1a-smoke] perspective-lock:', JSON.stringify(window.__canaryGetPerspectiveLock()))",
+      "console.log('[1a-smoke] camera-transition:', JSON.stringify(window.__canaryGetCameraTransition()))",
+      "console.log('[1a-smoke] planar-settings:', JSON.stringify(window.__canaryGetPlanarSettings()))",
+      "console.log('[1a-smoke] plane-deviation:', JSON.stringify(window.__canaryGetPlaneDeviation()))",
+      "console.log('[1a-smoke] full-snapshot-pre:', JSON.stringify(window.__canaryGetFullSnapshot()))"
+    ]
+  },
+  "actions": [
+    { "type": "DispatchZoom", "deltaY": 120 },
+    { "type": "DispatchPan", "dx": 50, "dy": 0 }
+  ],
+  "checkpoints": [
+    {
+      "name": "after-zoom-pan",
+      "description": "Default Qualia demo workspace, Atlas context active, after a wave-1a DispatchZoom(120) and DispatchPan(50,0). The view should show the demo graph slightly zoomed out and panned right relative to the natural framing — confirms the camera-controls dispatch path is wired.",
+      "tolerance": 0.5,
+      "stabilizeMs": 1000
+    }
+  ]
+}
