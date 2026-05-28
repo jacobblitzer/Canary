@@ -1,16 +1,18 @@
 ---
 date: 2026-05-27
 tags: [progress, ui, avalonia, migration, canary]
-status: in-progress
+status: shipped
 project: canary
 component: ui
 ---
 
 # Canary.UI Avalonia migration — progress log
 
+> **Status: SHIPPED 2026-05-28.** All 7 phases landed, Phase 6 smoke matrix passed 8/8, snapshot tag deleted, both repos pushed. See the Phase 6 section's retrospective at the bottom of this log.
+
 Per-phase implementation log for the migration from WinForms to Avalonia 11. Parent: [`docs/features/canary-ui-avalonia.md`](../features/canary-ui-avalonia.md). Driving plan: [`docs/plans/2026-05-27-canary-ui-avalonia-migration.md`](../plans/2026-05-27-canary-ui-avalonia-migration.md). Implementation prompt: `C:/Repos/MultiVerse/prompts/canary-ui-avalonia-implement-2026-05-27.md`.
 
-Snapshot tag: `pre-impl-ui-avalonia-2026-05-27` (preserved through Phase 6).
+Snapshot tag: `pre-impl-ui-avalonia-2026-05-27` — created at Phase 0 pre-flight, deleted 2026-05-28 after the Phase 6 smoke matrix passed.
 
 ## Phase 0 — spike (2026-05-27)
 
