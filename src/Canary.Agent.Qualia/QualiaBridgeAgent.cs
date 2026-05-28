@@ -160,6 +160,16 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
             "PlaygroundDeleteSnapshot" => await PlaygroundDeleteSnapshotAsync(parameters).ConfigureAwait(false),
             "PlaygroundListSnapshots" => await EvaluateOkAsync("window.__canaryPlaygroundListSnapshots()").ConfigureAwait(false),
             "PlaygroundGetState"   => await EvaluateOkAsync("window.__canaryPlaygroundGetState()").ConfigureAwait(false),
+            // Debug-info hook expansion wave 1a (2026-05-28): camera + planar
+            // dispatch + state setters. See
+            // docs/plans/2026-05-28-canary-hooks-expansion-agent.md.
+            "DispatchZoom"         => await DispatchZoomAsync(parameters).ConfigureAwait(false),
+            "DispatchPan"          => await DispatchPanAsync(parameters).ConfigureAwait(false),
+            "DispatchOrbit"        => await DispatchOrbitAsync(parameters).ConfigureAwait(false),
+            "AimAtFacet"           => await AimAtFacetAsync(parameters).ConfigureAwait(false),
+            "SetCameraState"       => await SetCameraStateAsync(parameters).ConfigureAwait(false),
+            "FitToView"            => await FitToViewAsync(parameters).ConfigureAwait(false),
+            "SetPlanarSettings"    => await SetPlanarSettingsAsync(parameters).ConfigureAwait(false),
             _ => Fail(
                 $"Unknown action: {action}. Supported: RunCommand, WaitForReady, WaitForStable, " +
                 "Reload, SetCanvasSize, HideUI, ApplyProfile, SetModuleEnabled, ShowLandingScreen, " +
@@ -167,7 +177,8 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
                 "ClickLandingCancel, ClearStorage, PlaygroundOpen, PlaygroundClose, " +
                 "PlaygroundLoadScenario, PlaygroundSetParam, PlaygroundSaveSnapshot, " +
                 "PlaygroundRestoreSnapshot, PlaygroundDeleteSnapshot, PlaygroundListSnapshots, " +
-                "PlaygroundGetState")
+                "PlaygroundGetState, DispatchZoom, DispatchPan, DispatchOrbit, AimAtFacet, " +
+                "SetCameraState, FitToView, SetPlanarSettings")
         };
     }
 
@@ -197,8 +208,12 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
 
         try
         {
+            // Debug-info hook expansion 1a (2026-05-28): prefer the new
+            // composite snapshot, which carries camera + planar + node/edge
+            // counts in one read. Falls back to legacy __canaryGetAppInfo
+            // for older Qualia builds during the rollout window.
             var info = await _cdp.EvaluateAsync<JsonElement?>(
-                "window.__canaryGetAppInfo ? window.__canaryGetAppInfo() : null"
+                "(function(){if(window.__canaryGetFullSnapshot){var r=window.__canaryGetFullSnapshot();return r&&r.ok?r.value:r;}if(window.__canaryGetAppInfo){return window.__canaryGetAppInfo();}return null;})()"
             ).ConfigureAwait(false);
 
             if (info.HasValue && info.Value.ValueKind == JsonValueKind.Object)
@@ -425,6 +440,104 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Debug-info hook expansion handlers (wave 1a, 2026-05-28)
+    // ──────────────────────────────────────────────────────────────────────
+    //
+    // Each named action mirrors a __canary* hook installed by the wave 1a
+    // hook batch (Qualia/packages/ui/src/canary-hooks.ts §A + §B). Reader
+    // hooks stay JS-only — call them from test JSON via RunCommand. See
+    // docs/plans/2026-05-28-canary-hooks-expansion-agent.md for the
+    // design rationale ("don't 50x the action switch").
+
+    private async Task<AgentResponse> DispatchZoomAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("deltaY", out var s) || !int.TryParse(s, out var deltaY))
+            return Fail("DispatchZoom requires 'deltaY' integer parameter.");
+        var result = await _cdp!.EvaluateAsync($"window.__canaryDispatchZoom({deltaY})")
+            .ConfigureAwait(false);
+        return Ok($"Dispatched zoom deltaY={deltaY}. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> DispatchPanAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("dx", out var dxStr) || !int.TryParse(dxStr, out var dx) ||
+            !parameters.TryGetValue("dy", out var dyStr) || !int.TryParse(dyStr, out var dy))
+            return Fail("DispatchPan requires 'dx' and 'dy' integer parameters.");
+        var result = await _cdp!.EvaluateAsync($"window.__canaryDispatchPan({{ dx: {dx}, dy: {dy} }})")
+            .ConfigureAwait(false);
+        return Ok($"Dispatched pan dx={dx} dy={dy}. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> DispatchOrbitAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("dPhi", out var pStr) || !double.TryParse(pStr, System.Globalization.CultureInfo.InvariantCulture, out var dPhi) ||
+            !parameters.TryGetValue("dTheta", out var tStr) || !double.TryParse(tStr, System.Globalization.CultureInfo.InvariantCulture, out var dTheta))
+            return Fail("DispatchOrbit requires 'dPhi' and 'dTheta' number parameters (radians).");
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryDispatchOrbit({{ dPhi: {dPhi.ToString(System.Globalization.CultureInfo.InvariantCulture)}, dTheta: {dTheta.ToString(System.Globalization.CultureInfo.InvariantCulture)} }})"
+        ).ConfigureAwait(false);
+        return Ok($"Dispatched orbit dPhi={dPhi} dTheta={dTheta}. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> AimAtFacetAsync(Dictionary<string, string> parameters)
+    {
+        if (!TryParseVec3(parameters, "axis", out var ax, out var ay, out var az))
+            return Fail("AimAtFacet requires 'axisX','axisY','axisZ' number parameters.");
+        if (!TryParseVec3(parameters, "origin", out var ox, out var oy, out var oz))
+            return Fail("AimAtFacet requires 'originX','originY','originZ' number parameters.");
+        double duration = 0.7;
+        if (parameters.TryGetValue("duration", out var dStr) && double.TryParse(dStr, System.Globalization.CultureInfo.InvariantCulture, out var d))
+            duration = d;
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canaryAimAtFacet({{ axis: [{ax.ToString(ci)},{ay.ToString(ci)},{az.ToString(ci)}], origin: [{ox.ToString(ci)},{oy.ToString(ci)},{oz.ToString(ci)}] }}, {duration.ToString(ci)})"
+        ).ConfigureAwait(false);
+        return Ok($"Aimed at facet axis=({ax},{ay},{az}) origin=({ox},{oy},{oz}). Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> SetCameraStateAsync(Dictionary<string, string> parameters)
+    {
+        if (!TryParseVec3(parameters, "pos", out var px, out var py, out var pz))
+            return Fail("SetCameraState requires 'posX','posY','posZ' number parameters.");
+        if (!TryParseVec3(parameters, "target", out var tx, out var ty, out var tz))
+            return Fail("SetCameraState requires 'targetX','targetY','targetZ' number parameters.");
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        string upClause = "";
+        if (TryParseVec3(parameters, "up", out var ux, out var uy, out var uz))
+            upClause = $", up: [{ux.ToString(ci)},{uy.ToString(ci)},{uz.ToString(ci)}]";
+        string fovClause = "";
+        if (parameters.TryGetValue("fov", out var fStr) && double.TryParse(fStr, ci, out var fov))
+            fovClause = $", fov: {fov.ToString(ci)}";
+        double duration = 0;
+        if (parameters.TryGetValue("duration", out var dStr) && double.TryParse(dStr, ci, out var d))
+            duration = d;
+        var result = await _cdp!.EvaluateAsync(
+            $"window.__canarySetCameraState({{ position: [{px.ToString(ci)},{py.ToString(ci)},{pz.ToString(ci)}], target: [{tx.ToString(ci)},{ty.ToString(ci)},{tz.ToString(ci)}]{upClause}{fovClause} }}, {duration.ToString(ci)})"
+        ).ConfigureAwait(false);
+        return Ok($"Set camera. Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> FitToViewAsync(Dictionary<string, string> parameters)
+    {
+        double? duration = null;
+        if (parameters.TryGetValue("duration", out var dStr) && double.TryParse(dStr, System.Globalization.CultureInfo.InvariantCulture, out var d))
+            duration = d;
+        var arg = duration.HasValue ? duration.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "";
+        var result = await _cdp!.EvaluateAsync($"window.__canaryFitToView({arg})")
+            .ConfigureAwait(false);
+        return Ok($"Fit to view (duration={duration?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "default"}). Result: {result ?? "undefined"}");
+    }
+
+    private async Task<AgentResponse> SetPlanarSettingsAsync(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("paramsJson", out var paramsJson) || string.IsNullOrWhiteSpace(paramsJson))
+            return Fail("SetPlanarSettings requires 'paramsJson' parameter (JSON object).");
+        var result = await _cdp!.EvaluateAsync($"window.__canarySetPlanarSettings({paramsJson})")
+            .ConfigureAwait(false);
+        return Ok($"Set planar settings. Result: {result ?? "undefined"}");
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Helpers
     // ──────────────────────────────────────────────────────────────────────
 
@@ -432,6 +545,24 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
     {
         var result = await _cdp!.EvaluateAsync(js).ConfigureAwait(false);
         return Ok($"Evaluated. Result: {result ?? "undefined"}");
+    }
+
+    /**
+     * Parse a vector-3 from three named keys with a shared prefix —
+     * e.g. ("axis", "axisX", "axisY", "axisZ"). Used by AimAtFacet,
+     * SetCameraState, etc. Returns false if any of the three keys is
+     * missing or non-numeric. Invariant-culture parse so locale doesn't
+     * break "0.5" reads from test JSON.
+     */
+    private static bool TryParseVec3(
+        Dictionary<string, string> p, string prefix,
+        out double x, out double y, out double z)
+    {
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        x = y = z = 0;
+        return p.TryGetValue($"{prefix}X", out var xs) && double.TryParse(xs, ci, out x)
+            && p.TryGetValue($"{prefix}Y", out var ys) && double.TryParse(ys, ci, out y)
+            && p.TryGetValue($"{prefix}Z", out var zs) && double.TryParse(zs, ci, out z);
     }
 
     private async Task WaitForReadyInternalAsync(int timeoutMs, CancellationToken ct)

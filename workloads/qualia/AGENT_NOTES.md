@@ -206,3 +206,89 @@ lands as a Qualia-side post-processing script.
 ```bash
 canary run --workload qualia --suite multi-display
 ```
+
+## Debug-info hook expansion (2026-05-28, wave 1a)
+
+A batched expansion of the hook surface to make Canary tests assert
+specifics (camera pose, planar deviation, mounted personas, sim state,
+RAG queue) instead of only screenshotting. Driven by recurring
+zoom/pan/planar regressions that pixel-diff couldn't catch
+deterministically.
+
+Plan docs:
+- Qualia side: `Qualia/docs/plans/2026-05-28-canary-hooks-expansion.md`
+- Canary side: `Canary/docs/plans/2026-05-28-canary-hooks-expansion-agent.md`
+
+Wave 1a landed §A (camera), §B (planar), §M (composite snapshot).
+Wave 1b will land §C (renderer stats / frame geometry), §D (nodes /
+edges), §E (qverse / context), §F (persona registry / mounted host),
+§G (simulation), §H (RAG sidecar), §I (event / console / recorder),
+§J (non-camera input dispatch), §K (DOM panels), §L (Penumbra bridge).
+
+### New hook surfaces (Qualia side) — wave 1a
+
+**A. Camera / viewport**
+- `__canaryGetCameraState()` → `{ position, target, up, fov, aspect, distanceToTarget, projection }`.
+- `__canaryGetCameraTransition()` → `{ active, durationMs, elapsedMs, fromTarget, toTarget }`. `fromTarget` / `toTarget` are null — position/target tween state belongs to the camera-controls library and isn't surfaced today. `durationMs` / `elapsedMs` reflect the up-vector slerp window only.
+- `__canaryGetPerspectiveLock()` → `{ engaged, axis, origin, side, distance }`.
+- `__canaryFitToView(duration?)` — programmatic frame.
+- `__canaryAimAtFacet({ axis, origin }, duration?)` — drives `aimAtFacet`.
+- `__canarySetCameraState({ position, target, up?, fov? }, duration?)`.
+- `__canaryDispatchZoom(deltaY)` / `__canaryDispatchPan({ dx, dy })` / `__canaryDispatchOrbit({ dPhi, dTheta })`
+  — route through camera-controls' imperative API (`dolly`/`truck`/`rotate`). Note: under an engaged perspective lock, zoom is a no-op because `SceneManager._applyPerspectiveLock` re-asserts camera distance every frame — tests should expect `before === after` for zoom under a lock.
+- `__canaryGetControlsEnabled()` / `__canarySetControlsEnabled(enabled)`.
+- `__canaryProjectToScreen([x, y, z])` → `{ x, y } | null`.
+
+**B. Planar confinement**
+- `__canaryGetPlanarSettings()` → full `PlanarSettings`.
+- `__canarySetPlanarSettings(partial)`.
+- `__canaryGetPlaneDeviation({ axisId? })` → `{ axis, origin, maxAbsDeviation, meanAbsDeviation, p95AbsDeviation, nodeCount, outliers[] }`
+  — **the computed invariant**; first-class way to assert "the context stayed planar".
+- `__canaryCaptureLevel(bandWidth?, name?)` / `__canaryUncaptureLevel(levelId)`.
+
+**M. Composite reader (sparse — 1a fills camera + planar + counts only)**
+- `__canaryGetFullSnapshot({ include? })` — orchestrator that calls every reader installed in 1a (camera, planar, node count, edge count, timestamp) and stitches the result. Sections C–L return `null` until wave 1b lands. Used by the supervised-session capture path and the heartbeat upgrade below.
+
+### New named agent actions — wave 1a (7 of 12)
+
+| Action | Hook | Notes |
+|---|---|---|
+| `DispatchZoom` | `__canaryDispatchZoom` | `deltaY: int`. |
+| `DispatchPan` | `__canaryDispatchPan` | `dx: int, dy: int`. |
+| `DispatchOrbit` | `__canaryDispatchOrbit` | `dPhi: number, dTheta: number` (radians). |
+| `AimAtFacet` | `__canaryAimAtFacet` | `axisX/Y/Z, originX/Y/Z, duration?`. |
+| `SetCameraState` | `__canarySetCameraState` | `posX/Y/Z, targetX/Y/Z, upX/Y/Z?, fov?, duration?`. |
+| `FitToView` | `__canaryFitToView` | `duration?`. |
+| `SetPlanarSettings` | `__canarySetPlanarSettings` | `paramsJson` (partial). |
+
+Deferred to wave 1b (waiting on §G / §J / §L hooks): `DispatchClick`,
+`DispatchDoubleClick`, `DispatchHover`, `DispatchDrag`, `DispatchKey`,
+`SimStep`, `LoadPenumbraPreset`.
+
+Every reader hook stays **JS-only** — call from `setup.commands` /
+checkpoint commands or via the `RunCommand` action:
+
+```json
+{
+  "action": "RunCommand",
+  "params": { "command": "JSON.stringify(window.__canaryGetPlaneDeviation())" }
+}
+```
+
+### Heartbeat upgrade
+
+`HeartbeatAsync` now prefers `__canaryGetFullSnapshot()` (unwrapped from
+its `{ ok, value }` envelope) and falls back to `__canaryGetAppInfo()`.
+Supervised-session telemetry streams the full snapshot at every
+heartbeat, so camera + planar state is captured passively even when no
+checkpoint asks. The fall-through preserves heartbeat for older Qualia
+builds during the rollout window.
+
+### Test plan
+
+A single new test `workloads/qualia/tests/diag-context-zoom-pan-planar.json`
+covers the headline regression — load minimal sample → switch into a
+perspective context → assert lock engaged + plane deviation within ε →
+`DispatchZoom` → assert distance changed → `DispatchPan` → assert target
+changed → re-assert plane deviation unchanged. Run with `--mode both`
+so Gemma also vets the visual.
