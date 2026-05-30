@@ -1,0 +1,16 @@
+{
+  "name": "viewport-minimal-qnode-inkdot",
+  "workload": "qualia",
+  "description": "Viewport polish (2026-05-30) — Minimal qnode synth nub routes to the `ink-dot` variant, not the legacy `shaded-sphere` fallback. The workshop-palette demo's cross-context edge exposes a qnode (foreign-node, referenced from ctx-showcase but living in ctx-child). Loading that demo + applying Minimal triggers EndpointDecoratorLayer's qnode-synth path, which upgrades `nubVariant: 'none'` → `'ink-dot'`. Test reads per-variant nub instance counts via `__canaryGetNubVariantCounts`: asserts ink-dot count > 0 (synth fired) AND shaded-sphere count == 0 (the legacy 'silently fall back to shaded-sphere because ink-dot bucket didn't exist' bug — fixed by building the ink-dot bucket for real this run).",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const load = await window.__canaryLoadDemo('workshop-palette'); if (!load || load.ok !== true) throw new Error('failed to load workshop-palette demo: ' + JSON.stringify(load)); await new Promise(r => setTimeout(r, 500)); window.__canaryApplyProfile('minimal'); await new Promise(r => setTimeout(r, 600)); const counts = window.__canaryGetNubVariantCounts().value; if (!counts) throw new Error('getNubVariantCounts returned empty'); const ink = counts['ink-dot'] ?? 0; const shaded = counts['shaded-sphere'] ?? 0; if (ink <= 0) throw new Error('expected ink-dot count > 0 after Minimal+workshop-palette (qnode synth should fire), got counts=' + JSON.stringify(counts)); if (shaded > 0) throw new Error('expected shaded-sphere count == 0 in Minimal (variant should NOT render); regression — got shaded=' + shaded + ', full counts=' + JSON.stringify(counts)); return 'pass: ink-dot=' + ink + ', shaded-sphere=0, full counts=' + JSON.stringify(counts); })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "viewport-qnode-inkdot-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

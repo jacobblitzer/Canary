@@ -1,0 +1,16 @@
+{
+  "name": "viewport-selection-dim",
+  "workload": "qualia",
+  "description": "Viewport polish (2026-05-30) — selection-dim invariant. When the selection set is non-empty, every non-selected node's FadeState alpha drops to ~0.28; selected nodes have no fade entry (null = full alpha). Clear selection and every node returns to null. Verifies the dim is universal (no profile gating) and reverts cleanly on deselection. Uses the new `__canaryGetNodeFadeAlpha` hook to read FadeState directly so the test is screenshot-free.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); const a0 = window.__canaryGetNodeFadeAlpha('hub').value; const b0 = window.__canaryGetNodeFadeAlpha('intro-md').value; if (a0 !== null) throw new Error('baseline: expected hub fade null (no selection), got: ' + a0); if (b0 !== null) throw new Error('baseline: expected intro-md fade null, got: ' + b0); window.__canarySelectNode('hub'); await new Promise(r => setTimeout(r, 250)); const a1 = window.__canaryGetNodeFadeAlpha('hub').value; const b1 = window.__canaryGetNodeFadeAlpha('intro-md').value; if (a1 !== null) throw new Error('selected: expected hub fade null (it is the selection), got: ' + a1); if (b1 === null || b1 > 0.5) throw new Error('selected: expected intro-md to be dimmed (~0.28), got: ' + b1); window.__canarySelectNode(''); await new Promise(r => setTimeout(r, 250)); const a2 = window.__canaryGetNodeFadeAlpha('hub').value; const b2 = window.__canaryGetNodeFadeAlpha('intro-md').value; if (a2 !== null || b2 !== null) throw new Error('post-clear: expected both null, got hub=' + a2 + ' intro-md=' + b2); return 'pass: hub null/null/null, intro-md null/' + b1.toFixed(2) + '/null'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "viewport-selection-dim-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

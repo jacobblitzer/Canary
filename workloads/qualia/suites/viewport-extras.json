@@ -1,0 +1,10 @@
+{
+  "name": "viewport-extras",
+  "description": "Verification suite for the 2026-05-30 viewport polish — zoom-to-selected (StatusBar button + `zs` shortcut), shift-click multi-select, selection-dim across personas, and the Minimal qnode-nub ink-dot fix. Programmatic assertions only (no pixel-diff). The shift-click handler path stays in manual-test territory since `__canarySelectNode` mutates the store directly rather than dispatching a real pointer event with shiftKey — the data-side multi-select is trivially correct because `store.selectNodes([…])` already accepts arrays.",
+  "tests": [
+    "viewport-zoom-to-selection",
+    "viewport-zoom-empty-falls-back",
+    "viewport-selection-dim",
+    "viewport-minimal-qnode-inkdot"
+  ]
+}

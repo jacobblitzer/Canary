@@ -1,0 +1,16 @@
+{
+  "name": "viewport-zoom-to-selection",
+  "workload": "qualia",
+  "description": "Viewport polish (2026-05-30) — `fitToSelection` programmatic camera frame. Load minimal sample, snapshot camera, select a non-origin node, fit to selection with duration 0 (instant), re-snapshot, assert position or target diverged from baseline. Verifies the camera math actually moves the view; pairs with the `zs` shortcut + StatusBar `Zoom` button which both call this entry point.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); const before = window.__canaryGetCameraState(); if (!before || before.ok !== true) throw new Error('camera state unavailable: ' + JSON.stringify(before)); const beforePos = before.value.position; window.__canarySelectNode('hub'); await new Promise(r => setTimeout(r, 200)); const fit = window.__canaryFitToSelection(['hub'], 0); if (!fit || fit.ok !== true) throw new Error('fitToSelection failed: ' + JSON.stringify(fit)); await new Promise(r => setTimeout(r, 200)); const after = window.__canaryGetCameraState(); const afterPos = after.value.position; const dx = afterPos[0] - beforePos[0]; const dy = afterPos[1] - beforePos[1]; const dz = afterPos[2] - beforePos[2]; const dist = Math.sqrt(dx*dx + dy*dy + dz*dz); if (dist < 0.1) throw new Error('camera position did not move after fitToSelection. before=' + JSON.stringify(beforePos) + ' after=' + JSON.stringify(afterPos) + ' dist=' + dist); return 'pass: camera moved dist=' + dist.toFixed(2); })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "viewport-zoom-to-selection-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

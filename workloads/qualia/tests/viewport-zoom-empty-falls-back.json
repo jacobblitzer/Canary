@@ -1,0 +1,16 @@
+{
+  "name": "viewport-zoom-empty-falls-back",
+  "workload": "qualia",
+  "description": "Viewport polish (2026-05-30) — `fitToSelection([])` falls back to fit-all behavior. The StatusBar button + `zs` shortcut both call with the live selection; when nothing is selected they pass an empty array and the user expects 'frame the whole graph' rather than no-op. Snapshot camera before with no selection, set camera to a known-bad position, call fitToSelection([]), verify the camera moved back toward a fit-all framing (i.e., moved from the bad position).",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); window.__canarySetCameraState({ position: [0, 0, 200], target: [50, 50, 50] }); await new Promise(r => setTimeout(r, 200)); const before = window.__canaryGetCameraState().value.position; const fit = window.__canaryFitToSelection([], 0); if (!fit || fit.ok !== true) throw new Error('fitToSelection([]) failed: ' + JSON.stringify(fit)); await new Promise(r => setTimeout(r, 200)); const after = window.__canaryGetCameraState().value.position; const dx = after[0] - before[0]; const dy = after[1] - before[1]; const dz = after[2] - before[2]; const dist = Math.sqrt(dx*dx + dy*dy + dz*dz); if (dist < 0.1) throw new Error('expected fit-all fallback to move camera away from forced bad position; before=' + JSON.stringify(before) + ' after=' + JSON.stringify(after) + ' dist=' + dist); return 'pass: empty selection fell back to fit-all (camera moved dist=' + dist.toFixed(2) + ')'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "viewport-zoom-empty-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}
