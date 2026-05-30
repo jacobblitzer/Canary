@@ -1,0 +1,16 @@
+{
+  "name": "resolver-c3-multi-intent-last-wins",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V — multiple personas declaring intent on the same field: last-writer-wins by registry mount order. The resolver walks the persona-intent list in order; whichever array entry wins is documented behavior. This test doesn't assert WHICH wins (registry order is internal) — only that enabling both `render.junction.surface` AND `render.junction.voronoi` lands a stable, predictable value on activeJunction (must be one of the two intents, not 'bubble', not undefined). Verifies multi-intent resolution doesn't crash or fall back to factory.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); window.__canarySetPersonaEnabled('render.junction.surface', true); window.__canarySetPersonaEnabled('render.junction.voronoi', true); await new Promise(r => setTimeout(r, 400)); const aj = window.__canaryGetPerfSettings().value.activeJunction; const prov = window.__qualiaGetSettingProvenance('activeJunction').value; if (aj !== 'surface' && aj !== 'voronoi') throw new Error('expected activeJunction to be one of the two enabled intents (surface|voronoi), got: ' + aj); if (prov !== 'persona') throw new Error('expected provenance=persona with both intents enabled, got: ' + prov); return 'C3 pass: multi-intent landed activeJunction=' + aj + ' prov=' + prov + ' (last-writer-wins reachable)'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "resolver-c3-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

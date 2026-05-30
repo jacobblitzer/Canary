@@ -1,0 +1,16 @@
+{
+  "name": "resolver-a3-untouch-reverts",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V — `__canaryUntouchField` + `__canaryReapplyProfile` returns a user-touched field to its profile-resolved value. Workshop apply → user-override nodeHaloVariant=aurora-vent → untouch + reapply → expect 'soft-glow' (Workshop's value) and provenance back to 'profile'. Locks PerfPanel's per-field reset affordance against the resolver. If untouch doesn't recompute through the resolver, the value stays sticky and this fails.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('workshop'); await new Promise(r => setTimeout(r, 300)); window.__canarySetPerfSettings({ nodeHaloVariant: 'aurora-vent' }); await new Promise(r => setTimeout(r, 100)); const mid = window.__canaryGetPerfSettings().value.nodeHaloVariant; if (mid !== 'aurora-vent') throw new Error('precondition failed: expected aurora-vent before untouch, got: ' + mid); const u = window.__canaryUntouchField('nodeHaloVariant'); if (!u || u.ok !== true) throw new Error('untouchField failed: ' + JSON.stringify(u)); const re = window.__canaryReapplyProfile(); if (!re || re.ok !== true || re.value !== true) throw new Error('reapplyProfile returned non-true: ' + JSON.stringify(re)); await new Promise(r => setTimeout(r, 300)); const after = window.__canaryGetPerfSettings().value.nodeHaloVariant; if (after !== 'soft-glow') throw new Error('expected nodeHaloVariant=soft-glow after untouch+reapply (Workshop default), got: ' + after); const prov = window.__qualiaGetSettingProvenance('nodeHaloVariant'); if (prov.value !== 'profile') throw new Error('expected provenance=profile after untouch, got: ' + prov.value); const touched = window.__canaryGetTouchedPerfFields(); if (touched.value.includes('nodeHaloVariant')) throw new Error('expected nodeHaloVariant gone from touched after untouch, but still present: ' + JSON.stringify(touched.value)); return 'A3 pass: reverted to ' + after + ' prov=' + prov.value; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "resolver-a3-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

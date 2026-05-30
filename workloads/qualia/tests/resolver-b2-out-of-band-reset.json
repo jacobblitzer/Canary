@@ -1,0 +1,16 @@
+{
+  "name": "resolver-b2-out-of-band-reset",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V Wave 3 invariant — out-of-band axes (nodeDisplayMode, edgeShape, edgeRouting, backgroundColor, toneMapping) reset on profile switch the same way PerfSettings does. Minimal declares nodeDisplayMode='circle'. Standard doesn't declare it → factory default 'mesh'. Switching Minimal → Standard must drop the field back to 'mesh'. The pre-Wave 3 bug was that nodeDisplayMode was an out-of-band axis the resolver didn't touch; switching profiles left it sticky.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('minimal'); await new Promise(r => setTimeout(r, 400)); const m1 = window.__canaryGetNodeDisplayMode(); if (m1.value !== 'circle') throw new Error('precondition: expected Minimal to land nodeDisplayMode=circle, got: ' + m1.value); window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); const m2 = window.__canaryGetNodeDisplayMode(); if (m2.value !== 'mesh') throw new Error('expected nodeDisplayMode to reset to mesh on Minimal→Standard switch, got: ' + m2.value + ' (sticky-state leak — Wave 3 regression)'); return 'B2 pass: nodeDisplayMode circle→mesh on profile switch'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "resolver-b2-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

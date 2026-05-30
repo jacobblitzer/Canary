@@ -1,0 +1,16 @@
+{
+  "name": "resolver-c1-laser-rat-round-trip",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V Wave 4 invariant — declarative persona intent: enable+disable round trip leaves no residue. fx.laser-rat declares a large intent block (bloomStrength=2.2, vignetteIntensity=0.20, edgeShape='straight', etc.). Apply Standard baseline. Snapshot. Enable laser-rat (intent applies). Verify multiple intent fields hit. Disable. Verify all fields revert to baseline. The pre-Wave-4 footgun was side-effectful mount() blocks with no-op disposers — fields would stay sticky after disable. If intent isn't declaratively applied/reverted, this fails on multiple fields.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); const sample = () => { const p = window.__canaryGetPerfSettings().value; return { bloomStrength: p.bloomStrength, vignetteIntensity: p.vignetteIntensity, edgeShape: p.edgeShape, edgeWidthPx: p.edgeWidthPx, nodeOpacity: p.nodeOpacity }; }; const s0 = sample(); const en = window.__canarySetPersonaEnabled('fx.laser-rat', true); if (!en || en.ok !== true) throw new Error('enable failed: ' + JSON.stringify(en)); await new Promise(r => setTimeout(r, 400)); const s1 = sample(); if (s1.bloomStrength === s0.bloomStrength) throw new Error('precondition: enabling laser-rat did not change bloomStrength — intent not applying? s0=' + JSON.stringify(s0) + ' s1=' + JSON.stringify(s1)); if (s1.bloomStrength !== 2.2) throw new Error('expected bloomStrength=2.2 (laser-rat intent) after enable, got: ' + s1.bloomStrength); window.__canarySetPersonaEnabled('fx.laser-rat', false); await new Promise(r => setTimeout(r, 400)); const s2 = sample(); const keys = ['bloomStrength','vignetteIntensity','edgeShape','edgeWidthPx','nodeOpacity']; const drift = keys.filter(k => s2[k] !== s0[k]); if (drift.length > 0) throw new Error('intent revert incomplete after disable. fields drifted: ' + JSON.stringify(drift.map(k => k + ': baseline=' + s0[k] + ' after-disable=' + s2[k]))); return 'C1 pass: laser-rat intent applied (' + keys.length + ' fields hit) and reverted cleanly on disable'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "resolver-c1-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

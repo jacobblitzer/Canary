@@ -1,0 +1,21 @@
+{
+  "name": "resolver-e1-persistence-round-trip",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V Wave 2 invariant — `qualia.settings` user-overrides survive a page reload. Apply Standard, manually set bloomStrength to a sentinel value (1.7), reload, verify the field still reads 1.7 with provenance='user'. Locks the unified-persistence blob's round-trip discipline.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); window.__canarySetPerfSettings({ bloomStrength: 1.7 }); await new Promise(r => setTimeout(r, 200)); const blob = localStorage.getItem('qualia.settings'); if (!blob) throw new Error('precondition: qualia.settings localStorage key missing after setPerfSettings'); const parsed = JSON.parse(blob); if (!parsed.userOverrides || parsed.userOverrides.bloomStrength !== 1.7) throw new Error('precondition: qualia.settings.userOverrides.bloomStrength expected 1.7, got: ' + JSON.stringify(parsed.userOverrides)); return 'E1 setup ok: qualia.settings holds bloomStrength=1.7'; })()"
+    ]
+  },
+  "actions": [
+    { "type": "Reload" },
+    { "type": "WaitForStable", "ms": "15000" },
+    { "type": "RunCommand", "command": "(async () => { await new Promise(r => setTimeout(r, 800)); const perf = window.__canaryGetPerfSettings().value; if (perf.bloomStrength !== 1.7) throw new Error('post-reload: expected bloomStrength=1.7 (survived from pre-reload), got: ' + perf.bloomStrength); const touched = window.__canaryGetTouchedPerfFields().value; if (!touched.includes('bloomStrength')) throw new Error('post-reload: bloomStrength should be in touched set, got: ' + JSON.stringify(touched)); const prov = window.__qualiaGetSettingProvenance('bloomStrength').value; if (prov !== 'user') throw new Error('post-reload: provenance expected user, got: ' + prov); return 'E1 pass: bloomStrength=1.7 survived reload, prov=user'; })()" }
+  ],
+  "checkpoints": [
+    { "name": "resolver-e1-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

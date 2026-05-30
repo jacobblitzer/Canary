@@ -1,0 +1,16 @@
+{
+  "name": "resolver-c2-junction-disable-reverts",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V — classic junction-preset no-op-disposer footgun is gone. Pre-Wave-4, junction-preset personas called `setPerfSettings({ activeJunction: X })` in their mount() and had a no-op disposer, so disabling left activeJunction stuck on whatever the persona set. Wave 4 moved this to declarative intent. Test: apply Standard (activeJunction='bubble' from factory). Enable surface preset. Verify activeJunction='surface'. Disable. Verify activeJunction reverts to 'bubble'. The exact regression class bug 0050 was tracking.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { window.__canaryApplyProfile('standard'); await new Promise(r => setTimeout(r, 400)); const aj0 = window.__canaryGetPerfSettings().value.activeJunction; window.__canarySetPersonaEnabled('render.junction.surface', true); await new Promise(r => setTimeout(r, 400)); const aj1 = window.__canaryGetPerfSettings().value.activeJunction; if (aj1 !== 'surface') throw new Error('precondition: surface persona enable did not change activeJunction. baseline=' + aj0 + ' after-enable=' + aj1); window.__canarySetPersonaEnabled('render.junction.surface', false); await new Promise(r => setTimeout(r, 400)); const aj2 = window.__canaryGetPerfSettings().value.activeJunction; if (aj2 !== aj0) throw new Error('REGRESSION: junction-preset disposer no-op footgun is back. activeJunction stayed=' + aj2 + ', expected revert to baseline=' + aj0); return 'C2 pass: activeJunction ' + aj0 + ' → ' + aj1 + ' → ' + aj2 + ' (clean revert)'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "resolver-c2-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}

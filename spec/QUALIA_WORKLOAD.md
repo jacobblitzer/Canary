@@ -310,7 +310,7 @@ hook addition, rename, or removal lands as a coordinated commit pair
 (Qualia hook change + Canary agent / `AGENT_NOTES.md` / this spec
 update) plus a one-line entry in `MultiVerse/BUILD_LOG.md`.
 
-## Suite roster (2026-05-25 snapshot)
+## Suite roster (2026-05-30 snapshot)
 
 | Suite | Tests | Coverage |
 |---|---|---|
@@ -321,6 +321,7 @@ update) plus a one-line entry in `MultiVerse/BUILD_LOG.md`.
 | `playground.json` | Wave 0.B Playground — one test per scenario (random / grid / tree / scale-free / stress-1k) + snapshot round-trip |
 | `qualia-v4-ui.json` | Pointer / qverse / RAG UI fixtures (pointers empty/populated/add-form-open, cross-qverse badge, dead-node prompt, breadcrumb-nested, ghost-node, qverse-navigator, refresh-toolbar/enabled, perfpanel-rag-section) |
 | `eager-l3.json` | RAG eager-L3 extraction (Phase M1 + Moves 2-4 — 2026-05-25 → 2026-05-27). Six fixtures: `reload-smoke` (validates the `Reload` action preserves localStorage + re-establishes hooks), `no-provider-noop` (silent-no-op per ADR 0031), `progress-badge` (Move 3 — asserts the EagerExtractionProgressBadge becomes visible during a live sweep; ~10s), `cold-launch` (sweep enqueues N > 0 with Ollama provider seeded; ~95s incl. one extraction), `warm-launch` (idempotency check; ~30s), `provider-swap` (Move 4 — Ollama extraction lands then swaps to OpenAI-compat-at-Ollama and re-extracts under the new provider id; asserts cache gains entries under both providers via the new `provider[ollama=N,openai-compat=M]` breakdown in the sidecar.behavior-cache dev test; ~150s). Cold/warm pair has an intentional dependency. Sweep-dependent fixtures explicitly enable the `compute.rag.eager-l3` persona via `__canarySetPersonaEnabled` before the Reload — required after Move 3 added the persona gate. |
+| `settings-resolver.json` | ADR 0037 Phase V verification (2026-05-30). 13 tests across five groups: **A precedence** (4 — profile beats factory, user beats profile, untouch reverts, user beats persona), **B switch determinism** (3 — A→B→A byte-identity, out-of-band axis reset, edgeRouting struct reset), **C declarative persona intent** (3 — laser-rat enable/disable, junction-preset revert, multi-intent last-wins), **D push channel** (1 — `onSettingsChange` fires per write), **E persistence** (2 — `qualia.settings` round-trip + legacy migration). Structural assertions only (no pixel-diff). Each test isolates one architectural claim so a Fail points at a specific invariant. Requires Qualia >= commit `caa3ae0` for the four new `__canary*` hooks (`setPerfSettings`, `untouchField`, `reapplyProfile`, `getSettingsChangeCount`). |
 
 The above suites cover most fixtures; a `diag-*` diagnostic family
 (~25 tests) is used for ad-hoc debugging arcs and doesn't yet belong

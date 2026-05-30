@@ -292,3 +292,59 @@ perspective context → assert lock engaged + plane deviation within ε →
 `DispatchZoom` → assert distance changed → `DispatchPan` → assert target
 changed → re-assert plane deviation unchanged. Run with `--mode both`
 so Gemma also vets the visual.
+
+## Settings resolver verification (ADR 0037 Phase V, 2026-05-30)
+
+The `settings-resolver` suite (13 tests) is the executable verification
+of Qualia's settings-resolver architecture (ADR 0037). Each test isolates
+one architectural claim: precedence (factory → profile → persona → user),
+switch determinism, declarative persona intent, push-channel notification,
+and persistence round-trip. Built so a Fail verdict points at a specific
+invariant rather than a generic regression bucket.
+
+New Qualia-side hooks (Qualia >= commit `caa3ae0`, 2026-05-30):
+
+- `__canarySetPerfSettings(partial, opts?)` — simulate a UI slider tweak.
+  `opts.markTouched` defaults true (matches SceneManager). Pass
+  `{ markTouched: false }` for programmatic writes that shouldn't shadow
+  profile/persona ownership.
+- `__canaryUntouchField(field)` — mirrors PerfPanel's per-field reset.
+  Removes the field from both the touched-fields set and persisted
+  `userOverrides`. Follow with `__canaryReapplyProfile()` for the
+  resolver to recompute + the renderer to apply.
+- `__canaryReapplyProfile()` — invokes `window.__qualiaReapplyProfile`
+  (installed by `Viewport.tsx` at Wave 6). Returns `{ ok: true, value:
+  false }` if the hook isn't installed yet (Viewport not mounted),
+  `{ ok: true, value: true }` on success.
+- `__canaryGetSettingsChangeCount()` — installs an `onSettingsChange`
+  subscription on first call, returns cumulative push-channel fire
+  count thereafter. Counter is per-page-load (Reload resets). Pattern:
+  read baseline → take action → read again → assert delta.
+
+Existing hooks the suite uses without modification:
+`__canaryApplyProfile`, `__canarySetPersonaEnabled`,
+`__canaryGetPerfSettings`, `__canaryGetTouchedPerfFields`,
+`__canaryGetNodeDisplayMode`, `__canaryGetEdgeRouting`,
+`__qualiaGetSettingProvenance`.
+
+### Test groups
+
+- **A (precedence)** — `resolver-a1`..`a4`: profile beats factory,
+  user beats profile, untouch reverts to profile, user beats persona.
+  Tests provenance flips alongside value flips.
+- **B (switch determinism)** — `resolver-b1`..`b3`: A→B→A byte-identity
+  on Cinematic, out-of-band axis reset (nodeDisplayMode), edgeRouting
+  struct reset.
+- **C (declarative persona intent)** — `resolver-c1`..`c3`: laser-rat
+  round-trip (multi-field intent revert), junction-preset disable revert
+  (the original Wave-4 no-op-disposer footgun), multi-intent last-wins
+  resolves to a stable choice.
+- **D (push channel)** — `resolver-d1`: 3 setPerfSettings calls produce
+  ≥3 `onSettingsChange` fires.
+- **E (persistence)** — `resolver-e1`..`e2`: user override round-trips
+  through Reload, one-shot legacy migration from the five pre-resolver
+  localStorage keys.
+
+Run with `canary run --workload qualia --suite settings-resolver`. All
+13 are structural (no pixel-diff or VLM); they take a screenshot as a
+record-keeping marker but the verdict is JS-assertion-driven.

@@ -1,0 +1,16 @@
+{
+  "name": "resolver-a2-user-beats-profile",
+  "workload": "qualia",
+  "description": "ADR 0037 Phase V — precedence rule: user override beats profile. Apply Workshop (which sets nodeHaloVariant=`'soft-glow'` per A1), then call `__canarySetPerfSettings({ nodeHaloVariant: 'aurora-vent' })` to simulate a manual UI tweak. Assert the live value is `'aurora-vent'`, provenance flips to `'user'`, and the touched-fields set contains `'nodeHaloVariant'`. Locks the third (top) tier.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const a = window.__canaryApplyProfile('workshop'); if (!a || a.ok !== true) throw new Error('applyProfile failed: ' + JSON.stringify(a)); await new Promise(r => setTimeout(r, 300)); const s = window.__canarySetPerfSettings({ nodeHaloVariant: 'aurora-vent' }); if (!s || s.ok !== true) throw new Error('setPerfSettings failed: ' + JSON.stringify(s)); await new Promise(r => setTimeout(r, 100)); const perf = window.__canaryGetPerfSettings(); if (perf.value.nodeHaloVariant !== 'aurora-vent') throw new Error('expected nodeHaloVariant=aurora-vent after user write, got: ' + perf.value.nodeHaloVariant); const prov = window.__qualiaGetSettingProvenance('nodeHaloVariant'); if (prov.value !== 'user') throw new Error('expected provenance=user after manual write, got: ' + prov.value); const touched = window.__canaryGetTouchedPerfFields(); if (!touched.value.includes('nodeHaloVariant')) throw new Error('expected touched-fields to include nodeHaloVariant, got: ' + JSON.stringify(touched.value)); return 'A2 pass: value=' + perf.value.nodeHaloVariant + ' prov=' + prov.value + ' touched ok'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "resolver-a2-marker", "stabilizeMs": 500, "tolerance": 0.5 }
+  ]
+}
