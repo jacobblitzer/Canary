@@ -116,6 +116,17 @@ public sealed class TestRunner
         var watchdogCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         bool appDead = false;
 
+        // Pre-create the test directory + emit OnTestDirectoryReady BEFORE app launch
+        // so operator-triggered "📷 Capture Screen" clicks during the launch / setup /
+        // GUID-warning phase route into <testDir>\manual-captures\ instead of falling
+        // back to %APPDATA%\Canary\captures\. Phase 4.6.E.A.3.
+        {
+            var earlyDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
+            Directory.CreateDirectory(earlyDir);
+            testDirSaved = earlyDir;
+            Progress?.OnTestDirectoryReady(testDef.Name, earlyDir);
+        }
+
         try
         {
             // 1. Launch application
@@ -185,11 +196,8 @@ public sealed class TestRunner
             // 5c. Initialize VLM provider if any checkpoint uses vlm mode
             InitVlmProviderIfNeeded(testDef);
 
-            // 6. Process checkpoints (capture + compare)
-            var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
-            Directory.CreateDirectory(testDir);
-            testDirSaved = testDir;
-            Progress?.OnTestDirectoryReady(testDef.Name, testDir);
+            // 6. Process checkpoints (capture + compare) — testDir was pre-created above.
+            var testDir = testDirSaved!;
 
             // Default capture size from WindowPositioner; updated after positioning
             var captureWidth = WindowPositioner.TargetWidth;
@@ -523,6 +531,12 @@ public sealed class TestRunner
                     continue;
                 }
 
+                // Pre-create + emit testDir before per-test actions so manual
+                // captures during action execution route correctly. Phase 4.6.E.A.3.
+                var sharedTestDir = GetTestDirectory(workload.Name, test.Name);
+                Directory.CreateDirectory(sharedTestDir);
+                Progress?.OnTestDirectoryReady(test.Name, sharedTestDir);
+
                 try
                 {
                     if (test.Actions.Count > 0)
@@ -549,9 +563,7 @@ public sealed class TestRunner
                     {
                         InitVlmProviderIfNeeded(test);
 
-                        var testDir = GetTestDirectory(workload.Name, test.Name);
-                        Directory.CreateDirectory(testDir);
-                        Progress?.OnTestDirectoryReady(test.Name, testDir);
+                        var testDir = sharedTestDir;
 
                         foreach (var checkpoint in test.Checkpoints)
                         {
@@ -680,6 +692,15 @@ public sealed class TestRunner
 
         Progress.OnTestStarted(testDef.Name);
 
+        // Pre-create + emit testDir before heartbeat/setup so manual captures
+        // during the early test phase route correctly. Phase 4.6.E.A.3.
+        {
+            var earlyDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
+            Directory.CreateDirectory(earlyDir);
+            testDirSaved = earlyDir;
+            Progress?.OnTestDirectoryReady(testDef.Name, earlyDir);
+        }
+
         try
         {
             // 1. Verify heartbeat
@@ -728,11 +749,8 @@ public sealed class TestRunner
             // 2c. Initialize VLM provider if any checkpoint uses vlm mode
             InitVlmProviderIfNeeded(testDef);
 
-            // 3. Process checkpoints with camera positioning
-            var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
-            Directory.CreateDirectory(testDir);
-            testDirSaved = testDir;
-            Progress?.OnTestDirectoryReady(testDef.Name, testDir);
+            // 3. Process checkpoints with camera positioning — testDir was pre-created above.
+            var testDir = testDirSaved!;
 
             var captureWidth = testDef.Setup?.Canvas?.Width ?? 960;
             var captureHeight = testDef.Setup?.Canvas?.Height ?? 540;
