@@ -14,8 +14,10 @@
         <TextBlock Text="{Binding SuiteLabel}" Foreground="#96DC82" VerticalAlignment="Center" Margin="0,0,12,0"
                    IsVisible="{Binding SuiteLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         <Button Content="Stop (Pause)" Command="{Binding StopCommand}" Background="#B43232" Foreground="White" Margin="0,0,8,0" />
-        <Button Content="📷 Capture Screen" Command="{Binding CaptureScreenCommand}" Background="#3868A8" Foreground="White"
+        <Button Content="📷 Capture Screen" Command="{Binding CaptureScreenCommand}" Background="#3868A8" Foreground="White" Margin="0,0,8,0"
                 ToolTip.Tip="Save a PNG of the whole desktop to %APPDATA%\Canary\captures — grabs warning balloons / modal toasts mid-run." />
+        <Button Content="💾 Save Snapshot" Command="{Binding SaveSnapshotCommand}" Background="#5C8C50" Foreground="White"
+                ToolTip.Tip="Freeze the last run's artifacts (candidates, manual-captures, logs) into &lt;testDir&gt;/archived/&lt;timestamp&gt;/ — preserves results without approving or rejecting them. Use this when iterating on infrastructure where you want to keep the screenshots but not commit to a baseline verdict." />
       </WrapPanel>
     </Border>
 

@@ -44,6 +44,12 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     private string? _currentTestDir;
     private string? _currentTestName;
 
+    // Phase 4.6.E.A.4 — Every testDir produced by the current/last run, so the
+    // "💾 Save Snapshot" button can copy candidates/manual-captures/logs into
+    // an archived subdirectory that subsequent runs won't overwrite. Cleared
+    // at run start, accumulates as OnTestDirectoryReady fires.
+    private readonly List<string> _lastRunTestDirs = new();
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StopCommand))]
     private TestRunnerState _state = TestRunnerState.Idle;
@@ -83,6 +89,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         ProgressMax = Math.Max(1, request.Tests.Count);
         _currentTestDir = null;
         _currentTestName = null;
+        _lastRunTestDirs.Clear();
         State = TestRunnerState.Running;
         StatusText = $"Running {request.Tests.Count} test(s)...";
         SuiteLabel = request.SuiteName != null
@@ -244,6 +251,74 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         }
     }
 
+    /// <summary>
+    /// Phase 4.6.E.A.4 — Preserve the artifacts from the last/current run by
+    /// copying each test's <c>candidates/</c>, <c>manual-captures/</c>,
+    /// <c>logs/</c>, and <c>*.json</c> into <c>&lt;testDir&gt;/archived/&lt;stamp&gt;/</c>.
+    /// Does NOT touch baselines, does NOT mark anything approved/rejected —
+    /// just freezes the bytes so a subsequent run doesn't overwrite them.
+    ///
+    /// Use case: iterating on infrastructure (dialog suppression, capture
+    /// plumbing) where the "result" we care about is the screenshot + log
+    /// evidence of the bug or its absence, not the pass/fail verdict.
+    /// </summary>
+    [RelayCommand]
+    public void SaveSnapshot()
+    {
+        if (_lastRunTestDirs.Count == 0)
+        {
+            Append("Save Snapshot: no run to snapshot yet — start a run first.");
+            StatusText = "No run to snapshot.";
+            return;
+        }
+
+        var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+        int snapped = 0, skipped = 0;
+        try
+        {
+            foreach (var testDir in _lastRunTestDirs)
+            {
+                if (!Directory.Exists(testDir)) { skipped++; continue; }
+                var archiveRoot = Path.Combine(testDir, "archived", stamp);
+                Directory.CreateDirectory(archiveRoot);
+
+                foreach (var sub in new[] { "candidates", "manual-captures", "logs" })
+                {
+                    var src = Path.Combine(testDir, sub);
+                    if (Directory.Exists(src))
+                        CopyDirectoryRecursive(src, Path.Combine(archiveRoot, sub));
+                }
+
+                foreach (var jsonFile in Directory.EnumerateFiles(testDir, "*.json"))
+                    File.Copy(jsonFile, Path.Combine(archiveRoot, Path.GetFileName(jsonFile)), true);
+
+                snapped++;
+            }
+            Append($"💾 Saved snapshot for {snapped} test(s) → archived/{stamp}/" + (skipped > 0 ? $" ({skipped} dir(s) missing, skipped)" : ""));
+            StatusText = $"Snapshot saved: archived/{stamp}/ ({snapped} test(s))";
+        }
+        catch (Exception ex)
+        {
+            Append($"Save Snapshot failed: {ex.Message}");
+            StatusText = "Save Snapshot failed";
+        }
+    }
+
+    private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+    {
+        Directory.CreateDirectory(destDir);
+        foreach (var file in Directory.EnumerateFiles(sourceDir))
+            File.Copy(file, Path.Combine(destDir, Path.GetFileName(file)), true);
+        foreach (var dir in Directory.EnumerateDirectories(sourceDir))
+        {
+            // Don't recurse into 'archived' itself (would create a loop if a
+            // previous snapshot lives there).
+            if (string.Equals(Path.GetFileName(dir), "archived", StringComparison.OrdinalIgnoreCase))
+                continue;
+            CopyDirectoryRecursive(dir, Path.Combine(destDir, Path.GetFileName(dir)));
+        }
+    }
+
     private async Task<SuiteResult> RunQualiaAsync(RunRequest request, TestRunner runner, ITestLogger logger, CancellationToken ct)
     {
         var configPath = Path.Combine(request.WorkloadsDir, request.Workload.Name, "workload.json");
@@ -352,6 +427,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         {
             _currentTestName = testName;
             _currentTestDir = testDir;
+            if (!_lastRunTestDirs.Contains(testDir)) _lastRunTestDirs.Add(testDir);
         });
 
     private ProgressCard FindOrCreate(string testName, string checkpointName)
