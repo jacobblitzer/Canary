@@ -1,0 +1,43 @@
+{
+    "name": "cpig-kin-18-2link-arm",
+    "workload": "rhino",
+    "description": "kin-18 2-DOF serial arm — first serial-chain (open kinematic chain, NO closed loops) fixture in the kinematics suite. Planar 2-link arm: world + upper_arm + forearm; shoulder revolute + elbow revolute, both driven by simultaneous constant torques (80 N·mm + 60 N·mm). Forward-dynamics integrates 2s; 5 Pose at Step taps flatten into Pose Bound Bodies, rendering both arm segments at all five sampled poses simultaneously so the end-effector trajectory is visible as a fanned strip of arms. Topological complement to the closed-loop walkers (kin_11/12). Phase 4.6.F.5 — clears the Session A ≥5-fixture minimum.",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Parallel",
+            "displayMode": "Shaded",
+            "width": 900,
+            "height": 900
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A 2-DOF serial robotic arm shown as a stop-motion strip at five different time points of a 2-second forward-dynamics integration. The arm has TWO bound bodies: the upper_arm (rendered as a thicker pipe radius 5 mm from the world-origin shoulder to the elbow at design-pose world (100,0,0)) and the forearm (a thinner pipe radius 4 mm from the elbow to the end-effector at (180,0,0)). Under simultaneous constant torques (80 N·mm at the shoulder, 60 N·mm at the elbow), both joints rotate; the end-effector sweeps a curved 2D path (a logarithmic-spiral-like locus) through the arm's workspace. All five sampled poses (steps 0/500/1000/1500/2000) are rendered together, so the strip shows the arm fanning out from its initial straight-out +X configuration into progressively more bent poses. A faint design-pose skeleton (shoulder and elbow joint glyphs + arm skeleton lines) is overlaid via Preview Diagram in Display Mode 2."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_18_2link_arm.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
+        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "2001" }
+    ]
+}
