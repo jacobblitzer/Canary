@@ -1,0 +1,45 @@
+{
+    "name": "cpig-kin-04-pendulum-period",
+    "workload": "rhino",
+    "description": "kin-04 Pendulum Period — integrate a simple pendulum (rod, length 200mm, mass 0.1kg, swinging about world Y from 10° offset) for 2.0s at dt=0.001s using Baumgarte stabilization. Phase 3.C forward-dynamics demo.",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Perspective",
+            "displayMode": "Shaded",
+            "width": 800,
+            "height": 600
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A single rigid rod pendulum hanging from a fixed pivot at the world origin, swinging in the X-Z plane. The rod is shown at its mid-swing position (slightly tilted from vertical). A single orange circle marks the revolute pivot at the top, and RGB axis triads are visible at both the pivot and the rod's free end. The rod's free-end traces a clean horizontal arc as it swings — visible as a single-segment line glyph in the body."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_04_pendulum_period.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 90000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
+        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "2001" },
+        { "type": "PanelContains",       "nickname": "Report",      "text": "baumgarte" },
+        { "type": "PanelContains",       "nickname": "SensorType",  "text": "trace" }
+    ]
+}

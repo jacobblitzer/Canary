@@ -1,0 +1,46 @@
+{
+    "name": "cpig-kin-01-fork-diagram",
+    "workload": "rhino",
+    "description": "kin-01 Fork Diagram — load the leading-link front-fork mechanism (4 bodies, 4 revolutes, 1 coil-over spring), validate to 1 DOF planar / 1 loop \"fourbar\" / 0 errors, and preview the skeletal four-bar diagram in the viewport.",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Perspective",
+            "displayMode": "Shaded",
+            "width": 800,
+            "height": 600
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A four-bar linkage front-fork skeleton drawn in line-art: a vertical ground column on the left with two ground pivots, two parallel horizontal links extending to the right to a wheel-carrier link, and a diagonal coil-spring (visible zig-zag pattern) between the top of the column and the upper link. Each pivot shows a small orange circle (revolute glyph). At every named frame a small red/green/blue axis triad is visible. Text labels mark the bodies and joints."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_01_fork_diagram.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelContains",       "nickname": "Summary",     "text": "1 DOF" },
+        { "type": "PanelContains",       "nickname": "Summary",     "text": "planar" },
+        { "type": "PanelContains",       "nickname": "Summary",     "text": "fourbar" },
+        { "type": "PanelEquals",         "nickname": "DOF",         "text": "1" },
+        { "type": "PanelEquals",         "nickname": "Formula",     "text": "planar" }
+    ]
+}
