@@ -502,8 +502,12 @@ public sealed class RhinoAgent : ICanaryAgent
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool EnumChildWindows(IntPtr hWndParent, EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
     private const uint WM_KEYDOWN = 0x0100;
     private const uint WM_KEYUP   = 0x0101;
+    private const uint BM_CLICK   = 0x00F5;
     private const int  VK_RETURN  = 0x0D;
 
     private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -550,6 +554,9 @@ public sealed class RhinoAgent : ICanaryAgent
             "FileNotFoundException", // .NET assembly missing — bubbles up to dialogs
             "Rhino Error",       // generic Rhino error dialog
             "Rhinoceros Error",  // (variant)
+            "Component conflict",// GH GUID-conflict modal (confirmed live 2026-06-01)
+            "Component ID",      // (variant)
+            "ID conflict",       // (variant)
         };
 
         while (!token.IsCancellationRequested)
@@ -580,16 +587,64 @@ public sealed class RhinoAgent : ICanaryAgent
                             break;
                         }
                     }
-                    if (!match) return true;
 
                     // Skip the main Rhino window (its title contains the doc path).
                     // The match heuristic above shouldn't pick it up, but belt-and-braces.
                     if (title.EndsWith("Rhinoceros 8", StringComparison.OrdinalIgnoreCase)) return true;
                     if (title.EndsWith("Grasshopper", StringComparison.OrdinalIgnoreCase)) return true;
 
-                    dismissed.Add(hWnd);
-                    PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_RETURN, IntPtr.Zero);
-                    PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_RETURN, IntPtr.Zero);
+                    if (match)
+                    {
+                        dismissed.Add(hWnd);
+                        PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_RETURN, IntPtr.Zero);
+                        PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_RETURN, IntPtr.Zero);
+                        return true;
+                    }
+
+                    // Body-text fallback: GH's GUID-conflict modal (confirmed
+                    // 2026-06-01) doesn't surface a useful title. Identify by
+                    // scanning child windows for the distinctive "Skip All"
+                    // button text and click it directly via BM_CLICK. We always
+                    // prefer Skip All over Replace All because Replace would
+                    // potentially overwrite installed-plugin components with
+                    // duplicates from CPig.gha.
+                    IntPtr skipAllBtn = IntPtr.Zero;
+                    bool hasConflictText = false;
+                    EnumChildWindows(hWnd, (child, _) =>
+                    {
+                        var ct = new System.Text.StringBuilder(256);
+                        GetWindowText(child, ct, ct.Capacity);
+                        var childText = ct.ToString();
+                        if (string.IsNullOrEmpty(childText)) return true;
+                        if (childText.Equals("Skip All", StringComparison.OrdinalIgnoreCase)
+                         || childText.Equals("&Skip All", StringComparison.OrdinalIgnoreCase))
+                        {
+                            skipAllBtn = child;
+                        }
+                        else if (childText.IndexOf("must be discarded", StringComparison.OrdinalIgnoreCase) >= 0
+                              || childText.IndexOf("share the same ID", StringComparison.OrdinalIgnoreCase) >= 0
+                              || childText.IndexOf("Component ID conflict", StringComparison.OrdinalIgnoreCase) >= 0
+                              || childText.IndexOf("Conflicting Component", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            hasConflictText = true;
+                        }
+                        return true;
+                    }, IntPtr.Zero);
+
+                    if (hasConflictText)
+                    {
+                        dismissed.Add(hWnd);
+                        if (skipAllBtn != IntPtr.Zero)
+                        {
+                            PostMessage(skipAllBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+                        }
+                        else
+                        {
+                            // Fallback: send Enter to whatever's focused.
+                            PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_RETURN, IntPtr.Zero);
+                            PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_RETURN, IntPtr.Zero);
+                        }
+                    }
                     return true;
                 }, IntPtr.Zero);
             }
