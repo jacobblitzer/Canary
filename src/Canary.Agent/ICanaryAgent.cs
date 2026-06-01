@@ -40,6 +40,15 @@ public class CaptureSettings
 
     /// <summary>File path where the captured PNG should be saved.</summary>
     public string OutputPath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// When true, the agent ALSO captures a full-screen desktop screenshot alongside
+    /// the viewport capture. The full-screen PNG is written next to <see cref="OutputPath"/>
+    /// with a <c>.fullscreen.png</c> suffix (e.g. <c>foo.png</c> → <c>foo.fullscreen.png</c>).
+    /// Useful for debugging warning balloons, modal dialogs, or off-viewport errors that
+    /// the viewport-only capture misses.
+    /// </summary>
+    public bool IncludeFullScreen { get; set; } = false;
 }
 
 /// <summary>
@@ -58,6 +67,13 @@ public class ScreenshotResult
 
     /// <summary>When the screenshot was taken.</summary>
     public DateTime CapturedAt { get; set; }
+
+    /// <summary>
+    /// Path to the optional full-screen capture, if <see cref="CaptureSettings.IncludeFullScreen"/>
+    /// was true. Null otherwise. Captures the whole desktop (all monitors of the primary
+    /// device) at native resolution — useful for catching warning balloons / toasts.
+    /// </summary>
+    public string? FullScreenPath { get; set; }
 }
 
 /// <summary>

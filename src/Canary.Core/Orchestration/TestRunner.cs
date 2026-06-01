@@ -1006,16 +1006,20 @@ public sealed class TestRunner
             }
             else
             {
-                // Default: viewport capture
+                // Default: viewport capture + full-screen sibling (Phase 4.6.E.A.2 —
+                // catches warning balloons / modal toasts that the viewport-only capture misses).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
                 var captureResult = await agent.CaptureScreenshotAsync(new CaptureSettings
                 {
                     Width = captureWidth,
                     Height = captureHeight,
-                    OutputPath = candidatePath
+                    OutputPath = candidatePath,
+                    IncludeFullScreen = true
                 }).ConfigureAwait(false);
 
                 cpResult.CandidatePath = captureResult.FilePath;
+                if (!string.IsNullOrEmpty(captureResult.FullScreenPath))
+                    _logger.Log($"  + full-screen capture: {captureResult.FullScreenPath}");
             }
 
             if (cpResult.CandidatePath != null)
@@ -1206,16 +1210,20 @@ public sealed class TestRunner
             }
             else
             {
-                // Default: viewport capture
+                // Default: viewport capture + full-screen sibling (Phase 4.6.E.A.2 —
+                // catches warning balloons / modal toasts that the viewport-only capture misses).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
                 var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
                 {
                     Width = captureWidth,
                     Height = captureHeight,
-                    OutputPath = candidatePath
+                    OutputPath = candidatePath,
+                    IncludeFullScreen = true
                 }, ct).ConfigureAwait(false);
 
                 cpResult.CandidatePath = captureResult.FilePath;
+                if (!string.IsNullOrEmpty(captureResult.FullScreenPath))
+                    _logger.Log($"  + full-screen capture: {captureResult.FullScreenPath}");
             }
 
             // Branch on comparison mode. forceMode (set by ResolveEffectiveModes)
