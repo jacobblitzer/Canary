@@ -54,6 +54,16 @@ public interface ITestProgressEvents
     /// Default no-op so the existing GUI doesn't need to handle it yet.
     /// </summary>
     void OnTelemetry(TelemetryRecord record) { }
+
+    /// <summary>
+    /// Fires once per test, right after the test's output directory is
+    /// computed + created. Lets the GUI route operator-triggered captures
+    /// (the "📷 Capture Screen" button) into the active test's folder
+    /// instead of a generic %APPDATA%\Canary\captures\ scratch space.
+    ///
+    /// Default no-op so non-GUI consumers (CLI runs) don't need to handle.
+    /// </summary>
+    void OnTestDirectoryReady(string testName, string testDir) { }
 }
 
 /// <summary>

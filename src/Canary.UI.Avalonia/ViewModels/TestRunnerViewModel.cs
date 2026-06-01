@@ -38,6 +38,12 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     public ObservableCollection<string> LogLines { get; } = new();
     public ObservableCollection<ProgressCard> ProgressCards { get; } = new();
 
+    // Phase 4.6.E.A.3 — TestRunner emits OnTestDirectoryReady when each test
+    // starts; we route operator "📷 Capture Screen" output here while it's set.
+    // Clears at the start of every run + on Idle transition.
+    private string? _currentTestDir;
+    private string? _currentTestName;
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StopCommand))]
     private TestRunnerState _state = TestRunnerState.Idle;
@@ -75,6 +81,8 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         ProgressCards.Clear();
         ProgressValue = 0;
         ProgressMax = Math.Max(1, request.Tests.Count);
+        _currentTestDir = null;
+        _currentTestName = null;
         State = TestRunnerState.Running;
         StatusText = $"Running {request.Tests.Count} test(s)...";
         SuiteLabel = request.SuiteName != null
@@ -165,6 +173,8 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
                 _pm?.KillAll();
                 _pm = null;
                 State = TestRunnerState.Idle;
+                _currentTestDir = null;
+                _currentTestName = null;
             }
             _cts?.Dispose();
             _cts = null;
@@ -186,13 +196,19 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     }
 
     /// <summary>
-    /// On-demand desktop screenshot — captures the whole virtual screen to
-    /// %APPDATA%\Canary\captures\<timestamp>.png. Always enabled (even when
-    /// no test is running) so the operator can grab warning balloons that
-    /// appear between tests, or capture an arbitrary moment of Rhino's state.
+    /// On-demand desktop screenshot. Routing:
+    ///   - If a test is currently running AND TestRunner has reported a
+    ///     testDir for the active test, the capture lands in
+    ///     <c>&lt;testDir&gt;\manual-captures\&lt;HH-mm-ss&gt;.png</c> alongside
+    ///     the auto-checkpoint artifacts.
+    ///   - Otherwise (idle, or before the first test's testDir event), the
+    ///     capture falls back to <c>%APPDATA%\Canary\captures\</c>.
+    ///
+    /// Always enabled — operator can grab arbitrary moments of Rhino's
+    /// state even when no suite is running.
     ///
     /// Companion to the auto-fullscreen-per-checkpoint capture wired into
-    /// TestRunner — that one fires at checkpoint boundaries; this one fires
+    /// TestRunner — that fires at checkpoint boundaries; this one fires
     /// when the operator clicks.
     /// </summary>
     [RelayCommand]
@@ -200,11 +216,26 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     {
         try
         {
-            var label = State == TestRunnerState.Running ? "running" : "idle";
-            var path = Services.DesktopCapture.NewCapturePath(label);
+            string path;
+            string locationLabel;
+            if (State == TestRunnerState.Running && !string.IsNullOrEmpty(_currentTestDir))
+            {
+                var dir = Path.Combine(_currentTestDir!, "manual-captures");
+                Directory.CreateDirectory(dir);
+                var stamp = DateTime.Now.ToString("HH-mm-ss");
+                var safeTest = _currentTestName ?? "test";
+                path = Path.Combine(dir, $"{stamp}-{safeTest}.png");
+                locationLabel = $"{Path.GetFileName(_currentTestDir)}\\manual-captures";
+            }
+            else
+            {
+                var label = State == TestRunnerState.Running ? "running" : "idle";
+                path = Services.DesktopCapture.NewCapturePath(label);
+                locationLabel = "appdata-captures";
+            }
             var (savedPath, w, h) = Services.DesktopCapture.Capture(path);
             Append($"📷 Captured screen → {savedPath} ({w}×{h})");
-            StatusText = $"Captured screen: {Path.GetFileName(savedPath)}";
+            StatusText = $"Captured: {locationLabel}\\{Path.GetFileName(savedPath)}";
         }
         catch (Exception ex)
         {
@@ -315,6 +346,13 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         => Post(() => Append($"  {testName} → {status} ({durationSeconds:F1}s)"));
 
     public void OnTelemetry(TelemetryRecord record) { /* no-op for now; Telemetry tab tails the NDJSON */ }
+
+    public void OnTestDirectoryReady(string testName, string testDir)
+        => Post(() =>
+        {
+            _currentTestName = testName;
+            _currentTestDir = testDir;
+        });
 
     private ProgressCard FindOrCreate(string testName, string checkpointName)
     {
