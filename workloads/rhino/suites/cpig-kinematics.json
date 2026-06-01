@@ -1,6 +1,6 @@
 {
   "name": "cpig-kinematics",
-  "description": "CPig.Kinematics regression suite — M1 (skeletal diagram) through M4.6 (transmission solver + hardtail bicycle). Runs in a shared Rhino instance via the cpig_slop_loader fixture. Each test loads its Slop JSON from CPig/research/slop_tests/kin_*.json, builds the canvas, and asserts on the result panels.",
+  "description": "CPig.Kinematics regression suite — M1 (skeletal diagram) through M4.6.F (animated-mechanism stop-motion fixtures). Runs in a shared Rhino instance via the cpig_slop_loader fixture. Each test loads its Slop JSON from CPig/research/slop_tests/kin_*.json, builds the canvas, and asserts on the result panels.",
   "tests": [
     "cpig-kin-01-fork-diagram",
     "cpig-kin-02-fork-sweep",
@@ -8,6 +8,7 @@
     "cpig-kin-04-pendulum-period",
     "cpig-kin-06-fork-bound-static",
     "cpig-kin-07-pendulum-bound-animated",
-    "cpig-kin-08-hardtail-bicycle"
+    "cpig-kin-08-hardtail-bicycle",
+    "cpig-kin-09-full-bicycle-animated"
   ]
 }

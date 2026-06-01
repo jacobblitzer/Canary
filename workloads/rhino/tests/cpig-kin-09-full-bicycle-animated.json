@@ -1,0 +1,43 @@
+{
+    "name": "cpig-kin-09-full-bicycle-animated",
+    "workload": "rhino",
+    "description": "kin-09 Full bicycle animated — extends kin-08 (single skeleton snapshot) with body-binding + a stop-motion strip. Forward-dynamics integrates 2s of pedal-torque rolling; five Pose at Step components sample steps 0/500/1000/1500/2000; Pose Bound Bodies flattens them into a tree of bound geometry so the viewport renders all five bikes simultaneously, spread left-to-right along world +X. Exercises rolling_contact (4.6.C) + chain_drive (4.6.A) together AND verifies body-binding survives multi-pose flattening. Phase 4.6.F.1 animated-mechanism demo.",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Perspective",
+            "displayMode": "Shaded",
+            "width": 1200,
+            "height": 600
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A stop-motion strip of five hardtail mountain bicycles arranged left-to-right along the world +X axis, each frozen at a different time-step of a 2-second forward-dynamics roll under 5 N·m pedal torque. The leftmost (step 0) sits near the world origin; the rightmost (step 2000) has rolled ~4 m forward; intermediate poses (500 / 1000 / 1500) fill in between, each at a recognisable diamond-frame profile with two 350 mm cylindrical wheels, tubes ~20 mm radius, and a small vertical crank. Wheel rotation is visible across the strip (the rear wheel spins at crank_rpm × chain_ratio 2.5). A faint design-pose skeleton (frame triads + joint circles + pivot points) is overlaid at the origin via Preview Diagram in Display Mode 2."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_09_full_bicycle_animated.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 180000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
+        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "2001" }
+    ]
+}
