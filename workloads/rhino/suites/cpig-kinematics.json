@@ -9,6 +9,7 @@
     "cpig-kin-06-fork-bound-static",
     "cpig-kin-07-pendulum-bound-animated",
     "cpig-kin-08-hardtail-bicycle",
-    "cpig-kin-09-full-bicycle-animated"
+    "cpig-kin-09-full-bicycle-animated",
+    "cpig-kin-10-corexy-printer"
   ]
 }

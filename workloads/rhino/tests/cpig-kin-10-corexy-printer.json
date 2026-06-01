@@ -1,0 +1,43 @@
+{
+    "name": "cpig-kin-10-corexy-printer",
+    "workload": "rhino",
+    "description": "kin-10 CoreXY 3D-printer head — first 4.6.F fixture for `belt` × 2 simultaneous-actuation. 2 motors at the rear corners drive 2 belts through opposite front-corner idlers + a tool-head anchor; the two belt length-conservation constraints couple both motor rotations to the X+Y position of a 2-DOF gantry tool head. Forward-dynamics integrates 1 s under (+150 N·mm, −100 N·mm) simultaneous motor torques; 5 Pose at Step taps (steps 0/250/500/750/1000) flatten into Pose Bound Bodies which renders a stop-motion trail of tool-head spheres. Phase 4.6.F.2 simultaneous-belt-actuation demo. Topology — NOT a physically calibrated CoreXY (single anchor per belt, simplified routing) — but kinematic deliverable is two `belt` transmissions simultaneously constraining a 2-DOF carriage system.",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Perspective",
+            "displayMode": "Shaded",
+            "width": 1000,
+            "height": 700
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A top-down view of a CoreXY-style 2-DOF gantry. The kinematic skeleton (drawn at 50% alpha via Preview Diagram in Display Mode 2) shows two motor axles as small revolute glyphs at the rear corners (back-left at world origin (0,200,100) and back-right at (300,200,100)), two idler points at the front corners (0,0,100) and (300,0,100), and the X+Y prismatic skeleton of the tool head carriage at the design centre (150,100,100). The tool head itself is rendered as five solid blue-grey 24 mm-diameter spheres in a stop-motion trail: a near-stationary cluster at the centre (step 0), then a curving trail diverging into the print bed under the simultaneous belt constraints (+150 N·mm torque on motor_a, −100 N·mm on motor_b). The two belts (route lines) are NOT drawn in this preview, but their length-conservation constraints determine which way the tool head moves."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_10_corexy_printer.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
+        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "1001" }
+    ]
+}
