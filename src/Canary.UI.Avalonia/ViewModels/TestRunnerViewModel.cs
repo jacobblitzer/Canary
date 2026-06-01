@@ -185,6 +185,34 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         if (State == TestRunnerState.KeepingOpen) State = TestRunnerState.Idle;
     }
 
+    /// <summary>
+    /// On-demand desktop screenshot — captures the whole virtual screen to
+    /// %APPDATA%\Canary\captures\<timestamp>.png. Always enabled (even when
+    /// no test is running) so the operator can grab warning balloons that
+    /// appear between tests, or capture an arbitrary moment of Rhino's state.
+    ///
+    /// Companion to the auto-fullscreen-per-checkpoint capture wired into
+    /// TestRunner — that one fires at checkpoint boundaries; this one fires
+    /// when the operator clicks.
+    /// </summary>
+    [RelayCommand]
+    public void CaptureScreen()
+    {
+        try
+        {
+            var label = State == TestRunnerState.Running ? "running" : "idle";
+            var path = Services.DesktopCapture.NewCapturePath(label);
+            var (savedPath, w, h) = Services.DesktopCapture.Capture(path);
+            Append($"📷 Captured screen → {savedPath} ({w}×{h})");
+            StatusText = $"Captured screen: {Path.GetFileName(savedPath)}";
+        }
+        catch (Exception ex)
+        {
+            Append($"Capture failed: {ex.Message}");
+            StatusText = "Capture failed";
+        }
+    }
+
     private async Task<SuiteResult> RunQualiaAsync(RunRequest request, TestRunner runner, ITestLogger logger, CancellationToken ct)
     {
         var configPath = Path.Combine(request.WorkloadsDir, request.Workload.Name, "workload.json");

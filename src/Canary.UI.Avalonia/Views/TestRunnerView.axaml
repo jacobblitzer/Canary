@@ -13,7 +13,9 @@
         <TextBlock Text="{Binding StatusText}" Foreground="#DCDCDC" VerticalAlignment="Center" Margin="0,0,12,0" />
         <TextBlock Text="{Binding SuiteLabel}" Foreground="#96DC82" VerticalAlignment="Center" Margin="0,0,12,0"
                    IsVisible="{Binding SuiteLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-        <Button Content="Stop (Pause)" Command="{Binding StopCommand}" Background="#B43232" Foreground="White" />
+        <Button Content="Stop (Pause)" Command="{Binding StopCommand}" Background="#B43232" Foreground="White" Margin="0,0,8,0" />
+        <Button Content="📷 Capture Screen" Command="{Binding CaptureScreenCommand}" Background="#3868A8" Foreground="White"
+                ToolTip.Tip="Save a PNG of the whole desktop to %APPDATA%\Canary\captures — grabs warning balloons / modal toasts mid-run." />
       </WrapPanel>
     </Border>
 
