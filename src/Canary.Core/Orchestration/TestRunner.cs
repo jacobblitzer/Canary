@@ -189,6 +189,7 @@ public sealed class TestRunner
             var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
             Directory.CreateDirectory(testDir);
             testDirSaved = testDir;
+            Progress?.OnTestDirectoryReady(testDef.Name, testDir);
 
             // Default capture size from WindowPositioner; updated after positioning
             var captureWidth = WindowPositioner.TargetWidth;
@@ -550,6 +551,7 @@ public sealed class TestRunner
 
                         var testDir = GetTestDirectory(workload.Name, test.Name);
                         Directory.CreateDirectory(testDir);
+                        Progress?.OnTestDirectoryReady(test.Name, testDir);
 
                         foreach (var checkpoint in test.Checkpoints)
                         {
@@ -730,6 +732,7 @@ public sealed class TestRunner
             var testDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
             Directory.CreateDirectory(testDir);
             testDirSaved = testDir;
+            Progress?.OnTestDirectoryReady(testDef.Name, testDir);
 
             var captureWidth = testDef.Setup?.Canvas?.Width ?? 960;
             var captureHeight = testDef.Setup?.Canvas?.Height ?? 540;
@@ -807,7 +810,7 @@ public sealed class TestRunner
         result.Duration = sw.Elapsed;
         if (testDirSaved != null)
             await SavePerRunArtifactsAsync(result, workload, testDirSaved, startedUtc, DateTime.UtcNow).ConfigureAwait(false);
-        Progress.OnTestCompleted(testDef.Name, result.Status, sw.Elapsed.TotalSeconds);
+        Progress?.OnTestCompleted(testDef.Name, result.Status, sw.Elapsed.TotalSeconds);
         return result;
     }
 
