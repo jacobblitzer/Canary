@@ -1,0 +1,43 @@
+{
+    "name": "cpig-kin-11-strandbeest-leg",
+    "workload": "rhino",
+    "description": "kin-11 Strandbeest-style walking leg — planar closed-loop 4-bar inspired by Theo Jansen's linkage. Crank + coupler + rocker + ground form one closed loop; a foot vertex on the coupler traces a coupler curve as the crank rotates under 200 N·mm torque. Forward-dynamics integrates 2s; 5 Pose at Step taps (steps 0/500/1000/1500/2000) flatten into Pose Bound Bodies, rendering five overlapping coupler-triangle outlines that capture the leg's swing motion in one frame. Topology — NOT the full Jansen 13-bar linkage (which has 2 closed loops + 2 rigid triangle bodies); this simplification is the minimum that stress-tests the planar closed-loop solver. Phase 4.6.F.3 closed-loop solver demo.",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Parallel",
+            "displayMode": "Shaded",
+            "width": 900,
+            "height": 900
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A Strandbeest-style walking-leg linkage shown as a stop-motion strip of five overlapping triangular shapes (the coupler-triangle B-C-F, rendered as a thin closed pipe outline) drawn at five different crank angles spanning a 2-second forward-dynamics integration under 200 N·mm constant crank torque. The triangles rotate and swing about the design-pose pivot points: O (crank hub at world origin), P (rocker hub at (-25,25,0)), and the moving pivots B (crank-coupler join) and C (coupler-rocker join). The free vertex F (the foot) sweeps a closed coupler curve — a smooth oval-to-kidney-bean shape under the linkage. The kinematic skeleton (design-pose 4-bar frame triads + joint circles) is drawn at 50% alpha behind the moving triangles via Preview Diagram in Display Mode 2."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_11_strandbeest_leg.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
+        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "2001" }
+    ]
+}
