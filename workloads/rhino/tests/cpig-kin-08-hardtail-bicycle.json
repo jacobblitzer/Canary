@@ -1,0 +1,43 @@
+{
+    "name": "cpig-kin-08-hardtail-bicycle",
+    "workload": "rhino",
+    "description": "kin-08 Hardtail bicycle — frame (chassis) on prismatic to world, two wheels + crank on revolutes to frame, chain_drive coupling crank → rear_wheel at ratio 2.5, rolling_contact at both wheels. Forward-dynamics integrate 2s under constant 5 N·m pedal torque; bicycle rolls forward ~4 m. Phase 4.6.C transmission integration demo. Visualizes the bike skeleton at step 1500 (~75% through the integration).",
+    "runMode": "shared",
+    "setup": {
+        "file": "fixtures/cpig_slop_loader.gh",
+        "viewport": {
+            "projection": "Perspective",
+            "displayMode": "Shaded",
+            "width": 800,
+            "height": 600
+        },
+        "commands": [],
+        "vlm": {
+            "provider": "ollama",
+            "model": "gemma4:e2b"
+        },
+        "vlmDescription": "A bicycle skeleton in motion shown in side view: a horizontal frame translated forward from the world origin along world +X; two orange pivot circles at the rear and front axles representing the wheels; a third pivot circle at the crank between them; frame triads (RGB axis indicators) at every joint. The bike is rolling under pedal torque — the wheels rotate and the chassis has translated several metres from the origin."
+    },
+    "actions": [
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+          "text": "C:/Repos/CPig/research/slop_tests/kin_08_hardtail_bicycle.json" },
+        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
+        { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
+    ],
+    "checkpoints": [
+        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+    ],
+    "asserts": [
+        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
+        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
+        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
+        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "2001" }
+    ]
+}
