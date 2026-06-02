@@ -149,11 +149,20 @@
                                          VerticalAlignment="Center"
                                          TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
                   </StackPanel>
-                  <controls:AnimatedImagePanel SourcePath="{Binding GifPath}"
+                  <!-- GIF stats line — populated async from CheckpointCardViewModel.LoadGifStatsAsync
+                       via ImageSharp's metadata-only Identify (no pixel decode). Format:
+                       "11 frames  ·  900×900  ·  1.8s  ·  612 KB". -->
+                  <TextBlock Text="{Binding GifStats}" Foreground="#A0A0A0" FontSize="11"
+                             IsVisible="{Binding GifStats, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <controls:AnimatedImagePanel x:Name="GifAnim"
+                                               SourcePath="{Binding GifPath}"
                                                IsPlaying="{Binding ShowGif}"
                                                IsVisible="{Binding ShowGif}"
                                                MaxHeight="280"
                                                HorizontalAlignment="Left" />
+                  <TextBlock Text="{Binding #GifAnim.Status}"
+                             Foreground="#7E9CC8" FontSize="10"
+                             IsVisible="{Binding ShowGif}" />
                 </StackPanel>
               </StackPanel>
             </Border>

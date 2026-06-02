@@ -3,6 +3,8 @@ using Avalonia.Media.Imaging;
 using Canary.Orchestration;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
 
 namespace Canary.UI.Avalonia.ViewModels;
 
@@ -58,8 +60,53 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
     // hasn't expanded.
     [ObservableProperty] private bool _showGif;
 
+    // GIF stats — populated async via LoadGifStatsAsync when the card is
+    // built. Uses ImageSharp's metadata-only Identify path so no pixel
+    // decode happens — safe to call eagerly for every card. Format:
+    // "11 frames · 900×900 · 1.8s · 612 KB".
+    [ObservableProperty] private string? _gifStats;
+
     [RelayCommand]
     private void ToggleShowGif() => ShowGif = !ShowGif;
+
+    internal async Task LoadGifStatsAsync()
+    {
+        if (string.IsNullOrWhiteSpace(GifPath) || !System.IO.File.Exists(GifPath)) return;
+        try
+        {
+            var info = await SixLabors.ImageSharp.Image.IdentifyAsync(GifPath).ConfigureAwait(false);
+            if (info == null) return;
+            int frameCount = info.FrameMetadataCollection?.Count ?? 1;
+            int totalDelayCs = 0;
+            if (info.FrameMetadataCollection != null)
+            {
+                foreach (var fm in info.FrameMetadataCollection)
+                {
+                    try
+                    {
+                        var g = fm.GetGifMetadata();
+                        if (g != null) totalDelayCs += Math.Max(0, g.FrameDelay);
+                    }
+                    catch { /* metadata is optional */ }
+                }
+            }
+            var sizeBytes = new System.IO.FileInfo(GifPath).Length;
+            string sizeText = sizeBytes >= 1024 * 1024
+                ? $"{sizeBytes / 1048576.0:F1} MB"
+                : $"{sizeBytes / 1024} KB";
+            string durationText = totalDelayCs > 0
+                ? $"{totalDelayCs / 100.0:F1}s"
+                : "(no delay metadata)";
+            await global::Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                GifStats = $"{frameCount} frames  ·  {info.Width}×{info.Height}  ·  {durationText}  ·  {sizeText}";
+            });
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CheckpointCardViewModel] GIF stats failed for {GifPath}: {ex.Message}");
+        }
+    }
 }
 
 public partial class ResultsViewerViewModel : ObservableObject
@@ -378,6 +425,10 @@ public partial class ResultsViewerViewModel : ObservableObject
         card.BaselineThumb = TryLoadBitmap(cp.BaselinePath);
         card.CandidateThumb = TryLoadBitmap(cp.CandidatePath);
         card.DiffThumb = TryLoadBitmap(cp.DiffImagePath);
+        // Fire-and-forget metadata-only decode for the stats line. Cheap +
+        // safe to batch (ImageSharp.IdentifyAsync doesn't read pixels).
+        if (!string.IsNullOrWhiteSpace(cp.GifPath))
+            _ = card.LoadGifStatsAsync();
         return card;
     }
 

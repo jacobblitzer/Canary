@@ -1862,7 +1862,6 @@ public sealed class TestRunner
             ct.ThrowIfCancellationRequested();
 
             var v = scrub.Values[i];
-            _logger.Log($"  scrub frame {i:D2}/{scrub.Values.Length - 1}: {scrub.Nickname}={v}");
             var sliderResp = await executeAsync("GrasshopperSetSlider", new Dictionary<string, string>
             {
                 ["nickname"] = scrub.Nickname,
@@ -1873,6 +1872,12 @@ public sealed class TestRunner
                 _logger.Log($"  ! scrub frame {i:D2} SetSlider('{scrub.Nickname}'={v}) failed: {sliderResp.Message}");
                 continue;
             }
+            // Log the actualValue the agent reports back — if it doesn't
+            // match `v`, SetSliderValue silently failed and the downstream
+            // Animate Bound is reading a stale Index.
+            string actual = "(no data)";
+            if (sliderResp.Data != null && sliderResp.Data.TryGetValue("actualValue", out var a)) actual = a;
+            _logger.Log($"  scrub frame {i:D2}/{scrub.Values.Length - 1}: {scrub.Nickname}={v} (actual={actual})");
 
             var waitResp = await executeAsync("WaitForGrasshopperSolution", new Dictionary<string, string>
             {

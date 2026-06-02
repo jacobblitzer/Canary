@@ -941,6 +941,20 @@ public sealed class RhinoAgent : ICanaryAgent
             {
                 slider.SetSliderValue((decimal)value);
                 slider.ExpireSolution(true);
+                // BUG-CANARY-pending — ExpireSolution(true) alone wasn't actually
+                // re-solving downstream when called from the agent's RPC thread
+                // (bound-body scrub captures were pixel-identical across all
+                // slider values, going back to 2026-06-02 08:10 archived runs).
+                // Explicitly call doc.NewSolution(false) on the UI thread so the
+                // recompute fires before WaitForGrasshopperSolution checks quiesce.
+                try
+                {
+                    if (global::Rhino.RhinoApp.InvokeRequired)
+                        global::Rhino.RhinoApp.InvokeOnUiThread(new Action(() => doc.NewSolution(false)));
+                    else
+                        doc.NewSolution(false);
+                }
+                catch (Exception nex) { global::Rhino.RhinoApp.WriteLine($"[Canary] SetSlider NewSolution: {nex.Message}"); }
 
                 return new AgentResponse
                 {

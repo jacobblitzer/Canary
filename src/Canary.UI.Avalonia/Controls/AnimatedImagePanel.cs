@@ -48,6 +48,21 @@ public sealed class AnimatedImagePanel : UserControl
     public static readonly StyledProperty<StretchDirection> StretchDirectionProperty =
         AvaloniaProperty.Register<AnimatedImagePanel, StretchDirection>(nameof(StretchDirection), defaultValue: StretchDirection.DownOnly);
 
+    /// <summary>
+    /// Diagnostic status string. Read-only from XAML. Set to one of:
+    /// "" (no source), "Decoding…", "Decoded N frames", "Decode failed: …".
+    /// Bind <c>Text="{Binding #panel.Status}"</c> next to the control to
+    /// see what the decoder is doing when no animation appears.
+    /// </summary>
+    public static readonly DirectProperty<AnimatedImagePanel, string> StatusProperty =
+        AvaloniaProperty.RegisterDirect<AnimatedImagePanel, string>(nameof(Status), o => o.Status);
+    private string _status = string.Empty;
+    public string Status
+    {
+        get => _status;
+        private set => SetAndRaise(StatusProperty, ref _status, value);
+    }
+
     public string? SourcePath
     {
         get => GetValue(SourcePathProperty);
@@ -113,13 +128,19 @@ public sealed class AnimatedImagePanel : UserControl
         StopTimer();
         _image.Source = null;
         ReleaseFrames();
+        Status = string.Empty;
 
         if (string.IsNullOrWhiteSpace(path)) return;
         // File.Exists is best-effort cheap synchronous; if false we just stay
         // blank rather than throwing. The decoder also handles missing files
         // defensively in case the file is deleted mid-decode.
-        if (!File.Exists(path)) return;
+        if (!File.Exists(path))
+        {
+            Status = $"File not found: {path}";
+            return;
+        }
 
+        Status = "Decoding…";
         var cts = new CancellationTokenSource();
         _decodeCts = cts;
         _ = Task.Run(() => DecodeAsync(path!, cts.Token), cts.Token);
@@ -173,6 +194,7 @@ public sealed class AnimatedImagePanel : UserControl
                 _delaysMs = delays;
                 _frameIndex = 0;
                 _image.Source = frames[0];
+                Status = $"Decoded {frames.Count} frames";
                 if (IsPlaying && frames.Count > 1) StartTimer();
             });
         }
@@ -183,6 +205,7 @@ public sealed class AnimatedImagePanel : UserControl
         catch (Exception ex)
         {
             Debug.WriteLine($"[AnimatedImagePanel] decode failed for {path}: {ex.Message}");
+            try { await Dispatcher.UIThread.InvokeAsync(() => Status = $"Decode failed: {ex.Message}"); } catch { }
         }
     }
 
