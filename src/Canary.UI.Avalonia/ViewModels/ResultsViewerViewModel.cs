@@ -50,14 +50,38 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
     [ObservableProperty] private string? _resolutionLabel;
     [ObservableProperty] private string _resolutionColor = "#969696";
 
-    // Phase 14.7+ — GIF playback is opt-in per card. Default false avoids the
-    // crash that Avalonia.Labs.Gif 11.3.1 hits when multiple medium-sized GIFs
-    // try to decode synchronously on view-open (the Past Runs DataGrid auto-
-    // selects the newest row and binds N cards in one shot; binding several
-    // GifImages at once can take down the UI). Toggled by the "🎞️ Play GIF"
-    // button on the card. The static candidate.png thumb stays visible
-    // regardless — the operator never has to click to see the still frame.
+    // Phase 14.7+ — GIF playback is opt-in per card. Default false. The
+    // Avalonia.Labs.Gif 11.3.1 decoder fires on Source assignment regardless
+    // of IsVisible, so the previous defensive `IsVisible=false` gate didn't
+    // help (Past Runs crashed even with ShowGif=false). The real fix: keep
+    // <see cref="GifSource"/> null until ShowGif flips. Source=null → no
+    // decode. Click "🎞️ Play GIF" → ShowGif=true → GifSource resolves to
+    // a file:// Uri → the GifImage decodes that single card's GIF.
     [ObservableProperty] private bool _showGif;
+
+    /// <summary>
+    /// Phase 14.7+ — null until <see cref="ShowGif"/> is true; otherwise a
+    /// <c>file://</c> Uri pointing at the captured GIF. Binding
+    /// <c>GifImage.Source</c> to this property defers the labs decoder until
+    /// the operator clicks Play — preventing the batch-bind crash that
+    /// killed the Past Runs view when multiple cards instantiated at once.
+    /// </summary>
+    public Uri? GifSource
+    {
+        get
+        {
+            if (!ShowGif || string.IsNullOrWhiteSpace(GifPath)) return null;
+            try
+            {
+                if (Uri.TryCreate(GifPath, UriKind.Absolute, out var u)) return u;
+                var full = System.IO.Path.GetFullPath(GifPath!).Replace('\\', '/');
+                return new Uri("file:///" + full);
+            }
+            catch { return null; }
+        }
+    }
+
+    partial void OnShowGifChanged(bool value) => OnPropertyChanged(nameof(GifSource));
 
     [RelayCommand]
     private void ToggleShowGif() => ShowGif = !ShowGif;
