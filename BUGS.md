@@ -2,11 +2,13 @@
 type: bugs
 repo: Canary
 open_bugs: null
-total_bugs: 7
+total_bugs: 8
 last_updated: 2026-06-02
 priority_max: null
 bugs_dir: docs/bugs/
 ---
+
+> **2026-06-02 — BUG-0009** opened: per-checkpoint viewport framing collapses to extreme close-ups in shared-session suite runs (`cpig-kinematics`). Solo `--test` invocations frame correctly; `--suite` zooms to a single body / label. Suspect `HandleSetViewport`'s post-switch `ZoomBoundingBox` unioning over stale shared-session geometry. See [docs/bugs/0009-shared-session-framing-regression.md](docs/bugs/0009-shared-session-framing-regression.md).
 
 # Bugs
 
