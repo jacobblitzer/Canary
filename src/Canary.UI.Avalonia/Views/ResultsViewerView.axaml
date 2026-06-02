@@ -3,9 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             xmlns:conv="using:Canary.UI.Avalonia.Converters"
+             xmlns:gif="using:Avalonia.Labs.Gif"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="Canary.UI.Avalonia.Views.ResultsViewerView"
              x:DataType="vm:ResultsViewerViewModel">
+
+  <UserControl.Resources>
+    <conv:GifPathToSourceConverter x:Key="GifPathToSourceConverter" />
+  </UserControl.Resources>
 
   <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
     <Border Grid.Row="0" Background="#252526" Padding="12,8">
@@ -126,6 +132,32 @@
                 <TextBlock Foreground="#82B496" TextWrapping="Wrap" FontSize="11"
                            Text="{Binding VlmReasoning}"
                            IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                <!-- Phase 14.7 — animated-GIF in-card playback. When the
+                     checkpoint captured a GIF (capture.gif=true + scrub
+                     frames), render it here so the operator sees the
+                     animation alongside the static baseline/candidate/diff
+                     thumbs. Mirrors the runner card pattern (Session B++).
+                     Click-through Button wraps the GifImage so the operator
+                     can also open the file in the OS default viewer. -->
+                <StackPanel Spacing="2"
+                            IsVisible="{Binding GifPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                  <TextBlock Text="🎞️ captured GIF" Foreground="#FFC850" FontSize="11" />
+                  <Button Padding="0" Background="Transparent" BorderThickness="0"
+                          HorizontalAlignment="Stretch"
+                          Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
+                          CommandParameter="{Binding GifPath}"
+                          ToolTip.Tip="{Binding GifPath}">
+                    <gif:GifImage Source="{Binding GifPath, Converter={StaticResource GifPathToSourceConverter}}"
+                                  Stretch="Uniform"
+                                  StretchDirection="DownOnly"
+                                  MaxHeight="280"
+                                  HorizontalAlignment="Left"
+                                  IterationCount="Infinite" />
+                  </Button>
+                  <SelectableTextBlock Text="{Binding GifPath}" Foreground="#FFC850" FontSize="10"
+                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                </StackPanel>
               </StackPanel>
             </Border>
           </DataTemplate>

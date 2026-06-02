@@ -282,18 +282,66 @@ public sealed class RhinoAgent : ICanaryAgent
         // Setting the camera to a known orbital position provides a
         // predictable starting point. ZoomExtents in WaitForGrasshopperSolution's
         // quiesce branch then re-frames once geometry exists.
+        //
+        // Phase 14.7: ONLY reset for Perspective. Front/Top/Right have their
+        // axis-aligned camera directions baked in by Rhino's view system; the
+        // off-axis (40, -40, 30) target would rotate them into a perspective-
+        // like pose and the 4-view checkpoint pattern would all look the same.
+        bool isPerspective = !parameters.TryGetValue("projection", out var projForCam)
+                             || string.Equals(projForCam, "Perspective", StringComparison.OrdinalIgnoreCase)
+                             || string.Equals(projForCam, "Parallel", StringComparison.OrdinalIgnoreCase);
+        if (isPerspective)
+        {
+            try
+            {
+                var v = doc.Views.ActiveView;
+                if (v != null)
+                {
+                    var avp = v.ActiveViewport;
+                    avp.SetCameraLocation(new global::Rhino.Geometry.Point3d(40, -40, 30), updateTargetLocation: false);
+                    avp.SetCameraTarget(global::Rhino.Geometry.Point3d.Origin, updateCameraLocation: false);
+                    v.Redraw();
+                }
+            }
+            catch (Exception cex) { RhinoApp.WriteLine($"[Canary] camera reset: {cex.Message}"); }
+        }
+
+        // Phase 14.7: After the viewport switch, refit the camera to the
+        // existing geometry on the now-active view. Without this, switching
+        // from Perspective to Front in a per-checkpoint override leaves Front
+        // looking at whatever camera position Rhino's view system remembers
+        // — which may be miles away from where the GH-built geometry sits.
         try
         {
             var v = doc.Views.ActiveView;
             if (v != null)
             {
-                var avp = v.ActiveViewport;
-                avp.SetCameraLocation(new global::Rhino.Geometry.Point3d(40, -40, 30), updateTargetLocation: false);
-                avp.SetCameraTarget(global::Rhino.Geometry.Point3d.Origin, updateCameraLocation: false);
+                var bbox = global::Rhino.Geometry.BoundingBox.Empty;
+                var rhDoc = RhinoDoc.ActiveDoc;
+                if (rhDoc != null)
+                {
+                    foreach (var ro in rhDoc.Objects)
+                    {
+                        try { var b = ro.Geometry.GetBoundingBox(true); if (b.IsValid) bbox.Union(b); } catch { }
+                    }
+                    var ghDoc = Grasshopper.Instances.ActiveCanvas?.Document;
+                    if (ghDoc != null)
+                    {
+                        foreach (var obj in ghDoc.Objects)
+                        {
+                            if (obj is Grasshopper.Kernel.IGH_PreviewObject prev && !prev.Hidden)
+                            {
+                                try { var pb = prev.ClippingBox; if (pb.IsValid && pb.Diagonal.Length > 1e-9) bbox.Union(pb); } catch { }
+                            }
+                        }
+                    }
+                }
+                if (bbox.IsValid && bbox.Diagonal.Length > 1e-6) v.ActiveViewport.ZoomBoundingBox(bbox);
+                else v.ActiveViewport.ZoomExtents();
                 v.Redraw();
             }
         }
-        catch (Exception cex) { RhinoApp.WriteLine($"[Canary] camera reset: {cex.Message}"); }
+        catch (Exception zex) { RhinoApp.WriteLine($"[Canary] SetViewport zoom: {zex.Message}"); }
 
         try
         {

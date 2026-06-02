@@ -1,7 +1,7 @@
 {
     "name": "cpig-kin-03-fork-equilibrium",
     "workload": "rhino",
-    "description": "kin-03 Fork Static Equilibrium — load the leading-link fork with a 20 N wheel load, solve via energy-min, render the sagged rest pose. Phase 3.A static-eq demo.",
+    "description": "kin-03 Fork Static Equilibrium \u2014 load the leading-link fork with a 20 N wheel load, solve via energy-min, render the sagged rest pose. Phase 3.A static-eq demo.",
     "runMode": "shared",
     "setup": {
         "file": "fixtures/cpig_slop_loader.gh",
@@ -16,28 +16,114 @@
             "provider": "ollama",
             "model": "gemma4:e2b"
         },
-        "vlmDescription": "A four-bar linkage front-fork skeleton tilted forward and down from its design pose — the suspension is sagged under load. Two parallel links rotate downward by ~23° from the ground column, the wheel carrier sits below its original position, and the diagonal coil-over spring is visibly stretched longer than the design-pose coil. Pivot circles (orange) and axis triads (RGB) visible at every frame."
+        "vlmDescription": "A four-bar linkage front-fork skeleton tilted forward and down from its design pose \u2014 the suspension is sagged under load. Two parallel links rotate downward by ~23\u00b0 from the ground column, the wheel carrier sits below its original position, and the diagonal coil-over spring is visibly stretched longer than the design-pose coil. Pivot circles (orange) and axis triads (RGB) visible at every frame."
     },
     "actions": [
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
-        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
-        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
-          "text": "C:/Repos/CPig/research/slop_tests/kin_03_fork_equilibrium.json" },
-        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 60000 }
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 5000
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Build",
+            "value": false
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Cleanup",
+            "value": true
+        },
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 5000
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Cleanup",
+            "value": false
+        },
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 2000
+        },
+        {
+            "type": "GrasshopperSetPanelText",
+            "nickname": "JsonPath",
+            "text": "C:/Repos/CPig/research/slop_tests/kin_03_fork_equilibrium.json"
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Build",
+            "value": true
+        },
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 60000
+        }
     ],
     "checkpoints": [
-        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+        {
+            "name": "front",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Front",
+                "displayMode": "Shaded"
+            }
+        },
+        {
+            "name": "top",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Top",
+                "displayMode": "Shaded"
+            }
+        },
+        {
+            "name": "right",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Right",
+                "displayMode": "Shaded"
+            }
+        },
+        {
+            "name": "persp",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Perspective",
+                "displayMode": "Shaded"
+            }
+        }
     ],
     "asserts": [
-        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
-        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
-        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
-        { "type": "PanelEquals",         "nickname": "Converged",   "text": "True" },
-        { "type": "PanelContains",       "nickname": "Report",      "text": "DOF-sweep minimum" }
+        {
+            "type": "PanelEquals",
+            "nickname": "SlopSuccess",
+            "text": "True"
+        },
+        {
+            "type": "PanelDoesNotContain",
+            "nickname": "SlopLog",
+            "text": "FATAL"
+        },
+        {
+            "type": "PanelDoesNotContain",
+            "nickname": "SlopLog",
+            "text": "!!!"
+        },
+        {
+            "type": "PanelEquals",
+            "nickname": "Converged",
+            "text": "True"
+        },
+        {
+            "type": "PanelContains",
+            "nickname": "Report",
+            "text": "DOF-sweep minimum"
+        }
     ]
 }

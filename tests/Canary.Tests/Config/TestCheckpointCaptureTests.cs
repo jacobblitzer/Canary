@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Canary.Config;
 using Xunit;
 
@@ -60,9 +61,14 @@ public class TestCheckpointCaptureTests
         var path = "C:/Repos/Canary/workloads/rhino/tests/cpig-kin-18-2link-arm.json";
         if (!File.Exists(path)) return; // skip if not present
 
+        // Phase 14.7 — kin-18 retrofit to 4-view layout: capture+scrub lives
+        // on the 'persp' checkpoint, not 'post-build'. Find any checkpoint
+        // with a capture block rather than relying on positional index so
+        // future shuffles don't re-break this.
         var def = TestDefinition.Parse(File.ReadAllText(path));
-        var cp = def.Checkpoints[0];
-        Assert.NotNull(cp.Capture);
+        var cp = def.Checkpoints.FirstOrDefault(c => c.Capture != null);
+        Assert.NotNull(cp);
+        Assert.NotNull(cp!.Capture);
         Assert.True(cp.Capture!.Gif);
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "cpig-kin-15-watt-straight-line",
     "workload": "rhino",
-    "description": "kin-15 Watt straight-line linkage — James Watt's 1784 4-bar parallel motion. Planar 4-bar (chassis + crank_left + coupler + crank_right) producing an APPROXIMATE vertical straight line at the coupler midpoint M. Operator-noted regression value: 'the straight line is an approximation, not exact — visual diff should show the slight curve at the extremes.' Same topology family as kin_11 (single closed loop) but with the Watt-specific 60°/120° crank angles + 40 mm short coupler. Forward-dynamics integrates 2s under 250 N·mm constant left-crank torque; Canary's per-frame scrub (Session B+) steps AnimSlider through 11 values to animate the GIF. Phase 4.6.F.6 — fills the original prompt's deferred kin_15 slot.",
+    "description": "kin-15 Watt straight-line linkage \u2014 James Watt's 1784 4-bar parallel motion. Planar 4-bar (chassis + crank_left + coupler + crank_right) producing an APPROXIMATE vertical straight line at the coupler midpoint M. Operator-noted regression value: 'the straight line is an approximation, not exact \u2014 visual diff should show the slight curve at the extremes.' Same topology family as kin_11 (single closed loop) but with the Watt-specific 60\u00b0/120\u00b0 crank angles + 40 mm short coupler. Forward-dynamics integrates 2s under 250 N\u00b7mm constant left-crank torque; Canary's per-frame scrub (Session B+) steps AnimSlider through 11 values to animate the GIF. Phase 4.6.F.6 \u2014 fills the original prompt's deferred kin_15 slot.",
     "runMode": "shared",
     "setup": {
         "file": "fixtures/cpig_slop_loader.gh",
@@ -16,41 +16,135 @@
             "provider": "ollama",
             "model": "gemma4:e2b"
         },
-        "vlmDescription": "James Watt's 1784 straight-line 4-bar linkage shown as a bound mechanism at a single time-step of a 2-second forward-dynamics integration. Three bound bodies are rendered as thin pipes: a slightly-thicker A–M–B coupler triangle (M is the trace midpoint) and two thinner rocker arms — O→A (left crank, pivoting from world origin) and P→B (right crank, pivoting from (100,0)). At slider=0 the design pose has both cranks pointing inward and upward at 60°/120° from world +X. As the slider advances, a constant 250 N·mm torque on the left crank rotates the linkage; the coupler midpoint M traces an APPROXIMATE vertical straight line. A faint design-pose skeleton (frame triads at O and P, joint circles at A, B, M) is overlaid via Preview Diagram in Display Mode 2."
+        "vlmDescription": "James Watt's 1784 straight-line 4-bar linkage shown as a bound mechanism at a single time-step of a 2-second forward-dynamics integration. Three bound bodies are rendered as thin pipes: a slightly-thicker A\u2013M\u2013B coupler triangle (M is the trace midpoint) and two thinner rocker arms \u2014 O\u2192A (left crank, pivoting from world origin) and P\u2192B (right crank, pivoting from (100,0)). At slider=0 the design pose has both cranks pointing inward and upward at 60\u00b0/120\u00b0 from world +X. As the slider advances, a constant 250 N\u00b7mm torque on the left crank rotates the linkage; the coupler midpoint M traces an APPROXIMATE vertical straight line. A faint design-pose skeleton (frame triads at O and P, joint circles at A, B, M) is overlaid via Preview Diagram in Display Mode 2."
     },
     "actions": [
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": false },
-        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": true  },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-        { "type": "GrasshopperSetToggle",  "nickname": "Cleanup", "value": false },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
-        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
-          "text": "C:/Repos/CPig/research/slop_tests/kin_15_watt_straight_line.json" },
-        { "type": "GrasshopperSetToggle",  "nickname": "Build",   "value": true  },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 5000
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Build",
+            "value": false
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Cleanup",
+            "value": true
+        },
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 5000
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Cleanup",
+            "value": false
+        },
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 2000
+        },
+        {
+            "type": "GrasshopperSetPanelText",
+            "nickname": "JsonPath",
+            "text": "C:/Repos/CPig/research/slop_tests/kin_15_watt_straight_line.json"
+        },
+        {
+            "type": "GrasshopperSetToggle",
+            "nickname": "Build",
+            "value": true
+        },
+        {
+            "type": "WaitForGrasshopperSolution",
+            "timeoutMs": 120000
+        }
     ],
     "checkpoints": [
         {
-            "name": "post-build",
+            "name": "front",
             "atTimeMs": 5000,
             "tolerance": 0.02,
+            "viewport": {
+                "projection": "Front",
+                "displayMode": "Shaded"
+            }
+        },
+        {
+            "name": "top",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Top",
+                "displayMode": "Shaded"
+            }
+        },
+        {
+            "name": "right",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Right",
+                "displayMode": "Shaded"
+            }
+        },
+        {
+            "name": "persp",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "viewport": {
+                "projection": "Perspective",
+                "displayMode": "Shaded"
+            },
             "capture": {
                 "gif": true,
                 "intervalMs": 150,
                 "scrub": {
                     "nickname": "AnimSlider",
-                    "values": [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000],
+                    "values": [
+                        0,
+                        200,
+                        400,
+                        600,
+                        800,
+                        1000,
+                        1200,
+                        1400,
+                        1600,
+                        1800,
+                        2000
+                    ],
                     "settleMs": 50
                 }
             }
         }
     ],
     "asserts": [
-        { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
-        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "FATAL" },
-        { "type": "PanelDoesNotContain", "nickname": "SlopLog",     "text": "!!!" },
-        { "type": "PanelEquals",         "nickname": "Completed",   "text": "True" },
-        { "type": "PanelEquals",         "nickname": "StepCount",   "text": "2001" }
+        {
+            "type": "PanelEquals",
+            "nickname": "SlopSuccess",
+            "text": "True"
+        },
+        {
+            "type": "PanelDoesNotContain",
+            "nickname": "SlopLog",
+            "text": "FATAL"
+        },
+        {
+            "type": "PanelDoesNotContain",
+            "nickname": "SlopLog",
+            "text": "!!!"
+        },
+        {
+            "type": "PanelEquals",
+            "nickname": "Completed",
+            "text": "True"
+        },
+        {
+            "type": "PanelEquals",
+            "nickname": "StepCount",
+            "text": "2001"
+        }
     ]
 }

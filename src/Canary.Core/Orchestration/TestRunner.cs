@@ -1856,11 +1856,13 @@ public sealed class TestRunner
         var frames = new List<string>(scrub.Values.Length);
         var solveTimeout = scrub.SolveTimeoutMs.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
+        _logger.Log($"  scrub start: {scrub.Values.Length} frames, slider='{scrub.Nickname}', settle={scrub.SettleMs}ms");
         for (int i = 0; i < scrub.Values.Length; i++)
         {
             ct.ThrowIfCancellationRequested();
 
             var v = scrub.Values[i];
+            _logger.Log($"  scrub frame {i:D2}/{scrub.Values.Length - 1}: {scrub.Nickname}={v}");
             var sliderResp = await executeAsync("GrasshopperSetSlider", new Dictionary<string, string>
             {
                 ["nickname"] = scrub.Nickname,
