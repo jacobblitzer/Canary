@@ -227,3 +227,64 @@
 - Update `CHANGELOG.md` and `spec/CPIG_WORKLOAD.md`.
 
 **Phase 13 Exit Criteria:** All 17 cpig-* tests run end-to-end. At least the smoke test (`cpig-00-smoke-ping`) passes pixel diff. The three crash-related tests (`cpig-07-alpha-wrap`, `cpig-09-implicit-advanced`, `cpig-16-field-evaluate`) confirm the Phase A+B CPig mitigations hold — either a pixel-diff pass or a clean error report (Watchdog does NOT fire). 0 errors, 0 warnings.
+
+---
+
+## Phase 14: Workload-tree click-to-view / Full TestEditor / Past Runs viewer
+**Goal:** Make the workload tree the operator's primary read+edit surface. Single-click any test → side-panel opens with the test's full definition, inline editing, and a Past Runs tab listing every prior `runs/<timestamp>/result.json` for that test. Right-click context menu now works. The TestEditor surfaces VLM oracle config, setup commands, and the Phase 4.6.F GIF/scrub fields that previously round-tripped silently through the backing POCO.
+
+Prompted by an operator report on 2026-06-02: "right clicking doesn't do anything. but a normal click should open a side panel to view/edit." Plus a corollary: "for vlm i'd be able to change prompt, change behavior for how stuff opens/runs/closes inside a suite" + "i can't see past test results in canary."
+
+### Checkpoint 14.1: Workload-tree single-click side panel + right-click fix
+**Status:** Landed 2026-06-02 (commit `a97f9ec`).
+
+Why right-click did nothing: Avalonia's `TreeView` doesn't auto-select on right-click. The context-menu commands (`RunSelection`, `EditSelection`, `ApproveSelection`, `OpenInExplorer`) read `Tree.SelectedNode` and early-out when null. So the menu opened against a stale / null selection and silently no-op'd. **Fix:** `TestsView.OnTreePointerPressed` PointerPressed handler — on right-button press, walk the visual tree to the enclosing `TreeViewItem` and assign its `WorkloadNode` DataContext to `Tree.SelectedNode` before the menu opens.
+
+Why single-click did nothing: `Tree.SelectedNode` was a two-way bound `ObservableProperty` but no observer fired. The right pane (`TestsViewModel.ActiveContent`) only swapped on explicit button/command. **Fix:** `TestsViewModel` subscribes to `Tree.PropertyChanged` in its constructor; `RouteSelectionToActiveContent` dispatches Test nodes → new `TestDetailsViewModel` swap. Other node kinds (Suite, Workload, *Group) fall back to Welcome until their dedicated panels land in a future 14.1b checkpoint. Also `NotifyCanExecuteChanged()` on the right-click commands so future `CanExecute=` attribute additions don't re-plumb.
+
+New files: `ViewModels/TestDetailsViewModel.cs`, `Views/TestDetailsView.axaml(.cs)`. The details view wraps the existing `TestEditorViewModel` so its 3-tab editor renders inline (no `EditorHostWindow` modal). Header row has Run / Approve / Open in Explorer buttons that route back to the parent via callbacks. Save propagates through the existing `TestEditorViewModel.SaveRequested` event.
+
+**Exit:** Single-click a test node → side panel renders with name + action buttons + embedded editor. Right-click works on the right item. Build 0/0; 289/289 Canary.Tests.
+
+### Checkpoint 14.2: TestEditor field coverage (VLM, Setup.Commands, Capture/Scrub)
+**Status:** Landed 2026-06-02 (commit `8135d93`).
+
+The editor previously surfaced 9 fields; the backing POCO (`_definition` in `TestEditorViewModel.cs`) preserved everything else through Save (Phase 3 round-trip), but operators couldn't see or change them without editing JSON. 14.2 surfaces:
+
+- `Setup.VlmDescription` (multiline) — the natural-language prompt the VLM reads.
+- `Setup.Vlm.Provider` + `Setup.Vlm.Model` (text) — `claude` / `ollama` etc. Optional; empty fields round-trip as null.
+- `Setup.Commands` (one per line) — pre-checkpoint open / run / close hooks. Rhino macros, Penumbra display-state mutations, etc.
+- Per-checkpoint `Capture` (Gif / FrameCount / IntervalMs) + nested `Scrub` (Nickname / Values / SettleMs / SolveTimeoutMs) — the Phase 4.6.F Session B+ GIF + slider-scrub schema. Emits as null when no capture features are active.
+
+Tests: 3 new `TestEditorViewModelRoundTripTests` verify the full kin_15-shaped definition round-trips through Load → BuildDefinition without data loss, including `VlmConfig.MaxTokens` which the editor doesn't surface but the POCO preserves.
+
+**Out of scope for 14.2** (deferred to a Phase 14+ Penumbra-flavoured drop): `Setup.Scene / Backend / Canvas / DisplayPreset` (Penumbra), per-checkpoint `Camera / StabilizeMs` (Penumbra). The Rhino+CPig fields are the immediate operator priority.
+
+**Exit:** A test JSON with `setup.vlmDescription` + `setup.commands` + `capture.scrub` round-trips through the editor unchanged. Canary.Tests 292/292 (was 289).
+
+### Checkpoint 14.3: Past Runs browser
+**Status:** Landed 2026-06-02 (commit `db47ec8`).
+
+The `ResultsViewerView` already rendered cards with baseline / candidate / diff / GIF thumbs + Approve / Reject buttons — but only loaded from an in-memory `SuiteResult` (`LoadResult` / `LoadSuiteResult`). It couldn't bootstrap from a `runs/<timestamp>/result.json` on disk. `TestResultSerializer.LoadAsync` knew how to deserialize from a path; `BaselineManager.ApproveCheckpoint` already supported past-run `suiteName=<timestamp>` paths. The missing piece was the UI entry point.
+
+`TestDetailsView` now wraps the editor + a Past Runs tab in a TabControl. The Past Runs tab embeds:
+- A `DataGrid` of past run rows (Started, Status, Duration, Run directory) from new `Services/PastRunsScanner.cs`.
+- Below: the existing `ResultsViewerView` bound to a nested `ResultsViewerViewModel`. Selecting a row populates it via the new `ResultsViewerViewModel.LoadFromPathAsync(resultJsonPath)`.
+
+When a row is selected, the viewer's context is set with `suiteName=<timestamp>` so Approve / Reject writes to `runs/<ts>/baselines/<checkpoint>.png` rather than the test's top-level `baselines/` folder — `BaselineManager` already supports this path; 14.3 just wires the UI.
+
+Tests: 3 new `PastRunsScannerTests` cover empty / sorted / orphan-tolerant scenarios. Canary.Tests 295/295 (was 292).
+
+**Exit:** Click a test's Past Runs tab → list of every prior run, newest first. Click a row → ResultsViewerView shows that run's checkpoints + artifacts. Approve / Reject targets the correct timestamp directory.
+
+### Checkpoint 14.4: Document the phase + carry-over
+**Status:** Landed 2026-06-02 (this entry).
+
+This Phase 14 section. Plus a `MultiVerse/BUILD_LOG.md` cross-repo one-liner per `STANDARD.md §15`, and a new auto-memory pointer (`canary_ui_side_panel.md`) so future agents know the tree-click side panel is the canonical edit/view surface and don't re-add the modal editor flow.
+
+**Out of scope (named for follow-up Phase 14+ work):**
+- SuiteDetailsView / WorkloadDetailsView inline panels (single-clicking Suite / Workload nodes still falls back to Welcome; right-click → Edit opens the modal flow for those kinds until a 14.1b ships).
+- Penumbra-specific Setup / Checkpoint fields (Scene, Backend, Canvas, DisplayPreset, Camera, StabilizeMs).
+- A "Run all from a past timestamp" multi-test rollup view (the Past Runs viewer is per-test today).
+
+**Phase 14 Exit Criteria:** Single-click any test → side panel renders the editor + Past Runs tab. Right-click works on the right item. Editor surfaces VLM + setup commands + capture/scrub. Past Runs lists every prior `runs/<ts>/` with status / duration; clicking a row loads it into the same ResultsViewerView. 295/295 Canary.Tests pass. Build 0/0 on Canary.sln.
