@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             xmlns:views="using:Canary.UI.Avalonia.Views"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="800"
+             x:Class="Canary.UI.Avalonia.Views.TestDetailsView"
+             x:DataType="vm:TestDetailsViewModel">
+
+  <!-- Phase 14.1 side panel: header with action buttons + embedded test editor.
+       Replaces the modal EditorHostWindow flow that required a right-click → Edit
+       sequence. Single-clicking a Test node in the workload tree now opens this. -->
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Background="#252526" Padding="16,12" BorderBrush="#3F3F46" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Spacing="2">
+          <TextBlock Text="{Binding HeaderName}" FontSize="20" FontWeight="Bold" Foreground="#DCDCDC" />
+          <TextBlock Text="{Binding HeaderSubtitle}" Foreground="#9696C8" FontSize="12" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button Content="▶ Run"
+                  Background="#3CC850" Foreground="White"
+                  Command="{Binding RunSelectedCommand}"
+                  ToolTip.Tip="Run this test once. The runner overlays here while the test executes; results land below on completion." />
+          <Button Content="✓ Approve"
+                  Background="#007ACC" Foreground="White"
+                  Command="{Binding ApproveSelectedCommand}"
+                  ToolTip.Tip="Promote the most-recent candidate screenshot to baseline." />
+          <Button Content="Open in Explorer"
+                  Background="#3F3F46" Foreground="White"
+                  Command="{Binding OpenSelectedInExplorerCommand}"
+                  ToolTip.Tip="Open this test's JSON file location in Windows Explorer." />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- The existing TestEditorView reused inline. Save still goes through
+         the TestEditorViewModel.SaveRequested event, which TestDetailsViewModel
+         routes to the parent's PersistTestAsync callback. -->
+    <ScrollViewer Grid.Row="1" Background="#181818">
+      <views:TestEditorView DataContext="{Binding Editor}" />
+    </ScrollViewer>
+
+    <Border Grid.Row="2" Background="#1F1F1F" Padding="12,6"
+            IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+      <TextBlock Text="{Binding StatusText}" Foreground="#96DC82" FontSize="11" />
+    </Border>
+  </Grid>
+</UserControl>

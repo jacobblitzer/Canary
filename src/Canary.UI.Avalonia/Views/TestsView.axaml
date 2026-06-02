@@ -15,7 +15,8 @@
                 ItemsSource="{Binding Tree.Roots}"
                 SelectedItem="{Binding Tree.SelectedNode, Mode=TwoWay}"
                 Background="#252526"
-                DragDrop.AllowDrop="True">
+                DragDrop.AllowDrop="True"
+                PointerPressed="OnTreePointerPressed">
         <TreeView.ContextMenu>
           <ContextMenu>
             <MenuItem Header="Run" Command="{Binding RunSelectionCommand}" />
@@ -52,6 +53,10 @@
         </DataTemplate>
         <DataTemplate x:DataType="vm:RecordingViewModel">
           <views:RecordingView />
+        </DataTemplate>
+        <!-- Phase 14.1 — TestDetails opens when a test node is single-clicked. -->
+        <DataTemplate x:DataType="vm:TestDetailsViewModel">
+          <views:TestDetailsView />
         </DataTemplate>
       </ContentControl.DataTemplates>
     </ContentControl>

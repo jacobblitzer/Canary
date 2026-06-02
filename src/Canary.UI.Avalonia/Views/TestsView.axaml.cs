@@ -1,7 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using Canary.UI.Avalonia.ViewModels;
 
 namespace Canary.UI.Avalonia.Views;
@@ -12,6 +14,30 @@ public partial class TestsView : UserControl
     {
         InitializeComponent();
         AttachedToVisualTree += OnAttached;
+    }
+
+    /// <summary>
+    /// Phase 14.1 fix — Avalonia's <see cref="TreeView"/> does not select on
+    /// right-click by default. Before this handler the right-click context
+    /// menu opened against a stale <c>Tree.SelectedNode</c> (or null), and
+    /// every menu item silently no-op'd because the bound commands early-out
+    /// on null selection. We promote the right-pressed item to selected so
+    /// the menu acts on what the operator pointed at.
+    /// </summary>
+    private void OnTreePointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var props = e.GetCurrentPoint(this).Properties;
+        if (!props.IsRightButtonPressed) return;
+        if (e.Source is not Visual source) return;
+
+        // Walk up the visual tree from the actual pointer hit (a TextBlock or
+        // glyph) to find the enclosing TreeViewItem, then re-anchor TreeView
+        // selection to its DataContext.
+        var item = source as TreeViewItem ?? source.FindAncestorOfType<TreeViewItem>();
+        if (item?.DataContext is WorkloadNode node && DataContext is TestsViewModel vm)
+        {
+            vm.Tree.SelectedNode = node;
+        }
     }
 
     private void OnAttached(object? sender, VisualTreeAttachmentEventArgs e)

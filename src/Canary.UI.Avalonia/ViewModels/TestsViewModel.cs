@@ -15,6 +15,11 @@ public partial class TestsViewModel : ObservableObject
     public TestRunnerViewModel Runner { get; } = new();
     public ResultsViewerViewModel Results { get; } = new();
     public RecordingViewModel Recording { get; } = new();
+    // Phase 14.1 — inline side panel for single-click-on-test. Reused for the
+    // lifetime of the TestsViewModel; Load() rebinds it to whichever test was
+    // selected. Suite and Workload details remain Welcome-placeholder until
+    // their dedicated panels land in a Phase 14.1b follow-up.
+    public TestDetailsViewModel TestDetails { get; } = new();
 
     [ObservableProperty]
     private ObservableObject _activeContent;
@@ -42,6 +47,117 @@ public partial class TestsViewModel : ObservableObject
                 await Tree.LoadAsync(Tree.WorkloadsDir).ConfigureAwait(true);
             }
         };
+
+        // Phase 14.1 — bind details panel callbacks back to this VM so the
+        // header-row buttons reuse the same Run / Approve / OpenInExplorer
+        // implementations as the context-menu commands. Persistence goes
+        // through SaveTestDefinitionToDiskAsync, mirroring the modal flow.
+        TestDetails.RunAsync = async td =>
+        {
+            // Run a single-test request (the same code path RunSelectionAsync
+            // uses for a Test node, factored to avoid pulling SelectedNode
+            // out from under the user mid-click).
+            await RunSingleTestAsync(td).ConfigureAwait(true);
+        };
+        TestDetails.Approve = td =>
+        {
+            if (Tree.WorkloadsDir == null) return;
+            var workload = Tree.SelectedNode?.OwningWorkload;
+            if (workload == null) return;
+            try { BaselineManager.ApproveTest(Tree.WorkloadsDir, workload.Config.Name, td.Name); }
+            catch { /* surfaced via next run */ }
+        };
+        TestDetails.OpenInExplorer = td =>
+        {
+            var workload = Tree.SelectedNode?.OwningWorkload;
+            if (workload == null) return;
+            var path = Path.Combine(workload.Directory, "tests", $"{td.Name}.json");
+            try
+            {
+                if (File.Exists(path))
+                    Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"/select,\"{path}\"", UseShellExecute = true });
+            }
+            catch { /* shell open fails silently */ }
+        };
+        TestDetails.SaveJsonToDiskAsync = async json =>
+        {
+            var workload = Tree.SelectedNode?.OwningWorkload;
+            if (workload == null || Tree.WorkloadsDir == null) return;
+            // Editor.BuildDefinition was already called inside the editor;
+            // it raised SaveRequested with the serialized JSON. Persist + reload.
+            var def = JsonSerializer.Deserialize<TestDefinition>(json);
+            if (def == null) return;
+            var path = Path.Combine(workload.Directory, "tests", $"{def.Name}.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.WriteAllText(path, json);
+            await Tree.LoadAsync(Tree.WorkloadsDir).ConfigureAwait(true);
+        };
+
+        // Selection-change observer — when the operator single-clicks a node,
+        // dispatch the right details view into ActiveContent. Test → inline
+        // editor. Suite / Workload / Group nodes stay on Welcome (their
+        // dedicated panels land in a future micro-checkpoint).
+        Tree.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName != nameof(WorkloadTreeViewModel.SelectedNode)) return;
+            RouteSelectionToActiveContent();
+            // Phase 14.1 also fixes right-click: the [RelayCommand] auto-generated
+            // commands here didn't notify when SelectedNode changed (no
+            // CanExecute was wired), so the context menu items were always-on
+            // but operated on a stale / null selection. Now we explicitly
+            // refresh execution state every selection change.
+            RunSelectionCommand.NotifyCanExecuteChanged();
+            EditSelectionCommand.NotifyCanExecuteChanged();
+            ApproveSelectionCommand.NotifyCanExecuteChanged();
+            OpenInExplorerCommand.NotifyCanExecuteChanged();
+            CreateTestFromRecordingCommand.NotifyCanExecuteChanged();
+        };
+    }
+
+    private void RouteSelectionToActiveContent()
+    {
+        var node = Tree.SelectedNode;
+        if (node == null)
+        {
+            ActiveContent = Welcome;
+            return;
+        }
+        // Don't yank the user out of the Runner mid-run or off a fresh results
+        // viewer. Selection still updates Tree.SelectedNode, but the visible
+        // panel stays put. Operator selects another test → switches.
+        if (ActiveContent == Runner) return;
+
+        if (node.Kind == WorkloadNodeKind.Test
+            && node.Payload is TestDefinition td
+            && node.OwningWorkload != null
+            && Tree.WorkloadsDir != null)
+        {
+            TestDetails.Load(td, node.OwningWorkload, Tree.WorkloadsDir);
+            ActiveContent = TestDetails;
+            return;
+        }
+        // Suite / Workload / *Group nodes — return to Welcome for now. The
+        // dedicated SuiteDetails / WorkloadDetails panels are deferred to a
+        // Phase 14.1b follow-up; users can still right-click → Edit them.
+        ActiveContent = Welcome;
+    }
+
+    private async Task RunSingleTestAsync(TestDefinition td)
+    {
+        var workload = Tree.SelectedNode?.OwningWorkload;
+        if (workload == null || Tree.WorkloadsDir == null) return;
+        ActiveContent = Runner;
+        Runner.ModeOverride = ModeOverride;
+        var request = new RunRequest
+        {
+            Workload = workload.Config,
+            Tests = new[] { td },
+            WorkloadsDir = Tree.WorkloadsDir,
+            SuiteName = null,
+            UseSharedMode = false,
+            SuiteKeepOpen = false,
+        };
+        await Runner.RunCommand.ExecuteAsync(request).ConfigureAwait(true);
     }
 
     public async Task LoadWorkloadsAsync(string workloadsDir)
