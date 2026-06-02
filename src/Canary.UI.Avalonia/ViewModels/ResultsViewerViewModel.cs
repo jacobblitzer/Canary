@@ -18,12 +18,27 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
     public string? BaselinePath { get; init; }
     public string? CandidatePath { get; init; }
     public string? DiffImagePath { get; init; }
+    public string? GifPath { get; init; }
     public string? VlmReasoning { get; init; }
     public double VlmConfidence { get; init; }
 
     // Phase 14.5 — per-checkpoint error surfaced on the card so the
     // operator doesn't have to dig into result.json for the failure cause.
     public string? ErrorMessage { get; init; }
+
+    // Phase 14.7 — filetype labels on each card cell so the operator can
+    // tell PNG (static) from GIF (animated scrub) at a glance. Derived
+    // from the path extension; "" when the path is absent.
+    public string BaselineHeader => CellHeader("baseline", BaselinePath);
+    public string CandidateHeader => CellHeader("candidate", CandidatePath);
+    public string DiffHeader => CellHeader("diff", DiffImagePath);
+
+    private static string CellHeader(string label, string? path)
+    {
+        if (string.IsNullOrEmpty(path)) return label;
+        var ext = System.IO.Path.GetExtension(path).TrimStart('.').ToUpperInvariant();
+        return string.IsNullOrEmpty(ext) ? label : $"{label}  ·  {ext}";
+    }
 
     [ObservableProperty] private Bitmap? _baselineThumb;
     [ObservableProperty] private Bitmap? _candidateThumb;
@@ -194,14 +209,23 @@ public partial class ResultsViewerViewModel : ObservableObject
     /// arbitrary loaded runs (fresh or past).
     /// </summary>
     [RelayCommand]
-    private void SaveSnapshot()
+    private void SaveSnapshot() => SnapshotInner(@override: false);
+
+    /// <summary>
+    /// Phase 14.7 — Override-mode snapshot. Writes to a fixed
+    /// <c>archived/latest/</c> slot, replacing the prior contents.
+    /// </summary>
+    [RelayCommand]
+    private void OverrideSnapshot() => SnapshotInner(@override: true);
+
+    private void SnapshotInner(bool @override)
     {
         if (_workloadsDir == null || ActiveWorkloadName == null)
         {
             Toast("Save Snapshot: no run loaded.", success: false);
             return;
         }
-        var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+        var slot = @override ? "latest" : DateTime.Now.ToString("yyyyMMdd-HHmmss");
         int snapped = 0;
         try
         {
@@ -209,7 +233,12 @@ public partial class ResultsViewerViewModel : ObservableObject
             {
                 var testDir = Path.Combine(_workloadsDir, ActiveWorkloadName, "results", testName);
                 if (!Directory.Exists(testDir)) continue;
-                var archiveRoot = Path.Combine(testDir, "archived", stamp);
+                var archiveRoot = Path.Combine(testDir, "archived", slot);
+                if (@override && Directory.Exists(archiveRoot))
+                {
+                    try { Directory.Delete(archiveRoot, recursive: true); }
+                    catch { /* fall through — directory create will surface errors */ }
+                }
                 Directory.CreateDirectory(archiveRoot);
 
                 // Source set: when ActiveSuiteName looks like a timestamp dir
@@ -230,9 +259,30 @@ public partial class ResultsViewerViewModel : ObservableObject
                     try { File.Copy(f, Path.Combine(archiveRoot, Path.GetFileName(f)), overwrite: true); }
                     catch { /* per-file copy failures non-fatal */ }
                 }
+                // Phase 14.7 — if the source is testDir (fresh in-session run),
+                // pick up the most-recent runs/<ts>/result.json so the snapshot
+                // renders in the Past Runs viewer. Past-run loads already have
+                // result.json sitting in sourceBase via the *.json copy above.
+                if (!LooksLikeTimestampDir(ActiveSuiteName))
+                {
+                    var runsDir = Path.Combine(testDir, "runs");
+                    if (Directory.Exists(runsDir))
+                    {
+                        var latestRun = Directory.GetDirectories(runsDir)
+                            .OrderByDescending(d => Path.GetFileName(d), StringComparer.Ordinal)
+                            .FirstOrDefault();
+                        if (latestRun != null)
+                        {
+                            var src = Path.Combine(latestRun, "result.json");
+                            if (File.Exists(src))
+                                File.Copy(src, Path.Combine(archiveRoot, "result.json"), overwrite: true);
+                        }
+                    }
+                }
                 snapped++;
             }
-            Toast($"💾 Snapshot saved → archived/{stamp}/  ({snapped} test(s))");
+            var icon = @override ? "📌 Override" : "💾";
+            Toast($"{icon} Snapshot saved → archived/{slot}/  ({snapped} test(s))");
         }
         catch (Exception ex)
         {
@@ -309,6 +359,7 @@ public partial class ResultsViewerViewModel : ObservableObject
             BaselinePath = cp.BaselinePath,
             CandidatePath = cp.CandidatePath,
             DiffImagePath = cp.DiffImagePath,
+            GifPath = cp.GifPath,
             VlmReasoning = cp.VlmReasoning,
             VlmConfidence = cp.VlmConfidence,
             ErrorMessage = cp.ErrorMessage,

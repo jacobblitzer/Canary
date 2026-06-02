@@ -893,6 +893,44 @@ public sealed class TestRunner
         return suite;
     }
 
+    /// <summary>
+    /// Phase 14.7 — per-checkpoint viewport override. When the checkpoint
+    /// carries its own <see cref="TestCheckpoint.Viewport"/>, switch the
+    /// active viewport via SetViewport just before capture and settle briefly.
+    /// Pairs with the new 4-views-per-test pattern: four checkpoints in one
+    /// test, each pinned to Front / Top / Right / Perspective.
+    /// </summary>
+    private static Dictionary<string, string>? BuildViewportParams(ViewportSetup? viewport)
+    {
+        if (viewport == null) return null;
+        var vparams = new Dictionary<string, string>
+        {
+            ["projection"] = viewport.Projection,
+            ["displayMode"] = viewport.DisplayMode
+        };
+        if (viewport.Width > 0) vparams["width"] = viewport.Width.ToString();
+        if (viewport.Height > 0) vparams["height"] = viewport.Height.ToString();
+        return vparams;
+    }
+
+    private async Task ApplyCheckpointViewportAsync(ICanaryAgent agent, TestCheckpoint checkpoint, CancellationToken ct)
+    {
+        var vparams = BuildViewportParams(checkpoint.Viewport);
+        if (vparams == null) return;
+        _logger.Log($"  switching viewport for checkpoint '{checkpoint.Name}': {vparams["projection"]} / {vparams["displayMode"]}");
+        await agent.ExecuteAsync("SetViewport", vparams).ConfigureAwait(false);
+        await Task.Delay(250, ct).ConfigureAwait(false);
+    }
+
+    private async Task ApplyCheckpointViewportAsync(HarnessClient client, TestCheckpoint checkpoint, CancellationToken ct)
+    {
+        var vparams = BuildViewportParams(checkpoint.Viewport);
+        if (vparams == null) return;
+        _logger.Log($"  switching viewport for checkpoint '{checkpoint.Name}': {vparams["projection"]} / {vparams["displayMode"]}");
+        await client.ExecuteAsync("SetViewport", vparams, ct).ConfigureAwait(false);
+        await Task.Delay(250, ct).ConfigureAwait(false);
+    }
+
     private async Task SendAgentSetupAsync(ICanaryAgent agent, TestSetup setup, CancellationToken ct)
     {
         // Set canvas size if specified
@@ -1035,6 +1073,7 @@ public sealed class TestRunner
                 //   (b) Scrub != null  → orchestrator-driven loop here (set slider →
                 //       wait for solve → single-frame capture, repeat). True animated GIF.
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+                await ApplyCheckpointViewportAsync(agent, checkpoint, ct).ConfigureAwait(false);
                 var gifEnabled = checkpoint.Capture?.Gif == true;
                 var scrub = checkpoint.Capture?.Scrub;
                 var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
@@ -1270,6 +1309,7 @@ public sealed class TestRunner
                 // Phase 4.6.F Session B: optional GIF capture (see in-process branch above for
                 // the agent-side-loop vs orchestrator-driven scrub split).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+                await ApplyCheckpointViewportAsync(client, checkpoint, ct).ConfigureAwait(false);
                 var gifEnabled = checkpoint.Capture?.Gif == true;
                 var scrub = checkpoint.Capture?.Scrub;
                 var gifFrames = checkpoint.Capture?.FrameCount ?? 30;

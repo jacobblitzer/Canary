@@ -93,6 +93,40 @@ public class TestDefinitionTests
     }
 
     [Fact]
+    public void TestCheckpoint_Parse_PerCheckpointViewportOverride_RoundTrips()
+    {
+        // Phase 14.7 — checkpoint.viewport overrides setup.viewport for the
+        // 4-views-per-test pattern. Each checkpoint can pin its own projection.
+        var json = """
+            {
+              "name": "kin-fourview",
+              "workload": "rhino",
+              "setup": {
+                "viewport": { "width": 600, "height": 600, "projection": "Perspective", "displayMode": "Shaded" }
+              },
+              "checkpoints": [
+                { "name": "front", "viewport": { "projection": "Front", "displayMode": "Wireframe" } },
+                { "name": "top",   "viewport": { "projection": "Top",   "displayMode": "Wireframe" } },
+                { "name": "right", "viewport": { "projection": "Right", "displayMode": "Wireframe" } },
+                { "name": "persp" }
+              ]
+            }
+            """;
+
+        var def = TestDefinition.Parse(json);
+        Assert.Equal(4, def.Checkpoints.Count);
+        Assert.NotNull(def.Checkpoints[0].Viewport);
+        Assert.Equal("Front", def.Checkpoints[0].Viewport!.Projection);
+        Assert.Equal("Wireframe", def.Checkpoints[0].Viewport!.DisplayMode);
+        Assert.NotNull(def.Checkpoints[1].Viewport);
+        Assert.Equal("Top", def.Checkpoints[1].Viewport!.Projection);
+        Assert.NotNull(def.Checkpoints[2].Viewport);
+        Assert.Equal("Right", def.Checkpoints[2].Viewport!.Projection);
+        // Fourth checkpoint omits viewport — falls back to setup.viewport at runtime.
+        Assert.Null(def.Checkpoints[3].Viewport);
+    }
+
+    [Fact]
     public void WorkloadConfig_Parse_AllFieldsPopulated()
     {
         var json = """

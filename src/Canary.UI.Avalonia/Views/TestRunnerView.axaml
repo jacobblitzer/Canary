@@ -24,6 +24,8 @@
                 ToolTip.Tip="Save a PNG of the whole desktop to %APPDATA%\Canary\captures — grabs warning balloons / modal toasts mid-run." />
         <Button Content="💾 Save Snapshot" Command="{Binding SaveSnapshotCommand}" Background="#5C8C50" Foreground="White"
                 ToolTip.Tip="Freeze the last run's artifacts (candidates, manual-captures, logs) into &lt;testDir&gt;/archived/&lt;timestamp&gt;/ — preserves results without approving or rejecting them. Use this when iterating on infrastructure where you want to keep the screenshots but not commit to a baseline verdict." />
+        <Button Content="📌 Override" Command="{Binding OverrideSnapshotCommand}" Background="#4C6B7D" Foreground="White" Margin="4,0,0,0"
+                ToolTip.Tip="Phase 14.7 — Write the snapshot to a fixed &lt;testDir&gt;/archived/latest/ slot, replacing the prior 'latest' snapshot. Use this when you don't want a stack of timestamped snapshots — just the most recent one." />
       </WrapPanel>
     </Border>
 

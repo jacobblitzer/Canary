@@ -246,6 +246,17 @@ public sealed class TestCheckpoint
     /// </summary>
     [JsonPropertyName("capture")]
     public TestCheckpointCapture? Capture { get; set; }
+
+    /// <summary>
+    /// Phase 14.7 — per-checkpoint viewport override. When set, the test runner
+    /// switches the active viewport (projection / displayMode / size) via
+    /// SetViewport just before this checkpoint's capture, settles briefly, then
+    /// captures. Falls back to the test-level <see cref="TestSetup.Viewport"/>
+    /// when null. Enables the "one test, four views" pattern: four checkpoints
+    /// per test, each pinned to Front / Top / Right / Perspective.
+    /// </summary>
+    [JsonPropertyName("viewport")]
+    public ViewportSetup? Viewport { get; set; }
 }
 
 /// <summary>

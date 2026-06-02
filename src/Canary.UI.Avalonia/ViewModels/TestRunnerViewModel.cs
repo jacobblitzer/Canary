@@ -266,7 +266,19 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     /// evidence of the bug or its absence, not the pass/fail verdict.
     /// </summary>
     [RelayCommand]
-    public void SaveSnapshot()
+    public void SaveSnapshot() => SnapshotInner(@override: false);
+
+    /// <summary>
+    /// Phase 14.7 — Override-mode snapshot. Writes to a fixed
+    /// <c>archived/latest/</c> slot, deleting the prior contents first.
+    /// Coexists with the timestamped <see cref="SaveSnapshot"/> for the rare
+    /// case the operator wants to keep a snapshot; routine "I just want the
+    /// most recent" use cases avoid the timestamp pile-up.
+    /// </summary>
+    [RelayCommand]
+    public void OverrideSnapshot() => SnapshotInner(@override: true);
+
+    private void SnapshotInner(bool @override)
     {
         if (_lastRunTestDirs.Count == 0)
         {
@@ -275,14 +287,19 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             return;
         }
 
-        var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+        var slot = @override ? "latest" : DateTime.Now.ToString("yyyyMMdd-HHmmss");
         int snapped = 0, skipped = 0;
         try
         {
             foreach (var testDir in _lastRunTestDirs)
             {
                 if (!Directory.Exists(testDir)) { skipped++; continue; }
-                var archiveRoot = Path.Combine(testDir, "archived", stamp);
+                var archiveRoot = Path.Combine(testDir, "archived", slot);
+                if (@override && Directory.Exists(archiveRoot))
+                {
+                    try { Directory.Delete(archiveRoot, recursive: true); }
+                    catch (Exception ex) { Append($"  override cleanup failed for {Path.GetFileName(testDir)}: {ex.Message}"); }
+                }
                 Directory.CreateDirectory(archiveRoot);
 
                 foreach (var sub in new[] { "candidates", "manual-captures", "logs" })
@@ -295,16 +312,37 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
                 foreach (var jsonFile in Directory.EnumerateFiles(testDir, "*.json"))
                     File.Copy(jsonFile, Path.Combine(archiveRoot, Path.GetFileName(jsonFile)), true);
 
+                // Phase 14.7 — also copy result.json from the most recent
+                // runs/<ts>/ so the snapshot renders in the Past Runs viewer.
+                // Without this, archived/<slot>/ has candidates + logs but no
+                // result.json → PastRunsScanner shows the row but
+                // ResultsViewerViewModel.LoadFromPathAsync has nothing to load.
+                CopyLatestRunResultJson(testDir, archiveRoot);
+
                 snapped++;
             }
-            Append($"💾 Saved snapshot for {snapped} test(s) → archived/{stamp}/" + (skipped > 0 ? $" ({skipped} dir(s) missing, skipped)" : ""));
-            StatusText = $"Snapshot saved: archived/{stamp}/ ({snapped} test(s))";
+            var label = @override ? "archived/latest/" : $"archived/{slot}/";
+            Append($"{(@override ? "📌 Override" : "💾 Saved")} snapshot for {snapped} test(s) → {label}" + (skipped > 0 ? $" ({skipped} dir(s) missing, skipped)" : ""));
+            StatusText = $"Snapshot saved: {label} ({snapped} test(s))";
         }
         catch (Exception ex)
         {
             Append($"Save Snapshot failed: {ex.Message}");
             StatusText = "Save Snapshot failed";
         }
+    }
+
+    private static void CopyLatestRunResultJson(string testDir, string archiveRoot)
+    {
+        var runsDir = Path.Combine(testDir, "runs");
+        if (!Directory.Exists(runsDir)) return;
+        var latestRun = Directory.GetDirectories(runsDir)
+            .OrderByDescending(d => Path.GetFileName(d), StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (latestRun == null) return;
+        var src = Path.Combine(latestRun, "result.json");
+        if (File.Exists(src))
+            File.Copy(src, Path.Combine(archiveRoot, "result.json"), overwrite: true);
     }
 
     private static void CopyDirectoryRecursive(string sourceDir, string destDir)

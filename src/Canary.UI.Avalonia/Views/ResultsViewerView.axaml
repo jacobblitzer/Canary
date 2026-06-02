@@ -15,6 +15,8 @@
                 ToolTip.Tip="Promote every candidate in this run to baseline. Per-checkpoint Approve / Reject buttons in the cards below do the same thing one at a time." />
         <Button Content="💾 Save Snapshot" Command="{Binding SaveSnapshotCommand}" Background="#5C8C50" Foreground="White"
                 ToolTip.Tip="Phase 14.5 — freeze this run's candidates / logs / json into &lt;testDir&gt;/archived/&lt;timestamp&gt;/ without approving or rejecting. Use this when you want to preserve the run as-is for later inspection." />
+        <Button Content="📌 Override" Command="{Binding OverrideSnapshotCommand}" Background="#4C6B7D" Foreground="White"
+                ToolTip.Tip="Phase 14.7 — Write the snapshot to a fixed &lt;testDir&gt;/archived/latest/ slot, replacing the prior 'latest' snapshot. Use this when you don't want a stack of timestamped snapshots — just the most recent one." />
       </StackPanel>
     </Border>
 
@@ -78,7 +80,7 @@
 
                 <Grid ColumnDefinitions="*,*,*" Margin="0,4,0,0">
                   <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="baseline" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding BaselineHeader}" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
                     <!-- Phase 14.5 — click thumb → open PNG in default viewer.
                          Path label below is selectable + double-click reveals
                          in Explorer. -->
@@ -94,7 +96,7 @@
                                          IsVisible="{Binding BaselinePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   </StackPanel>
                   <StackPanel Grid.Column="1" Spacing="4">
-                    <TextBlock Text="candidate" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding CandidateHeader}" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
                     <Button Padding="0" Background="Transparent" BorderThickness="0"
                             HorizontalAlignment="Stretch"
                             Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
@@ -107,7 +109,7 @@
                                          IsVisible="{Binding CandidatePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   </StackPanel>
                   <StackPanel Grid.Column="2" Spacing="4">
-                    <TextBlock Text="diff" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding DiffHeader}" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
                     <Button Padding="0" Background="Transparent" BorderThickness="0"
                             HorizontalAlignment="Stretch"
                             Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
