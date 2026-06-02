@@ -145,12 +145,21 @@ public sealed class AgentServer : IDisposable
 
     private async Task<RpcResponse> HandleCaptureAsync(RpcRequest request)
     {
+        // Every field of CaptureSettings MUST be deserialized here, mirroring
+        // HarnessClient.CaptureScreenshotAsync. Missing a field here = silent drop
+        // on the agent side (the original Phase 4.6.F Session B bug — RecordGif
+        // arrived in JSON but wasn't read, so the agent quietly fell back to the
+        // default-false single-PNG path).
         var settings = new CaptureSettings();
         if (request.Params != null)
         {
             if (request.Params.TryGetValue("width", out var w)) settings.Width = w.GetInt32();
             if (request.Params.TryGetValue("height", out var h)) settings.Height = h.GetInt32();
             if (request.Params.TryGetValue("outputPath", out var p)) settings.OutputPath = p.GetString() ?? string.Empty;
+            if (request.Params.TryGetValue("includeFullScreen", out var ifs)) settings.IncludeFullScreen = ifs.GetBoolean();
+            if (request.Params.TryGetValue("recordGif", out var rg)) settings.RecordGif = rg.GetBoolean();
+            if (request.Params.TryGetValue("gifFrameCount", out var fc)) settings.GifFrameCount = fc.GetInt32();
+            if (request.Params.TryGetValue("gifFrameIntervalMs", out var fi)) settings.GifFrameIntervalMs = fi.GetInt32();
         }
 
         var result = await _agent.CaptureScreenshotAsync(settings).ConfigureAwait(false);

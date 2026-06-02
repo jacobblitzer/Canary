@@ -85,11 +85,20 @@ public sealed class HarnessClient : IDisposable
     /// </summary>
     public async Task<ScreenshotResult> CaptureScreenshotAsync(CaptureSettings settings, CancellationToken cancellationToken = default)
     {
+        // Per-field serialization (vs whole-object) keeps the wire format stable and
+        // explicit. Any new CaptureSettings field MUST be added BOTH here and in
+        // AgentServer.HandleCaptureAsync — otherwise the field is silently dropped on
+        // the wire (the original Phase 4.6.F Session B bug: RecordGif passed
+        // orchestrator-side but never reached the agent).
         var rpcParams = new Dictionary<string, JsonElement>
         {
             ["width"] = JsonSerializer.SerializeToElement(settings.Width),
             ["height"] = JsonSerializer.SerializeToElement(settings.Height),
-            ["outputPath"] = JsonSerializer.SerializeToElement(settings.OutputPath)
+            ["outputPath"] = JsonSerializer.SerializeToElement(settings.OutputPath),
+            ["includeFullScreen"] = JsonSerializer.SerializeToElement(settings.IncludeFullScreen),
+            ["recordGif"] = JsonSerializer.SerializeToElement(settings.RecordGif),
+            ["gifFrameCount"] = JsonSerializer.SerializeToElement(settings.GifFrameCount),
+            ["gifFrameIntervalMs"] = JsonSerializer.SerializeToElement(settings.GifFrameIntervalMs)
         };
 
         var response = await SendRequestAsync(RpcMethods.CaptureScreenshot, rpcParams, cancellationToken).ConfigureAwait(false);
