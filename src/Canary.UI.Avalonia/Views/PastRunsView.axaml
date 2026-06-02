@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             xmlns:views="using:Canary.UI.Avalonia.Views"
+             xmlns:svc="using:Canary.UI.Avalonia.Services"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="Canary.UI.Avalonia.Views.PastRunsView"
+             x:DataType="vm:PastRunsViewModel">
+
+  <Grid RowDefinitions="Auto,200,4,*">
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0" Text="{Binding StatusText}" Foreground="#DCDCDC" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Content="Refresh" Command="{Binding ReloadCommand}" />
+      </Grid>
+    </Border>
+
+    <DataGrid Grid.Row="1"
+              ItemsSource="{Binding Rows}"
+              SelectedItem="{Binding SelectedRun, Mode=TwoWay}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              GridLinesVisibility="Horizontal"
+              HeadersVisibility="Column">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Started" Binding="{Binding StartedDisplay}" Width="170" />
+        <DataGridTextColumn Header="Status"  Binding="{Binding Status}"          Width="100" />
+        <DataGridTextColumn Header="Duration" Binding="{Binding DurationDisplay}" Width="100" />
+        <DataGridTextColumn Header="Run directory" Binding="{Binding TimestampDir}" Width="*" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <GridSplitter Grid.Row="2" Height="4" HorizontalAlignment="Stretch" Background="#404040" />
+
+    <!-- Embed the existing ResultsViewerView (cards w/ baseline/candidate/diff/
+         GIF thumbs + Approve/Reject) bound to this VM's nested Results VM.
+         When SelectedRun changes the VM loads that run's result.json into
+         the viewer. -->
+    <views:ResultsViewerView Grid.Row="3" DataContext="{Binding Results}" />
+  </Grid>
+</UserControl>

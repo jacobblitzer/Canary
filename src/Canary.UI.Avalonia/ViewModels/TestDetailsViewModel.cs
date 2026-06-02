@@ -23,6 +23,8 @@ namespace Canary.UI.Avalonia.ViewModels;
 public sealed partial class TestDetailsViewModel : ObservableObject
 {
     public TestEditorViewModel Editor { get; } = new();
+    /// <summary>Phase 14.3 — past runs tab.</summary>
+    public PastRunsViewModel PastRuns { get; } = new();
 
     [ObservableProperty]
     private string _headerName = string.Empty;
@@ -72,6 +74,10 @@ public sealed partial class TestDetailsViewModel : ObservableObject
         HeaderName = definition.Name;
         HeaderSubtitle = $"{workload.Config.DisplayName}  ·  {definition.Workload}";
         StatusText = null;
+        // Phase 14.3 — bind the past-runs tab to this test's results directory.
+        // Fire-and-forget the async scan; UI shows "(no past runs found)" until
+        // the scan completes.
+        _ = PastRuns.SetContextAsync(workloadsDir, workload.Config.Name, definition.Name);
     }
 
     [RelayCommand]

@@ -35,12 +35,21 @@
       </Grid>
     </Border>
 
-    <!-- The existing TestEditorView reused inline. Save still goes through
-         the TestEditorViewModel.SaveRequested event, which TestDetailsViewModel
-         routes to the parent's PersistTestAsync callback. -->
-    <ScrollViewer Grid.Row="1" Background="#181818">
-      <views:TestEditorView DataContext="{Binding Editor}" />
-    </ScrollViewer>
+    <!-- Phase 14.3 — TabControl wraps the editor + past-runs viewer.
+         Definition tab embeds TestEditorView (Phase 14.1/14.2). Past Runs
+         tab embeds PastRunsView (Phase 14.3) which lists every prior
+         runs/<ts>/result.json and surfaces its baseline/candidate/diff/GIF
+         cards via the embedded ResultsViewerView. -->
+    <TabControl Grid.Row="1" Background="#181818">
+      <TabItem Header="Definition">
+        <ScrollViewer>
+          <views:TestEditorView DataContext="{Binding Editor}" />
+        </ScrollViewer>
+      </TabItem>
+      <TabItem Header="Past Runs">
+        <views:PastRunsView DataContext="{Binding PastRuns}" />
+      </TabItem>
+    </TabControl>
 
     <Border Grid.Row="2" Background="#1F1F1F" Padding="12,6"
             IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">

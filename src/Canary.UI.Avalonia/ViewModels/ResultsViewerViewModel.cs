@@ -60,6 +60,29 @@ public partial class ResultsViewerViewModel : ObservableObject
         StatusText = $"{Cards.Count} checkpoint(s)";
     }
 
+    /// <summary>
+    /// Phase 14.3 — load an arbitrary past run's <c>result.json</c> from disk
+    /// into the viewer. Uses the existing <see cref="TestResultSerializer"/>;
+    /// the resulting <see cref="TestResult"/> feeds <see cref="LoadResult"/>.
+    /// <c>SetContext</c> still needs to be called beforehand so Approve /
+    /// Reject know where to write the baseline back.
+    /// </summary>
+    public async Task LoadFromPathAsync(string resultJsonPath)
+    {
+        try
+        {
+            var result = await TestResultSerializer.LoadAsync(resultJsonPath).ConfigureAwait(true);
+            LoadResult(result);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load past run: {ex.Message}";
+            Header = "(load failed)";
+            Cards.Clear();
+            StatusText = ex.Message;
+        }
+    }
+
     public void LoadSuiteResult(SuiteResult suite, string suiteName)
     {
         ActiveTestName = null;
