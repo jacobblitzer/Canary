@@ -49,6 +49,18 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
     // so the operator gets visible feedback. "✓ Approved" / "✗ Rejected".
     [ObservableProperty] private string? _resolutionLabel;
     [ObservableProperty] private string _resolutionColor = "#969696";
+
+    // Phase 14.7+ — GIF playback is opt-in per card. Default false avoids the
+    // crash that Avalonia.Labs.Gif 11.3.1 hits when multiple medium-sized GIFs
+    // try to decode synchronously on view-open (the Past Runs DataGrid auto-
+    // selects the newest row and binds N cards in one shot; binding several
+    // GifImages at once can take down the UI). Toggled by the "🎞️ Play GIF"
+    // button on the card. The static candidate.png thumb stays visible
+    // regardless — the operator never has to click to see the still frame.
+    [ObservableProperty] private bool _showGif;
+
+    [RelayCommand]
+    private void ToggleShowGif() => ShowGif = !ShowGif;
 }
 
 public partial class ResultsViewerViewModel : ObservableObject
