@@ -3,15 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
-             xmlns:conv="using:Canary.UI.Avalonia.Converters"
-             xmlns:gif="using:Avalonia.Labs.Gif"
+             xmlns:controls="using:Canary.UI.Avalonia.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="Canary.UI.Avalonia.Views.TestRunnerView"
              x:DataType="vm:TestRunnerViewModel">
-
-  <UserControl.Resources>
-    <conv:GifPathToSourceConverter x:Key="GifPathToSourceConverter" />
-  </UserControl.Resources>
 
   <Grid RowDefinitions="Auto,Auto,*">
     <Border Grid.Row="0" Background="#2D2D30" Padding="8,4">
@@ -60,19 +55,19 @@
                              IsVisible="{Binding VlmPrompt, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   <TextBlock Text="{Binding VlmReasoning}" Foreground="#82B496" TextWrapping="Wrap" FontSize="11"
                              IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                  <!-- Phase 4.6.F Session B++ — animated-GIF in-card playback via
-                       Avalonia.Labs.Gif (MIT). The path string is wrapped into a
-                       file:// Uri by GifPathToSourceConverter so AssetLoader can
-                       open it locally. The text label stays as a tooltip-anchor
-                       + selectable copy target for the operator. -->
+                  <!-- BUG-0006 fix — animated-GIF in-card playback via the
+                       custom AnimatedImagePanel (ImageSharp decode + plain
+                       Image host). Replaces Avalonia.Labs.Gif which crashed
+                       on null Source / missing-file / batch-bind. The runner
+                       card's progressive Add pattern accidentally avoided
+                       those crashes but the underlying control was still
+                       brittle; swap for consistency with ResultsViewer. -->
                   <StackPanel Spacing="2"
                               IsVisible="{Binding GifPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                    <gif:GifImage Source="{Binding GifPath, Converter={StaticResource GifPathToSourceConverter}}"
-                                  Stretch="Uniform"
-                                  StretchDirection="DownOnly"
-                                  MaxHeight="240"
-                                  HorizontalAlignment="Left"
-                                  IterationCount="Infinite" />
+                    <controls:AnimatedImagePanel SourcePath="{Binding GifPath}"
+                                                 IsPlaying="True"
+                                                 MaxHeight="240"
+                                                 HorizontalAlignment="Left" />
                     <SelectableTextBlock Text="{Binding GifPath, StringFormat='🎞️ {0}'}"
                                          Foreground="#FFC850" TextWrapping="Wrap" FontSize="11"
                                          ToolTip.Tip="Animated GIF captured for this checkpoint. Open in Explorer for full-size playback." />

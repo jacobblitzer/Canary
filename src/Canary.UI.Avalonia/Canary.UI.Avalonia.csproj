@@ -25,10 +25,15 @@
     <PackageReference Include="FluentAvaloniaUI" Version="2.2.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
-    <!-- Phase 4.6.F Session B++ — animated-GIF playback in the test-runner card.
-         Avalonia.Labs.Gif is the official community/labs package; 11.3.1 is the
-         highest version compatible with the Avalonia 11.2.5 we use. MIT. -->
-    <PackageReference Include="Avalonia.Labs.Gif" Version="11.3.1" />
+    <!-- BUG-0006 fix — Canary.UI.Avalonia.Controls.AnimatedImagePanel decodes
+         GIF frames via SixLabors.ImageSharp on a worker thread and ticks them
+         via DispatcherTimer. Replaces Avalonia.Labs.Gif (the labs package
+         crashed on null Source / missing-file / batch-bind scenarios in our
+         DataTemplate flow — see docs/bugs/0006-resultsviewer-gif-crash-batch-bind.md).
+         ImageSharp is already pulled in transitively via Canary.Core but the
+         direct reference is needed so the GIF-format extension methods bind
+         cleanly inside this assembly. -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
 
   <ItemGroup>

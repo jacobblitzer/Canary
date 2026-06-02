@@ -337,3 +337,30 @@ Operator-reported after 14.6 dogfooding:
 Tests: 1 new `TestCheckpoint_Parse_PerCheckpointViewportOverride_RoundTrips` covers the new field. Canary.Tests 297/297 (was 296).
 
 **Exit:** Save Snapshot → snapshot row in Past Runs renders full cards (thumbs + paths + error + VLM). 📌 Override snapshot → only one `archived/latest/` per test, replaced on each click. Each card cell header shows `baseline · PNG` / `candidate · GIF` / `diff · PNG` based on extension. A test definition with 4 viewport-tagged checkpoints captures Front / Top / Right / Perspective from one solve. Build 0/0; 297/297 Canary.Tests.
+
+### Checkpoint 14.8: Custom AnimatedImagePanel — resolve BUG-0006 in-card GIF crash
+**Status:** Landed 2026-06-02.
+
+`docs/bugs/0006-resultsviewer-gif-crash-batch-bind.md` documented three back-to-back Canary.UI crashes when navigating to Past Runs for a test whose `result.json` carried a `GifPath`. Stack trace from `dotnet-dump analyze` on `Canary.UI.exe.43820.dmp`:
+
+```
+System.ArgumentException: "Unsupported Source object: only Stream, Uri and absolute uri string are supported."
+   at Avalonia.Labs.Gif.GifImage.InitializeGif()
+   at Avalonia.Labs.Gif.GifImage.OnAttachedToVisualTree(...)
+```
+
+Plus a parallel `FileNotFoundException` signature when the `Source` Uri pointed at a file that disappeared. Three XAML-side defenses (`c79b9c1` raw bind, `092f9e7` `IsVisible` opt-in, `661a77f` null-Source-until-Play) all crashed; the labs decoder fires on `Source` assignment regardless of visibility and doesn't tolerate null or missing files.
+
+- **New `Canary.UI.Avalonia.Controls.AnimatedImagePanel`** UserControl (~210 LOC). Hosts a plain `Avalonia.Controls.Image`; decodes GIF frames via `SixLabors.ImageSharp.Image.LoadAsync<Rgba32>` on `Task.Run`; ticks frames via `DispatcherTimer` using per-frame `GifFrameMetadata.FrameDelay` (centiseconds → ms, clamped to 20ms min). Public surface: `SourcePath` (string?), `IsPlaying` (bool), `Stretch`, `StretchDirection`. Null / empty / missing-file SourcePath are no-ops — no exception propagates to the dispatcher. `OnDetachedFromVisualTree` cancels in-flight decode + disposes the frame bitmap list. Rapid SourcePath changes cancel the prior decode via a `CancellationTokenSource`.
+
+- **Avalonia.Labs.Gif package removed** from `Canary.UI.Avalonia.csproj`. `SixLabors.ImageSharp` added as a direct PackageReference (was transitive via `Canary.Core`; the GIF-format extension methods need the direct reference to bind cleanly inside the UI assembly). `Canary.UI.Avalonia/Converters/GifPathToSourceConverter.cs` deleted (no longer needed — the new control accepts a plain string path).
+
+- **Both views updated**: `TestRunnerView.axaml` swaps `<gif:GifImage>` → `<controls:AnimatedImagePanel SourcePath="{Binding GifPath}" IsPlaying="True" />`. `ResultsViewerView.axaml` re-adds the in-card GIF section that was pulled in `4a24e8f`, binding `SourcePath="{Binding GifPath}"` + `IsPlaying="{Binding ShowGif}"`. The `🎞️ Play GIF` toggle and `🌐 Open externally` button are both retained.
+
+- **`CheckpointCardViewModel.GifSource`** computed Uri property removed (was only there to bridge the labs control's typed `Source`). `ShowGif` boolean + `ToggleShowGifCommand` retained — they now drive the new control's `IsPlaying`.
+
+Tests: 5 new `AnimatedImagePanelTests` (null / empty / missing-file SourcePath, rapid-change cancellation, IsPlaying toggle without source). Canary.Tests 302/302 (was 297). Build 0/0.
+
+End-to-end re-verified: ran `cpig-kin-15-watt-straight-line` headless from session; 4 viewports captured + 11-frame scrub + GIF assembled; no new crash dumps in `%LOCALAPPDATA%/CrashDumps/`.
+
+**Exit:** Past Runs navigation no longer crashes Canary.UI. Operator can click `🎞️ Play GIF` on the persp card and the linkage animates in-card. Operator can swap between Past Runs rows freely without crash. Same control used in the TestRunner live-progress card. `Avalonia.Labs.Gif` removed from dependency graph.

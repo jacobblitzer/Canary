@@ -50,38 +50,13 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
     [ObservableProperty] private string? _resolutionLabel;
     [ObservableProperty] private string _resolutionColor = "#969696";
 
-    // Phase 14.7+ — GIF playback is opt-in per card. Default false. The
-    // Avalonia.Labs.Gif 11.3.1 decoder fires on Source assignment regardless
-    // of IsVisible, so the previous defensive `IsVisible=false` gate didn't
-    // help (Past Runs crashed even with ShowGif=false). The real fix: keep
-    // <see cref="GifSource"/> null until ShowGif flips. Source=null → no
-    // decode. Click "🎞️ Play GIF" → ShowGif=true → GifSource resolves to
-    // a file:// Uri → the GifImage decodes that single card's GIF.
+    // BUG-0006 fix — GIF playback toggle. The custom AnimatedImagePanel
+    // (Canary.UI.Avalonia.Controls.AnimatedImagePanel) binds IsPlaying to
+    // this property and SourcePath to GifPath. SourcePath is always set
+    // when the card exists; the panel decodes only when IsPlaying flips
+    // true. Default false avoids decoding GIFs for cards the operator
+    // hasn't expanded.
     [ObservableProperty] private bool _showGif;
-
-    /// <summary>
-    /// Phase 14.7+ — null until <see cref="ShowGif"/> is true; otherwise a
-    /// <c>file://</c> Uri pointing at the captured GIF. Binding
-    /// <c>GifImage.Source</c> to this property defers the labs decoder until
-    /// the operator clicks Play — preventing the batch-bind crash that
-    /// killed the Past Runs view when multiple cards instantiated at once.
-    /// </summary>
-    public Uri? GifSource
-    {
-        get
-        {
-            if (!ShowGif || string.IsNullOrWhiteSpace(GifPath)) return null;
-            try
-            {
-                if (Uri.TryCreate(GifPath, UriKind.Absolute, out var u)) return u;
-                var full = System.IO.Path.GetFullPath(GifPath!).Replace('\\', '/');
-                return new Uri("file:///" + full);
-            }
-            catch { return null; }
-        }
-    }
-
-    partial void OnShowGifChanged(bool value) => OnPropertyChanged(nameof(GifSource));
 
     [RelayCommand]
     private void ToggleShowGif() => ShowGif = !ShowGif;

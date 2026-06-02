@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
-             xmlns:gif="using:Avalonia.Labs.Gif"
+             xmlns:controls="using:Canary.UI.Avalonia.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="Canary.UI.Avalonia.Views.ResultsViewerView"
              x:DataType="vm:ResultsViewerViewModel">
@@ -128,37 +128,32 @@
                            Text="{Binding VlmReasoning}"
                            IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-                <!-- Phase 14.7++ — in-card GIF playback restored via
-                     null-Source-until-Play gating. The previous IsVisible
-                     opt-in (092f9e7) crashed because Avalonia.Labs.Gif's
-                     Source setter fires the decoder independent of
-                     visibility. This version binds Source to GifSource
-                     (a Uri-or-null computed property on CheckpointCardViewModel
-                     that stays null until ShowGif flips), so the decoder
-                     never runs unless the operator explicitly clicks Play.
-                     One GIF at a time means no batch-bind contention. -->
+                <!-- BUG-0006 fix — animated-GIF in-card playback via the
+                     custom AnimatedImagePanel. ImageSharp decode on a worker
+                     thread + plain Image host + DispatcherTimer. Null /
+                     missing-file SourcePath are no-ops; no
+                     CompositionCustomVisualHandler lifecycle race; safe in
+                     batch-bound DataTemplate scenarios. -->
                 <StackPanel Spacing="4"
                             IsVisible="{Binding GifPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                   <StackPanel Orientation="Horizontal" Spacing="6">
                     <Button Content="🎞️ Play GIF" Background="#5C8C50" Foreground="White"
                             Command="{Binding ToggleShowGifCommand}"
-                            ToolTip.Tip="Decode + animate the GIF inline. Click again to stop. Stays opt-in to avoid the Avalonia.Labs.Gif decoder crashing when N cards bind at once." />
+                            ToolTip.Tip="Decode + animate the GIF inline. Click again to stop." />
                     <Button Content="🌐 Open externally" Background="#3868A8" Foreground="White"
                             Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
                             CommandParameter="{Binding GifPath}"
-                            ToolTip.Tip="Open in the OS default image viewer (a browser, usually) — no in-card decode required." />
+                            ToolTip.Tip="Open in the OS default image viewer (a browser, usually) where the GIF will animate full-size." />
                     <SelectableTextBlock Text="{Binding GifPath, StringFormat='🎞️ {0}'}"
                                          Foreground="#FFC850" FontSize="10"
                                          VerticalAlignment="Center"
                                          TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
                   </StackPanel>
-                  <gif:GifImage Source="{Binding GifSource}"
-                                IsVisible="{Binding ShowGif}"
-                                Stretch="Uniform"
-                                StretchDirection="DownOnly"
-                                MaxHeight="280"
-                                HorizontalAlignment="Left"
-                                IterationCount="Infinite" />
+                  <controls:AnimatedImagePanel SourcePath="{Binding GifPath}"
+                                               IsPlaying="{Binding ShowGif}"
+                                               IsVisible="{Binding ShowGif}"
+                                               MaxHeight="280"
+                                               HorizontalAlignment="Left" />
                 </StackPanel>
               </StackPanel>
             </Border>
