@@ -3,15 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
-             xmlns:conv="using:Canary.UI.Avalonia.Converters"
-             xmlns:gif="using:Avalonia.Labs.Gif"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="Canary.UI.Avalonia.Views.ResultsViewerView"
              x:DataType="vm:ResultsViewerViewModel">
-
-  <UserControl.Resources>
-    <conv:GifPathToSourceConverter x:Key="GifPathToSourceConverter" />
-  </UserControl.Resources>
 
   <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
     <Border Grid.Row="0" Background="#252526" Padding="12,8">
@@ -133,37 +127,27 @@
                            Text="{Binding VlmReasoning}"
                            IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-                <!-- Phase 14.7+ — animated-GIF section. Opt-in playback to
-                     avoid the Avalonia.Labs.Gif 11.3.1 sync-decode-on-bind
-                     crash that hit when the Past Runs view auto-selected a
-                     row whose cards had multiple GIF candidates. Default
-                     state shows just the path label + an open-in-browser
-                     button. Click "🎞️ Play GIF" → ShowGif flips to true →
-                     the GifImage gets added to the visual tree and decodes.
-                     Operator can still hit "🌐 Open" to get the GIF in the
-                     OS default image viewer (browser, normally) without
-                     triggering the in-card decoder at all. -->
-                <StackPanel Spacing="4"
+                <!-- Phase 14.7+ — animated-GIF section. The in-card
+                     GifImage element was pulled after a Past Runs crash
+                     reproduced even with opt-in IsVisible=false. The
+                     Avalonia.Labs.Gif 11.3.1 decoder appears to be the
+                     trigger when multiple GIF-bound cards instantiate at
+                     once. Replaced with a path label + "🌐 Open externally"
+                     button — clicking opens the GIF in the OS default
+                     image viewer (a browser, normally) where animation
+                     plays full-size. The static candidate PNG above this
+                     row is always the first frame, so the operator never
+                     sees a blank for animated checkpoints. -->
+                <StackPanel Orientation="Horizontal" Spacing="6"
                             IsVisible="{Binding GifPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <Button Content="🎞️ Play GIF" Background="#5C8C50" Foreground="White"
-                            Command="{Binding ToggleShowGifCommand}"
-                            ToolTip.Tip="Decode the GIF in-card. Opt-in to keep the Past Runs viewer responsive when several large GIFs are listed." />
-                    <Button Content="🌐 Open externally" Background="#3868A8" Foreground="White"
-                            Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
-                            CommandParameter="{Binding GifPath}"
-                            ToolTip.Tip="Open in the OS default image viewer (a browser, usually) — no in-card decode required." />
-                    <SelectableTextBlock Text="{Binding GifPath}" Foreground="#FFC850" FontSize="10"
-                                         VerticalAlignment="Center"
-                                         TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
-                  </StackPanel>
-                  <gif:GifImage Source="{Binding GifPath, Converter={StaticResource GifPathToSourceConverter}}"
-                                IsVisible="{Binding ShowGif}"
-                                Stretch="Uniform"
-                                StretchDirection="DownOnly"
-                                MaxHeight="280"
-                                HorizontalAlignment="Left"
-                                IterationCount="Infinite" />
+                  <Button Content="🌐 Open GIF externally" Background="#3868A8" Foreground="White"
+                          Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
+                          CommandParameter="{Binding GifPath}"
+                          ToolTip.Tip="Open in the OS default image viewer (a browser, usually) where the GIF will animate full-size." />
+                  <SelectableTextBlock Text="{Binding GifPath, StringFormat='🎞️ {0}'}"
+                                       Foreground="#FFC850" FontSize="10"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
                 </StackPanel>
               </StackPanel>
             </Border>
