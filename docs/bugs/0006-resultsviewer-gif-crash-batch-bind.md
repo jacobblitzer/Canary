@@ -11,7 +11,7 @@ status: resolved
 project: canary
 component: ui-results-viewer
 severity: high
-fix-commit: "pending"
+fix-commit: "29513ea"
 canary-repro: "cpig-kin-15-watt-straight-line"
 ---
 
