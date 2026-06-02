@@ -21,10 +21,19 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
     public string? VlmReasoning { get; init; }
     public double VlmConfidence { get; init; }
 
+    // Phase 14.5 — per-checkpoint error surfaced on the card so the
+    // operator doesn't have to dig into result.json for the failure cause.
+    public string? ErrorMessage { get; init; }
+
     [ObservableProperty] private Bitmap? _baselineThumb;
     [ObservableProperty] private Bitmap? _candidateThumb;
     [ObservableProperty] private Bitmap? _diffThumb;
     [ObservableProperty] private bool _resolved;
+
+    // Phase 14.5 — post-action label shown on the card after Approve / Reject
+    // so the operator gets visible feedback. "✓ Approved" / "✗ Rejected".
+    [ObservableProperty] private string? _resolutionLabel;
+    [ObservableProperty] private string _resolutionColor = "#969696";
 }
 
 public partial class ResultsViewerViewModel : ObservableObject
@@ -39,6 +48,20 @@ public partial class ResultsViewerViewModel : ObservableObject
     [ObservableProperty] private string? _activeTestName;
     [ObservableProperty] private string? _activeSuiteName;
     [ObservableProperty] private string? _activeWorkloadName;
+
+    // Phase 14.5 — short-lived toast banner at the top of the view. Set by
+    // every Approve / Reject / Save Snapshot so the operator sees feedback
+    // immediately (the StatusText footer is below the scroll viewport and
+    // easy to miss). Cleared by the next action.
+    [ObservableProperty] private string? _toastMessage;
+    [ObservableProperty] private string _toastColor = "#3CC850";
+
+    private void Toast(string message, bool success = true)
+    {
+        ToastMessage = message;
+        ToastColor = success ? "#3CC850" : "#DC3C3C";
+        StatusText = message;
+    }
 
     public void SetContext(string workloadsDir, string workloadName, string? suiteName)
     {
@@ -108,11 +131,13 @@ public partial class ResultsViewerViewModel : ObservableObject
         {
             BaselineManager.ApproveCheckpoint(_workloadsDir, ActiveWorkloadName, card.TestName, card.Name, ActiveSuiteName);
             card.Resolved = true;
-            StatusText = $"Approved checkpoint {card.TestName}/{card.Name} as baseline.";
+            card.ResolutionLabel = "✓ Approved";
+            card.ResolutionColor = "#3CC850";
+            Toast($"Approved {card.TestName}/{card.Name} → baseline updated.");
         }
         catch (Exception ex)
         {
-            StatusText = $"Approve failed: {ex.Message}";
+            Toast($"Approve failed: {ex.Message}", success: false);
         }
     }
 
@@ -124,29 +149,150 @@ public partial class ResultsViewerViewModel : ObservableObject
         {
             BaselineManager.RejectCheckpoint(_workloadsDir, ActiveWorkloadName, card.TestName, card.Name, ActiveSuiteName);
             card.Resolved = true;
-            StatusText = $"Rejected candidate for {card.TestName}/{card.Name}.";
+            card.ResolutionLabel = "✗ Rejected";
+            card.ResolutionColor = "#DC3C3C";
+            Toast($"Rejected candidate for {card.TestName}/{card.Name}.");
         }
         catch (Exception ex)
         {
-            StatusText = $"Reject failed: {ex.Message}";
+            Toast($"Reject failed: {ex.Message}", success: false);
         }
     }
 
     [RelayCommand]
     private void ApproveAll()
     {
-        if (_workloadsDir == null || ActiveWorkloadName == null) return;
+        if (_workloadsDir == null || ActiveWorkloadName == null)
+        {
+            Toast("Approve All: no run loaded.", success: false);
+            return;
+        }
         int count = 0;
+        int testCount = Cards.GroupBy(c => c.TestName).Count();
         foreach (var byTest in Cards.GroupBy(c => c.TestName))
         {
             try
             {
                 count += BaselineManager.ApproveTest(_workloadsDir, ActiveWorkloadName, byTest.Key, ActiveSuiteName);
-                foreach (var c in byTest) c.Resolved = true;
+                foreach (var c in byTest)
+                {
+                    c.Resolved = true;
+                    c.ResolutionLabel = "✓ Approved";
+                    c.ResolutionColor = "#3CC850";
+                }
             }
-            catch { /* surface per-test failures in StatusText below */ }
+            catch { /* surface per-test failures via Toast below */ }
         }
-        StatusText = $"Approved {count} checkpoint(s) across {Cards.GroupBy(c => c.TestName).Count()} test(s).";
+        Toast($"Approved {count} checkpoint(s) across {testCount} test(s).");
+    }
+
+    /// <summary>
+    /// Phase 14.5 — freeze the currently-loaded run's artifacts into
+    /// <c>&lt;testDir&gt;/archived/&lt;stamp&gt;/</c>. Does NOT touch baselines and
+    /// does NOT mark anything approved/rejected — just preserves the bytes.
+    /// Mirrors <c>TestRunnerViewModel.SaveSnapshot</c> but works against
+    /// arbitrary loaded runs (fresh or past).
+    /// </summary>
+    [RelayCommand]
+    private void SaveSnapshot()
+    {
+        if (_workloadsDir == null || ActiveWorkloadName == null)
+        {
+            Toast("Save Snapshot: no run loaded.", success: false);
+            return;
+        }
+        var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+        int snapped = 0;
+        try
+        {
+            foreach (var testName in Cards.Select(c => c.TestName).Distinct())
+            {
+                var testDir = Path.Combine(_workloadsDir, ActiveWorkloadName, "results", testName);
+                if (!Directory.Exists(testDir)) continue;
+                var archiveRoot = Path.Combine(testDir, "archived", stamp);
+                Directory.CreateDirectory(archiveRoot);
+
+                // Source set: when ActiveSuiteName looks like a timestamp dir
+                // (past-run view), pull from runs/<ts>/. Otherwise from the
+                // test's top-level state (fresh in-session run).
+                string sourceBase = LooksLikeTimestampDir(ActiveSuiteName)
+                    ? Path.Combine(testDir, "runs", ActiveSuiteName!)
+                    : testDir;
+
+                foreach (var sub in new[] { "candidates", "manual-captures", "logs" })
+                {
+                    var src = Path.Combine(sourceBase, sub);
+                    if (Directory.Exists(src))
+                        CopyDirectoryRecursive(src, Path.Combine(archiveRoot, sub));
+                }
+                foreach (var f in Directory.EnumerateFiles(sourceBase, "*.json"))
+                {
+                    try { File.Copy(f, Path.Combine(archiveRoot, Path.GetFileName(f)), overwrite: true); }
+                    catch { /* per-file copy failures non-fatal */ }
+                }
+                snapped++;
+            }
+            Toast($"💾 Snapshot saved → archived/{stamp}/  ({snapped} test(s))");
+        }
+        catch (Exception ex)
+        {
+            Toast($"Save Snapshot failed: {ex.Message}", success: false);
+        }
+    }
+
+    private static bool LooksLikeTimestampDir(string? s)
+    {
+        if (string.IsNullOrEmpty(s) || s.Length < 15) return false;
+        // Format: yyyyMMdd-HHmmss-<hex>
+        return s[8] == '-' && s.Take(8).All(char.IsDigit) && s.Skip(9).Take(6).All(char.IsDigit);
+    }
+
+    private static void CopyDirectoryRecursive(string sourceDir, string destDir)
+    {
+        Directory.CreateDirectory(destDir);
+        foreach (var file in Directory.EnumerateFiles(sourceDir))
+            File.Copy(file, Path.Combine(destDir, Path.GetFileName(file)), overwrite: true);
+        foreach (var dir in Directory.EnumerateDirectories(sourceDir))
+        {
+            if (string.Equals(Path.GetFileName(dir), "archived", StringComparison.OrdinalIgnoreCase)) continue;
+            CopyDirectoryRecursive(dir, Path.Combine(destDir, Path.GetFileName(dir)));
+        }
+    }
+
+    /// <summary>
+    /// Phase 14.5 — click a thumb in the card to open the underlying PNG in
+    /// the OS default image viewer.
+    /// </summary>
+    [RelayCommand]
+    private void OpenImage(string? path)
+    {
+        if (string.IsNullOrEmpty(path) || !File.Exists(path)) return;
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true,
+            });
+        }
+        catch { /* shell open fails silently — operator can still copy the path */ }
+    }
+
+    [RelayCommand]
+    private void OpenImageInExplorer(string? path)
+    {
+        if (string.IsNullOrEmpty(path)) return;
+        try
+        {
+            if (File.Exists(path))
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"/select,\"{path}\"",
+                    UseShellExecute = true,
+                });
+        }
+        catch { /* ignore */ }
     }
 
     private static CheckpointCardViewModel BuildCard(CheckpointResult cp, string testName)
@@ -165,6 +311,7 @@ public partial class ResultsViewerViewModel : ObservableObject
             DiffImagePath = cp.DiffImagePath,
             VlmReasoning = cp.VlmReasoning,
             VlmConfidence = cp.VlmConfidence,
+            ErrorMessage = cp.ErrorMessage,
         };
         card.BaselineThumb = TryLoadBitmap(cp.BaselinePath);
         card.CandidateThumb = TryLoadBitmap(cp.CandidatePath);

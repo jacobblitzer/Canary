@@ -288,3 +288,19 @@ This Phase 14 section. Plus a `MultiVerse/BUILD_LOG.md` cross-repo one-liner per
 - A "Run all from a past timestamp" multi-test rollup view (the Past Runs viewer is per-test today).
 
 **Phase 14 Exit Criteria:** Single-click any test → side panel renders the editor + Past Runs tab. Right-click works on the right item. Editor surfaces VLM + setup commands + capture/scrub. Past Runs lists every prior `runs/<ts>/` with status / duration; clicking a row loads it into the same ResultsViewerView. 295/295 Canary.Tests pass. Build 0/0 on Canary.sln.
+
+### Checkpoint 14.5: ResultsViewer polish (feedback, snapshot, image-open, error info)
+**Status:** Landed 2026-06-02.
+
+Operator-reported after 14.3 dogfooding: (a) "approve all doesnt seem to do anything, theres no feedback on my screen. neither is there for approve"; (b) requested a "save this run as-is, neither approve nor reject" action; (c) "Cant open the images / candidates / baselines or get more detailed info from the test result page." 14.5 closes all three.
+
+- **Toast banner** at the top of the ResultsViewerView. Set by every Approve / Reject / Approve All / Save Snapshot via a new `Toast(msg, success)` helper on the VM. Green for success, red for error. Replaces the easy-to-miss bottom StatusText footer as the primary feedback channel. (Footer stays as a second affordance.)
+- **Per-card resolution label.** When the operator clicks ✓ Approve or ✗ Reject on a card, the buttons hide and a "✓ Approved" / "✗ Rejected" label appears in their place in the matching colour. The whole card stays visible (it doesn't disappear), so the operator can still see what they just resolved.
+- **💾 Save Snapshot button** on the ResultsViewer header. Mirrors the runner toolbar's existing Save Snapshot but works against any loaded run (fresh or past). Copies `candidates/`, `manual-captures/`, `logs/`, and `*.json` into `<testDir>/archived/<timestamp>/`. Detects past-run loads via `ActiveSuiteName` looking like a timestamp directory (`yyyyMMdd-HHmmss-…`) and pulls from `runs/<ts>/` in that case; otherwise from the test's top-level state.
+- **Clickable thumbnails.** Each baseline / candidate / diff thumb is wrapped in a transparent Button bound to `OpenImageCommand` (Process.Start on the PNG path, opens in the OS default image viewer). Tooltip on hover surfaces the full path. The `OpenImageInExplorerCommand` is also wired (no UI affordance yet — reserved for a future right-click menu).
+- **Path label under each thumb.** SelectableTextBlock with ellipsis trimming; the operator can copy the path with normal text selection. Hidden when the path is null (e.g. no diff image for passing checkpoints).
+- **Per-checkpoint error message.** `CheckpointResult.ErrorMessage` (previously only surfaced at the test level via the existing top error banner) now renders on each card in a dark-red box. The "No baseline exists" / "Agent did not respond" / "diff > tolerance" messages now appear where the operator is already looking.
+
+Files: `ViewModels/ResultsViewerViewModel.cs` (Toast helper, ResolutionLabel/Color on the card VM, SaveSnapshotCommand + LooksLikeTimestampDir + CopyDirectoryRecursive helpers, OpenImage / OpenImageInExplorer commands, ErrorMessage on BuildCard). `Views/ResultsViewerView.axaml` (toast row, header buttons, per-card layout overhaul).
+
+**Exit:** Click Approve / Reject / Approve All / Save Snapshot → toast banner shows the result. Per-card state visibly changes. Clicking any thumb opens the PNG. Each path is visible + selectable below its thumb. ErrorMessage shows when non-empty. Build 0/0; 295/295 Canary.Tests.

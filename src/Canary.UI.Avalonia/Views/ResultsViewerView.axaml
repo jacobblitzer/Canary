@@ -7,70 +7,131 @@
              x:Class="Canary.UI.Avalonia.Views.ResultsViewerView"
              x:DataType="vm:ResultsViewerViewModel">
 
-  <Grid RowDefinitions="Auto,Auto,*,Auto">
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
     <Border Grid.Row="0" Background="#252526" Padding="12,8">
-      <StackPanel Orientation="Horizontal" Spacing="12">
+      <StackPanel Orientation="Horizontal" Spacing="8">
         <TextBlock Text="{Binding Header}" FontSize="16" FontWeight="Bold" Foreground="#DCDCDC" VerticalAlignment="Center" />
-        <Button Content="Approve All" Command="{Binding ApproveAllCommand}" Background="#007ACC" Foreground="White" />
+        <Button Content="✓ Approve All" Command="{Binding ApproveAllCommand}" Background="#3CC850" Foreground="White"
+                ToolTip.Tip="Promote every candidate in this run to baseline. Per-checkpoint Approve / Reject buttons in the cards below do the same thing one at a time." />
+        <Button Content="💾 Save Snapshot" Command="{Binding SaveSnapshotCommand}" Background="#5C8C50" Foreground="White"
+                ToolTip.Tip="Phase 14.5 — freeze this run's candidates / logs / json into &lt;testDir&gt;/archived/&lt;timestamp&gt;/ without approving or rejecting. Use this when you want to preserve the run as-is for later inspection." />
       </StackPanel>
     </Border>
 
-    <Border Grid.Row="1" Background="#3A1F1F" Padding="12,6"
+    <!-- Phase 14.5 — top toast banner. Visible after any Approve / Reject /
+         Save Snapshot so the operator gets immediate feedback (the StatusText
+         footer at the bottom of the view is below the scroll viewport on
+         long cards lists and was easy to miss). -->
+    <Border Grid.Row="1" Padding="12,6"
+            Background="{Binding ToastColor}"
+            IsVisible="{Binding ToastMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+      <TextBlock Text="{Binding ToastMessage}" Foreground="White" FontWeight="SemiBold" />
+    </Border>
+
+    <Border Grid.Row="2" Background="#3A1F1F" Padding="12,6"
             IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
       <TextBlock Text="{Binding ErrorMessage}" Foreground="#FFB4B4" TextWrapping="Wrap" />
     </Border>
 
-    <ScrollViewer Grid.Row="2" Padding="10">
+    <ScrollViewer Grid.Row="3" Padding="10">
       <ItemsControl ItemsSource="{Binding Cards}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:CheckpointCardViewModel">
             <Border BorderBrush="#404040" BorderThickness="1" Margin="0,0,0,10" Padding="10" Background="#252526" CornerRadius="3">
-              <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                  <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="#DCDCDC" />
-                  <TextBlock Text="{Binding TestName}" Foreground="#9696C8" />
-                  <TextBlock Text="{Binding Status}" Foreground="{Binding StatusColor}" />
-                </StackPanel>
-                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="6">
-                  <Button Content="Approve" Background="#3CC850" Foreground="White"
-                          Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).ApproveCheckpointCommand}"
-                          CommandParameter="{Binding}"
-                          IsEnabled="{Binding !Resolved}" />
-                  <Button Content="Reject" Background="#DC3C3C" Foreground="White"
-                          Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).RejectCheckpointCommand}"
-                          CommandParameter="{Binding}"
-                          IsEnabled="{Binding !Resolved}" />
-                </StackPanel>
-
-                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Foreground="#A0A0A0" FontSize="11"
-                           Text="{Binding DiffPercentage, StringFormat='Diff: {0:F2}%  ·  Tolerance: {1:F2}  ·  SSIM: {2:F3}'}" />
-
-                <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*,*,*" Margin="0,8,0,0">
-                  <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="baseline" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
-                    <Image Source="{Binding BaselineThumb}" MaxHeight="180" Stretch="Uniform" />
+              <StackPanel Spacing="6">
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="#DCDCDC" />
+                    <TextBlock Text="{Binding TestName}" Foreground="#9696C8" />
+                    <TextBlock Text="{Binding Status}" Foreground="{Binding StatusColor}" />
                   </StackPanel>
-                  <StackPanel Grid.Column="1" Spacing="4">
-                    <TextBlock Text="candidate" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
-                    <Image Source="{Binding CandidateThumb}" MaxHeight="180" Stretch="Uniform" />
-                  </StackPanel>
-                  <StackPanel Grid.Column="2" Spacing="4">
-                    <TextBlock Text="diff" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
-                    <Image Source="{Binding DiffThumb}" MaxHeight="180" Stretch="Uniform" />
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                    <!-- Phase 14.5 — pre-action buttons hidden after the
+                         operator clicks Approve / Reject; resolution label
+                         appears in their place. -->
+                    <Button Content="✓ Approve" Background="#3CC850" Foreground="White"
+                            Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).ApproveCheckpointCommand}"
+                            CommandParameter="{Binding}"
+                            IsVisible="{Binding !Resolved}" />
+                    <Button Content="✗ Reject" Background="#DC3C3C" Foreground="White"
+                            Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).RejectCheckpointCommand}"
+                            CommandParameter="{Binding}"
+                            IsVisible="{Binding !Resolved}" />
+                    <TextBlock Text="{Binding ResolutionLabel}"
+                               Foreground="{Binding ResolutionColor}"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               IsVisible="{Binding Resolved}" />
                   </StackPanel>
                 </Grid>
 
-                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="0,8,0,0" Foreground="#82B496" TextWrapping="Wrap" FontSize="11"
+                <TextBlock Foreground="#A0A0A0" FontSize="11"
+                           Text="{Binding DiffPercentage, StringFormat='Diff: {0:F2}%  ·  Tolerance: {1:F2}  ·  SSIM: {2:F3}'}" />
+
+                <!-- Phase 14.5 — per-checkpoint error surfaced on the card.
+                     Previously hidden inside result.json; the operator had
+                     to dig for failure causes. -->
+                <Border Background="#3A1F1F" Padding="8,4" CornerRadius="2"
+                        IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                  <SelectableTextBlock Text="{Binding ErrorMessage}" Foreground="#FFB4B4" TextWrapping="Wrap" FontSize="11" />
+                </Border>
+
+                <Grid ColumnDefinitions="*,*,*" Margin="0,4,0,0">
+                  <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="baseline" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
+                    <!-- Phase 14.5 — click thumb → open PNG in default viewer.
+                         Path label below is selectable + double-click reveals
+                         in Explorer. -->
+                    <Button Padding="0" Background="Transparent" BorderThickness="0"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
+                            CommandParameter="{Binding BaselinePath}"
+                            ToolTip.Tip="{Binding BaselinePath, FallbackValue='(no baseline)'}">
+                      <Image Source="{Binding BaselineThumb}" MaxHeight="180" Stretch="Uniform" />
+                    </Button>
+                    <SelectableTextBlock Text="{Binding BaselinePath}" Foreground="#7E9CC8" FontSize="10"
+                                         TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                         IsVisible="{Binding BaselinePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock Text="candidate" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
+                    <Button Padding="0" Background="Transparent" BorderThickness="0"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
+                            CommandParameter="{Binding CandidatePath}"
+                            ToolTip.Tip="{Binding CandidatePath, FallbackValue='(no candidate)'}">
+                      <Image Source="{Binding CandidateThumb}" MaxHeight="180" Stretch="Uniform" />
+                    </Button>
+                    <SelectableTextBlock Text="{Binding CandidatePath}" Foreground="#7E9CC8" FontSize="10"
+                                         TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                         IsVisible="{Binding CandidatePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" Spacing="4">
+                    <TextBlock Text="diff" Foreground="#969696" FontSize="11" HorizontalAlignment="Center" />
+                    <Button Padding="0" Background="Transparent" BorderThickness="0"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding $parent[ItemsControl].((vm:ResultsViewerViewModel)DataContext).OpenImageCommand}"
+                            CommandParameter="{Binding DiffImagePath}"
+                            ToolTip.Tip="{Binding DiffImagePath, FallbackValue='(no diff image — diff only computed for non-passing checkpoints)'}">
+                      <Image Source="{Binding DiffThumb}" MaxHeight="180" Stretch="Uniform" />
+                    </Button>
+                    <SelectableTextBlock Text="{Binding DiffImagePath}" Foreground="#7E9CC8" FontSize="10"
+                                         TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                         IsVisible="{Binding DiffImagePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  </StackPanel>
+                </Grid>
+
+                <TextBlock Foreground="#82B496" TextWrapping="Wrap" FontSize="11"
                            Text="{Binding VlmReasoning}"
                            IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-              </Grid>
+              </StackPanel>
             </Border>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </ScrollViewer>
 
-    <Border Grid.Row="3" Background="#007ACC" Padding="8,4">
+    <Border Grid.Row="4" Background="#007ACC" Padding="8,4">
       <TextBlock Text="{Binding StatusText}" Foreground="White" />
     </Border>
   </Grid>
