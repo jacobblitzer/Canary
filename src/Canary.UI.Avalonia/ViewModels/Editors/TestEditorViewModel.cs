@@ -15,6 +15,18 @@ public sealed partial class CheckpointRow : ObservableObject
     [ObservableProperty] private string _description = string.Empty;
     [ObservableProperty] private string _source = "viewport";
     [ObservableProperty] private string? _panelNickname;
+
+    // Phase 14.2 — Capture sub-object (Phase 4.6.F Session B+). When CaptureGif
+    // is false AND ScrubNickname/ScrubValues are empty, the Capture object is
+    // omitted on save. Otherwise it round-trips.
+    [ObservableProperty] private bool _captureGif;
+    [ObservableProperty] private int _captureFrameCount = 30;
+    [ObservableProperty] private int _captureIntervalMs = 100;
+    [ObservableProperty] private string _scrubNickname = string.Empty;
+    /// <summary>Comma- or whitespace-separated list of slider values (parsed on save).</summary>
+    [ObservableProperty] private string _scrubValuesText = string.Empty;
+    [ObservableProperty] private int _scrubSettleMs;
+    [ObservableProperty] private int _scrubSolveTimeoutMs = 10_000;
 }
 
 public sealed partial class AssertRow : ObservableObject
@@ -55,6 +67,14 @@ public partial class TestEditorViewModel : ObservableObject
     [ObservableProperty] private string _actionsJson = "[]";
     [ObservableProperty] private string? _validationError;
 
+    // Phase 14.2 — VLM oracle config + setup.commands surfaced inline. All
+    // optional; round-trip through the backing POCO if left blank.
+    [ObservableProperty] private string _vlmDescription = string.Empty;
+    [ObservableProperty] private string _vlmProvider = string.Empty;
+    [ObservableProperty] private string _vlmModel = string.Empty;
+    /// <summary>One command per line. Empty lines are ignored on save.</summary>
+    [ObservableProperty] private string _commandsText = string.Empty;
+
     public event Action<string>? SaveRequested;
 
     public void Load(TestDefinition definition)
@@ -74,10 +94,18 @@ public partial class TestEditorViewModel : ObservableObject
         ViewportProjection = vp?.Projection ?? string.Empty;
         ViewportDisplayMode = vp?.DisplayMode ?? string.Empty;
 
+        // Phase 14.2 — VLM + commands.
+        VlmDescription = definition.Setup?.VlmDescription ?? string.Empty;
+        VlmProvider = definition.Setup?.Vlm?.Provider ?? string.Empty;
+        VlmModel = definition.Setup?.Vlm?.Model ?? string.Empty;
+        CommandsText = (definition.Setup?.Commands == null || definition.Setup.Commands.Count == 0)
+            ? string.Empty
+            : string.Join("\n", definition.Setup.Commands);
+
         Checkpoints.Clear();
         foreach (var cp in definition.Checkpoints)
         {
-            Checkpoints.Add(new CheckpointRow
+            var row = new CheckpointRow
             {
                 Name = cp.Name,
                 Mode = string.IsNullOrEmpty(cp.Mode) ? "pixel-diff" : cp.Mode,
@@ -86,7 +114,23 @@ public partial class TestEditorViewModel : ObservableObject
                 Description = cp.Description,
                 Source = string.IsNullOrEmpty(cp.Source) ? "viewport" : cp.Source,
                 PanelNickname = cp.PanelNickname,
-            });
+            };
+            if (cp.Capture != null)
+            {
+                row.CaptureGif = cp.Capture.Gif;
+                row.CaptureFrameCount = cp.Capture.FrameCount;
+                row.CaptureIntervalMs = cp.Capture.IntervalMs;
+                if (cp.Capture.Scrub != null)
+                {
+                    row.ScrubNickname = cp.Capture.Scrub.Nickname;
+                    row.ScrubValuesText = cp.Capture.Scrub.Values == null || cp.Capture.Scrub.Values.Length == 0
+                        ? string.Empty
+                        : string.Join(", ", cp.Capture.Scrub.Values);
+                    row.ScrubSettleMs = cp.Capture.Scrub.SettleMs;
+                    row.ScrubSolveTimeoutMs = cp.Capture.Scrub.SolveTimeoutMs;
+                }
+            }
+            Checkpoints.Add(row);
         }
 
         Asserts.Clear();
@@ -128,15 +172,72 @@ public partial class TestEditorViewModel : ObservableObject
         _definition.Setup.Viewport.Projection = ViewportProjection;
         _definition.Setup.Viewport.DisplayMode = ViewportDisplayMode;
 
-        _definition.Checkpoints = Checkpoints.Select(cp => new TestCheckpoint
+        // Phase 14.2 — VLM + commands. Empty → null (omit on serialize).
+        _definition.Setup.VlmDescription = string.IsNullOrWhiteSpace(VlmDescription) ? null : VlmDescription;
+        if (!string.IsNullOrWhiteSpace(VlmProvider) || !string.IsNullOrWhiteSpace(VlmModel))
         {
-            Name = cp.Name,
-            AtTimeMs = cp.AtTimeMs,
-            Tolerance = cp.Tolerance,
-            Description = cp.Description,
-            Source = cp.Source,
-            PanelNickname = cp.PanelNickname,
-            Mode = cp.Mode,
+            _definition.Setup.Vlm ??= new VlmConfig();
+            if (!string.IsNullOrWhiteSpace(VlmProvider)) _definition.Setup.Vlm.Provider = VlmProvider.Trim();
+            if (!string.IsNullOrWhiteSpace(VlmModel)) _definition.Setup.Vlm.Model = VlmModel.Trim();
+        }
+        else
+        {
+            // Leave existing Vlm in place if both fields are blanked; the
+            // backing POCO preserves any fields the editor doesn't surface
+            // (MaxTokens etc.). Operators who want to truly delete the Vlm
+            // block can hand-edit JSON.
+        }
+        _definition.Setup.Commands = string.IsNullOrWhiteSpace(CommandsText)
+            ? new List<string>()
+            : CommandsText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim()).Where(s => s.Length > 0).ToList();
+
+        _definition.Checkpoints = Checkpoints.Select(cp =>
+        {
+            var built = new TestCheckpoint
+            {
+                Name = cp.Name,
+                AtTimeMs = cp.AtTimeMs,
+                Tolerance = cp.Tolerance,
+                Description = cp.Description,
+                Source = cp.Source,
+                PanelNickname = cp.PanelNickname,
+                Mode = cp.Mode,
+            };
+            // Phase 14.2 — Capture / Scrub. Capture sub-object is emitted only
+            // when at least one capture feature is active (gif on OR scrub
+            // nickname+values populated). Otherwise null (omit on serialize).
+            bool hasScrub = !string.IsNullOrWhiteSpace(cp.ScrubNickname)
+                            && !string.IsNullOrWhiteSpace(cp.ScrubValuesText);
+            if (cp.CaptureGif || hasScrub)
+            {
+                var cap = new TestCheckpointCapture
+                {
+                    Gif = cp.CaptureGif,
+                    FrameCount = cp.CaptureFrameCount,
+                    IntervalMs = cp.CaptureIntervalMs,
+                };
+                if (hasScrub)
+                {
+                    var values = cp.ScrubValuesText
+                        .Split(new[] { ',', ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(t =>
+                        {
+                            return double.TryParse(t.Trim(), System.Globalization.NumberStyles.Float,
+                                System.Globalization.CultureInfo.InvariantCulture, out var v) ? (double?)v : null;
+                        })
+                        .Where(v => v.HasValue).Select(v => v!.Value).ToArray();
+                    cap.Scrub = new TestCheckpointScrub
+                    {
+                        Nickname = cp.ScrubNickname.Trim(),
+                        Values = values,
+                        SettleMs = cp.ScrubSettleMs,
+                        SolveTimeoutMs = cp.ScrubSolveTimeoutMs,
+                    };
+                }
+                built.Capture = cap;
+            }
+            return built;
         }).ToList();
 
         _definition.Asserts = Asserts.Select(a => new TestAssert
