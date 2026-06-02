@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -11,6 +12,20 @@ namespace Canary.UI.Avalonia.Views;
 public partial class MainWindow : Window
 {
     private AbortHotkey? _abortHotkey;
+
+    // Phase 4.6.F Session B+ — exclude Canary.UI from DWM screen capture so the
+    // 📷 Capture Screen button (which brings Canary.UI to the foreground on click)
+    // doesn't end up photographing Canary.UI's own chrome instead of the warning
+    // balloon / modal toast the operator was trying to catch. Also affects the
+    // automated full-screen sibling capture and any external screenshot tool
+    // (Snip & Sketch, Greenshot, etc.) — desirable: the operator never wants
+    // Canary in their screenshots. Backward-safe: on Windows older than 10 2004
+    // (build 19041) the call returns false and the window behaves as before.
+    private const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
 
     public MainWindow()
     {
@@ -38,6 +53,10 @@ public partial class MainWindow : Window
         if (DataContext is not MainWindowViewModel vm) return;
         var handle = TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
         if (handle == IntPtr.Zero) return;
+
+        // Best-effort capture exclusion. Failure is silent (older Windows).
+        try { SetWindowDisplayAffinity(handle, WDA_EXCLUDEFROMCAPTURE); } catch { /* ignore */ }
+
         _abortHotkey = new AbortHotkey(handle);
         _abortHotkey.AbortRequested += () =>
         {

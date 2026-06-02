@@ -259,13 +259,68 @@ public sealed class TestCheckpointCapture
     [JsonPropertyName("gif")]
     public bool Gif { get; set; } = false;
 
-    /// <summary>Number of additional frames to capture for the GIF. Default 30.</summary>
+    /// <summary>
+    /// Number of additional frames to capture for the GIF when <see cref="Scrub"/> is null
+    /// (agent-side timer loop, static viewport). Default 30. Ignored when <see cref="Scrub"/>
+    /// is set — then <c>Scrub.Values.Length</c> is the frame count.
+    /// </summary>
     [JsonPropertyName("frameCount")]
     public int FrameCount { get; set; } = 30;
 
-    /// <summary>Sleep interval between frame captures in milliseconds. Default 100.</summary>
+    /// <summary>
+    /// Sleep interval between frame captures in milliseconds when <see cref="Scrub"/> is null.
+    /// Default 100. Also used as the GIF's per-frame display delay (rounded to centiseconds).
+    /// </summary>
     [JsonPropertyName("intervalMs")]
     public int IntervalMs { get; set; } = 100;
+
+    /// <summary>
+    /// Optional per-frame slider scrub for true animated capture. When non-null, the
+    /// orchestrator (TestRunner) loops <see cref="TestCheckpointScrub.Values"/>, calling
+    /// <c>GrasshopperSetSlider(nickname, value)</c> + <c>WaitForGrasshopperSolution</c> +
+    /// single-frame capture for each entry, then assembles the resulting frame PNGs into
+    /// the GIF. Bypasses the agent-side timer-loop GIF capture (<see cref="FrameCount"/> /
+    /// <see cref="IntervalMs"/> are ignored for frame timing). Use when the fixture has a
+    /// Grasshopper slider (Slop slider, nicknamed) wired into something that visibly
+    /// changes the viewport when the value changes — typically the <c>Index</c> input of
+    /// CPig.Kinematics' <c>Animate Bound</c>. Phase 4.6.F Session B+.
+    /// </summary>
+    [JsonPropertyName("scrub")]
+    public TestCheckpointScrub? Scrub { get; set; }
+}
+
+/// <summary>
+/// Per-frame slider scrub spec for animated-GIF capture. See <see cref="TestCheckpointCapture.Scrub"/>.
+/// </summary>
+public sealed class TestCheckpointScrub
+{
+    /// <summary>
+    /// Nickname of the Grasshopper slider (case-insensitive) to drive. Resolved by
+    /// <c>RhinoAgent.HandleGrasshopperSetSlider</c>. Must exist on the canvas and be
+    /// uniquely nameable — typically a Slop slider node with an explicit <c>name</c>.
+    /// </summary>
+    [JsonPropertyName("nickname")]
+    public string Nickname { get; set; } = "";
+
+    /// <summary>
+    /// Slider values to step through, in order. One frame is captured per entry. Use
+    /// integers for integer-typed sliders; doubles otherwise.
+    /// </summary>
+    [JsonPropertyName("values")]
+    public double[] Values { get; set; } = System.Array.Empty<double>();
+
+    /// <summary>
+    /// Optional extra wait (ms) AFTER WaitForGrasshopperSolution returns but BEFORE the
+    /// frame capture, to let any deferred preview / display-cache settle. Default 0.
+    /// </summary>
+    [JsonPropertyName("settleMs")]
+    public int SettleMs { get; set; } = 0;
+
+    /// <summary>
+    /// Optional per-frame solve timeout (ms). Default 10_000.
+    /// </summary>
+    [JsonPropertyName("solveTimeoutMs")]
+    public int SolveTimeoutMs { get; set; } = 10_000;
 }
 
 /// <summary>

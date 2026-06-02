@@ -1029,19 +1029,25 @@ public sealed class TestRunner
             {
                 // Default: viewport capture + full-screen sibling (Phase 4.6.E.A.2 —
                 // catches warning balloons / modal toasts that the viewport-only capture misses).
-                // Phase 4.6.F Session B: optional GIF capture (capture.gif=true on the checkpoint
-                // captures N additional frames + encodes them via AnimatedGifEncoder below).
+                // Phase 4.6.F Session B: optional GIF capture. Two paths:
+                //   (a) Scrub == null  → agent-side timer loop (N frames of whatever the
+                //       viewport shows; useful only if the viewport changes on its own).
+                //   (b) Scrub != null  → orchestrator-driven loop here (set slider →
+                //       wait for solve → single-frame capture, repeat). True animated GIF.
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
                 var gifEnabled = checkpoint.Capture?.Gif == true;
+                var scrub = checkpoint.Capture?.Scrub;
                 var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
                 var gifInterval = checkpoint.Capture?.IntervalMs ?? 100;
+                // Disable the agent-side timer loop when scrub is taking over.
+                var agentSideGif = gifEnabled && (scrub == null || scrub.Values.Length == 0);
                 var captureResult = await agent.CaptureScreenshotAsync(new CaptureSettings
                 {
                     Width = captureWidth,
                     Height = captureHeight,
                     OutputPath = candidatePath,
                     IncludeFullScreen = true,
-                    RecordGif = gifEnabled,
+                    RecordGif = agentSideGif,
                     GifFrameCount = gifFrames,
                     GifFrameIntervalMs = gifInterval
                 }).ConfigureAwait(false);
@@ -1050,9 +1056,22 @@ public sealed class TestRunner
                 if (!string.IsNullOrEmpty(captureResult.FullScreenPath))
                     _logger.Log($"  + full-screen capture: {captureResult.FullScreenPath}");
 
-                if (gifEnabled && captureResult.FramePaths.Count > 0)
+                if (agentSideGif && captureResult.FramePaths.Count > 0)
                 {
                     cpResult.GifPath = EncodeGifAndCleanup(captureResult, candidatePath, gifInterval);
+                }
+                else if (gifEnabled && scrub != null && scrub.Values.Length > 0)
+                {
+                    var scrubFrames = await ScrubAndCaptureFramesAsync(
+                        (a, p) => agent.ExecuteAsync(a, p),
+                        s => agent.CaptureScreenshotAsync(s),
+                        scrub,
+                        candidatePath,
+                        captureWidth, captureHeight,
+                        ct).ConfigureAwait(false);
+                    if (scrubFrames.Count > 0)
+                        cpResult.GifPath = EncodeGifFromFrames(scrubFrames, candidatePath, gifInterval);
+                    CleanupFrames(scrubFrames);
                 }
             }
 
@@ -1248,19 +1267,21 @@ public sealed class TestRunner
             {
                 // Default: viewport capture + full-screen sibling (Phase 4.6.E.A.2 —
                 // catches warning balloons / modal toasts that the viewport-only capture misses).
-                // Phase 4.6.F Session B: optional GIF capture (capture.gif=true on the checkpoint
-                // captures N additional frames + encodes them via AnimatedGifEncoder below).
+                // Phase 4.6.F Session B: optional GIF capture (see in-process branch above for
+                // the agent-side-loop vs orchestrator-driven scrub split).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
                 var gifEnabled = checkpoint.Capture?.Gif == true;
+                var scrub = checkpoint.Capture?.Scrub;
                 var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
                 var gifInterval = checkpoint.Capture?.IntervalMs ?? 100;
+                var agentSideGif = gifEnabled && (scrub == null || scrub.Values.Length == 0);
                 var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
                 {
                     Width = captureWidth,
                     Height = captureHeight,
                     OutputPath = candidatePath,
                     IncludeFullScreen = true,
-                    RecordGif = gifEnabled,
+                    RecordGif = agentSideGif,
                     GifFrameCount = gifFrames,
                     GifFrameIntervalMs = gifInterval
                 }, ct).ConfigureAwait(false);
@@ -1269,9 +1290,22 @@ public sealed class TestRunner
                 if (!string.IsNullOrEmpty(captureResult.FullScreenPath))
                     _logger.Log($"  + full-screen capture: {captureResult.FullScreenPath}");
 
-                if (gifEnabled && captureResult.FramePaths.Count > 0)
+                if (agentSideGif && captureResult.FramePaths.Count > 0)
                 {
                     cpResult.GifPath = EncodeGifAndCleanup(captureResult, candidatePath, gifInterval);
+                }
+                else if (gifEnabled && scrub != null && scrub.Values.Length > 0)
+                {
+                    var scrubFrames = await ScrubAndCaptureFramesAsync(
+                        (a, p) => client.ExecuteAsync(a, p, ct),
+                        s => client.CaptureScreenshotAsync(s, ct),
+                        scrub,
+                        candidatePath,
+                        captureWidth, captureHeight,
+                        ct).ConfigureAwait(false);
+                    if (scrubFrames.Count > 0)
+                        cpResult.GifPath = EncodeGifFromFrames(scrubFrames, candidatePath, gifInterval);
+                    CleanupFrames(scrubFrames);
                 }
             }
 
@@ -1711,41 +1745,126 @@ public sealed class TestRunner
     }
 
     /// <summary>
-    /// Phase 4.6.F Session B helper: encode the captured frame PNGs into an animated GIF
-    /// sibling of <paramref name="candidatePath"/>, delete the intermediate frame files,
-    /// and return the GIF path (null if encoding failed). <paramref name="intervalMs"/>
-    /// is the requested per-frame interval in milliseconds; converted to GIF centiseconds.
+    /// Phase 4.6.F Session B helper: encode the captured agent-side frame PNGs into an
+    /// animated GIF sibling of <paramref name="candidatePath"/>, delete the intermediate
+    /// frame files, and return the GIF path (null if encoding failed). Used by the
+    /// agent-side internal frame-grabber path (CaptureSettings.RecordGif=true, no scrub).
     /// </summary>
     private string? EncodeGifAndCleanup(Canary.Agent.ScreenshotResult captureResult, string candidatePath, int intervalMs)
     {
+        var gifPath = EncodeGifFromFrames(captureResult.FramePaths, candidatePath, intervalMs);
+        CleanupFrames(captureResult.FramePaths);
+        return gifPath;
+    }
+
+    /// <summary>
+    /// Phase 4.6.F Session B+ shared core: encode a list of frame PNG paths into an
+    /// animated GIF sibling of <paramref name="candidatePath"/>. Does NOT delete the
+    /// frames — the caller decides cleanup policy. <paramref name="intervalMs"/> is the
+    /// requested per-frame GIF playback delay in milliseconds (converted to GIF
+    /// centiseconds, clamped ≥ 1).
+    /// </summary>
+    private string? EncodeGifFromFrames(IReadOnlyList<string> framePaths, string candidatePath, int intervalMs)
+    {
+        if (framePaths == null || framePaths.Count == 0) return null;
+
         var dir = Path.GetDirectoryName(candidatePath) ?? string.Empty;
         var baseName = Path.GetFileNameWithoutExtension(candidatePath);
         var gifPath = Path.Combine(dir, baseName + ".gif");
 
-        // GIF delay is in centiseconds (1/100 s). Round to nearest, clamp to at least 1.
         int delayCs = Math.Max(1, (int)Math.Round(intervalMs / 10.0));
         try
         {
-            int encoded = Canary.Comparison.AnimatedGifEncoder.Encode(
-                captureResult.FramePaths, gifPath, delayCs);
-            _logger.Log($"  + GIF capture: {encoded} frame(s) → {gifPath}");
+            int encoded = Canary.Comparison.AnimatedGifEncoder.Encode(framePaths, gifPath, delayCs);
+            _logger.Log($"  + GIF capture: {encoded} frame(s)  {gifPath}");
         }
         catch (Exception ex)
         {
-            _logger.Log($"  ! GIF encoding failed ({captureResult.FramePaths.Count} frames): {ex.Message}");
+            _logger.Log($"  ! GIF encoding failed ({framePaths.Count} frames): {ex.Message}");
             return null;
-        }
-        finally
-        {
-            // Always clean up the intermediate frame PNGs — they're noisy in
-            // the candidates dir and the GIF supersedes them. Failures here are
-            // non-fatal (e.g., AV lock); the GIF is what matters.
-            foreach (var f in captureResult.FramePaths)
-            {
-                try { if (File.Exists(f)) File.Delete(f); } catch { /* best-effort */ }
-            }
         }
 
         return File.Exists(gifPath) ? gifPath : null;
+    }
+
+    private static void CleanupFrames(IReadOnlyList<string> framePaths)
+    {
+        foreach (var f in framePaths)
+        {
+            try { if (File.Exists(f)) File.Delete(f); } catch { /* best-effort */ }
+        }
+    }
+
+    /// <summary>
+    /// Phase 4.6.F Session B+ orchestrator-driven per-frame slider scrub. For each
+    /// value in <paramref name="scrub"/>.Values: drive the named Grasshopper slider,
+    /// wait for the canvas to re-solve, optionally settle, then capture a single
+    /// frame PNG sibling of <paramref name="candidatePath"/>. Returns the list of
+    /// frame paths that were actually written (skipping any frame whose set/wait/
+    /// capture failed). The caller assembles + cleans them.
+    /// </summary>
+    private async Task<List<string>> ScrubAndCaptureFramesAsync(
+        Func<string, Dictionary<string, string>, Task<AgentResponse>> executeAsync,
+        Func<CaptureSettings, Task<ScreenshotResult>> captureAsync,
+        TestCheckpointScrub scrub,
+        string candidatePath,
+        int width, int height,
+        CancellationToken ct)
+    {
+        var dir = Path.GetDirectoryName(candidatePath) ?? string.Empty;
+        var baseName = Path.GetFileNameWithoutExtension(candidatePath);
+        var frames = new List<string>(scrub.Values.Length);
+        var solveTimeout = scrub.SolveTimeoutMs.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        for (int i = 0; i < scrub.Values.Length; i++)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            var v = scrub.Values[i];
+            var sliderResp = await executeAsync("GrasshopperSetSlider", new Dictionary<string, string>
+            {
+                ["nickname"] = scrub.Nickname,
+                ["value"] = v.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            }).ConfigureAwait(false);
+            if (!sliderResp.Success)
+            {
+                _logger.Log($"  ! scrub frame {i:D2} SetSlider('{scrub.Nickname}'={v}) failed: {sliderResp.Message}");
+                continue;
+            }
+
+            var waitResp = await executeAsync("WaitForGrasshopperSolution", new Dictionary<string, string>
+            {
+                ["timeoutMs"] = solveTimeout
+            }).ConfigureAwait(false);
+            if (!waitResp.Success)
+            {
+                _logger.Log($"  ! scrub frame {i:D2} WaitForGrasshopperSolution failed: {waitResp.Message}");
+                continue;
+            }
+
+            if (scrub.SettleMs > 0)
+                await Task.Delay(scrub.SettleMs, ct).ConfigureAwait(false);
+
+            var framePath = Path.Combine(dir, $"{baseName}.frame{i:D2}.png");
+            try
+            {
+                var captureResp = await captureAsync(new CaptureSettings
+                {
+                    Width = width,
+                    Height = height,
+                    OutputPath = framePath,
+                    IncludeFullScreen = false,
+                    RecordGif = false
+                }).ConfigureAwait(false);
+                if (File.Exists(captureResp.FilePath))
+                    frames.Add(captureResp.FilePath);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"  ! scrub frame {i:D2} capture failed: {ex.Message}");
+            }
+        }
+
+        return frames;
     }
 }

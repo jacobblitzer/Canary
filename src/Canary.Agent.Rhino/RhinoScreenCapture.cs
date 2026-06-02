@@ -87,12 +87,37 @@ public sealed class RhinoScreenCapture
             CapturedAt = DateTime.UtcNow
         };
 
+        // Phase 4.6.E.A.2 full-screen sibling. Originally declared but the
+        // wiring was never landed — the IncludeFullScreen flag was set by
+        // TestRunner but ignored here, AND silently dropped by HarnessClient
+        // (fixed in commit 684050d). With both fixed, this now actually
+        // produces `{baseName}.fullscreen.png`. Done BEFORE the GIF frame loop
+        // so the full-screen snapshot matches the main static PNG temporally.
+        if (settings.IncludeFullScreen)
+        {
+            try
+            {
+                var fsPath = FullScreenCapture.DeriveFullScreenPath(settings.OutputPath);
+                FullScreenCapture.Capture(fsPath);
+                result.FullScreenPath = fsPath;
+            }
+            catch
+            {
+                // Best-effort — the viewport PNG is the authoritative artifact.
+                // Failures here (display affinity, locked DC, multi-monitor edge
+                // cases) shouldn't fail the checkpoint.
+            }
+        }
+
         // Phase 4.6.F Session B: GIF frame capture. After the main PNG, capture
         // N additional viewport frames at the requested interval, saving each as
         // a sibling PNG `{baseName}.frame{NN:D2}.png`. The orchestrator (TestRunner)
         // encodes them into the final animated GIF via ImageSharp's GifEncoder.
         // Frame capture must stay on the Rhino UI thread (RhinoAgent already
         // marshals this whole method via InvokeOnUiThread).
+        // Bypassed when the orchestrator's per-frame scrub path is taking over
+        // (Session B+) — TestRunner sets RecordGif=false in that case so this
+        // branch correctly does nothing.
         if (settings.RecordGif && settings.GifFrameCount > 0)
         {
             CaptureGifFrames(view, settings, size, result);

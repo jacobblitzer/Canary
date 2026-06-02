@@ -37,8 +37,12 @@
             "tolerance": 0.02,
             "capture": {
                 "gif": true,
-                "frameCount": 12,
-                "intervalMs": 150
+                "intervalMs": 150,
+                "scrub": {
+                    "nickname": "AnimSlider",
+                    "values": [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000],
+                    "settleMs": 50
+                }
             }
         }
     ],

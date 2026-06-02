@@ -78,15 +78,50 @@ Field semantics:
 
 Output: a single animated GIF at `candidates/{name}.gif`, with `loop = ∞` and a uniform per-frame delay. The path is plumbed through `CheckpointResult.GifPath` (orchestrator side) and `ProgressCard.GifPath` (UI). The Avalonia runner card shows the GIF file path as a `🎞️ GIF: …` label; in-card animation playback needs the [AvaloniaGif](https://github.com/AvaloniaUI/avalonia-gif) community package, which is not adopted by this phase.
 
-**Useful when** the viewport changes during the capture window — Grasshopper Animate-style timelines, slider scrub, render progressive reveal. **Useless when** the viewport is static (you'll get N copies of the same frame); for stop-motion fixtures like `kin_09..kin_18`, the single PNG already encodes everything.
+**Useful when** the viewport changes during the capture window — Grasshopper Animate-style timelines, slider scrub, render progressive reveal. **Useless when** the viewport is static (you'll get N copies of the same frame).
 
-**Per-frame slider scrub is not yet wired** — Canary captures N frames of whatever the viewport shows. To drive a slider between frames, a future extension to either `RhinoScreenCapture` (per-frame action callback) or the checkpoint schema (`capture.beforeEachFrame`) would be needed.
+### Per-frame slider scrub (Session B+, 2026-06-01)
+
+Adding a `scrub` sub-object to `capture` switches Canary from the agent-side timer loop (above) to an orchestrator-driven per-frame loop: for each value, the orchestrator calls `GrasshopperSetSlider(nickname, value)` + `WaitForGrasshopperSolution` + a single-frame screenshot, then assembles the resulting PNGs into the GIF:
+
+```json
+{
+  "name": "post-build",
+  "atTimeMs": 5000,
+  "tolerance": 0.02,
+  "capture": {
+    "gif": true,
+    "intervalMs": 150,
+    "scrub": {
+      "nickname": "AnimSlider",
+      "values": [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000],
+      "settleMs": 50,
+      "solveTimeoutMs": 10000
+    }
+  }
+}
+```
+
+Field semantics:
+- `nickname` (string, required) — the Grasshopper slider's NickName. Match is case-insensitive. Slop slider nodes' `name` field becomes the GH NickName.
+- `values` (number[], required) — slider values to step through. One frame per entry; `values.Length` becomes the frame count (overrides `frameCount`).
+- `settleMs` (int, default 0) — extra wait after `WaitForGrasshopperSolution` returns, before capturing. Use when the canvas has deferred preview / display-cache updates that don't trigger the solve-complete signal.
+- `solveTimeoutMs` (int, default 10000) — per-frame upper bound on the solve wait.
+
+The static `post-build.png` is captured normally first; the GIF is built from the N scrub frames. The agent-side timer loop is bypassed when scrub is set (`RecordGif=false` is passed to the agent in that case).
+
+**Fixture-side requirement**: the canvas must have a Grasshopper slider with a stable NickName wired to whatever drives the visible-change. For CPig.Kinematics animated fixtures, this means dropping a Slop `{ type: "slider", name: "AnimSlider", min: 0, max: ... }` node and wiring it to `Animate Bound`'s `Index` input (input 2). `Animate Bound`'s auto-spawned slider has no NickName, so it can't be a scrub target — wire your own. `kin_18_2link_arm.json` is the canonical example.
 
 VLM mode does not consume the GIF (no current LLM provider takes animated input). Pixel-diff mode compares only the static PNG. The GIF is evidence-only.
 
 Encoder: `Canary.Comparison.AnimatedGifEncoder` (wrapping `SixLabors.ImageSharp.Formats.Gif.GifEncoder` — already a `Canary.Core` dependency for pixel-diff, so no new NuGet was added). See `THIRD_PARTY_LICENSES.md`.
 
-Demo fixture: `cpig-kin-18-2link-arm` has `capture.gif=true` on its post-build checkpoint as the end-to-end smoke of the pipeline.
+Demo fixture: `cpig-kin-18-2link-arm` has `capture.gif=true` + `capture.scrub` on its post-build checkpoint as the end-to-end smoke of the scrub pipeline.
+
+VLM mode does not consume the GIF (no current LLM provider takes animated input). Pixel-diff mode compares only the static PNG. The GIF is evidence-only.
+
+Encoder: `Canary.Comparison.AnimatedGifEncoder` (wrapping `SixLabors.ImageSharp.Formats.Gif.GifEncoder` — already a `Canary.Core` dependency for pixel-diff, so no new NuGet was added). See `THIRD_PARTY_LICENSES.md`.
+
 
 ## Naming convention
 Test name `cpig-NN-slug` mirrors the Slop JSON filename `NN_slug.json`. Underscores in the JSON name become hyphens in the test name. Numbering is shared so users can correlate at a glance.
