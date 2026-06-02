@@ -25,6 +25,10 @@
     <PackageReference Include="FluentAvaloniaUI" Version="2.2.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+    <!-- Phase 4.6.F Session B++ — animated-GIF playback in the test-runner card.
+         Avalonia.Labs.Gif is the official community/labs package; 11.3.1 is the
+         highest version compatible with the Avalonia 11.2.5 we use. MIT. -->
+    <PackageReference Include="Avalonia.Labs.Gif" Version="11.3.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,6 +16,7 @@ source (single-file ports, snippets) gets its own section below the NuGet table.
 | SixLabors.ImageSharp | 3.1.x | Apache-2.0 | `Canary.Core` | Pixel-diff (`PixelDiffComparer`), SSIM (`SsimComparer`), pixel-diff overlay rendering, animated-GIF encoding (`AnimatedGifEncoder`, Phase 4.6.F Session B). |
 | SixLabors.ImageSharp.Drawing | 2.1.x | Six Labors Split License | `Canary.Core` | Diff-overlay rendering (rectangles + text on the diff PNG). |
 | Avalonia | 11.x | MIT | `Canary.UI.Avalonia` | Cross-platform desktop UI for the test runner. |
+| Avalonia.Labs.Gif | 11.3.1 | MIT | `Canary.UI.Avalonia` | Animated-GIF playback control in the runner card (Phase 4.6.F Session B++). Official Avalonia Labs incubation project. |
 | CommunityToolkit.Mvvm | latest | MIT | `Canary.UI.Avalonia` | `ObservableObject` / `[ObservableProperty]` / `[RelayCommand]` source generators for the runner view-models. |
 | System.Text.Json | (BCL) | MIT | `Canary.Agent` / `Canary.Core` | Test JSON parsing + bridge serialization. |
 
@@ -23,9 +24,17 @@ source (single-file ports, snippets) gets its own section below the NuGet table.
 
 ## Vendored source
 
-None at present. If a future single-file vendoring lands here (e.g. a tiny GIF89a encoder, a glyph atlas, an LZW codec), add the upstream URL, license, SHA, and `Canary/src/...` location.
+- **`Canary.UI.Avalonia/Converters/GifPathToSourceConverter.cs`** —
+  pattern adapted from Avalonia.Labs.Catalog's sample
+  `GifSourceConverter` (Avalonia.Labs repo, MIT, 11.3.1 tag). Wraps
+  a `string` file path into a `file://` `Uri` so
+  `Avalonia.Labs.Gif.GifImage.Source` (typed `object`) routes through
+  `AssetLoader.Open(uri)` to a local file stream. Inline rather than
+  vendored verbatim because the upstream class is internal to the
+  Labs sample app, not shipped from the NuGet.
 
 ---
 
 History:
 - 2026-06-01 — created; first entry SixLabors.ImageSharp (Phase 4.6.F Session B, animated-GIF capture).
+- 2026-06-02 — added Avalonia.Labs.Gif (Phase 4.6.F Session B++, in-card animated-GIF playback).

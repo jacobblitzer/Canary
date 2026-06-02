@@ -76,7 +76,7 @@ Field semantics:
 - `frameCount` (int, default `30`) — number of additional viewport frames to grab beyond the main PNG. Each is written as a temporary sibling `{name}.frame{NN}.png` and deleted after encoding.
 - `intervalMs` (int, default `100`) — sleep between consecutive frame captures, in milliseconds. The orchestrator converts to GIF centiseconds (rounded, min 1cs = 10ms).
 
-Output: a single animated GIF at `candidates/{name}.gif`, with `loop = ∞` and a uniform per-frame delay. The path is plumbed through `CheckpointResult.GifPath` (orchestrator side) and `ProgressCard.GifPath` (UI). The Avalonia runner card shows the GIF file path as a `🎞️ GIF: …` label; in-card animation playback needs the [AvaloniaGif](https://github.com/AvaloniaUI/avalonia-gif) community package, which is not adopted by this phase.
+Output: a single animated GIF at `candidates/{name}.gif`, with `loop = ∞` and a uniform per-frame delay. The path is plumbed through `CheckpointResult.GifPath` (orchestrator side) and `ProgressCard.GifPath` (UI). The Avalonia runner card renders the GIF inline at up to 240 px tall via `Avalonia.Labs.Gif` (Phase 4.6.F Session B++) plus a selectable `🎞️ <path>` label below it for the operator to copy / open at full size in Explorer.
 
 **Useful when** the viewport changes during the capture window — Grasshopper Animate-style timelines, slider scrub, render progressive reveal. **Useless when** the viewport is static (you'll get N copies of the same frame).
 
