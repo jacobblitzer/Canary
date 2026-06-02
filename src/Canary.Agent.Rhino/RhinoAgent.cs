@@ -539,9 +539,13 @@ public sealed class RhinoAgent : ICanaryAgent
         // Title keywords that strongly imply a dismissable warning/error.
         // Order: most specific first. Avoid generic words like "Rhino" or
         // "Grasshopper" that would also match the main app windows.
+        // CRITICAL: ANY dialog that needs a non-default button clicked must
+        // be handled by the body-text fallback below, NOT here — title-keyword
+        // matches always send VK_RETURN which clicks the dialog's DEFAULT button.
         var keywords = new[]
         {
             "loading errors",    // GH "Grasshopper loading errors" — confirmed live
+            "loading sequence",  // GH "Grasshopper loading sequence" (single-OK follow-on after a Component ID conflict — confirmed live 2026-06-02)
             "Component Loader",  // GH plugin load errors
             "Loader Errors",     // GH plugin load errors (variant)
             "Old file format",   // GH version mismatch
@@ -554,9 +558,11 @@ public sealed class RhinoAgent : ICanaryAgent
             "FileNotFoundException", // .NET assembly missing — bubbles up to dialogs
             "Rhino Error",       // generic Rhino error dialog
             "Rhinoceros Error",  // (variant)
-            "Component conflict",// GH GUID-conflict modal (confirmed live 2026-06-01)
-            "Component ID",      // (variant)
-            "ID conflict",       // (variant)
+            // Removed 2026-06-02: "Component conflict", "Component ID", "ID conflict".
+            // The "Component ID conflict" modal HAS those substrings in its title, but
+            // its default button is Replace All — destructive (overwrites installed
+            // plugin components). The body-text-+Skip All path below handles it
+            // correctly; matching by title here was clicking the wrong button.
         };
 
         while (!token.IsCancellationRequested)
@@ -601,48 +607,87 @@ public sealed class RhinoAgent : ICanaryAgent
                         return true;
                     }
 
-                    // Body-text fallback: GH's GUID-conflict modal (confirmed
-                    // 2026-06-01) doesn't surface a useful title. Identify by
-                    // scanning child windows for the distinctive "Skip All"
-                    // button text and click it directly via BM_CLICK. We always
-                    // prefer Skip All over Replace All because Replace would
-                    // potentially overwrite installed-plugin components with
-                    // duplicates from CPig.gha.
-                    IntPtr skipAllBtn = IntPtr.Zero;
-                    bool hasConflictText = false;
+                    // Body-text fallback: GH dialogs whose title isn't matchable
+                    // OR whose default button is wrong. We scan child windows once
+                    // and try every known pattern, preferring an explicit BM_CLICK
+                    // on the named button over a generic Enter.
+
+                    IntPtr skipAllBtn = IntPtr.Zero; // "Component ID conflict" → Skip All
+                    IntPtr noBtn      = IntPtr.Zero; // "Grasshopper IO" yes/no → No
+                    bool hasConflictText = false;    // 2026-06-01 GH GUID-conflict modal
+                    bool hasGhIoText     = false;    // 2026-06-02 GH "IO generated N messages" modal
                     EnumChildWindows(hWnd, (child, _) =>
                     {
                         var ct = new System.Text.StringBuilder(256);
                         GetWindowText(child, ct, ct.Capacity);
                         var childText = ct.ToString();
                         if (string.IsNullOrEmpty(childText)) return true;
+
+                        // Buttons we know about. Match button text exactly so a
+                        // body label that *mentions* the word doesn't accidentally
+                        // get clicked.
                         if (childText.Equals("Skip All", StringComparison.OrdinalIgnoreCase)
                          || childText.Equals("&Skip All", StringComparison.OrdinalIgnoreCase))
                         {
                             skipAllBtn = child;
                         }
-                        else if (childText.IndexOf("must be discarded", StringComparison.OrdinalIgnoreCase) >= 0
-                              || childText.IndexOf("share the same ID", StringComparison.OrdinalIgnoreCase) >= 0
-                              || childText.IndexOf("Component ID conflict", StringComparison.OrdinalIgnoreCase) >= 0
-                              || childText.IndexOf("Conflicting Component", StringComparison.OrdinalIgnoreCase) >= 0)
+                        else if (childText.Equals("No", StringComparison.OrdinalIgnoreCase)
+                              || childText.Equals("&No", StringComparison.OrdinalIgnoreCase))
+                        {
+                            noBtn = child;
+                        }
+
+                        // Body-text markers (substring match — labels can be
+                        // multi-line and include surrounding prose).
+                        if (childText.IndexOf("must be discarded", StringComparison.OrdinalIgnoreCase) >= 0
+                         || childText.IndexOf("share the same ID", StringComparison.OrdinalIgnoreCase) >= 0
+                         || childText.IndexOf("Component ID conflict", StringComparison.OrdinalIgnoreCase) >= 0
+                         || childText.IndexOf("Conflicting Component", StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             hasConflictText = true;
+                        }
+                        else if (childText.IndexOf("IO generated", StringComparison.OrdinalIgnoreCase) >= 0
+                              || childText.IndexOf("would you like to see them", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            hasGhIoText = true;
                         }
                         return true;
                     }, IntPtr.Zero);
 
                     if (hasConflictText)
                     {
+                        // GH "Component ID conflict" — click Skip All (don't let
+                        // CPig.gha overwrite an installed plugin's components).
                         dismissed.Add(hWnd);
                         if (skipAllBtn != IntPtr.Zero)
-                        {
                             PostMessage(skipAllBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
-                        }
                         else
                         {
-                            // Fallback: send Enter to whatever's focused.
+                            // Fallback: Enter clicks the default button — which is
+                            // Replace All in this dialog. Suboptimal but unblocks
+                            // the UI thread. (Should never happen — the button is
+                            // always reachable via EnumChildWindows on a #32770.)
                             PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_RETURN, IntPtr.Zero);
                             PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_RETURN, IntPtr.Zero);
+                        }
+                    }
+                    else if (hasGhIoText)
+                    {
+                        // GH "Grasshopper IO — IO generated N messages, would you
+                        // like to see them?" — click NO so the messages window
+                        // doesn't open and trap focus. Confirmed live 2026-06-02
+                        // as the third dialog in the cold-load chain after a
+                        // Component ID conflict + loading sequence pair.
+                        dismissed.Add(hWnd);
+                        if (noBtn != IntPtr.Zero)
+                            PostMessage(noBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+                        else
+                        {
+                            // No "No" button found — send ESC, which typically
+                            // closes a Yes/No dialog the same way as No.
+                            const int VK_ESCAPE = 0x1B;
+                            PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_ESCAPE, IntPtr.Zero);
+                            PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_ESCAPE, IntPtr.Zero);
                         }
                     }
                     return true;
