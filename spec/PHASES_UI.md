@@ -304,3 +304,18 @@ Operator-reported after 14.3 dogfooding: (a) "approve all doesnt seem to do anyt
 Files: `ViewModels/ResultsViewerViewModel.cs` (Toast helper, ResolutionLabel/Color on the card VM, SaveSnapshotCommand + LooksLikeTimestampDir + CopyDirectoryRecursive helpers, OpenImage / OpenImageInExplorer commands, ErrorMessage on BuildCard). `Views/ResultsViewerView.axaml` (toast row, header buttons, per-card layout overhaul).
 
 **Exit:** Click Approve / Reject / Approve All / Save Snapshot → toast banner shows the result. Per-card state visibly changes. Clicking any thumb opens the PNG. Each path is visible + selectable below its thumb. ErrorMessage shows when non-empty. Build 0/0; 295/295 Canary.Tests.
+
+### Checkpoint 14.6: Past Runs + snapshots unified surface, "View Latest Run" header button
+**Status:** Landed 2026-06-02.
+
+Operator-reported after 14.5 dogfooding: (a) "if i leave the post run page i can't get back to it" — once `ActiveContent` swapped away from the `ResultsViewer` (e.g. by clicking another tree node), there was no obvious path back to a freshly-finished run's results; (b) "when i hit the snapshot button [...] there is nothing logged in the past runs details of those tests" — `SaveSnapshot` writes to `<testDir>/archived/<stamp>/`, but `PastRunsScanner` only enumerated `<testDir>/runs/*`, so snapshots were invisible in the UI.
+
+- **`PastRunsScanner` enumerates `archived/` too.** Refactored into two `ScanKindAsync` passes (`runs/` → `RowKind.Run`, `archived/` → `RowKind.Snapshot`), merged + sorted newest-first by timestamp directory name. Snapshots from `TestRunnerViewModel.SaveSnapshot` (no `result.json`) show Status="(snapshot)" + the dir mtime; snapshots from `ResultsViewerViewModel.SaveSnapshot` of a past-run load (which DOES copy the source's `result.json`) read Status / Duration from that file like a regular run. New `Kind` column in `PastRunsView` DataGrid: "Run" / "Snapshot".
+
+- **Auto-select newest row on context load.** `PastRunsViewModel.ReloadAsync` now sets `SelectedRun = Rows.FirstOrDefault()` after loading. Side effect: clicking a freshly-run test in the tree → side panel opens → flipping to Past Runs tab loads the latest run's cards immediately (no extra grid click needed).
+
+- **"🔁 View Latest Run" header button on `TestDetailsView`.** New `TestDetailsViewModel.ViewLatestRunCommand` sets `ActiveTabIndex = 1` (Past Runs tab) and triggers a `PastRunsViewModel.ReloadAsync` refresh. Combined with the auto-select above, this is a one-click path back to the post-run results after navigating away — addressing the "can't get back" complaint. TabControl gained a two-way binding on `SelectedIndex` to support the programmatic switch.
+
+Tests: 1 new `ScanAsync_includes_archived_snapshots_with_Snapshot_kind` covers mixed runs/ + archived/ enumeration, status parsing for snapshots-with-result.json and snapshots-without, and the newest-first ordering across both kinds. Canary.Tests 296/296 (was 295).
+
+**Exit:** Save Snapshot from the ResultsViewer → snapshot appears in that test's Past Runs tab. "🔁 View Latest Run" jumps to Past Runs + loads the newest row in one click. Every executed run's `runs/<ts>/result.json` is visible via the same DataGrid alongside snapshots, with a Kind column to distinguish them. Build 0/0; 296/296 Canary.Tests.

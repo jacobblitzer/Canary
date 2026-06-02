@@ -25,10 +25,11 @@
               GridLinesVisibility="Horizontal"
               HeadersVisibility="Column">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Started" Binding="{Binding StartedDisplay}" Width="170" />
-        <DataGridTextColumn Header="Status"  Binding="{Binding Status}"          Width="100" />
+        <DataGridTextColumn Header="Started"  Binding="{Binding StartedDisplay}" Width="170" />
+        <DataGridTextColumn Header="Kind"     Binding="{Binding KindDisplay}"    Width="90" />
+        <DataGridTextColumn Header="Status"   Binding="{Binding Status}"         Width="120" />
         <DataGridTextColumn Header="Duration" Binding="{Binding DurationDisplay}" Width="100" />
-        <DataGridTextColumn Header="Run directory" Binding="{Binding TimestampDir}" Width="*" />
+        <DataGridTextColumn Header="Directory" Binding="{Binding TimestampDir}"  Width="*" />
       </DataGrid.Columns>
     </DataGrid>
 

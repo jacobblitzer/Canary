@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Canary.UI.Avalonia.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -55,8 +56,15 @@ public sealed partial class PastRunsViewModel : ObservableObject
         Rows.Clear();
         foreach (var r in rows) Rows.Add(r);
         StatusText = rows.Count == 0
-            ? "No past runs found. Run the test once to populate."
-            : $"{rows.Count} past run(s).";
+            ? "No past runs or snapshots found. Run the test once to populate."
+            : $"{rows.Count} entries ({rows.Count(r => r.Kind == PastRunsScanner.RowKind.Run)} run(s), {rows.Count(r => r.Kind == PastRunsScanner.RowKind.Snapshot)} snapshot(s)).";
+
+        // Phase 14.6 — auto-select the newest row so the operator's mental
+        // model "click test → see latest results" works without an extra
+        // grid click. Also addresses the "I can't get back to the post-run
+        // page" issue: a freshly-run test's result.json is in runs/<ts>/
+        // already; landing on the Past Runs tab now loads it immediately.
+        SelectedRun = Rows.FirstOrDefault();
     }
 
     partial void OnSelectedRunChanged(PastRunsScanner.PastRunRow? value)

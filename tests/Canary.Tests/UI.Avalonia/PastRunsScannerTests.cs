@@ -74,6 +74,53 @@ public class PastRunsScannerTests
         }
     }
 
+    [Fact]
+    public async Task ScanAsync_includes_archived_snapshots_with_Snapshot_kind()
+    {
+        var tmp = NewTempDir();
+        try
+        {
+            var testDir = Path.Combine(tmp, "rhino", "results", "cpig-kin-15");
+            var runsDir = Path.Combine(testDir, "runs");
+            var archivedDir = Path.Combine(testDir, "archived");
+            Directory.CreateDirectory(runsDir);
+            Directory.CreateDirectory(archivedDir);
+
+            CreateRun(runsDir, "20260602-130430-aaaaaaaa", "Passed", "00:00:30.0000000");
+            // Snapshot from TestRunnerViewModel.SaveSnapshot — no result.json.
+            var snapDir1 = Path.Combine(archivedDir, "20260602-150000");
+            Directory.CreateDirectory(snapDir1);
+            // Snapshot from ResultsViewerViewModel.SaveSnapshot against a past-run
+            // load — DOES include result.json.
+            var snapDir2 = Path.Combine(archivedDir, "20260602-160000");
+            Directory.CreateDirectory(snapDir2);
+            File.WriteAllText(Path.Combine(snapDir2, "result.json"),
+                "{\"TestName\":\"cpig-kin-15-watt-straight-line\",\"Workload\":\"rhino\",\"Status\":\"New\",\"CheckpointResults\":[],\"CompositeImagePath\":null,\"ErrorMessage\":null,\"Duration\":\"00:00:39.8014961\"}");
+
+            var rows = await PastRunsScanner.ScanAsync(tmp, "rhino", "cpig-kin-15");
+            Assert.Equal(3, rows.Count);
+
+            // Newest first across runs/ + archived/.
+            Assert.Equal("20260602-160000", rows[0].TimestampDir);
+            Assert.Equal(PastRunsScanner.RowKind.Snapshot, rows[0].Kind);
+            Assert.Equal("Snapshot", rows[0].KindDisplay);
+            Assert.Equal("New", rows[0].Status);
+
+            Assert.Equal("20260602-150000", rows[1].TimestampDir);
+            Assert.Equal(PastRunsScanner.RowKind.Snapshot, rows[1].Kind);
+            Assert.Equal("(snapshot)", rows[1].Status);
+
+            Assert.Equal("20260602-130430-aaaaaaaa", rows[2].TimestampDir);
+            Assert.Equal(PastRunsScanner.RowKind.Run, rows[2].Kind);
+            Assert.Equal("Run", rows[2].KindDisplay);
+            Assert.Equal("Passed", rows[2].Status);
+        }
+        finally
+        {
+            TryDelete(tmp);
+        }
+    }
+
     private static void CreateRun(string runsDir, string timestamp, string status, string durationIso)
     {
         var dir = Path.Combine(runsDir, timestamp);
