@@ -52,6 +52,15 @@
                              IsVisible="{Binding VlmPrompt, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                   <TextBlock Text="{Binding VlmReasoning}" Foreground="#82B496" TextWrapping="Wrap" FontSize="11"
                              IsVisible="{Binding VlmReasoning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <!-- Phase 4.6.F Session B: GIF capture indicator. Shows the file path so the
+                       operator can open in Explorer / a browser (in-card animated rendering needs
+                       the AvaloniaGif community package, which Session B does not adopt — see
+                       MultiVerse/prompts/cpig-kinematics-animated-test-coverage-2026-06-01.md
+                       hand-off note). -->
+                  <SelectableTextBlock Text="{Binding GifPath, StringFormat='🎞️ GIF: {0}'}"
+                                       Foreground="#FFC850" TextWrapping="Wrap" FontSize="11"
+                                       ToolTip.Tip="Animated GIF captured for this checkpoint. Open in Explorer to view playback."
+                                       IsVisible="{Binding GifPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                 </StackPanel>
               </Border>
             </DataTemplate>

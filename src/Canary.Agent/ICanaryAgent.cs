@@ -49,6 +49,29 @@ public class CaptureSettings
     /// the viewport-only capture misses.
     /// </summary>
     public bool IncludeFullScreen { get; set; } = false;
+
+    /// <summary>
+    /// When true, the agent ALSO captures <see cref="GifFrameCount"/> additional viewport
+    /// frames at <see cref="GifFrameIntervalMs"/> intervals after the main PNG, saving each as
+    /// a sibling PNG named <c>foo.frame{NN}.png</c>. The orchestrator (TestRunner) reads those
+    /// frame PNGs from <see cref="ScreenshotResult.FramePaths"/> and encodes them into a single
+    /// animated GIF (<c>foo.gif</c>) via the ImageSharp GifEncoder already present in
+    /// Canary.Core.
+    /// </summary>
+    /// <remarks>
+    /// Useful for kinematics + animated-render fixtures where the viewport changes over time
+    /// (slider scrub, render progressive reveal, Grasshopper Animate-style timelines). For
+    /// fixtures where the viewport is static, the GIF will contain N copies of the same frame
+    /// — harmless but useless. Phase 4.6.F Session B (CPig.Kinematics animated-mechanism test
+    /// coverage prompt, 2026-06-01).
+    /// </remarks>
+    public bool RecordGif { get; set; } = false;
+
+    /// <summary>Number of additional frames to capture beyond the main static PNG. Default 30.</summary>
+    public int GifFrameCount { get; set; } = 30;
+
+    /// <summary>Sleep interval between consecutive frame captures in milliseconds. Default 100 ms.</summary>
+    public int GifFrameIntervalMs { get; set; } = 100;
 }
 
 /// <summary>
@@ -74,6 +97,20 @@ public class ScreenshotResult
     /// device) at native resolution — useful for catching warning balloons / toasts.
     /// </summary>
     public string? FullScreenPath { get; set; }
+
+    /// <summary>
+    /// Ordered list of intermediate frame PNG paths captured when
+    /// <see cref="CaptureSettings.RecordGif"/> was true. Empty otherwise. Each path is a sibling
+    /// of <see cref="FilePath"/> named <c>{baseName}.frame{NN}.png</c>. The orchestrator
+    /// (TestRunner) reads these and encodes them into <see cref="GifPath"/>.
+    /// </summary>
+    public List<string> FramePaths { get; set; } = new();
+
+    /// <summary>
+    /// Path to the encoded animated GIF, populated by the orchestrator after it consumes
+    /// <see cref="FramePaths"/>. Null when GIF capture was off or encoding failed.
+    /// </summary>
+    public string? GifPath { get; set; }
 }
 
 /// <summary>

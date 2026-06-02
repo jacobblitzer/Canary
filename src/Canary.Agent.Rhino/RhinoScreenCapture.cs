@@ -72,13 +72,59 @@ public sealed class RhinoScreenCapture
             throw new InvalidOperationException($"Screenshot file was not created at: {settings.OutputPath}");
 
         // Read dimensions from the saved file
-        using var img = Image.FromFile(settings.OutputPath);
-        return new ScreenshotResult
+        int finalWidth, finalHeight;
+        using (var img = Image.FromFile(settings.OutputPath))
+        {
+            finalWidth = img.Width;
+            finalHeight = img.Height;
+        }
+
+        var result = new ScreenshotResult
         {
             FilePath = settings.OutputPath,
-            Width = img.Width,
-            Height = img.Height,
+            Width = finalWidth,
+            Height = finalHeight,
             CapturedAt = DateTime.UtcNow
         };
+
+        // Phase 4.6.F Session B: GIF frame capture. After the main PNG, capture
+        // N additional viewport frames at the requested interval, saving each as
+        // a sibling PNG `{baseName}.frame{NN:D2}.png`. The orchestrator (TestRunner)
+        // encodes them into the final animated GIF via ImageSharp's GifEncoder.
+        // Frame capture must stay on the Rhino UI thread (RhinoAgent already
+        // marshals this whole method via InvokeOnUiThread).
+        if (settings.RecordGif && settings.GifFrameCount > 0)
+        {
+            CaptureGifFrames(view, settings, size, result);
+        }
+
+        return result;
+    }
+
+    private static void CaptureGifFrames(RhinoView view, CaptureSettings settings, Size size, ScreenshotResult result)
+    {
+        var dir = System.IO.Path.GetDirectoryName(settings.OutputPath) ?? string.Empty;
+        var baseName = System.IO.Path.GetFileNameWithoutExtension(settings.OutputPath);
+        int interval = System.Math.Max(0, settings.GifFrameIntervalMs);
+
+        for (int i = 0; i < settings.GifFrameCount; i++)
+        {
+            if (interval > 0) Thread.Sleep(interval);
+            view.Document?.Views.Redraw();
+            RhinoApp.Wait();
+            view.Redraw();
+            RhinoApp.Wait();
+
+            var framePath = System.IO.Path.Combine(dir, $"{baseName}.frame{i:D2}.png");
+            using var frameBmp = view.CaptureToBitmap(size);
+            if (frameBmp == null)
+            {
+                // Single-frame failure is non-fatal — log via the result, skip this frame.
+                // The orchestrator's GIF encoder tolerates a partial frame list.
+                continue;
+            }
+            frameBmp.Save(framePath, ImageFormat.Png);
+            result.FramePaths.Add(framePath);
+        }
     }
 }

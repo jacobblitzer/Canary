@@ -24,6 +24,15 @@ public sealed class CheckpointResult
     public string? BaselinePath { get; set; }
     public string? CandidatePath { get; set; }
     public string? DiffImagePath { get; set; }
+
+    /// <summary>
+    /// Path to the encoded animated GIF, when the checkpoint requested
+    /// <c>capture.gif=true</c> and at least one frame was captured. Sibling of
+    /// <see cref="CandidatePath"/>, e.g. <c>candidates/post-build.gif</c>.
+    /// Phase 4.6.F Session B.
+    /// </summary>
+    public string? GifPath { get; set; }
+
     public string? ErrorMessage { get; set; }
 
     // VLM oracle fields — populated only for mode="vlm" checkpoints

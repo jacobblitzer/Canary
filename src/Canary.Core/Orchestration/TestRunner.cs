@@ -1029,22 +1029,37 @@ public sealed class TestRunner
             {
                 // Default: viewport capture + full-screen sibling (Phase 4.6.E.A.2 —
                 // catches warning balloons / modal toasts that the viewport-only capture misses).
+                // Phase 4.6.F Session B: optional GIF capture (capture.gif=true on the checkpoint
+                // captures N additional frames + encodes them via AnimatedGifEncoder below).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+                var gifEnabled = checkpoint.Capture?.Gif == true;
+                var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
+                var gifInterval = checkpoint.Capture?.IntervalMs ?? 100;
                 var captureResult = await agent.CaptureScreenshotAsync(new CaptureSettings
                 {
                     Width = captureWidth,
                     Height = captureHeight,
                     OutputPath = candidatePath,
-                    IncludeFullScreen = true
+                    IncludeFullScreen = true,
+                    RecordGif = gifEnabled,
+                    GifFrameCount = gifFrames,
+                    GifFrameIntervalMs = gifInterval
                 }).ConfigureAwait(false);
 
                 cpResult.CandidatePath = captureResult.FilePath;
                 if (!string.IsNullOrEmpty(captureResult.FullScreenPath))
                     _logger.Log($"  + full-screen capture: {captureResult.FullScreenPath}");
+
+                if (gifEnabled && captureResult.FramePaths.Count > 0)
+                {
+                    cpResult.GifPath = EncodeGifAndCleanup(captureResult, candidatePath, gifInterval);
+                }
             }
 
             if (cpResult.CandidatePath != null)
                 Progress.OnScreenshotCaptured(testName, displayName, cpResult.CandidatePath);
+            if (cpResult.GifPath != null)
+                Progress.OnGifCaptured(testName, displayName, cpResult.GifPath);
 
             // Branch on comparison mode. forceMode (set by ResolveEffectiveModes)
             // wins over checkpoint.Mode. forceMode == null preserves the original
@@ -1233,18 +1248,31 @@ public sealed class TestRunner
             {
                 // Default: viewport capture + full-screen sibling (Phase 4.6.E.A.2 —
                 // catches warning balloons / modal toasts that the viewport-only capture misses).
+                // Phase 4.6.F Session B: optional GIF capture (capture.gif=true on the checkpoint
+                // captures N additional frames + encodes them via AnimatedGifEncoder below).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
+                var gifEnabled = checkpoint.Capture?.Gif == true;
+                var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
+                var gifInterval = checkpoint.Capture?.IntervalMs ?? 100;
                 var captureResult = await client.CaptureScreenshotAsync(new CaptureSettings
                 {
                     Width = captureWidth,
                     Height = captureHeight,
                     OutputPath = candidatePath,
-                    IncludeFullScreen = true
+                    IncludeFullScreen = true,
+                    RecordGif = gifEnabled,
+                    GifFrameCount = gifFrames,
+                    GifFrameIntervalMs = gifInterval
                 }, ct).ConfigureAwait(false);
 
                 cpResult.CandidatePath = captureResult.FilePath;
                 if (!string.IsNullOrEmpty(captureResult.FullScreenPath))
                     _logger.Log($"  + full-screen capture: {captureResult.FullScreenPath}");
+
+                if (gifEnabled && captureResult.FramePaths.Count > 0)
+                {
+                    cpResult.GifPath = EncodeGifAndCleanup(captureResult, candidatePath, gifInterval);
+                }
             }
 
             // Branch on comparison mode. forceMode (set by ResolveEffectiveModes)
@@ -1680,5 +1708,44 @@ public sealed class TestRunner
 
             _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain)")
         };
+    }
+
+    /// <summary>
+    /// Phase 4.6.F Session B helper: encode the captured frame PNGs into an animated GIF
+    /// sibling of <paramref name="candidatePath"/>, delete the intermediate frame files,
+    /// and return the GIF path (null if encoding failed). <paramref name="intervalMs"/>
+    /// is the requested per-frame interval in milliseconds; converted to GIF centiseconds.
+    /// </summary>
+    private string? EncodeGifAndCleanup(Canary.Agent.ScreenshotResult captureResult, string candidatePath, int intervalMs)
+    {
+        var dir = Path.GetDirectoryName(candidatePath) ?? string.Empty;
+        var baseName = Path.GetFileNameWithoutExtension(candidatePath);
+        var gifPath = Path.Combine(dir, baseName + ".gif");
+
+        // GIF delay is in centiseconds (1/100 s). Round to nearest, clamp to at least 1.
+        int delayCs = Math.Max(1, (int)Math.Round(intervalMs / 10.0));
+        try
+        {
+            int encoded = Canary.Comparison.AnimatedGifEncoder.Encode(
+                captureResult.FramePaths, gifPath, delayCs);
+            _logger.Log($"  + GIF capture: {encoded} frame(s) → {gifPath}");
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"  ! GIF encoding failed ({captureResult.FramePaths.Count} frames): {ex.Message}");
+            return null;
+        }
+        finally
+        {
+            // Always clean up the intermediate frame PNGs — they're noisy in
+            // the candidates dir and the GIF supersedes them. Failures here are
+            // non-fatal (e.g., AV lock); the GIF is what matters.
+            foreach (var f in captureResult.FramePaths)
+            {
+                try { if (File.Exists(f)) File.Delete(f); } catch { /* best-effort */ }
+            }
+        }
+
+        return File.Exists(gifPath) ? gifPath : null;
     }
 }

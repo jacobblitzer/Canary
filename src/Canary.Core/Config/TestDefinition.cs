@@ -237,6 +237,35 @@ public sealed class TestCheckpoint
     /// </summary>
     [JsonPropertyName("stabilizeMs")]
     public int? StabilizeMs { get; set; }
+
+    /// <summary>
+    /// Optional capture-side options layered on top of the default viewport screenshot.
+    /// Today: <see cref="TestCheckpointCapture.Gif"/> enables animated-GIF capture
+    /// (Phase 4.6.F Session B). Null = no extra capture options (current default
+    /// behaviour: single PNG + optional full-screen sibling).
+    /// </summary>
+    [JsonPropertyName("capture")]
+    public TestCheckpointCapture? Capture { get; set; }
+}
+
+/// <summary>
+/// Optional capture-side options for a checkpoint. Currently controls animated-GIF
+/// capture (Phase 4.6.F Session B); future extensions can add fields here without
+/// breaking the per-checkpoint contract.
+/// </summary>
+public sealed class TestCheckpointCapture
+{
+    /// <summary>When true, capture an animated GIF alongside the static PNG.</summary>
+    [JsonPropertyName("gif")]
+    public bool Gif { get; set; } = false;
+
+    /// <summary>Number of additional frames to capture for the GIF. Default 30.</summary>
+    [JsonPropertyName("frameCount")]
+    public int FrameCount { get; set; } = 30;
+
+    /// <summary>Sleep interval between frame captures in milliseconds. Default 100.</summary>
+    [JsonPropertyName("intervalMs")]
+    public int IntervalMs { get; set; } = 100;
 }
 
 /// <summary>

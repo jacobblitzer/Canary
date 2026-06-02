@@ -43,6 +43,7 @@ Beyond Canary's existing `setup` + `recording` + `checkpoints`, CPig tests use `
   "checkpoints": [
     { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
   ],
+  // Optional Phase 4.6.F Session B GIF capture — see the "capture.gif" section below.
   "asserts": [
     { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True" },
     { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
@@ -52,6 +53,40 @@ Beyond Canary's existing `setup` + `recording` + `checkpoints`, CPig tests use `
 ```
 
 `actions[]` runs sequentially before checkpoint capture. `asserts[]` runs after each checkpoint. Both extensions are dispatched in `Canary.Harness/TestRunner.cs`.
+
+## Optional GIF capture on a checkpoint (Phase 4.6.F Session B, 2026-06-01)
+
+Each checkpoint can opt into an animated-GIF capture sibling to the static PNG by adding a `capture` sub-object:
+
+```json
+{
+  "name": "post-build",
+  "atTimeMs": 5000,
+  "tolerance": 0.02,
+  "capture": {
+    "gif": true,
+    "frameCount": 12,
+    "intervalMs": 150
+  }
+}
+```
+
+Field semantics:
+- `gif` (bool, default `false`) — turn the GIF path on. When `false`, behaviour is unchanged (single PNG + optional `.fullscreen.png`).
+- `frameCount` (int, default `30`) — number of additional viewport frames to grab beyond the main PNG. Each is written as a temporary sibling `{name}.frame{NN}.png` and deleted after encoding.
+- `intervalMs` (int, default `100`) — sleep between consecutive frame captures, in milliseconds. The orchestrator converts to GIF centiseconds (rounded, min 1cs = 10ms).
+
+Output: a single animated GIF at `candidates/{name}.gif`, with `loop = ∞` and a uniform per-frame delay. The path is plumbed through `CheckpointResult.GifPath` (orchestrator side) and `ProgressCard.GifPath` (UI). The Avalonia runner card shows the GIF file path as a `🎞️ GIF: …` label; in-card animation playback needs the [AvaloniaGif](https://github.com/AvaloniaUI/avalonia-gif) community package, which is not adopted by this phase.
+
+**Useful when** the viewport changes during the capture window — Grasshopper Animate-style timelines, slider scrub, render progressive reveal. **Useless when** the viewport is static (you'll get N copies of the same frame); for stop-motion fixtures like `kin_09..kin_18`, the single PNG already encodes everything.
+
+**Per-frame slider scrub is not yet wired** — Canary captures N frames of whatever the viewport shows. To drive a slider between frames, a future extension to either `RhinoScreenCapture` (per-frame action callback) or the checkpoint schema (`capture.beforeEachFrame`) would be needed.
+
+VLM mode does not consume the GIF (no current LLM provider takes animated input). Pixel-diff mode compares only the static PNG. The GIF is evidence-only.
+
+Encoder: `Canary.Comparison.AnimatedGifEncoder` (wrapping `SixLabors.ImageSharp.Formats.Gif.GifEncoder` — already a `Canary.Core` dependency for pixel-diff, so no new NuGet was added). See `THIRD_PARTY_LICENSES.md`.
+
+Demo fixture: `cpig-kin-18-2link-arm` has `capture.gif=true` on its post-build checkpoint as the end-to-end smoke of the pipeline.
 
 ## Naming convention
 Test name `cpig-NN-slug` mirrors the Slop JSON filename `NN_slug.json`. Underscores in the JSON name become hyphens in the test name. Numbering is shared so users can correlate at a glance.

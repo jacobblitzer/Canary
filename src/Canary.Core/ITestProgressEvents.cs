@@ -31,6 +31,15 @@ public interface ITestProgressEvents
     void OnScreenshotCaptured(string testName, string checkpointName, string imagePath);
 
     /// <summary>
+    /// Fires after the orchestrator finishes encoding the animated GIF for a
+    /// checkpoint with <c>capture.gif=true</c>. <paramref name="gifPath"/> is
+    /// absolute, sibling of the static-PNG path delivered via
+    /// <see cref="OnScreenshotCaptured"/>. Default no-op so non-GUI consumers
+    /// (CLI runs, tests) don't need to handle it. Phase 4.6.F Session B.
+    /// </summary>
+    void OnGifCaptured(string testName, string checkpointName, string gifPath) { }
+
+    /// <summary>
     /// Fires when the VLM round-trip is dispatched. <paramref name="prompt"/>
     /// is exactly what's being sent to the model (the test's
     /// <c>description</c> field). The GUI shows it next to the screenshot

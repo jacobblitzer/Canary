@@ -26,6 +26,9 @@ public sealed partial class ProgressCard : ObservableObject
     [ObservableProperty] private string? _vlmPrompt;
     [ObservableProperty] private string? _vlmReasoning;
     [ObservableProperty] private string? _imagePath;
+    // Phase 4.6.F Session B — populated when the checkpoint set capture.gif=true
+    // and the orchestrator successfully encoded the animated GIF. Sibling of ImagePath.
+    [ObservableProperty] private string? _gifPath;
     public string Key => $"{TestName}/{CheckpointName}";
 }
 
@@ -397,6 +400,13 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
         {
             var card = FindOrCreate(testName, checkpointName);
             card.ImagePath = imagePath;
+        });
+
+    public void OnGifCaptured(string testName, string checkpointName, string gifPath)
+        => Post(() =>
+        {
+            var card = FindOrCreate(testName, checkpointName);
+            card.GifPath = gifPath;
         });
 
     public void OnVlmEvaluating(string testName, string checkpointName, string prompt)

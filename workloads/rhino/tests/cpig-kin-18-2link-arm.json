@@ -31,7 +31,16 @@
         { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 }
     ],
     "checkpoints": [
-        { "name": "post-build", "atTimeMs": 5000, "tolerance": 0.02 }
+        {
+            "name": "post-build",
+            "atTimeMs": 5000,
+            "tolerance": 0.02,
+            "capture": {
+                "gif": true,
+                "frameCount": 12,
+                "intervalMs": 150
+            }
+        }
     ],
     "asserts": [
         { "type": "PanelEquals",         "nickname": "SlopSuccess", "text": "True" },
