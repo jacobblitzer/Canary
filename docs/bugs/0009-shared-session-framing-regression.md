@@ -7,11 +7,11 @@ tags:
   - rhino-agent
   - viewport
   - shared-session
-status: open
+status: resolved-not-canary
 project: canary
 component: rhino-agent-set-viewport
 severity: medium
-fix-commit: ""
+fix-commit: "self-resolved by CPig c091570"
 canary-repro: "cpig-kinematics suite (any cpig-kin-* test)"
 ---
 
@@ -68,6 +68,19 @@ A third hypothesis: in shared mode, the `WaitForGrasshopperSolution` quiesce tim
 ## Workaround
 None. Run tests individually via `--test <name>` if correct framing matters. Loses the ~10x speed advantage of shared sessions.
 
+## Resolution (2026-06-02, post-investigation)
+**The framing regression was NOT a Canary-side bug.** Investigation via new diagnostic logging in `HandleSetViewport` (logs `bbox.min/max/diag` + camera position to `C:/Repos/CPig/logs/agent_viewport_diag.log`) showed:
+
+- For kin-15 Watt, the bbox diagonal + camera position are **byte-identical** between solo `--test` and shared `--suite` modes (both: `bbox.diag=166mm`, `cam=(50,-35,0)`, `tgt=(50,26,0)`).
+- The agent's `ZoomBoundingBox` does the same math in both modes — there is no shared-session-specific viewport bug.
+
+The "extreme close-up" symptom at the time of reporting was actually **extreme zoom-OUT** caused by an upstream issue: CPig BUG-0008 had just been fixed (the FD driver-field omission) but the kin fixtures' constant torques were still un-tuned. Closed-loop linkages (Watt / Strandbeest / Klann) and the 2-link arm flew apart under the un-tuned torques (Watt 250 N·mm at the time, 1500 in the speculative version, Strandbeest 200, Klann 400, 2-link 80/60). Bodies separated to (millions, millions, 0) mm. The agent correctly computed the bbox over the flown-apart geometry → bbox.diag = millions of mm → camera positioned far away → actual mechanism a single-pixel speck.
+
+After CPig commits `f7506b6` (Watt tuning) + `c091570` (Strandbeest + Klann tuning) landed and motion was bounded (28-65mm origin deltas), the captures returned to correct framing automatically. No Canary-side code change was needed.
+
+The diagnostic instrumentation added to `HandleSetViewport` in this investigation is retained for future framing-issue diagnosis — see `Canary.Agent.Rhino/RhinoAgent.cs::HandleSetViewport` and `C:/Repos/CPig/logs/agent_viewport_diag.log`.
+
 ## Out of scope
-- The actual visual content of the diagrams (whether the bicycle skeleton resembles a bicycle, etc) — tracked separately.
-- The kin-18 forearm-divergence bug — tracked separately.
+- The actual visual content of the diagrams (whether the bicycle skeleton resembles a bicycle, etc) — tracked as CPig BUG-0011.
+- The kin-18 forearm-divergence bug — tracked as CPig BUG-0009.
+- The bicycle fixtures (kin-08 / kin-09) legitimately span 4 metres because they're rolling tests — the resulting captures are small at the default 960×600 res. Not a framing bug, but a "render at higher resolution for wide bboxes" follow-up worth filing if visual diff needs more detail.

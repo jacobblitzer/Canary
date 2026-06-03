@@ -311,27 +311,51 @@ public sealed class RhinoAgent : ICanaryAgent
         // from Perspective to Front in a per-checkpoint override leaves Front
         // looking at whatever camera position Rhino's view system remembers
         // — which may be miles away from where the GH-built geometry sits.
+        //
+        // BUG-CANARY-0009 diagnostic: counts + diagonal + camera position
+        // are logged to agent_viewport_diag.log so the shared-vs-solo
+        // framing-regression hypotheses can be tested without re-instrumenting.
+        string zoomDiag = "(unset)";
         try
         {
             var v = doc.Views.ActiveView;
             if (v != null)
             {
                 var bbox = global::Rhino.Geometry.BoundingBox.Empty;
+                int docCount = 0, ghValid = 0, ghHidden = 0, ghInvalid = 0;
+                double ghMaxDiag = 0;
                 var rhDoc = RhinoDoc.ActiveDoc;
                 if (rhDoc != null)
                 {
                     foreach (var ro in rhDoc.Objects)
                     {
-                        try { var b = ro.Geometry.GetBoundingBox(true); if (b.IsValid) bbox.Union(b); } catch { }
+                        try
+                        {
+                            var b = ro.Geometry.GetBoundingBox(true);
+                            if (b.IsValid) { bbox.Union(b); docCount++; }
+                        }
+                        catch { }
                     }
                     var ghDoc = Grasshopper.Instances.ActiveCanvas?.Document;
                     if (ghDoc != null)
                     {
                         foreach (var obj in ghDoc.Objects)
                         {
-                            if (obj is Grasshopper.Kernel.IGH_PreviewObject prev && !prev.Hidden)
+                            if (obj is Grasshopper.Kernel.IGH_PreviewObject prev)
                             {
-                                try { var pb = prev.ClippingBox; if (pb.IsValid && pb.Diagonal.Length > 1e-9) bbox.Union(pb); } catch { }
+                                if (prev.Hidden) { ghHidden++; continue; }
+                                try
+                                {
+                                    var pb = prev.ClippingBox;
+                                    if (pb.IsValid && pb.Diagonal.Length > 1e-9)
+                                    {
+                                        bbox.Union(pb);
+                                        ghValid++;
+                                        if (pb.Diagonal.Length > ghMaxDiag) ghMaxDiag = pb.Diagonal.Length;
+                                    }
+                                    else { ghInvalid++; }
+                                }
+                                catch { ghInvalid++; }
                             }
                         }
                     }
@@ -339,9 +363,20 @@ public sealed class RhinoAgent : ICanaryAgent
                 if (bbox.IsValid && bbox.Diagonal.Length > 1e-6) v.ActiveViewport.ZoomBoundingBox(bbox);
                 else v.ActiveViewport.ZoomExtents();
                 v.Redraw();
+
+                var cam = v.ActiveViewport.CameraLocation;
+                var tgt = v.ActiveViewport.CameraTarget;
+                zoomDiag = $"doc={docCount} gh={ghValid} ghH={ghHidden} ghI={ghInvalid} ghMaxDiag={ghMaxDiag:F1} bbox.diag={(bbox.IsValid ? bbox.Diagonal.Length : 0):F1} bbox.min=({bbox.Min.X:F1},{bbox.Min.Y:F1},{bbox.Min.Z:F1}) bbox.max=({bbox.Max.X:F1},{bbox.Max.Y:F1},{bbox.Max.Z:F1}) cam=({cam.X:F1},{cam.Y:F1},{cam.Z:F1}) tgt=({tgt.X:F1},{tgt.Y:F1},{tgt.Z:F1})";
             }
         }
-        catch (Exception zex) { RhinoApp.WriteLine($"[Canary] SetViewport zoom: {zex.Message}"); }
+        catch (Exception zex) { zoomDiag = $"ERR: {zex.Message}"; RhinoApp.WriteLine($"[Canary] SetViewport zoom: {zex.Message}"); }
+
+        try
+        {
+            System.IO.File.AppendAllText(@"C:\Repos\CPig\logs\agent_viewport_diag.log",
+                $"  -> zoom: {zoomDiag}\n");
+        }
+        catch { }
 
         try
         {
