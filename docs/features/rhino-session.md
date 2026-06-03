@@ -21,6 +21,9 @@ Files shipped:
 - `--file <path.gh>` / `--mech <path.kin.json>` shortcuts that pre-open a fixture in Rhino. Today the operator opens whatever they want from inside Rhino after the session arms.
 - Bring-Rhino-to-foreground hint at session-start so the operator doesn't have to alt-tab to find it.
 
+**Known v1 caveat (2026-06-02 smoke test):**
+- `RhinoSessionAgent.DisposeAsync` calls `Process.Kill(entireProcessTree: true)` but the kill didn't actually tear down Rhino on closeout — two zombie Rhino processes remained alive after the smoke-test session exited. Suspect `SupervisedSession.DisposeAsync` doesn't propagate to the bundle's `IAsyncDisposable Agent` (need to verify). Manual workaround: `Get-Process Rhino | Stop-Process -Force` between sessions. v1.1 fix: trace the disposal chain and ensure agent disposal fires before process exit.
+
 # Rhino session mode
 
 A third supervised-session workload alongside `qualia` (browser-based) and `penumbra` (browser-based) — boots Rhino + Grasshopper under Canary supervision so the operator can drive a Slop / CPig.Kinematics / retopo fixture by hand, capture screenshots on demand, and produce a `SESSION_REPORT.md` bundle without writing a Canary test definition first.
