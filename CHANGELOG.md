@@ -12,6 +12,30 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Phase 15.1: Rhino supervised-session v1 (2026-06-02)
+
+Third supervised-session workload alongside Qualia + Penumbra. `canary session start --workload rhino` boots Rhino under supervision, connects the existing `canary-rhino-<pid>` named-pipe agent, and drops the operator into the same REPL (`c` / `a` / `n` / `q`). Sessions live at `workloads/rhino/sessions/<yyyyMMdd-HHmmss-xxxx>/` with `SESSION_REPORT.md` + `session.json` + `captures/`. Smoke-verified end-to-end. `RhinoSessionAgent` (`ICanaryAgent` + `IAsyncDisposable`) wraps `AppLauncher.Launch` + `HarnessClient`; `SessionAgentFactory` gains a `"rhino"` case. Known v1 caveat: Rhino process not torn down on closeout — v1.1 fix planned. Telemetry source, `--file`/`--mech` shortcuts, and bring-to-foreground deferred to v2. Spec: `spec/PHASES.md` Phase 15.1; feature doc `docs/features/rhino-session.md`.
+
+### Phase 14.8 — Custom AnimatedImagePanel (BUG-0006 resolved, 2026-06-02)
+
+`Avalonia.Labs.Gif.GifImage` 11.3.1 crashed Canary.UI when batch-binding GIF candidates into the ResultsViewer card grid — three consecutive XAML defenses all failed (the labs decoder fires on `Source` assignment regardless of `IsVisible`). Dump analysis (`dotnet-dump analyze` + `pe -nested`) extracted the actual exception (`ArgumentException` on null Source / `FileNotFoundException` on missing file). Custom `Canary.UI.Avalonia.Controls.AnimatedImagePanel` (~210 LOC) replaces the labs control: plain `Image` host + ImageSharp decode on `Task.Run` + `DispatcherTimer` playback, null/missing-file safe. Avalonia.Labs.Gif package removed. 5 new tests; 302/302.
+
+### Added — Phase 14.7+: 4-view checkpoint pattern + GIF surface polish (2026-06-02)
+
+`TestCheckpoint.Viewport` per-checkpoint override (Front/Top/Right/Perspective from one Grasshopper solve). All 13 `cpig-kin-*` Canary tests retrofitted via `scripts/retrofit_kin_fourview.py`. ResultsViewer card: Save Snapshot writes `result.json` so past-snapshot loads render full cards. Override snapshot button writes a fixed `archived/latest/` slot. Filetype labels per card (PNG / GIF). 14.5 — Approve / Reject / Save Snapshot toast banner; clickable thumbs open the PNG in the OS default viewer; selectable path label per thumb; per-checkpoint `ErrorMessage` surfaced on the card. 14.6 — Past Runs scanner walks `runs/` + `archived/` with a `Kind` column; "🔁 View Latest Run" header button.
+
+### Fixed — BUG-0007 CLI exit codes (Approve/Report/Record sibling audit, 2026-06-02)
+
+Original report targeted `RunCommand.RunAsync` returning `Task` (no result). That had been fixed at some point but the bug doc was never updated. Audit found three siblings still in the void-handler pattern: `ApproveCommand`, `ReportCommand`, `RecordCommand`. All converted to the `ctx => { ctx.ExitCode = …Inner(...); }` pattern with internal `*Inner` methods returning `int` for unit testability. 3 new regression tests cover the negative paths. End-to-end: `canary approve --workload rhino --test nonexistent` → exit=1; `canary approve --workload rhino --test cpig-kin-01-fork-diagram` → exit=0.
+
+### Diagnostic — BUG-0009-Canary shared-session framing resolved-not-canary (2026-06-02)
+
+Investigated reported "extreme close-up" framing in shared-suite captures. Instrumented `HandleSetViewport` to log per-call `bbox.min/max/diagonal` + camera position to `agent_viewport_diag.log`. Solo `--test` and shared `--suite` modes produce IDENTICAL bbox + camera output (kin-15 Watt: both `bbox.diag=166mm, cam=(50,-35,0)`). The visible regression was actually extreme zoom-OUT caused by upstream FD divergence (un-tuned torques flying linkages apart, producing millions-of-mm bboxes); self-resolved when the CPig torque-tuning commits landed. Bug closed `resolved-not-canary`; diagnostic instrumentation retained for future framing triage.
+
+### Doc — "run canary" verbal shorthand pinned to UI-visible default (2026-06-03)
+
+`STANDARD.md §16 rule 8` augmented with the operator-shorthand sub-paragraph: when the operator (jacobblitzer) says "run canary" in chat, the agent MUST invoke without `--headless`. Auto-close-on-done is NOT v1-supported; `AutoRunArgs` has no `AutoExit` flag and UI stays open after the run. Operator wants the close behavior conditionally, not always — deferred. `Canary/CLAUDE.md` Quick Reference + `CPig/CLAUDE.md` Regression line back-reference the rule. Agent's own end-to-end verification may still use `--headless` per `canary_launch_from_session` memory; that's internal tooling.
+
 ### Changed — Canary.UI migrated to Avalonia 11 + FluentAvaloniaUI + CommunityToolkit.Mvvm (2026-05-27)
 
 **SHIPPED.** Phase 6 cutover landed. The Avalonia project at `src/Canary.UI.Avalonia/` is now the sole UI project; its `<AssemblyName>` was flipped to `Canary.UI` so the produced `Canary.UI.exe` matches the legacy filename. `Canary.Harness/UiLocator.cs` walks to the Avalonia sibling's `bin/.../Canary.UI.exe`. `src/Canary.UI/` deleted entirely.

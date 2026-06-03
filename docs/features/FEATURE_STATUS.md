@@ -10,6 +10,14 @@ tags:
 
 Living tracker for all Canary features. Updated as work progresses.
 
+## Supervised sessions (capture-and-annotate, no automated tests)
+
+| Workload | Status | Phase | Notes |
+|---------|--------|-------|-------|
+| Qualia (CDP) | Done | 14 | Shipped 2026-05-27. Telemetry via CDP Console + Log + Network. |
+| Penumbra (CDP) | Done | 14 | Shipped 2026-05-27. Same telemetry path as Qualia. |
+| Rhino (named pipe) | v1 landed | 15.1 (2026-06-02) | `RhinoSessionAgent` wraps `AppLauncher.Launch` + `HarnessClient` behind `ICanaryAgent`. Smoke-verified end-to-end. v1 caveats: no telemetry source yet (Rhino command-line + Slop log tail → v2); Rhino process not torn down on closeout (zombie processes; v1.1 fix); no `--file`/`--mech` shortcuts (v2). |
+
 ## Core Harness
 
 | Feature | Status | Phase | Notes |
