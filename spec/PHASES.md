@@ -337,3 +337,31 @@
 - Documentation: canonical "Testing modes — VLM vs. Visual Regression" section in `MultiVerse/CLAUDE.md`; back-references in CPig, Canary, Slop, and Pigture CLAUDE.md.
 
 **Phase 8.6 Exit Criteria:** every existing test runs unchanged under `--mode pixel-diff` (default); same tests run as VLM under `--mode vlm` when `setup.vlmDescription` is set; `--mode both` produces two verdicts per checkpoint in the HTML report. Cross-repo docs taught the duality once (MultiVerse) and linked from each child repo. Rationale: pixel-diff and VLM are different jobs (regression vs. correctness); mode should be a runtime choice, not a property baked into the test JSON.
+
+---
+
+## Phase 15: Rhino supervised session (v1, 2026-06-02)
+
+A third supervised-session workload alongside Qualia and Penumbra (Phase 14 supervised-session shipped 2026-05-27). Lets the operator boot Rhino under Canary supervision, drive a Slop / CPig.Kinematics / retopo fixture by hand, and capture-and-annotate without authoring a test definition first.
+
+### Checkpoint 15.1: Agent adapter + factory case + CLI dispatch (v1)
+- New `Canary.Harness.Session.RhinoSessionAgent` (`ICanaryAgent` + `IAsyncDisposable`) — wraps `AppLauncher.Launch(workload)` + `HarnessClient` connecting to `canary-rhino-<pid>`. Forwards Execute / CaptureScreenshot / Heartbeat to the pipe client. `DisposeAsync` kills the launched Rhino process.
+- New `"rhino"` case in `SessionAgentFactory.CreateAndInitializeAsync`. Discards the `ITelemetrySink` for v1 (no Rhino-side telemetry source wired yet).
+- `SessionCommand.BuildStart`'s `--workload` help text updated to list `qualia | penumbra | rhino`.
+
+### Checkpoint 15.2: Verification (manual, operator)
+- `cd C:/Repos/Canary && canary session start --workload rhino` boots Rhino, REPL armed, captures work via `c` / `a` / `n`, `q` writes `SESSION_REPORT.md`.
+- `canary session list --workload rhino` lists prior Rhino sessions.
+- `canary session report --workload rhino --id <ts>` opens the report.
+
+### Phase 15 Exit Criteria
+- `canary session start --workload rhino` boots Rhino + drops into the REPL.
+- Captures go to `workloads/rhino/sessions/<yyyyMMdd-HHmmss-xxxx>/captures/`.
+- `session list` + `session report` work for Rhino sessions.
+- Build 0/0; existing 305 tests still pass.
+
+### Out of scope for v1 (deferred to Phase 15.3+)
+- Telemetry source: tail `C:/Repos/CPig/cpig_debug.log` + the Slop log panel into `telemetry.ndjson` so the report bundles per-event timestamps.
+- `--file <path.gh>` / `--mech <path.kin.json>` convenience flags to pre-open a fixture or pre-fill the Slop loader's `JsonPath` panel.
+- "Bring Rhino to foreground" hint at session-start so the operator doesn't have to alt-tab.
+- Multi-session / multi-Rhino (out of scope per the original feature design — one supervised session = one Rhino process).

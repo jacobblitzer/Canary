@@ -1,10 +1,25 @@
 ---
 date: 2026-06-02
 tags: [feature, canary, supervised-session, rhino]
-status: proposed
+status: landed-v1
 project: canary
 component: session
+landed-date: 2026-06-02
 ---
+
+## v1 status (2026-06-02)
+
+Shipped: `canary session start --workload rhino` launches Rhino under supervision, connects the existing `canary-rhino-<pid>` named-pipe agent, and drops into the same REPL loop Qualia + Penumbra use. Captures go to `workloads/rhino/sessions/<yyyyMMdd-HHmmss-xxxx>/captures/`. `session list` and `session report` work via the existing dispatch (no Rhino-specific changes needed there).
+
+Files shipped:
+- `src/Canary.Harness/Session/RhinoSessionAgent.cs` — `ICanaryAgent` adapter wrapping `AppLauncher.Launch` + `HarnessClient`. Owns the launched process; `DisposeAsync` kills it.
+- `src/Canary.Harness/Session/SessionAgentFactory.cs` — new `"rhino"` case in the agent-type switch.
+- `src/Canary.Harness/Cli/SessionCommand.cs` — `--workload` help text updated to list rhino.
+
+**Deferred to v2:**
+- Telemetry source (Rhino command-line history + Slop log tail → `telemetry.ndjson`). The factory accepts an `ITelemetrySink` but discards it for Rhino in v1.
+- `--file <path.gh>` / `--mech <path.kin.json>` shortcuts that pre-open a fixture in Rhino. Today the operator opens whatever they want from inside Rhino after the session arms.
+- Bring-Rhino-to-foreground hint at session-start so the operator doesn't have to alt-tab to find it.
 
 # Rhino session mode
 

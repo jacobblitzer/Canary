@@ -22,7 +22,7 @@ public static class SessionCommand
 
     private static Command BuildStart()
     {
-        var workloadOpt = new Option<string>("--workload", "Workload to launch (qualia | penumbra).") { IsRequired = true };
+        var workloadOpt = new Option<string>("--workload", "Workload to launch (qualia | penumbra | rhino).") { IsRequired = true };
         var urlOpt = new Option<string?>("--url", "URL override for the report header (defaults to the workload's Vite URL).");
 
         var c = new Command("start", "Launch the workload under supervision + enter the capture REPL.")

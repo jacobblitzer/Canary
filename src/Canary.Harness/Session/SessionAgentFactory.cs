@@ -18,9 +18,25 @@ public sealed class SessionAgentFactory : ISessionAgentFactory
         {
             "qualia-cdp" => await CreateQualiaAsync(workloadConfigPath, telemetrySink, ct).ConfigureAwait(false),
             "penumbra-cdp" => await CreatePenumbraAsync(workloadConfigPath, telemetrySink, ct).ConfigureAwait(false),
+            "rhino" => await CreateRhinoAsync(workload, telemetrySink, ct).ConfigureAwait(false),
             _ => throw new InvalidOperationException(
                 $"Supervised sessions are not supported for agentType '{workload.AgentType}'. " +
-                "Only qualia-cdp and penumbra-cdp are supported in v1."),
+                "Supported: qualia-cdp, penumbra-cdp, rhino."),
+        };
+    }
+
+    private static async Task<SessionAgentBundle> CreateRhinoAsync(
+        WorkloadConfig workload, ITelemetrySink telemetrySink, CancellationToken ct)
+    {
+        // v1 scope (2026-06-02): launch Rhino + connect the named-pipe agent.
+        // Telemetry source for Rhino (command-line history + Slop log tail)
+        // deferred to v2 — see docs/features/rhino-session.md.
+        _ = telemetrySink;
+        var agent = await RhinoSessionAgent.CreateAsync(workload, ct).ConfigureAwait(false);
+        return new SessionAgentBundle
+        {
+            Agent = agent,
+            Url = null, // Rhino has no URL; the SESSION_REPORT header omits this row.
         };
     }
 
