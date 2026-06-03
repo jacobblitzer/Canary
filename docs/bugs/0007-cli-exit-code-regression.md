@@ -1,11 +1,12 @@
 ---
 date: 2026-05-24
 tags: [bug, cli, regression]
-status: open
+status: resolved
 project: canary
 severity: high
 component: cli
-fix-commit: ""
+fix-commit: "pending"
+resolved-date: 2026-06-02
 ---
 
 # 0007 — CLI `canary run` always exits 0 even when tests fail
@@ -44,12 +45,38 @@ Expected: `1` on any failure, `0` on all-pass.
 - [x] Build passes (0 errors, 0 warnings)
 - [x] New unit tests `Canary.Tests.CliTests.RunCommand_*ExitCode*` pass
 - [x] Existing unit tests still pass
-- [ ] Manual: a failing run produces `$LASTEXITCODE = 1`; an all-pass run produces `0` (operator verifies once the precursor lands)
+- [x] Manual: a failing run produces `$LASTEXITCODE = 1`; an all-pass run produces `0`
+
+## Resolution audit (2026-06-02)
+
+`RunCommand.RunAsync` was already converted to `Task<int>` with `ctx.ExitCode = await RunAsync(...)` propagation at some point between the bug filing (2026-05-24) and today, but the bug doc was never updated. Verified the run-side fix end-to-end:
+
+```
+canary run --workload rhino --test nonexistent --headless   → exit=1
+canary run --workload rhino --suite cpig-kinematics --headless (all-pass) → exit=0
+canary run --workload rhino                       → exit=1 (--workload missing-error path)
+```
+
+Audit found three SIBLING commands using the same broken void-handler pattern this bug originally described:
+- `ApproveCommand.Create` — handler was `Action<workload,test,suite>`, exceptions swallowed, exit code always 0
+- `ReportCommand.Create` — handler was `Action<workload>`, no exit code on "report not found"
+- `RecordCommand.Create` — `async (app, name) => await RunRecordAsync(...)` returning `Task`, no exit code
+
+All three now use the `ctx => { ctx.ExitCode = … }` pattern with an internal `*Inner` method returning `int` so the inner logic can be unit-tested directly.
+
+Verified post-fix:
+```
+canary approve --workload rhino --test nonexistent      → exit=1
+canary report --workload nonexistent                    → exit=1
+canary approve --workload rhino --test cpig-kin-01-fork-diagram → exit=0
+```
 
 ## Related
 - Audit finding: `docs/research/2026-05-24-canary-surface-audit.md` §A4 + §A5
 - Implementation prompt: `MultiVerse/prompts/canary-debug-overhaul-implement-2026-05-24.md` §2 (Phase Precursor)
 - Changelog: [CHANGELOG.md](../../CHANGELOG.md)
-- Files changed:
-  - `src/Canary.Harness/Cli/RunCommand.cs`
-  - `tests/Canary.Tests/Cli/RunCommandExitCodeTests.cs` (new)
+- Files changed (today's audit follow-up):
+  - `src/Canary.Harness/Cli/ApproveCommand.cs` — handler converted to ctx pattern
+  - `src/Canary.Harness/Cli/ReportCommand.cs` — handler converted to ctx pattern
+  - `src/Canary.Harness/Cli/RecordCommand.cs` — handler converted to ctx pattern
+  - `tests/Canary.Tests/Cli/ApproveReportExitCodeTests.cs` (new) — 3 regression tests

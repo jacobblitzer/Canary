@@ -22,40 +22,44 @@ public static class ReportCommand
             workloadOption
         };
 
-        command.SetHandler((workload) =>
+        // BUG-0007 follow-up — exit code propagation.
+        command.SetHandler(ctx =>
         {
-            var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
-            string? reportPath = null;
-
-            if (workload != null)
-            {
-                reportPath = Path.Combine(workloadsDir, workload, "results", "report.html");
-            }
-            else
-            {
-                // Find the most recent report.html across all workloads
-                if (Directory.Exists(workloadsDir))
-                {
-                    reportPath = Directory.GetFiles(workloadsDir, "report.html", SearchOption.AllDirectories)
-                        .OrderByDescending(File.GetLastWriteTimeUtc)
-                        .FirstOrDefault();
-                }
-            }
-
-            if (reportPath == null || !File.Exists(reportPath))
-            {
-                Program.Log("No report found. Run tests first with 'canary run'.");
-                return;
-            }
-
-            Program.Log($"Opening report: {reportPath}");
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = reportPath,
-                UseShellExecute = true
-            });
-        }, workloadOption);
+            var workload = ctx.ParseResult.GetValueForOption(workloadOption);
+            ctx.ExitCode = ReportInner(workload);
+        });
 
         return command;
+    }
+
+    internal static int ReportInner(string? workload)
+    {
+        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        string? reportPath = null;
+
+        if (workload != null)
+        {
+            reportPath = Path.Combine(workloadsDir, workload, "results", "report.html");
+        }
+        else if (Directory.Exists(workloadsDir))
+        {
+            reportPath = Directory.GetFiles(workloadsDir, "report.html", SearchOption.AllDirectories)
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .FirstOrDefault();
+        }
+
+        if (reportPath == null || !File.Exists(reportPath))
+        {
+            Program.Log("No report found. Run tests first with 'canary run'.");
+            return 1;
+        }
+
+        Program.Log($"Opening report: {reportPath}");
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = reportPath,
+            UseShellExecute = true
+        });
+        return 0;
     }
 }

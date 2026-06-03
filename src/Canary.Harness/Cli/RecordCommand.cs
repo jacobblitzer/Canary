@@ -29,26 +29,29 @@ public static class RecordCommand
             nameOption
         };
 
-        command.SetHandler(async (app, name) =>
+        // BUG-0007 follow-up — exit code propagation.
+        command.SetHandler(async ctx =>
         {
-            await RunRecordAsync(app, name).ConfigureAwait(false);
-        }, appOption, nameOption);
+            var app = ctx.ParseResult.GetValueForOption(appOption);
+            var name = ctx.ParseResult.GetValueForOption(nameOption);
+            ctx.ExitCode = await RunRecordAsync(app, name).ConfigureAwait(false);
+        });
 
         return command;
     }
 
-    private static async Task RunRecordAsync(string app, string name)
+    private static async Task<int> RunRecordAsync(string? app, string? name)
     {
         if (string.IsNullOrWhiteSpace(app))
         {
             Program.Log("Error: --app is required (e.g., canary record --app rhino --name my-test)");
-            return;
+            return 1;
         }
 
         if (string.IsNullOrWhiteSpace(name))
         {
             Program.Log("Error: --name is required (e.g., canary record --app rhino --name my-test)");
-            return;
+            return 1;
         }
 
         // Load workload config
@@ -58,7 +61,7 @@ public static class RecordCommand
         if (!File.Exists(configPath))
         {
             Program.Log($"Error: Workload config not found: {configPath}");
-            return;
+            return 1;
         }
 
         var workload = await WorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
@@ -71,7 +74,7 @@ public static class RecordCommand
         {
             Program.Log($"Error: Target window not found: '{workload.WindowTitle}'");
             Program.Log("Make sure the target application is running.");
-            return;
+            return 1;
         }
 
         Program.Log($"Found window: 0x{hwnd:X}");
@@ -120,5 +123,6 @@ public static class RecordCommand
 
         await recording.SaveAsync(outputPath).ConfigureAwait(false);
         Program.Log($"Saved: {outputPath}");
+        return 0;
     }
 }
