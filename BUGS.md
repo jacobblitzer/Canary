@@ -8,7 +8,7 @@ priority_max: null
 bugs_dir: docs/bugs/
 ---
 
-> **2026-06-02 — BUG-0009** opened: per-checkpoint viewport framing collapses to extreme close-ups in shared-session suite runs (`cpig-kinematics`). Solo `--test` invocations frame correctly; `--suite` zooms to a single body / label. Suspect `HandleSetViewport`'s post-switch `ZoomBoundingBox` unioning over stale shared-session geometry. See [docs/bugs/0009-shared-session-framing-regression.md](docs/bugs/0009-shared-session-framing-regression.md).
+> **2026-06-02 — BUG-0009** RESOLVED-NOT-CANARY (Canary `59456b9`): the "extreme close-up" framing was actually extreme zoom-OUT caused by upstream CPig FD divergence (un-tuned torques on closed-loop linkages → bodies fly to (millions, millions, 0) mm → ZoomBoundingBox correctly framed the huge bbox → mechanism became a single-pixel speck). Solo and shared modes produce identical bbox+camera per new diagnostic logging in `HandleSetViewport` (writes to `C:/Repos/CPig/logs/agent_viewport_diag.log`). Self-resolved when CPig torque-tuning commits `f7506b6` + `c091570` bounded motion. See [docs/bugs/0009-shared-session-framing-regression.md](docs/bugs/0009-shared-session-framing-regression.md).
 
 # Bugs
 
