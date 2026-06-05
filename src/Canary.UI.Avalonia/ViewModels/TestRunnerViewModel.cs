@@ -136,6 +136,8 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             StatusText = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed";
             ProgressValue = ProgressMax;
 
+            // Operator's toolbar checkbox keeps the app open no matter the outcome.
+            _keepOpenAfterRun |= request.ForceKeepOpen;
             _keepOpenAfterRun |= request.SuiteKeepOpen && request.Tests.Any(t => t.KeepOpenOnFailure
                 && suite.TestResults.Any(r => r.TestName == t.Name && r.Status is TestStatus.Failed or TestStatus.Crashed));
 
@@ -175,7 +177,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             if (_keepOpenAfterRun)
             {
                 StatusText += " — App kept open for inspection";
-                Append("App kept open for inspection (keepOpenOnFailure). Click Close App to tear down.");
+                Append("App kept open for inspection. Click Stop to tear it down.");
                 State = TestRunnerState.KeepingOpen;
             }
             else
@@ -505,4 +507,8 @@ public sealed class RunRequest
     public string? SuiteName { get; init; }
     public bool UseSharedMode { get; init; }
     public bool SuiteKeepOpen { get; init; }
+
+    /// <summary>Operator-forced via the toolbar "Keep app open" checkbox: leave the
+    /// target app running after the run regardless of pass/fail, for inspection.</summary>
+    public bool ForceKeepOpen { get; init; }
 }

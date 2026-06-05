@@ -39,7 +39,13 @@ public partial class WorkloadTreeViewModel : ObservableObject
     {
         WorkloadsDir = workloadsDir;
         var explorer = new WorkloadExplorer();
-        var entries = await explorer.LoadWorkloadsAsync(workloadsDir).ConfigureAwait(false);
+        // NOTE: must be ConfigureAwait(true). Everything after this await mutates
+        // UI-bound ObservableCollections (Roots / Children). Avalonia does NOT
+        // marshal collection-change notifications, so mutating off the UI thread
+        // races the container generator -> "Collection was modified; enumeration
+        // operation may not execute" -> intermittent crash on cold launch (BUG: the
+        // disk scan finishes mid-render only when the file cache is cold).
+        var entries = await explorer.LoadWorkloadsAsync(workloadsDir).ConfigureAwait(true);
         LoadedWorkloads = entries;
 
         Roots.Clear();

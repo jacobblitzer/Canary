@@ -1,0 +1,36 @@
+{
+  "name": "slop-01-graft-grid",
+  "workload": "rhino",
+  "description": "Validates the documented graft-for-cross-product routing convention (Slop/fodder/kb/examples/graft-cross-product.md): grafting one Construct Point input turns index-pairing into a 4x3 grid of 12 points. Proves the KB guidance produces a buildable, correct definition.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": {
+      "projection": "Top",
+      "displayMode": "Shaded",
+      "width": 800,
+      "height": 600
+    },
+    "vlmDescription": "A regular rectangular grid of points: 4 columns by 3 rows, 12 points total, evenly spaced, lying flat on the ground plane. Just point markers, no surfaces or curves."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/Slop/research/slop_tests/01_graft_grid.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 30000}
+  ],
+  "checkpoints": [
+    {"name": "post-build", "atTimeMs": 5000, "tolerance": 0.02}
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "not found"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"}
+  ]
+}

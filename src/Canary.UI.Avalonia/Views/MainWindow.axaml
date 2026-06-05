@@ -34,6 +34,12 @@
                 Margin="8,0,0,0"
                 Command="{Binding RecordNewCommand}"
                 IsVisible="{Binding IsTestsActive}" />
+        <CheckBox Grid.Column="4" Content="Keep app open"
+                  Margin="8,0,0,0"
+                  VerticalAlignment="Center"
+                  ToolTip.Tip="Leave the target app (e.g. Rhino) running after the run — pass or fail — so you can inspect the canvas. Click Stop to close it."
+                  IsChecked="{Binding Tests.KeepAppOpen, Mode=TwoWay}"
+                  IsVisible="{Binding IsTestsActive}" />
         <TextBlock Grid.Column="5" Text="{Binding WorkloadsDir, StringFormat='workloads: {0}'}"
                    VerticalAlignment="Center"
                    Foreground="#96C8FF"

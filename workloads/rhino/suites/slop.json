@@ -1,0 +1,8 @@
+{
+  "name": "slop",
+  "description": "Slop-native regression tests — validate that the documented authoring conventions in Slop/fodder/kb produce buildable, correct definitions. Pure core-GH + Slop components (no CPig dependency); run through the generic Slop loader fixture (cpig_slop_loader.gh).",
+  "tests": [
+    "slop-01-graft-grid",
+    "slop-02-within-radius"
+  ]
+}

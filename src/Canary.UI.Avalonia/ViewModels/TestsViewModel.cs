@@ -27,6 +27,14 @@ public partial class TestsViewModel : ObservableObject
     [ObservableProperty]
     private ModeOverride _modeOverride = ModeOverride.None;
 
+    // Run-scoped toggle. Lives on the singleton TestsViewModel, so it persists
+    // across nav and does NOT reset like the per-test editor's keepOpenOnFailure.
+    // When true, the target app (e.g. Rhino) is left running after the run — pass
+    // OR fail — so the operator can inspect the actual canvas/viewport. Tear it
+    // down with the Stop button.
+    [ObservableProperty]
+    private bool _keepAppOpen;
+
     // View-supplied delegates for the Phase 5 context-menu commands so
     // the VM stays testable without opening real dialog windows.
     public Func<TestDefinition, Task>? EditTestAsync { get; set; }
@@ -156,6 +164,7 @@ public partial class TestsViewModel : ObservableObject
             SuiteName = null,
             UseSharedMode = false,
             SuiteKeepOpen = false,
+            ForceKeepOpen = KeepAppOpen,
         };
         await Runner.RunCommand.ExecuteAsync(request).ConfigureAwait(true);
     }
@@ -207,6 +216,7 @@ public partial class TestsViewModel : ObservableObject
             SuiteName = suiteName,
             UseSharedMode = useSharedMode,
             SuiteKeepOpen = suiteKeepOpen,
+            ForceKeepOpen = KeepAppOpen,
         };
         await Runner.RunCommand.ExecuteAsync(request).ConfigureAwait(true);
     }

@@ -21,7 +21,10 @@ public partial class SessionsViewModel : ObservableObject
 
     public async Task LoadWorkloadsAsync(string workloadsDir)
     {
-        var configs = await DiscoverWorkloadConfigsAsync(workloadsDir).ConfigureAwait(false);
+        // ConfigureAwait(true): the continuation calls into Live/Past which mutate
+        // UI-bound collections. Off-thread mutation races Avalonia's container
+        // generator (same class of bug as WorkloadTreeViewModel.LoadAsync).
+        var configs = await DiscoverWorkloadConfigsAsync(workloadsDir).ConfigureAwait(true);
         Live.SetWorkloads(workloadsDir, configs);
         Past.SetWorkloadsDir(workloadsDir);
     }

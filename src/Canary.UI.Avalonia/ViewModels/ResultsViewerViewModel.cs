@@ -74,7 +74,9 @@ public sealed partial class CheckpointCardViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(GifPath) || !System.IO.File.Exists(GifPath)) return;
         try
         {
-            var info = await SixLabors.ImageSharp.Image.IdentifyAsync(GifPath).ConfigureAwait(false);
+            // ConfigureAwait(true): the continuation sets the GifStats bound
+            // property, which must raise PropertyChanged on the UI thread.
+            var info = await SixLabors.ImageSharp.Image.IdentifyAsync(GifPath).ConfigureAwait(true);
             if (info == null) return;
             int frameCount = info.FrameMetadataCollection?.Count ?? 1;
             int totalDelayCs = 0;

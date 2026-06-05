@@ -12,6 +12,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Toolbar "Keep app open" toggle (2026-06-04)
+
+Interactive checkbox on the Tests toolbar (`MainWindow.axaml`, column 4) that forces the **target app (e.g. Rhino) to stay running after the run, regardless of pass/fail**, so the operator can inspect the actual Grasshopper canvas/viewport. Distinct from the existing failure-gated knobs (`SuiteDefinition.KeepOpen` / `TestDefinition.KeepOpenOnFailure`): those only fire on failure and live in saved JSON; this is a run-scoped toggle on the singleton `TestsViewModel` so it persists across navigation and never auto-fires. Plumbed via new `RunRequest.ForceKeepOpen` → `TestRunnerViewModel` OR-into `_keepOpenAfterRun`. (Canary itself never auto-closes; this only governs the target app teardown — `_pm.KillAll()`.) Tear the app down afterward with the existing Stop button. Generalized the keep-open status message (was hard-coded "keepOpenOnFailure"). Build 0/0.
+
+### Fixed — BUG-0010 UI cold-launch crash (off-thread collection mutation, 2026-06-04)
+
+`Canary.UI.exe` opened-then-closed on a cold first launch (second launch fine). Event-Log forensics caught an unhandled `InvalidOperationException: Collection was modified` inside Avalonia's `PanelContainerGenerator`. Root cause: `WorkloadTreeViewModel.LoadAsync` awaited the startup disk scan with `ConfigureAwait(false)`, so the continuation mutated UI-bound `ObservableCollection`s (`Roots`/`Children`) on a threadpool thread — a data race against Avalonia's container generator (cold launch = slow scan finishing mid-render). Fixed by resuming on the UI thread (`ConfigureAwait(true)`) at the three continuation points that touch bound state: `WorkloadTreeViewModel.LoadAsync`, `SessionsViewModel.LoadWorkloadsAsync`, `ResultsViewerViewModel.LoadGifStatsAsync`. Build 0/0. See `docs/bugs/0010-ui-cold-launch-collection-race.md`.
+
 ### Added — Phase 15.1: Rhino supervised-session v1 (2026-06-02)
 
 Third supervised-session workload alongside Qualia + Penumbra. `canary session start --workload rhino` boots Rhino under supervision, connects the existing `canary-rhino-<pid>` named-pipe agent, and drops the operator into the same REPL (`c` / `a` / `n` / `q`). Sessions live at `workloads/rhino/sessions/<yyyyMMdd-HHmmss-xxxx>/` with `SESSION_REPORT.md` + `session.json` + `captures/`. Smoke-verified end-to-end. `RhinoSessionAgent` (`ICanaryAgent` + `IAsyncDisposable`) wraps `AppLauncher.Launch` + `HarnessClient`; `SessionAgentFactory` gains a `"rhino"` case. Known v1 caveat: Rhino process not torn down on closeout — v1.1 fix planned. Telemetry source, `--file`/`--mech` shortcuts, and bring-to-foreground deferred to v2. Spec: `spec/PHASES.md` Phase 15.1; feature doc `docs/features/rhino-session.md`.
