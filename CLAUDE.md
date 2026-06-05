@@ -78,6 +78,9 @@ Key `TestCheckpoint` fields for file-source:
 
 See `spec/PIGTURE_WORKLOAD.md` for the full pattern.
 
+### Running Slop tests
+`canary run --workload rhino --suite slop` runs the Slop-native tests (`slop-01-graft-grid`, `slop-02-within-radius`) — pure core-Grasshopper + Slop components that validate the Slop `fodder/kb` authoring conventions produce buildable, correct definitions (graft cross-product, within-radius count). They reuse the `cpig_slop_loader.gh` fixture. Note: Slop's JSON schema is now drift-guarded by a tripwire (CI + every Slop `dotnet build`), so the `SLOP_PROMPT.md` contract these tests rely on stays in sync with the runtime `.gha`. When authoring new Slop JSON, see `Slop/fodder/kb/` + `Slop/fodder/tools/lookup_component.py` (now prints port `[access]`).
+
 ### Before Any Work
 Read `spec/SUPERVISOR.md` — single source of truth for build decisions.
 
