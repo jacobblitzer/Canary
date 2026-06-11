@@ -9,6 +9,7 @@
     "commands": [
       "window.__canarySetClassificationMethod('interval')",
       "window.__canarySetDisplayState({ render: { subBrickRefinement: true, subBrickTrigger: 'interval', subBrickThreshold: 2.0, subBrickMaxDepth: 1 } })",
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
       "JSON.stringify(window.__canaryGetMultiscaleSignalState())"
     ]
   },

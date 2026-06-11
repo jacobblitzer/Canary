@@ -13,7 +13,8 @@
       "height": 540
     },
     "commands": [
-      "window.__canaryHideUI(true)"
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
     ]
   },
   "checkpoints": [
