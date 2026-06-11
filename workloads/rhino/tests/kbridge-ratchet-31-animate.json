@@ -1,0 +1,117 @@
+{
+  "name": "kbridge-ratchet-31-animate",
+  "workload": "rhino",
+  "description": "Coverage-campaign showcase: ratchet_31 sat in the dropped-joints bucket since the first scoreboard - the extraction emitted UnknownJointType joints it could not classify. F2's screw-fit of the recorded relative motion recovered them (constant pose -> welds, single-axis rotation -> revolutes) and B-bug-014's orientation-carrying weld frames let it assemble in 0 iters. Sweep drives the emitted driver joint_0 0->170 deg, 35/35 steps, no overrides. Pass/fail = Converged + SlopSuccess. doc=MM, CPig-only. Slop: KinematicBridge/out/_slop-side-by-side/ratchet-31-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 1000,
+      "height": 800
+    },
+    "commands": [
+      "-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"
+    ],
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e2b"
+    },
+    "vlmDescription": "A ratchet mechanism as shaded solid CAD parts: a toothed ratchet wheel, a pawl resting against the teeth, a crank arm posed mid-rotation by the solver, a T-slider and coil spring, on base brackets, overlaid with a CPig frame-triad skeleton, at a sane scale."
+  },
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/ratchet-31-bind-sweep-animate.canary.slop.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 90000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Perspective",
+        "displayMode": "Shaded"
+      },
+      "description": "ratchet_31 posed mid-sweep by CPig's solve; the F2 motion-recovered joints hold the pawl/spring train together."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Front",
+        "displayMode": "Shaded"
+      },
+      "description": "Front view of ratchet_31 mid-sweep."
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "!!!"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "Converged",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "BindReport",
+      "text": "file not found"
+    }
+  ]
+}

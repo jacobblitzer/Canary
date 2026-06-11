@@ -1,0 +1,117 @@
+{
+  "name": "kbridge-geneva-20-animate",
+  "workload": "rhino",
+  "description": "Coverage-campaign showcase: geneva_20 is the campaign's poster child - it arrived with 3 dropped joints and could not assemble. F1 synthesized the CrankAss sub-assembly's children (Shaft1, Crank - occurrence records absent from the table, recovered from keyframe-0) and welded them rigid; F2 classified the UnknownJointType crank pivot as a revolute from its recorded motion (72 deg single-axis rotation) and that joint is now the EMITTED DRIVER; B-bug-014 gave every weld frame orientation so the assembly converges in 0 iters. Sweep drives joint_5 0->72 deg, 35/35 steps, no overrides. Pass/fail = Converged + SlopSuccess. doc=MM, CPig-only. Slop: KinematicBridge/out/_slop-side-by-side/geneva-20-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 1000,
+      "height": 800
+    },
+    "commands": [
+      "-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"
+    ],
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e2b"
+    },
+    "vlmDescription": "A Geneva indexing mechanism as shaded solid CAD parts: a crank assembly (shaft + crank arm) posed mid-rotation by the solver, two meshing gears, a slotted Geneva disk, on base brackets, overlaid with a CPig frame-triad skeleton, at a sane scale."
+  },
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/geneva-20-bind-sweep-animate.canary.slop.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 90000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Perspective",
+        "displayMode": "Shaded"
+      },
+      "description": "geneva_20 posed mid-sweep by CPig's solve of the F2-recovered driver; the synthesized Shaft1+Crank ride their B-bug-014 welds."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Front",
+        "displayMode": "Shaded"
+      },
+      "description": "Front view of geneva_20 mid-sweep."
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "!!!"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "Converged",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "BindReport",
+      "text": "file not found"
+    }
+  ]
+}

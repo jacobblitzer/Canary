@@ -1,0 +1,21 @@
+{
+  "name": "kbridge",
+  "description": "KinematicBridge operator-visual trust-check tests. Step-0 isolation on the four-bar at doc=cm: Run A (KinematicImporter alone), Run B (CPig skeleton alone), Run C (overlay — scale-parity check). All runMode=shared, sharing the cpig_slop_loader.gh fixture. Slop graphs live in C:/Repos/KinematicBridge/out/_slop-side-by-side/. UNITS: doc=cm — the importer is cm-native, and CPig's preview is now unit-aware (CPig ADR 0005) so it matches at cm. Set via each test's setup.commands; the macro needed extra Enters last run, so if cm doesn't take, set it once manually in the shared Rhino instance (persists across the suite). REQUIRES the KinematicImporter .gha loaded (Runs A + C). Designed for --mode vlm (no baselines yet); --mode pixel-diff also works to capture candidate screenshots for manual review.",
+  "tests": [
+    "kbridge-four-bar-importer",
+    "kbridge-four-bar-cpig",
+    "kbridge-four-bar-overlay",
+    "kbridge-slider-crank-overlay",
+    "kbridge-slider-crank-sweep",
+    "kbridge-slider-crank-animate",
+    "kbridge-four-bar-animate",
+    "kbridge-oldham-animate",
+    "kbridge-spherical-four-bar-animate",
+    "kbridge-slider-crank-differential",
+    "kbridge-geneva-animate",
+    "kbridge-pin-gear-animate",
+    "kbridge-geneva-20-animate",
+    "kbridge-ratchet-31-animate",
+    "kbridge-ratchet-22-animate"
+  ]
+}
