@@ -12,7 +12,7 @@
         Width="1280" Height="900"
         MinWidth="1024" MinHeight="768">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*,Auto">
     <!-- Top toolbar. Open Folder is always visible; the Tests-only items
          (Run Tests + Mode picker + Record) bind their IsVisible to the
          IsTestsActive computed property so they appear only when the
@@ -87,6 +87,11 @@
         </ContentControl.DataTemplates>
       </ContentControl>
     </ui:NavigationView>
+
+    <!-- Docked Run History pane (feedback 2026-06-10-run-history-log-window):
+         a chronological all-workloads log of past runs, visible in every tab.
+         Collapsible to its header strip via the ▾/▸ title button. -->
+    <views:RunHistoryPaneView Grid.Row="2" DataContext="{Binding RunHistory}" />
   </Grid>
 
   <Window.KeyBindings>

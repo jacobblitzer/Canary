@@ -34,22 +34,23 @@ public static class PastRunsScanner
         public string Status { get; init; } = "?";
         public string DurationDisplay { get; init; } = "";
         public DateTime LastWriteUtc { get; init; }
-        public string StartedDisplay => TryParseTimestampDisplay(TimestampDir);
+        public string StartedDisplay => ParseTimestampDisplay(TimestampDir);
+    }
 
-        private static string TryParseTimestampDisplay(string dirname)
+    /// <summary>Shared with <see cref="RunHistoryScanner"/>.</summary>
+    internal static string ParseTimestampDisplay(string dirname)
+    {
+        // Run dirs: yyyyMMdd-HHmmss-<hex>. Snapshot dirs: yyyyMMdd-HHmmss
+        // (no hex suffix). Both parse cleanly from the first 15 chars.
+        if (dirname.Length >= 15 && dirname[8] == '-')
         {
-            // Run dirs: yyyyMMdd-HHmmss-<hex>. Snapshot dirs: yyyyMMdd-HHmmss
-            // (no hex suffix). Both parse cleanly from the first 15 chars.
-            if (dirname.Length >= 15 && dirname[8] == '-')
-            {
-                var date = dirname.Substring(0, 8);
-                var time = dirname.Substring(9, 6);
-                if (date.All(char.IsDigit) && time.All(char.IsDigit))
-                    return $"{date.Substring(0,4)}-{date.Substring(4,2)}-{date.Substring(6,2)} " +
-                           $"{time.Substring(0,2)}:{time.Substring(2,2)}:{time.Substring(4,2)}";
-            }
-            return dirname;
+            var date = dirname.Substring(0, 8);
+            var time = dirname.Substring(9, 6);
+            if (date.All(char.IsDigit) && time.All(char.IsDigit))
+                return $"{date.Substring(0,4)}-{date.Substring(4,2)}-{date.Substring(6,2)} " +
+                       $"{time.Substring(0,2)}:{time.Substring(2,2)}:{time.Substring(4,2)}";
         }
+        return dirname;
     }
 
     public static async Task<IReadOnlyList<PastRunRow>> ScanAsync(string workloadsDir, string workloadName, string testName)

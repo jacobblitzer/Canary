@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="220"
+             x:Class="Canary.UI.Avalonia.Views.RunHistoryPaneView"
+             x:DataType="vm:RunHistoryViewModel">
+
+  <Border Background="#1F1F1F" BorderBrush="#3F3F46" BorderThickness="0,1,0,0">
+    <Grid RowDefinitions="Auto,Auto">
+      <!-- Header strip — always visible; click the title to collapse/expand. -->
+      <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto" Background="#252526">
+        <Button Grid.Column="0"
+                Content="{Binding HeaderText}"
+                Command="{Binding ToggleExpandedCommand}"
+                Background="Transparent" BorderThickness="0"
+                Padding="8,4" FontWeight="SemiBold" />
+        <TextBlock Grid.Column="1" Text="{Binding StatusText}"
+                   Foreground="#969696" FontSize="11"
+                   VerticalAlignment="Center" Margin="8,0,0,0" />
+        <Button Grid.Column="3" Content="Refresh"
+                Command="{Binding RefreshCommand}"
+                Margin="0,2,4,2" Padding="8,2" FontSize="11" />
+      </Grid>
+
+      <DataGrid Grid.Row="1"
+                Height="190"
+                IsVisible="{Binding IsExpanded}"
+                ItemsSource="{Binding Rows}"
+                SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                DoubleTapped="OnRowDoubleTapped"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="Column"
+                Background="#1F1F1F"
+                FontSize="12"
+                ToolTip.Tip="Double-click a run to open its REPORT.md">
+        <DataGrid.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="Open REPORT.md" Command="{Binding OpenSelectedCommand}" />
+            <MenuItem Header="Open run folder" Command="{Binding OpenSelectedInExplorerCommand}" />
+          </ContextMenu>
+        </DataGrid.ContextMenu>
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Started"  Binding="{Binding StartedDisplay}"  Width="160" />
+          <DataGridTextColumn Header="Workload" Binding="{Binding Workload}"        Width="110" />
+          <DataGridTextColumn Header="Suite"    Binding="{Binding Suite}"           Width="110" />
+          <DataGridTextColumn Header="Test"     Binding="{Binding Test}"            Width="*" />
+          <DataGridTextColumn Header="Status"   Binding="{Binding Status}"          Width="110" />
+          <DataGridTextColumn Header="Duration" Binding="{Binding DurationDisplay}" Width="90" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </Grid>
+  </Border>
+</UserControl>

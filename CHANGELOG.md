@@ -12,6 +12,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Docked Run History pane (2026-06-11)
+
+Operator feedback `2026-06-10-run-history-log-window` ("I want there to be a window that has previous test runs as a log") — operator chose a **docked companion pane** over a Past Runs enhancement when asked. A chronological, all-workloads log of past runs docked at the bottom of the main window, visible in every nav tab: Started / Workload / Suite / Test / Status / Duration, newest first. Collapsible to its header strip (▾/▸ title button); refreshes on workloads-dir load, after every in-UI run (new `TestRunnerViewModel.RunCompleted` event), and via a Refresh button. Double-click opens the run's `REPORT.md` (falls back to the run dir); context menu opens the run folder. New `RunHistoryScanner` walks both per-run layouts (`results/<test>/runs/<stamp>/` and suite-nested `results/<suite>/<test>/runs/<stamp>/`); legacy flat `result.json` and `archived/` snapshots are excluded by design. Files: `Services/RunHistoryScanner.cs`, `ViewModels/RunHistoryViewModel.cs`, `Views/RunHistoryPaneView.axaml(.cs)`, wired in `MainWindow(.axaml/ViewModel)`. 3 new unit tests; operator-approved in-UI. Build 0/0.
+
+### Added — Collapsible suite member tests in the Tests tree (2026-06-11)
+
+Operator feedback `2026-06-10-suite-tree-collapsible-tests` — suite nodes in the Tests tree now expand to their member tests (chevron, collapsed by default, suite-JSON order) instead of presenting as leaves. Member nodes carry the full `TestDefinition` payload so single-click details, Run, Edit, Approve and Open in Explorer behave identically to All Tests nodes; a suite entry with no matching `tests/*.json` renders as a red "(missing)" leaf instead of silently dropping. Motivating case: the 15-test `kbridge` suite. `WorkloadTreeViewModel` only; 1 new unit test; operator-approved in-UI. Build 0/0.
+
+### Fixed — Stale CheckpointMode enum-shape guard (2026-06-11)
+
+`ModeOverrideTests.CheckpointMode_Enum_HasTwoValues` still asserted two enum values after `CheckpointMode.Capture` landed (2026-06-09), failing at HEAD. Updated to assert all three.
+
 ### Added — Capture-only checkpoint mode (2026-06-09)
 
 New `CheckpointMode.Capture`: a checkpoint with `"mode": "capture"` (aliases `"none"`/`"off"`) saves the screenshot candidate and runs **no comparison** — neither pixel-diff nor VLM — and never FAILs (status = Passed, no verdict). It **wins over the `--mode` override**, so opted-in checkpoints stay off even under `--mode pixel-diff|vlm`, and the VLM provider isn't initialized for them (no Ollama dependency). For recording images for manual review during bring-up, before a baseline or VLM is wired. Implemented in `src/Canary.Core/Orchestration/TestRunner.cs` (`CheckpointMode.Capture`, `ResolveEffectiveModes`, `IsCaptureOnly`, both checkpoint-processing branches); documented in CLAUDE.md "Test mode duality". First consumer: the `kbridge-*` Rhino tests. Build 0/0 (Core).

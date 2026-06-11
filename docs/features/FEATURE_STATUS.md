@@ -12,10 +12,14 @@ Living tracker for all Canary features. Updated as work progresses.
 
 ## Requested (operator desires, not yet scheduled)
 
-| Feature | Status | Requested | Notes |
-|---------|--------|-----------|-------|
-| Run-history log window | Requested | 2026-06-10 | Log-style window of previous test runs. See [docs/feedback/inbox/2026-06-10-run-history-log-window.md](../feedback/inbox/2026-06-10-run-history-log-window.md) — clarify vs the existing Past Runs tab before building. |
-| Suite tree: collapsible nested tests | Requested | 2026-06-10 | Suites list member tests as a collapsed/expandable group in the Tests tree. See [docs/feedback/inbox/2026-06-10-suite-tree-collapsible-tests.md](../feedback/inbox/2026-06-10-suite-tree-collapsible-tests.md). |
+_(none currently — shipped items move to the sections below)_
+
+## Operator-feedback UI features (Canary.UI Avalonia)
+
+| Feature | Status | Shipped | Notes |
+|---------|--------|---------|-------|
+| Suite tree: collapsible nested tests | Done | 2026-06-11 | Suite nodes expand to member tests (collapsed by default, suite-JSON order, full TestDefinition payload; "(missing)" leaf for dangling names). See [docs/feedback/resolved/2026-06-10-suite-tree-collapsible-tests.md](../feedback/resolved/2026-06-10-suite-tree-collapsible-tests.md). |
+| Run-history log window | Done | 2026-06-11 | Operator chose a **docked companion pane**: bottom-docked, all-workloads chronological run log, visible in every tab, collapsible, double-click → REPORT.md. `RunHistoryScanner` + `RunHistoryViewModel` + `RunHistoryPaneView`. See [docs/feedback/resolved/2026-06-10-run-history-log-window.md](../feedback/resolved/2026-06-10-run-history-log-window.md). |
 
 ## Supervised sessions (capture-and-annotate, no automated tests)
 

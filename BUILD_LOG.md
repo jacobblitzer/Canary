@@ -2053,3 +2053,29 @@ End-of-session bookkeeping:
   - VLM smoke (`canary run --workload qualia --suite landing-screen
     --mode vlm`) to confirm the toolbar mode picker + Phase 2
     telemetry coexist with VLM oracle evaluation.
+
+## 2026-06-11 — Operator-feedback UI fixes (suite tree + Run History pane)
+
+- **Scope:** the two deferred 2026-06-10 feedback items, green-lit today.
+  Canary.UI (Avalonia) only — no harness/agent/comparison changes.
+- **Step 0:** clean tree at `3f2ac4c`; build 0/0; unit tests 304/305 — the
+  one failure was a stale enum-shape guard
+  (`CheckpointMode_Enum_HasTwoValues`) left behind by the 2026-06-09
+  Capture-mode work. Fixed to assert three values (`4d42ae3`).
+- **Item 2 — collapsible suite tree (`77500e1`):** suite nodes in the Tests
+  tree now nest their member tests (collapsed by default, suite-JSON order,
+  full TestDefinition payload so Run/Edit/Approve/details work; red
+  "(missing)" leaf for dangling suite entries). 1 new unit test.
+  Operator eyeballed the 15-test kbridge suite in the launched UI: approved.
+- **Item 1 — Run History docked pane:** hard-gate question answered by the
+  operator: **docked companion pane** (not a Past Runs enhancement).
+  New `RunHistoryScanner` (walks `results/<test>/runs/<stamp>/` and
+  suite-nested `results/<suite>/<test>/runs/<stamp>/`; excludes legacy flat
+  results + archived snapshots), `RunHistoryViewModel`,
+  `RunHistoryPaneView` docked below the NavigationView in MainWindow.
+  Auto-refresh after in-UI runs via new `TestRunnerViewModel.RunCompleted`
+  event. Double-click opens REPORT.md. 3 new unit tests.
+  Operator eyeballed the pane in the launched UI: approved.
+- **Build/tests at wrap:** 0 errors / 0 warnings; 309/309 unit tests.
+- **Feedback lifecycle:** both items inbox → triaged → resolved.
+- **Cross-repo impact:** none (UI-only).

@@ -75,6 +75,14 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
     public Func<IntPtr?>? GetMainWindowHandleAsync { get; set; }
     public Func<SuiteResult, Task>? OnRunCompletedAsync { get; set; }
 
+    /// <summary>
+    /// Raised after a run finishes and OnRunCompletedAsync has been awaited.
+    /// Unlike the single-consumer OnRunCompletedAsync delegate (owned by
+    /// TestsViewModel), any number of listeners may subscribe — the Run
+    /// History pane uses it to refresh its log.
+    /// </summary>
+    public event Action? RunCompleted;
+
     // Phase 5: set by MainWindow so AbortHotkey can arm against the
     // main window HWND for the duration of a run.
     public Action? OnRunStarted { get; set; }
@@ -161,6 +169,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             }
 
             if (OnRunCompletedAsync != null) await OnRunCompletedAsync(suite).ConfigureAwait(true);
+            RunCompleted?.Invoke();
         }
         catch (OperationCanceledException)
         {

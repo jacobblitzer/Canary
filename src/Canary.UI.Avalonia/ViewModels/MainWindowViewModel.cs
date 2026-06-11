@@ -32,6 +32,9 @@ public partial class MainWindowViewModel : ObservableObject
     public FeedbackViewModel Feedback { get; }
     public TelemetryViewModel Telemetry { get; }
     public SettingsViewModel Settings { get; }
+    // Docked Run History pane (feedback 2026-06-10-run-history-log-window) —
+    // lives below the NavigationView so it stays visible in every tab.
+    public RunHistoryViewModel RunHistory { get; }
 
     public IReadOnlyList<ModeOverride> ModeOverrides { get; } = new[] { ModeOverride.None, ModeOverride.PixelDiff, ModeOverride.Vlm, ModeOverride.Both };
 
@@ -47,6 +50,11 @@ public partial class MainWindowViewModel : ObservableObject
         Feedback = new FeedbackViewModel();
         Telemetry = new TelemetryViewModel();
         Settings = new SettingsViewModel();
+        RunHistory = new RunHistoryViewModel();
+        // Keep the log current: every in-UI run appends a runs/<stamp>/ dir,
+        // so re-scan when the runner finishes. CLI runs land on the next
+        // manual Refresh / workloads-dir load.
+        Tests.Runner.RunCompleted += () => _ = RunHistory.RefreshAsync();
 
         // Phase 2 full nav set. Tests is the operator's primary work
         // surface so it leads the rail.
@@ -92,6 +100,7 @@ public partial class MainWindowViewModel : ObservableObject
         _ = Sessions.LoadWorkloadsAsync(dir);
         _ = Tests.LoadWorkloadsAsync(dir);
         Telemetry.SetWorkloadsDir(dir);
+        RunHistory.SetWorkloadsDir(dir);
     }
 
     public async Task HandleAutoRunAsync(AutoRunArgs args)
