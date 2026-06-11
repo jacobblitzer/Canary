@@ -70,13 +70,15 @@ public class ModeOverrideTests
     }
 
     [Fact]
-    public void CheckpointMode_Enum_HasTwoValues()
+    public void CheckpointMode_Enum_HasThreeValues()
     {
-        // ResolveEffectiveModes returns 1-or-2 of these. Adding a third would
-        // change the dispatcher's iteration semantics.
+        // ResolveEffectiveModes returns 1-or-2 of these (Capture is always
+        // returned alone). Adding a fourth would change the dispatcher's
+        // iteration semantics.
         var values = System.Enum.GetValues<CheckpointMode>();
         Assert.Contains(CheckpointMode.PixelDiff, values);
         Assert.Contains(CheckpointMode.Vlm, values);
-        Assert.Equal(2, values.Length);
+        Assert.Contains(CheckpointMode.Capture, values);
+        Assert.Equal(3, values.Length);
     }
 }
