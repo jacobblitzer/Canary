@@ -1,0 +1,117 @@
+{
+  "name": "kbridge-geneva-animate",
+  "workload": "rhino",
+  "description": "Phase C2 of the trust-chain plan: geneva, the HONEST landing. The recorded keyframes cover only a dwell phase (crank 133 deg, disk 0.000 deg), so no coupling is inferable and none is emitted - a constant-ratio gear would be a wrong machine. CPig sweeps the crank via the emitted driver (joint_2, 0->133 deg, no overrides); the geneva disk stays at rest, which IS the recorded truth. The intermittent pin-slot indexing needs a CPig contact/intermittent transmission primitive (CPig ask filed in the plan doc). Pass/fail = Converged + SlopSuccess. doc=MM, CPig-only. Slop: KinematicBridge/out/_slop-side-by-side/geneva-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 1000,
+      "height": 800
+    },
+    "commands": [
+      "-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"
+    ],
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e2b"
+    },
+    "vlmDescription": "A Geneva mechanism shown as shaded solid CAD parts: a crank arm with a pin posed mid-rotation, and a slotted Geneva disk at rest, on two small house brackets, overlaid with a CPig frame-triad skeleton, at a sane scale."
+  },
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/geneva-bind-sweep-animate.canary.slop.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 90000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Perspective",
+        "displayMode": "Shaded"
+      },
+      "description": "Geneva crank posed mid-sweep by CPig's solve; the slotted disk dwells (matching the recorded truth)."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Front",
+        "displayMode": "Shaded"
+      },
+      "description": "Front view: Geneva crank posed mid-sweep by CPig's solve; the slotted disk dwells (matching the recorded truth)."
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "!!!"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "Converged",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "BindReport",
+      "text": "file not found"
+    }
+  ]
+}

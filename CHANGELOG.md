@@ -12,6 +12,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Capture-only checkpoint mode (2026-06-09)
+
+New `CheckpointMode.Capture`: a checkpoint with `"mode": "capture"` (aliases `"none"`/`"off"`) saves the screenshot candidate and runs **no comparison** — neither pixel-diff nor VLM — and never FAILs (status = Passed, no verdict). It **wins over the `--mode` override**, so opted-in checkpoints stay off even under `--mode pixel-diff|vlm`, and the VLM provider isn't initialized for them (no Ollama dependency). For recording images for manual review during bring-up, before a baseline or VLM is wired. Implemented in `src/Canary.Core/Orchestration/TestRunner.cs` (`CheckpointMode.Capture`, `ResolveEffectiveModes`, `IsCaptureOnly`, both checkpoint-processing branches); documented in CLAUDE.md "Test mode duality". First consumer: the `kbridge-*` Rhino tests. Build 0/0 (Core).
+
 ### Added — Toolbar "Keep app open" toggle (2026-06-04)
 
 Interactive checkbox on the Tests toolbar (`MainWindow.axaml`, column 4) that forces the **target app (e.g. Rhino) to stay running after the run, regardless of pass/fail**, so the operator can inspect the actual Grasshopper canvas/viewport. Distinct from the existing failure-gated knobs (`SuiteDefinition.KeepOpen` / `TestDefinition.KeepOpenOnFailure`): those only fire on failure and live in saved JSON; this is a run-scoped toggle on the singleton `TestsViewModel` so it persists across navigation and never auto-fires. Plumbed via new `RunRequest.ForceKeepOpen` → `TestRunnerViewModel` OR-into `_keepOpenAfterRun`. (Canary itself never auto-closes; this only governs the target app teardown — `_pm.KillAll()`.) Tear the app down afterward with the existing Stop button. Generalized the keep-open status message (was hard-coded "keepOpenOnFailure"). Build 0/0.

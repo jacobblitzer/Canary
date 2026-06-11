@@ -10,6 +10,13 @@ tags:
 
 Living tracker for all Canary features. Updated as work progresses.
 
+## Requested (operator desires, not yet scheduled)
+
+| Feature | Status | Requested | Notes |
+|---------|--------|-----------|-------|
+| Run-history log window | Requested | 2026-06-10 | Log-style window of previous test runs. See [docs/feedback/inbox/2026-06-10-run-history-log-window.md](../feedback/inbox/2026-06-10-run-history-log-window.md) — clarify vs the existing Past Runs tab before building. |
+| Suite tree: collapsible nested tests | Requested | 2026-06-10 | Suites list member tests as a collapsed/expandable group in the Tests tree. See [docs/feedback/inbox/2026-06-10-suite-tree-collapsible-tests.md](../feedback/inbox/2026-06-10-suite-tree-collapsible-tests.md). |
+
 ## Supervised sessions (capture-and-annotate, no automated tests)
 
 | Workload | Status | Phase | Notes |

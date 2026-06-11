@@ -1,0 +1,49 @@
+{
+  "name": "kbridge-slider-crank-animate",
+  "workload": "rhino",
+  "description": "Phase-4 of the animate plan — the earned-trust payoff: Inventor STEP geometry (converted to part-local mm .3dm in KinematicBridge/out/slider-crank/bodies/) bound to the bridge-translated slider-crank .kin.json and animated through CPig's OWN solve (Read Mechanism -> Bind Body From File x4 -> Sweep(Live) -> Animate Bound -> Custom Preview), posed mid-sweep at Step 17/34 (~85 deg). Sweep overridden at the node to 0 -> 2.967 rad (170 deg) to avoid the 180 deg dead-center (B-cand-008). Pass/fail = Converged + SlopSuccess asserts (guards B-bug-008 end-to-end with real geometry). Runs at doc=MM like the fork pipeline smoke: Custom Preview draws Animate Bound's raw canonical-mm geometry with no unit awareness, and there is no importer in this graph to co-locate with (cm + World Frame is the Phase-5 side-by-side). CPig-only; no KinematicImporter .gha needed. Slop: KinematicBridge/out/_slop-side-by-side/slider-crank-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "A slider-crank mechanism shown as shaded solid CAD parts (a base rail, a short crank arm, a connecting rod, and a flat slider plate) posed mid-motion with the crank rotated about 85 degrees, overlaid with a small CPig frame-triad skeleton. The solid parts sit on the skeleton joints, forming one connected mechanism at a sane scale."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/slider-crank-bind-sweep-animate.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 90000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Inventor slider-crank CAD parts posed mid-sweep by CPig's solve, on the CPig skeleton."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Front", "displayMode": "Shaded" },
+      "description": "Front view of the CPig-posed slider-crank parts."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"},
+    {"type": "PanelEquals", "nickname": "Converged", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "BindReport", "text": "file not found"}
+  ]
+}

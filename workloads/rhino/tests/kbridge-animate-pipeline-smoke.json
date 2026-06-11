@@ -1,0 +1,40 @@
+{
+  "name": "kbridge-animate-pipeline-smoke",
+  "workload": "rhino",
+  "description": "Phase-1 of the animate plan: prove the CPig Bind Body From File -> Sweep -> Animate Bound machinery on a CPig example that actually sweeps (leading-link-fork), before applying it to an Inventor mechanism (which needs the CPig solver fixed, B-cand-005). Binds the fork's 3 .stl bodies, sweeps the steer driver (30 steps), and previews the bound geometry posed at Step 15 via Animate Bound. Runs at doc=MM (CPig-native, unlike the cm kbridge overlay tests). Capture-only. Slop: KinematicBridge/out/_slop-side-by-side/fork-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "A leading-link suspension fork shown as shaded solid CAD parts (lower link, upper link, carrier) posed mid-sweep, overlaid with a small CPig frame-triad skeleton. The solid parts should sit on the skeleton joints, forming one connected mechanism at a sane scale."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/fork-bind-sweep-animate.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 60000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Fork bound geometry posed mid-sweep on the CPig skeleton."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"},
+    {"type": "PanelEquals", "nickname": "Converged", "text": "True"}
+  ]
+}

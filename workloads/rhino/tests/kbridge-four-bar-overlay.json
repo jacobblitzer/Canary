@@ -1,0 +1,47 @@
+{
+  "name": "kbridge-four-bar-overlay",
+  "workload": "rhino",
+  "description": "KinematicBridge Step-0 isolation, Run C. OVERLAY at doc=cm. PRIMARY preview is the imported Inventor mechanism geometry at rest (Mechanism out 1 → Custom Preview) overlaid with the CPig skeleton (design pose). A separate Inventor Animate(Time) layer (contrasting tint) is available to scrub the Inventor animation. cm is the importer's native unit; CPig matches via the unit-aware preview (CPig ADR 0005). At rest the imported mechanism and the CPig skeleton co-locate (kf0 seed). DEFERRED: a CPig animation scrub layer (blocked on B-cand-008 sweep stagnation) and CPig body geometry (skeleton only). Slop fixture: KinematicBridge/out/_slop-side-by-side/four-bar-overlay.canary.slop.json. Requires the KinematicImporter .gha loaded.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Centimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "Two representations of the SAME four-bar linkage shown together in one Rhino viewport: (1) solid shaded CAD parts (KinematicImporter) and (2) a skeleton of colored coordinate-frame triads and link polylines (CPig). A correct result has both at the SAME physical scale and roughly co-located / overlapping. Report a problem if one is dramatically larger than the other (e.g. about 10x), or if the two sit far apart as two separate clusters instead of overlapping."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/four-bar-overlay.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 90000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Solid four-bar CAD parts and a four-bar frame-triad skeleton in one viewport, same scale, overlapping/co-located. Flag a ~10x size mismatch or two far-apart clusters."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Front", "displayMode": "Shaded" },
+      "description": "Front view of the same overlay: solid parts and skeleton at the same scale, overlapping. Flag a ~10x size mismatch or a large positional offset between the two."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"}
+  ]
+}

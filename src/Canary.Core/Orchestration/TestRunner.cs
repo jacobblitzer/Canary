@@ -24,6 +24,13 @@ public enum CheckpointMode
     PixelDiff,
     /// <summary>VLM (vision-language model) evaluation against a description.</summary>
     Vlm,
+    /// <summary>
+    /// Capture-only: save the screenshot as the candidate and run NO comparison
+    /// (neither pixel-diff nor VLM). Not a verification — used to record images for
+    /// manual review without a verdict. Opted in via a checkpoint <c>mode = "capture"</c>
+    /// (aliases: "none", "off"); wins over the <c>--mode</c> override.
+    /// </summary>
+    Capture,
 }
 
 /// <summary>
@@ -1123,9 +1130,19 @@ public sealed class TestRunner
             // wins over checkpoint.Mode. forceMode == null preserves the original
             // per-checkpoint behaviour for backwards compatibility.
             var effective = forceMode
-                ?? (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase)
-                    ? CheckpointMode.Vlm
-                    : CheckpointMode.PixelDiff);
+                ?? (IsCaptureOnly(checkpoint)
+                    ? CheckpointMode.Capture
+                    : string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase)
+                        ? CheckpointMode.Vlm
+                        : CheckpointMode.PixelDiff);
+            if (effective == CheckpointMode.Capture)
+            {
+                // Capture-only: the screenshot was already saved as the candidate above.
+                // Run no comparison (no pixel-diff, no VLM) and produce no failure — this
+                // just records the image for manual review.
+                cpResult.Status = TestStatus.Passed;
+                return cpResult;
+            }
             if (effective == CheckpointMode.Vlm)
             {
                 return await ProcessVlmCheckpointAsync(cpResult, checkpoint, testName, displayName, ct).ConfigureAwait(false);
@@ -1353,9 +1370,19 @@ public sealed class TestRunner
             // wins over checkpoint.Mode. forceMode == null preserves the original
             // per-checkpoint behaviour for backwards compatibility.
             var effective = forceMode
-                ?? (string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase)
-                    ? CheckpointMode.Vlm
-                    : CheckpointMode.PixelDiff);
+                ?? (IsCaptureOnly(checkpoint)
+                    ? CheckpointMode.Capture
+                    : string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase)
+                        ? CheckpointMode.Vlm
+                        : CheckpointMode.PixelDiff);
+            if (effective == CheckpointMode.Capture)
+            {
+                // Capture-only: the screenshot was already saved as the candidate above.
+                // Run no comparison (no pixel-diff, no VLM) and produce no failure — this
+                // just records the image for manual review.
+                cpResult.Status = TestStatus.Passed;
+                return cpResult;
+            }
             if (effective == CheckpointMode.Vlm)
             {
                 // Client (named-pipe) path doesn't track testName here; pass "" so events still fire.
@@ -1448,6 +1475,11 @@ public sealed class TestRunner
     /// </summary>
     private IReadOnlyList<CheckpointMode> ResolveEffectiveModes(TestCheckpoint checkpoint)
     {
+        // Capture-only wins over everything — even a --mode override: the checkpoint is
+        // opted out of both comparisons. Just save the screenshot, produce no verdict.
+        if (IsCaptureOnly(checkpoint))
+            return new[] { CheckpointMode.Capture };
+
         bool checkpointIsExplicitVlm = string.Equals(checkpoint.Mode, "vlm", StringComparison.OrdinalIgnoreCase);
         if (checkpointIsExplicitVlm)
             return new[] { CheckpointMode.Vlm };
@@ -1460,6 +1492,15 @@ public sealed class TestRunner
             _ => new[] { CheckpointMode.PixelDiff },
         };
     }
+
+    /// <summary>
+    /// True when a checkpoint opts out of comparison entirely (<c>mode = "capture"</c>,
+    /// or the aliases "none"/"off"). Such checkpoints only save the candidate image.
+    /// </summary>
+    private static bool IsCaptureOnly(TestCheckpoint checkpoint) =>
+        string.Equals(checkpoint.Mode, "capture", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(checkpoint.Mode, "none", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(checkpoint.Mode, "off", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Roll the rolling test-level status forward based on a single

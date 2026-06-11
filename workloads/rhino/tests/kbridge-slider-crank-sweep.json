@@ -1,0 +1,48 @@
+{
+  "name": "kbridge-slider-crank-sweep",
+  "workload": "rhino",
+  "description": "Regression guard for KinematicBridge B-bug-008 (prismatic anti-roll frame fix). CPig-only: reads the bridge-translated slider-crank .kin.json and SWEEPS it (Read Mechanism -> Sweep(Live) -> Pose at Step -> Preview Diagram), posing the skeleton mid-sweep (step 17/34 ~= 85 deg). Before the fix the assembly would not converge (rms 0.207, step scale collapsed) so no sweep was possible; the `Converged` assert below is the actual guard. The sweep range is overridden to 0 -> 2.967 rad (= 170 deg) at the Sweep node to stay short of the 180 deg dead-center singularity (B-cand-008). No KinematicImporter needed (CPig-only). Capture-only screenshots; pass/fail is the asserts. Slop fixture: KinematicBridge/out/_slop-side-by-side/slider-crank-sweep-skeleton.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Centimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "A CPig frame-triad + link-polyline skeleton of a slider-crank mechanism posed mid-motion (crank rotated about 85 degrees from rest): a crank arm, a connecting rod, and a slider, forming one connected closed-loop linkage at a sane scale."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/slider-crank-sweep-skeleton.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 90000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Slider-crank CPig skeleton posed mid-sweep (step 17/34)."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Front", "displayMode": "Shaded" },
+      "description": "Front view of the swept slider-crank skeleton."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"},
+    {"type": "PanelEquals", "nickname": "Converged", "text": "True"}
+  ]
+}

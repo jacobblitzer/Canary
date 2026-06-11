@@ -1,0 +1,117 @@
+{
+  "name": "kbridge-pin-gear-animate",
+  "workload": "rhino",
+  "description": "Phase C1 of the trust-chain plan: pin-gear, the FIRST INFERRED GEAR TRANSMISSION. The extraction never captured the pin-tooth mesh (Inventor read 8 DOF); the bridge's gear inference fit the recorded signed wheel angles (joint_1 = 1.9976 x joint_0, max residual 0.44 deg over a 72 deg span) and emitted a CPig gear transmission, making the wheel pair 1-DOF and sweepable. The sweep drives the emitted driver (joint_1, 0->72 deg, no overrides); the gear constraint turns the pin wheel at half rate. Scrub Step to watch BOTH wheels turn in 2:1 ratio. Pass/fail = Converged + SlopSuccess. doc=MM, CPig-only. Slop: KinematicBridge/out/_slop-side-by-side/pin-gear-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 1000,
+      "height": 800
+    },
+    "commands": [
+      "-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"
+    ],
+    "vlm": {
+      "provider": "ollama",
+      "model": "gemma4:e2b"
+    },
+    "vlmDescription": "A pin-gear drive shown as shaded solid CAD parts: a large pin wheel and a smaller gear on two house brackets, both posed mid-rotation and meshed at their rims, overlaid with a CPig frame-triad skeleton, at a sane scale."
+  },
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/pin-gear-bind-sweep-animate.canary.slop.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 90000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Perspective",
+        "displayMode": "Shaded"
+      },
+      "description": "Pin-gear pair posed mid-sweep by CPig's solve, both wheels rotated in 2:1 ratio via the inferred gear transmission."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": {
+        "projection": "Front",
+        "displayMode": "Shaded"
+      },
+      "description": "Front view: Pin-gear pair posed mid-sweep by CPig's solve, both wheels rotated in 2:1 ratio via the inferred gear transmission."
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "!!!"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "Converged",
+      "text": "True"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "BindReport",
+      "text": "file not found"
+    }
+  ]
+}

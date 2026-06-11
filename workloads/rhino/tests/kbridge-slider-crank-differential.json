@@ -1,0 +1,49 @@
+{
+  "name": "kbridge-slider-crank-differential",
+  "workload": "rhino",
+  "description": "Phase B of the trust-chain plan (KinematicBridge/docs/progress/2026-06-09-trust-chain-next-phases.md): the MOTION DIFFERENTIAL. One canvas, two motion layers at doc=cm: ORANGE = KinematicImporter Animate(Time) replaying Inventor's recorded motion (untouched, world-absolute, cm-native); GREEN = the same Inventor geometry bound to the bridge-translated .kin.json and driven by CPig's own Sweep of the EMITTED driver (joint_1, 0->170 deg, no node overrides — B-bug-011), reframed mm->cm (Scale x0.1 about origin) then placed into Inventor world by the ground occurrence's transform taken from the importer's own Names+Transforms outputs (the importer layer is never moved). Operator protocol: scrub Time and Step together — orange and green should move through the same positions. KNOWN OPEN ITEM: the CPig driver direction is unsigned (B-bug-011); if green mirrors orange, the driver sign needs flipping — report it as the Phase-B finding. Requires KinematicImporter .gha + current CPig .gha. Capture-only screenshots; asserts = SlopSuccess + Converged + bind files found. Slop: KinematicBridge/out/_slop-side-by-side/slider-crank-differential.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Centimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "Two copies of the same slider-crank mechanism (base rail, crank, connecting rod, slider plate) overlaid in one viewport at the same scale and position: one tinted orange, one tinted green, plus a faint blue rest copy. At Time=0 and Step=0 the orange and green copies should coincide."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/slider-crank-differential.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 120000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Both motion layers at rest (Time=0, Step=0): orange recorded + green solved coinciding on the faint rest copy."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Front", "displayMode": "Shaded" },
+      "description": "Front view of the coinciding layers at rest."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"},
+    {"type": "PanelEquals", "nickname": "Converged", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "BindReport", "text": "file not found"}
+  ]
+}

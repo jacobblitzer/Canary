@@ -1,0 +1,49 @@
+{
+  "name": "kbridge-spherical-four-bar-animate",
+  "workload": "rhino",
+  "description": "Fourth mechanism through the animate pipeline and the FIRST fully-3D one (every prior kbridge mechanism is planar): 0529_spherical_4_bar_linkage_mechanism_2b, picked fresh from the corpus (4 bodies, 4 revolutes whose axes all intersect at one point - the links move on a sphere; dyn-sim keyframes carry a full ~180 deg recorded cycle). Translated clean on the first pass (0 errors/warnings; assembly converges 0 iters at rms 2.4e-13 - the kf0-derived frame x-axes hold in full 3D with no new fixes). The bridge inferred NO driver (B-cand-004 family), so the Sweep node passes an explicit Joint override = joint_0 (Base<->CrankA), 0 -> 2.967 rad (170 deg; full 360 hits the ~180 deg dead-center, B-cand-008). Probed 35/35 both directions headlessly. Binds the 4 Inventor .3dm bodies (part-local mm, out/spherical-four-bar/bodies/), poses mid-sweep at Step 17/34. Pass/fail = Converged + SlopSuccess asserts. doc=MM, CPig-only. Slop: KinematicBridge/out/_slop-side-by-side/spherical-four-bar-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "A spherical four-bar linkage shown as shaded solid CAD parts: a curved base, two curved crank links, and a curved connecting rod, all arcing over a common center so the links move on a sphere, posed mid-rotation, overlaid with a small CPig frame-triad skeleton. The parts form one connected closed-loop linkage at a sane scale."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/spherical-four-bar-bind-sweep-animate.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 90000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Inventor spherical 4-bar CAD parts posed mid-sweep by CPig's solve, on the CPig skeleton."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Front", "displayMode": "Shaded" },
+      "description": "Front view of the CPig-posed spherical 4-bar parts."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"},
+    {"type": "PanelEquals", "nickname": "Converged", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "BindReport", "text": "file not found"}
+  ]
+}

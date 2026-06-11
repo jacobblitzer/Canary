@@ -1,0 +1,49 @@
+{
+  "name": "kbridge-oldham-animate",
+  "workload": "rhino",
+  "description": "Third mechanism through the animate pipeline — and the regression guard for B-bug-010 (motion-based joint retyping). The oldham coupling's cross slides in each shaft hub's slot, but the extraction declared those joints RevoluteJointType, which pinned the cross and locked the whole mechanism (no sweep possible at any angle). The bridge's motion-retype pass proves them prismatic from the recorded keyframes (pure translation ~1.2 cm, 0 deg relative rotation) and recovers the slide axes frame-correctly (A-local; the hubs rotate). This test binds the 5 Inventor .3dm bodies, sweeps joint_3 (shaft) 0 -> 2.967 rad (170 deg, short of the 180 deg dead-center), and poses mid-sweep at Step 17/34. Pass/fail = Converged + SlopSuccess asserts. doc=MM, CPig-only. Slop: KinematicBridge/out/_slop-side-by-side/oldham-bind-sweep-animate.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Millimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "An Oldham shaft coupling shown as shaded solid CAD parts: two base brackets, two shaft hubs with slotted flanges, and a cross-shaped middle disc engaged between them, posed mid-rotation, overlaid with a small CPig frame-triad skeleton. The parts form one connected coupling at a sane scale."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/oldham-bind-sweep-animate.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 90000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 6000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "Inventor oldham coupling CAD parts posed mid-sweep by CPig's solve, on the CPig skeleton."
+    },
+    {
+      "name": "front",
+      "atTimeMs": 1500,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Front", "displayMode": "Shaded" },
+      "description": "Front view of the CPig-posed oldham parts."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"},
+    {"type": "PanelEquals", "nickname": "Converged", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "BindReport", "text": "file not found"}
+  ]
+}

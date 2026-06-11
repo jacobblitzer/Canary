@@ -1,0 +1,39 @@
+{
+  "name": "kbridge-four-bar-cpig",
+  "workload": "rhino",
+  "description": "KinematicBridge Step-0 isolation, Run B. CPig.Kinematics ALONE at doc=cm: reads the bridge-emitted four-bar .kin.json and draws the design-pose skeleton via Preview Diagram (Display Mode = Skeleton + Bodies). With the unit-aware preview (CPig ADR 0005) the skeleton renders at correct physical scale in a cm doc. The stagnating quasi-static Sweep (B-cand-008) is intentionally removed so the build does not hang; the skeleton draws regardless of solver state. Confirms correct scale + the expected four-bar topology. Slop fixture: KinematicBridge/out/_slop-side-by-side/four-bar-cpig.canary.slop.json.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 1000, "height": 800 },
+    "commands": ["-_DocumentProperties _Units _ModelUnits _UnitSystem _Centimeters _EnterEnd"],
+    "vlm": { "provider": "ollama", "model": "gemma4:e2b" },
+    "vlmDescription": "A kinematic skeleton diagram (NOT solid CAD parts): small colored coordinate-frame triads (red/green/blue axis lines) at the joints, connected by thin link polylines, forming a four-bar linkage topology — a closed loop of links anchored to a ground. It reads as one connected mechanism at a consistent scale, not a scatter of disconnected triads and not collapsed to a point."
+  },
+  "actions": [
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": false},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 5000},
+    {"type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 2000},
+    {"type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/four-bar-cpig.canary.slop.json"},
+    {"type": "GrasshopperSetToggle", "nickname": "Build", "value": true},
+    {"type": "WaitForGrasshopperSolution", "timeoutMs": 30000}
+  ],
+  "checkpoints": [
+    {
+      "name": "persp",
+      "atTimeMs": 5000,
+      "tolerance": 0.02,
+      "mode": "capture",
+      "viewport": { "projection": "Perspective", "displayMode": "Shaded" },
+      "description": "A four-bar kinematic skeleton: frame-triads at joints connected by link polylines into one closed loop on a ground; consistent scale, no scatter."
+    }
+  ],
+  "asserts": [
+    {"type": "PanelEquals", "nickname": "SlopSuccess", "text": "True"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL"},
+    {"type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!"}
+  ]
+}
