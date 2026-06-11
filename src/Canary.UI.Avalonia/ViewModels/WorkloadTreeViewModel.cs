@@ -72,14 +72,38 @@ public partial class WorkloadTreeViewModel : ObservableObject
                 };
                 foreach (var suite in entry.Suites)
                 {
-                    suitesGroup.Children.Add(new WorkloadNode
+                    var suiteNode = new WorkloadNode
                     {
                         Label = $"{suite.Name} ({suite.Tests.Count} tests)",
                         Kind = WorkloadNodeKind.Suite,
                         Payload = suite,
                         OwningWorkload = entry,
                         Color = "#96DC82",
-                    });
+                    };
+                    // Member tests nest under the suite in suite-JSON order,
+                    // collapsed by default (IsExpanded defaults false). A name
+                    // with no matching tests/*.json renders as a red "(missing)"
+                    // leaf instead of silently dropping.
+                    foreach (var testName in suite.Tests)
+                    {
+                        var test = entry.Tests.FirstOrDefault(t => t.Name == testName);
+                        suiteNode.Children.Add(test != null
+                            ? new WorkloadNode
+                            {
+                                Label = test.Name,
+                                Kind = WorkloadNodeKind.Test,
+                                Payload = test,
+                                OwningWorkload = entry,
+                            }
+                            : new WorkloadNode
+                            {
+                                Label = $"{testName} (missing)",
+                                Kind = WorkloadNodeKind.Test,
+                                OwningWorkload = entry,
+                                Color = "#C86464",
+                            });
+                    }
+                    suitesGroup.Children.Add(suiteNode);
                 }
                 workloadNode.Children.Add(suitesGroup);
                 totalSuites += entry.Suites.Count;

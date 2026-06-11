@@ -90,6 +90,54 @@ public class WorkloadTreeViewModelTests
     }
 
     [Fact]
+    public async Task Load_SuiteNode_NestsMemberTestsCollapsedInSuiteOrder()
+    {
+        // Feedback 2026-06-10-suite-tree-collapsible-tests: suite nodes list
+        // their member tests as a collapsed, expandable child group.
+        var root = Path.Combine(Path.GetTempPath(), "canary-tree-vm-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "alpha", "tests"));
+        Directory.CreateDirectory(Path.Combine(root, "alpha", "suites"));
+        File.WriteAllText(Path.Combine(root, "alpha", "workload.json"),
+            JsonSerializer.Serialize(new { name = "alpha", displayName = "Alpha", agentType = "qualia-cdp", appPath = "" }));
+        // Discovery returns tests alphabetically; the suite declares the
+        // reverse order to prove children follow suite-JSON order.
+        File.WriteAllText(Path.Combine(root, "alpha", "tests", "aardvark.json"),
+            JsonSerializer.Serialize(new { name = "aardvark", workload = "alpha", checkpoints = Array.Empty<object>() }));
+        File.WriteAllText(Path.Combine(root, "alpha", "tests", "zebra.json"),
+            JsonSerializer.Serialize(new { name = "zebra", workload = "alpha", checkpoints = Array.Empty<object>() }));
+        File.WriteAllText(Path.Combine(root, "alpha", "suites", "primary.json"),
+            JsonSerializer.Serialize(new { name = "primary", tests = new[] { "zebra", "aardvark", "ghost" } }));
+
+        try
+        {
+            var vm = new WorkloadTreeViewModel();
+            await vm.LoadAsync(root);
+
+            var alpha = vm.Roots.Single();
+            var suiteNode = alpha.Children
+                .Single(c => c.Kind == WorkloadNodeKind.SuitesGroup).Children.Single();
+            Assert.Equal(WorkloadNodeKind.Suite, suiteNode.Kind);
+            Assert.False(suiteNode.IsExpanded);
+
+            Assert.Equal(3, suiteNode.Children.Count);
+            Assert.Equal(new[] { "zebra", "aardvark", "ghost (missing)" },
+                suiteNode.Children.Select(c => c.Label).ToArray());
+            Assert.All(suiteNode.Children, c => Assert.Equal(WorkloadNodeKind.Test, c.Kind));
+
+            // Real members carry the TestDefinition payload (so single-click /
+            // Run / Edit behave exactly like an All Tests node); the missing
+            // one carries none.
+            Assert.NotNull(suiteNode.Children[0].Payload);
+            Assert.NotNull(suiteNode.Children[1].Payload);
+            Assert.Null(suiteNode.Children[2].Payload);
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
     public async Task Load_MissingDir_LeavesEmptyRoots()
     {
         var vm = new WorkloadTreeViewModel();
