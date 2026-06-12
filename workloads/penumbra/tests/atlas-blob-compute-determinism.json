@@ -15,6 +15,7 @@
     "commands": [
       "window.__canaryHideUI(true)",
       "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "window.__canarySetDisplayState({features: {eventDrivenRender: 'off'}})",
       "window.__canaryPrebuildComputeMarchPipeline()",
       "window.__canarySetComputeMarchToggles({})",
       "window.__canaryRunComputeMarcherSmoke(15000)",
