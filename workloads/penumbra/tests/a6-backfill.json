@@ -1,0 +1,35 @@
+{
+  "name": "a6-backfill",
+  "workload": "penumbra",
+  "description": "A6 splat-cache backfill MVP (PFP Stage 3) — hybrid scene with splatCache ON must drain dirty cells from the GPU (drainCount > 0 via getRenderLoopState().a6SplatCache). The poll command supplies its own render demand (forceMarkDirty per iteration, C2 convention) and throws loudly on timeout. The settled checkpoint is capture-only: A6 must not change visuals (hybrid-default owns the pixel-diff guard for this scene) and backfill replan timing varies.",
+  "setup": {
+    "scene": {
+      "index": 3,
+      "sceneName": "Hybrid (Tape + Atlas)"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryWaitForAtlasPipelineReady(120000)",
+      "(() => { window.__canarySetDisplayState({ features: { splatCache: 'on' } }); var s = window.__canaryGetRenderLoopState(); return 'A6 splatCache ON; a6=' + JSON.stringify(s && s.a6SplatCache); })()",
+      "new Promise(function(resolve, reject){ var t0 = Date.now(); (function poll(){ try { if (window.__canaryForceMarkDirty) window.__canaryForceMarkDirty('a6-drain-poll'); var s = window.__canaryGetRenderLoopState && window.__canaryGetRenderLoopState(); var a6 = s && s.a6SplatCache; if (a6 && a6.stats && a6.stats.drainCount > 0) { resolve('A6 drains observed: ' + JSON.stringify(a6) + ' atlasFrames=' + (s && s.atlasFramesCount)); return; } if (Date.now() - t0 > 60000) { reject(new Error('A6 drain never fired within 60s; a6=' + JSON.stringify(a6) + ' atlasFrames=' + (s && s.atlasFramesCount) + ' fingerprint=' + JSON.stringify(s && s.atlasFingerprint))); return; } setTimeout(poll, 100); } catch (e) { reject(e instanceof Error ? e : new Error(String(e))); } })(); })",
+      "window.__canaryHideUI(true)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "settled",
+      "mode": "capture",
+      "camera": {
+        "azimuth": 45,
+        "elevation": 30,
+        "distance": 8
+      },
+      "stabilizeMs": 2500,
+      "tolerance": 0.02
+    }
+  ]
+}
