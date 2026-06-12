@@ -1,5 +1,84 @@
 # Build Log — Canary
 
+## 2026-06-11 — BUG-0013 compute-smoke starvation fix (eventDrivenRender) — SHIPPED
+
+- **Date**: 2026-06-11
+- **Scope**: All 13 `atlas-blob-compute-*` tests crashed in both sweeps.
+  Original theory (helper budget < ~90s pipeline build) disproven — every
+  test already prebuilds via `__canaryPrebuildComputeMarchPipeline()`.
+  Actual chain: Penumbra's 2026-05-08 graduation flipped
+  `eventDrivenRender` ON in the default profile → Canary's
+  `?autostart=true` boot reads the launch checkboxes initialized from
+  that profile (fresh temp Chrome profile = no localStorage) → C2 render
+  gate idles the loop → the smoke gets 1 dirty frame but needs ~10
+  dispatches → `dispatchCount=0` at any budget.
+- **Fix**: insert `__canarySetDisplayState({features: {eventDrivenRender:
+  'off'}})` into all 13 test JSONs before the smoke (probe-validated on
+  one test first). No Canary code change; no Penumbra change.
+- **Validation**: 10/13 New (first-ever passes; 96–173s each;
+  `.compute-validation.log`). 3 residuals are Penumbra-side (2× TDR-class
+  device loss on heavy D2Cubic variants, 1× persistent-threading path
+  never dispatching) — folded into ask
+  `docs/asks/penumbra/0002-compute-smoke-self-mark-dirty.md` along with
+  the upstream self-mark-dirty improvement that would let the C2-off
+  lines be removed.
+- **Docs**: `docs/bugs/0013-compute-smoke-starved-by-event-driven-render.md`,
+  CHANGELOG entry, penumbra ask 0002.
+
+## 2026-06-11 — BUG-0012 feature-loader stale assertions + benchy bare-await fix — SHIPPED
+
+- **Date**: 2026-06-11
+- **Scope**: Root-caused the four "JavaScript evaluation failed: Uncaught"
+  penumbra test crashes. Three test JSONs were stale against Penumbra's
+  2026-05-08 graduation rework (default profile ships 7 features ON;
+  quality keeps meshDrivenClassification off; the A3↔A6 invalidates edge
+  was removed — they compose); stl-import-benchy had a bare top-level
+  `await` setup command (SyntaxError under Runtime.evaluate, broken since
+  authoring, zero successful runs) and swallowed STL-load failures.
+  No Penumbra-side changes — profiles/matrix/hooks behave as documented.
+- **Also**: `CdpClient.DescribeException` — JS errors now surface
+  `exception.description` (message + top stack frames) instead of the
+  bare "Uncaught" that made this class of failure opaque.
+- **Build/tests**: 0/0; 309/309 unit tests.
+- **Validation**: all four tests pass as solo headless runs
+  (mutex-rejection 76s, quality-profile 76s, benchy 17s — first-ever
+  success; all-off confirmed earlier in the BUG-0011 sweep). Bonus signal:
+  40 shared-agent sweep tests the same evening had ZERO load-timeout
+  crashes (BUG-0011 holding); its 13 atlas-blob-compute-* crashes are a
+  separate compute-pipeline-build-budget issue, flagged as a follow-up.
+- **Docs**: `docs/bugs/0012-feature-loader-stale-assertions-and-benchy-await.md`,
+  CHANGELOG `[Unreleased]` Fixed entry.
+
+## 2026-06-11 — BUG-0011 penumbra spawn/teardown reliability fix — SHIPPED
+
+- **Date**: 2026-06-11
+- **Scope**: Root-caused and fixed the ~35% `Page.loadEventFired` timeout
+  crashes from the 2026-06-11 90-test penumbra sweep. Three layered causes:
+  (1) hard-coded 60s navigate ceiling vs 30–90s WebGPU/Dawn re-init on the
+  per-test `setup.backend` → `SetBackend` reload; (2) `ViteManager` tree-kill
+  racing child enumeration and orphaning the vite node (port 3000 held +
+  inherited console handles blocking external drivers — the reason the prior
+  session's retry pass needed a 20s node-janitor loop); (3) Chrome temp
+  profile delete racing child file locks (28 leaked dirs).
+- **Fix**: `PenumbraConfig.PageLoadTimeoutMs` (default 180s) +
+  `NavigateWithRetryAsync` (retry-once, warn telemetry);
+  `ViteManager.StopInternal` kill-by-port fallback + `KillStaleListenerAsync`
+  waits for actual port release; `ChromeLauncher` CDP-port stale-listener
+  kill + 2h-aged profile GC + delete retry in `ChromeLaunchResult.Dispose`.
+- **Build/tests**: 0 errors / 0 warnings; 309/309 unit tests.
+- **Validation**: 19 remaining roster tests re-run as individual headless
+  `canary run` invocations with NO external kill/sleep workarounds
+  (`.retry-validation.log`): 0 load-timeout crashes, port 3000 released
+  after every run, profile-dir count flat. Typical per-invocation wall
+  20–40s (atlas-heavy 90–160s), all far under the 180s ceiling. The 3
+  remaining crashes are the unrelated flaky `JavaScript evaluation failed:
+  Uncaught` bug (feature-loader trio + stl-import-benchy), tracked
+  separately.
+- **Docs**: `docs/bugs/0011-penumbra-page-load-timeout-sweep-crashes.md`,
+  CHANGELOG `[Unreleased]` Fixed entry, CLAUDE.md "Running Penumbra tests"
+  section (suite runs already share one Vite+Chrome; the per-test reload is
+  the navigation that matters).
+
 ## 2026-05-27 — Canary.UI Avalonia migration Phase 6 (cutover) — SHIPPED
 
 - **Date**: 2026-05-27
