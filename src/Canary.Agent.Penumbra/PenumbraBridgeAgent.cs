@@ -585,33 +585,50 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
     }
 
     /// <summary>
-    /// Wait for atlas build to complete if any fields use atlas evaluation.
-    /// Polls up to 10 seconds.
+    /// Wait for the atlas to be PRESENTABLE if any fields use atlas
+    /// evaluation — pipeline ready + bind groups + build complete, via
+    /// Penumbra's strong always-resolve hook.
+    ///
+    /// 2026-06-12 (mesh-suite black-bunny): the old version polled the
+    /// weak `atlasBuildComplete` flag for only 10s. After a WebGPU
+    /// device-loss recovery (Chrome can kill the device when a prior
+    /// test's page is torn down late — "external Instance reference no
+    /// longer exists"), Penumbra rebuilds the device AND recompiles the
+    /// atlas pipeline (20-60s). The 10s poll expired silently, the
+    /// presented-frame check then passed on TAPE-pipeline frames, and
+    /// mesh atoms (whose tape fallback is deliberately surface-free)
+    /// captured black. The 90s strong wait outlasts recovery before
+    /// EVERY capture; for non-atlas scenes and the already-ready case
+    /// it returns in one poll.
     /// </summary>
     private async Task WaitForAtlasIfNeededAsync(CancellationToken ct = default)
     {
-        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(10);
+        var needsAtlas = await _cdp!.EvaluateAsync<bool?>(@"
+            (() => {
+                if (!window.__canaryGetRendererInfo) return false;
+                const info = window.__canaryGetRendererInfo();
+                return info.hasAtlasFields === true;
+            })()
+        ", ct).ConfigureAwait(false);
+        if (needsAtlas != true) return;
 
-        while (DateTime.UtcNow < deadline)
+        // Strong condition (always resolves with {ok, reason}; never
+        // rejects — see Penumbra BUILD_LOG 2026-05-06). NO bare
+        // top-level await (BUG-0012); return the promise.
+        var result = await _cdp!.EvaluateAsync(
+            "window.__canaryWaitForAtlasPipelineReady ? window.__canaryWaitForAtlasPipelineReady(90000).then(function(r){ return JSON.stringify(r); }) : 'no-hook'",
+            ct).ConfigureAwait(false);
+
+        if (result is string s && !s.Contains("\"completed\"") && s != "no-hook")
         {
-            ct.ThrowIfCancellationRequested();
-
-            var complete = await _cdp!.EvaluateAsync<bool?>(@"
-                (() => {
-                    if (!window.__canaryGetRendererInfo) return true;
-                    const info = window.__canaryGetRendererInfo();
-                    // If no atlas fields, we're done
-                    if (!info.hasAtlasFields) return true;
-                    return info.atlasBuildComplete === true;
-                })()
-            ", ct).ConfigureAwait(false);
-
-            if (complete == true) return;
-
-            await Task.Delay(200, ct).ConfigureAwait(false);
+            _telemetrySink.Write(new TelemetryRecord
+            {
+                Source = "penumbra",
+                Kind = TelemetryKind.Log,
+                Level = "warn",
+                Data = new { text = $"WaitForAtlasIfNeeded: atlas not presentable after 90s wait: {s}" }
+            });
         }
-
-        // Don't throw — atlas might just be slow. Capture what we have.
     }
 
     /// <summary>

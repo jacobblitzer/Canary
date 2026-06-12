@@ -182,6 +182,16 @@ public static class ChromeLauncher
             "--disable-ipc-flooding-protection",
             "--disable-infobars",
 
+            // BFCache keeps the OLD page (and its WebGPU handles) alive
+            // ~20s after a same-tab navigation; its eventual eviction can
+            // drop Dawn's shared instance refcount AFTER the next test's
+            // page created its device — killing it mid-test ("A valid
+            // external Instance reference no longer exists"; the
+            // 2026-06-12 mesh-suite black-bunny / red-ribbon failure).
+            // Tests navigate constantly and never press Back; force
+            // immediate, ordered page teardown instead.
+            "--disable-features=BackForwardCache",
+
             // CRITICAL for screenshot determinism — lock DPI to 1x
             "--force-device-scale-factor=1",
 
