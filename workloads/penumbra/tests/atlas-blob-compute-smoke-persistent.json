@@ -15,8 +15,8 @@
     "commands": [
       "window.__canaryHideUI(true)",
       "window.__canaryWaitForAtlasPipelineReady(120000)",
-      "window.__canaryPrebuildComputeMarchPipeline()",
       "window.__canarySetComputeMarchToggles({enablePersistentThreading: true, persistentWorkgroupCount: 32})",
+      "window.__canaryPrebuildComputeMarchPipeline()",
       "window.__canaryRunComputeMarcherSmoke(20000)"
     ]
   },
