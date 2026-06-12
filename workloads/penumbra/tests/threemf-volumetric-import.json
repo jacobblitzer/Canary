@@ -1,0 +1,42 @@
+{
+  "name": "threemf-volumetric-import",
+  "workload": "penumbra",
+  "description": "Bug 0035 regression guard — load a 3MF Volumetric file (csg-difference fixture, served from Studio public/) via __canaryLoadThreeMFFromUrl and verify it RENDERS: the historical failure was tape-ALU-then-fade-to-black (dropped C2 dirty signal at pipeline-ready + bug-0045 tape clobber). The load command throws loudly on importer failure; the checkpoint catches silent-black regressions. First run records the baseline candidate; approve after visual review.",
+  "setup": {
+    "scene": {
+      "index": 0,
+      "sceneName": "Box - Sphere"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryLoadThreeMFFromUrl('/test-csg-difference.3mf').then(r => { if (!r || !r.atoms) throw new Error('3MF load returned no atoms: ' + JSON.stringify(r)); return JSON.stringify(r); })"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": {
+        "azimuth": 30,
+        "elevation": 20,
+        "distance": 9
+      },
+      "stabilizeMs": 1200,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": {
+        "azimuth": 120,
+        "elevation": 30,
+        "distance": 9
+      },
+      "stabilizeMs": 1200,
+      "tolerance": 0.02
+    }
+  ]
+}
