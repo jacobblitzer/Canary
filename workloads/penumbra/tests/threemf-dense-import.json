@@ -13,9 +13,11 @@
       "height": 540
     },
     "commands": [
-      "window.__canaryHideUI(true)",
+      "(() => { window.__pfpResizesBeforeLoad = (window.__canaryGetRenderLoopState() || {}).ensureOffscreenCount || 0; return 'resizes before load: ' + window.__pfpResizesBeforeLoad; })()",
       "window.__canaryLoadThreeMFFromUrl('/test-dense-blob.3mf').then(function(r){ if (!r || !r.atoms) throw new Error('dense 3MF load returned no atoms: ' + JSON.stringify(r)); return JSON.stringify(r); })",
       "(() => { const s = window.__canaryGetEvalSnapshot(); const reps = (s && s.atomDispatch && s.atomDispatch.byActiveRep) || {}; if (!reps.atlasBaked) { throw new Error('dense import did NOT route to atlasBaked; byActiveRep=' + JSON.stringify(reps) + ' fields=' + JSON.stringify(s && s.fields)); } return 'dense import routed to atlas: ' + JSON.stringify(reps); })()",
+      "new Promise(function(res){ setTimeout(res, 1200); }).then(function(){ var l = window.__canaryGetRenderLoopState() || {}; var hist = l.renderDimHistory || []; var delta = (l.ensureOffscreenCount || 0) - (window.__pfpResizesBeforeLoad || 0); var hasCoarse = hist.some(function(d){ return parseInt(d, 10) <= 480; }); if (delta < 3 || !hasCoarse) { throw new Error('coarse first-paint ramp did NOT re-seed after dense import (resize delta=' + delta + ', coarse-in-ring=' + hasCoarse + '); renderDimHistory(last12)=' + JSON.stringify(hist)); } return 'first-paint re-ramp: ' + delta + ' resizes post-load, ring=' + JSON.stringify(hist); })",
+      "window.__canaryHideUI(true)",
       "window.__canaryWaitForAtlasPipelineReady(120000)"
     ]
   },
