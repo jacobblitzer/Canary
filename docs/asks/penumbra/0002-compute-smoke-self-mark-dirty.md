@@ -1,11 +1,22 @@
 ---
 id: 0002
 peer: penumbra
-status: open
+status: resolved
 requested: 2026-06-11
+resolved: 2026-06-12
 severity: medium
 tags: [canary-hooks, compute-marcher, eventDrivenRender]
 ---
+
+> **RESOLVED 2026-06-12** (Penumbra bug-fix-first sprint step 2):
+> `runComputeMarcherSmokeImpl` marks dirty per tick exactly as proposed;
+> additionally `__canaryWaitForPresentedFrame(timeoutMs)` was added and
+> the agent's WaitForStable now calls it before every capture. The 13
+> test-side workaround lines were removed; base smoke verified clean
+> under the shipping default profile (UI-visible run, baseline
+> approved); assembly-default passed 4/4 vs its original baseline.
+> Residual: the 2 TDR-class D2Cubic variants + the persistent-threading
+> no-op remain Penumbra-side (sprint step 5 covers the latter).
 
 # Compute-marcher smoke hardening: self-supply render demand (C2-proof) + two residual failures
 

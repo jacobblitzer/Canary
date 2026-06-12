@@ -369,7 +369,20 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
         await WaitForAtlasIfNeededAsync().ConfigureAwait(false);
         await Task.Delay(ms).ConfigureAwait(false);
 
-        return Ok($"Waited {ms}ms for stabilization.");
+        // Sprint step 2b (2026-06-12): a fixed sleep is not "a frame was
+        // presented" — heavy scenes' first FULL-RES frame can exceed any
+        // stabilizeMs (the black assembly-default candidates). Ask
+        // Penumbra to confirm a full-res frame actually rendered after
+        // the latest change. The hook always resolves with {ok, ...};
+        // older Penumbra builds without it fall through silently.
+        // NOTE: no bare top-level `await` here — that is a SyntaxError
+        // under Runtime.evaluate (Canary BUG-0012, the benchy lesson).
+        // Return the promise; the CDP layer awaits it.
+        var presented = await _cdp!.EvaluateAsync(
+            "window.__canaryWaitForPresentedFrame ? window.__canaryWaitForPresentedFrame(15000).then(function(r){ return JSON.stringify(r); }) : 'no-hook'"
+        ).ConfigureAwait(false);
+
+        return Ok($"Waited {ms}ms for stabilization; presentedFrame={presented ?? "unknown"}.");
     }
 
     private async Task<AgentResponse> SetBackendAsync(Dictionary<string, string> parameters)
