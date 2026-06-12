@@ -1,0 +1,44 @@
+{
+  "name": "threemf-dense6-import",
+  "workload": "penumbra",
+  "description": "Bug-0047 guard — the 6-sphere min-union 3MF (~130 expanded scalar graph nodes) must STRUCTURALLY compile (levelsetsVoxelBaked=0) and render real geometry. Before the liveness register-reuse fix this exact fixture died on 'register exhaustion (>64 live values)' and silently degraded to a bounding-sphere placeholder. Also asserts Stage-1 dense routing (activeRep=atlasBaked).",
+  "setup": {
+    "scene": {
+      "index": 0,
+      "sceneName": "Box - Sphere"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryLoadThreeMFFromUrl('/test-dense-blob6.3mf').then(function(r){ if (!r || !r.atoms) throw new Error('dense6 3MF load returned no atoms: ' + JSON.stringify(r)); if (r.diagnostics && r.diagnostics.levelsetsVoxelBaked > 0) throw new Error('bug 0047 REGRESSED: 6-sphere graph voxel-baked to placeholder instead of structural compile; diagnostics=' + JSON.stringify(r.diagnostics)); return 'structural compile OK: ' + JSON.stringify(r.diagnostics); })",
+      "(() => { const s = window.__canaryGetEvalSnapshot(); const reps = (s && s.atomDispatch && s.atomDispatch.byActiveRep) || {}; if (!reps.atlasBaked) { throw new Error('dense6 import did NOT route to atlasBaked; byActiveRep=' + JSON.stringify(reps)); } return 'dense6 routed to atlas: ' + JSON.stringify(reps); })()",
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": {
+        "azimuth": 20,
+        "elevation": 20,
+        "distance": 9
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": {
+        "azimuth": 120,
+        "elevation": 30,
+        "distance": 9
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    }
+  ]
+}
