@@ -110,7 +110,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
 
         // 4. Navigate to Penumbra test harness
         var url = $"{_vite.Url}?autostart=true&backend={_config.DefaultBackend}";
-        await _cdp.NavigateAsync(url, TimeSpan.FromSeconds(60), ct).ConfigureAwait(false);
+        await NavigateWithRetryAsync(url, ct).ConfigureAwait(false);
 
         // 5. Wait for Penumbra to initialize (renderer ready)
         await WaitForPenumbraReadyAsync(ct).ConfigureAwait(false);
@@ -238,6 +238,17 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
     public async Task<ScreenshotResult> CaptureScreenshotAsync(CaptureSettings settings)
     {
         EnsureInitialized();
+
+        // Per the Penumbra<->Canary contract (Penumbra spec/CANARY.md:
+        // "Penumbra MUST honor __canaryHideUI(true) without rendering UI
+        // overlays before each screenshot"), enforce hide-UI HERE rather
+        // than relying on each test JSON to remember the setup command.
+        // Discovered 2026-06-11: ~40 tests without the explicit command
+        // were capturing the full HUD into their candidates/baselines.
+        // Idempotent; also triggers Penumbra's full-res capture prep
+        // (progressive-ramp disable) as of Penumbra Phase 12.
+        await _cdp!.EvaluateAsync(
+            "window.__canaryHideUI && window.__canaryHideUI(true)").ConfigureAwait(false);
 
         // Re-measure canvas offset in case layout changed
         await MeasureCanvasOffsetAsync().ConfigureAwait(false);
@@ -368,7 +379,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
 
         var baseUrl = _externalViteUrl ?? _vite!.Url;
         var url = $"{baseUrl}?autostart=true&backend={backend}";
-        await _cdp!.NavigateAsync(url, TimeSpan.FromSeconds(60)).ConfigureAwait(false);
+        await NavigateWithRetryAsync(url).ConfigureAwait(false);
         await WaitForPenumbraReadyAsync().ConfigureAwait(false);
         await LockCanvasSizeAsync(_canvasWidth, _canvasHeight).ConfigureAwait(false);
         await MeasureCanvasOffsetAsync().ConfigureAwait(false);
@@ -449,6 +460,36 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
     // ──────────────────────────────────────────────────────────────────────
 
     /// <summary>
+    /// Navigate with the configured page-load timeout, retrying once on a
+    /// load-event timeout. Every penumbra test's setup.backend triggers a
+    /// SetBackend reload, so over a long suite the shared browser performs
+    /// dozens of full Penumbra re-inits (WebGPU adapter + Dawn pipeline
+    /// builds delay Page.loadEventFired by 30–90s on this hardware). The
+    /// 2026-06-11 90-test sweep crashed ~35% of tests at exactly the old
+    /// hard-coded 60s ceiling. A reload is idempotent, so one retry is safe
+    /// and converts a transient slow load into a pass instead of a CRASH.
+    /// </summary>
+    private async Task NavigateWithRetryAsync(string url, CancellationToken ct = default)
+    {
+        var timeout = TimeSpan.FromMilliseconds(_config.PageLoadTimeoutMs);
+        try
+        {
+            await _cdp!.NavigateAsync(url, timeout, ct).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            _telemetrySink.Write(new TelemetryRecord
+            {
+                Source = "penumbra",
+                Kind = TelemetryKind.Log,
+                Level = "warn",
+                Data = new { text = $"Page.loadEventFired not seen within {timeout.TotalSeconds:F0}s for {url}; retrying navigation once." }
+            });
+            await _cdp!.NavigateAsync(url, timeout, ct).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Wait for Penumbra's test harness to initialize (renderer created, first scene loaded).
     /// Polls window.__canaryGetRendererInfo until it returns a valid response.
     /// </summary>
@@ -485,7 +526,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
         }
 
         throw new TimeoutException(
-            "Penumbra test harness did not initialize within 30s. " +
+            "Penumbra test harness did not initialize within 120s. " +
             "Ensure window.__canaryGetRendererInfo is exposed in test/main.ts");
     }
 

@@ -17,6 +17,7 @@
     "defaultCanvasWidth": 960,
     "defaultCanvasHeight": 540,
     "defaultStabilizeMs": 500,
+    "pageLoadTimeoutMs": 180000,
     "chromeFlags": [
       "--force-device-scale-factor=1",
       "--hide-scrollbars",

@@ -64,13 +64,24 @@ public sealed class ChromeLaunchResult : IDisposable
         catch { /* best effort */ }
         Process.Dispose();
 
-        // Clean up temp profile
-        try
+        // Clean up temp profile. Chrome's child processes can hold file
+        // locks for a few seconds after the tree-kill — a single delete
+        // attempt leaked ~28 canary-chrome-* dirs over the 2026-06-11
+        // sweep, so retry with backoff. Anything that still survives is
+        // collected by the launch-time GC sweep in ChromeLauncher.
+        for (var attempt = 0; attempt < 3; attempt++)
         {
-            if (Directory.Exists(TempProfileDir))
+            try
+            {
+                if (!Directory.Exists(TempProfileDir)) break;
                 Directory.Delete(TempProfileDir, recursive: true);
+                break;
+            }
+            catch
+            {
+                Thread.Sleep(500);
+            }
         }
-        catch { /* best effort, Chrome may still hold locks briefly */ }
     }
 }
 
@@ -134,6 +145,22 @@ public static class ChromeLauncher
         if (chromePath == null || !File.Exists(chromePath))
             throw new FileNotFoundException(
                 "Chrome/Edge not found. Install Chrome or Edge, or set chromePath in workload.json.");
+
+        // 2026-06-11 spawn-reliability hardening: if a previous automation
+        // browser survived teardown and still holds the CDP port, the new
+        // Chrome silently fails to bind --remote-debugging-port and
+        // PollForCdpEndpointAsync connects to the STALE browser's page —
+        // we would drive the wrong instance. The configured CDP port is
+        // Canary's dedicated automation port (same contract as the Vite
+        // port), so any listener on it is a leftover: kill it before
+        // launching, mirroring ViteManager.KillStaleListenerAsync.
+        var localhost = new Canary.Localhost.LocalhostManager();
+        await localhost.KillByPortAsync(options.CdpPort, ct).ConfigureAwait(false);
+
+        // GC stale temp profiles from prior runs whose delete-on-dispose
+        // failed (locked at teardown, or the harness was hard-killed).
+        // Age-gated to 2h so we never race a concurrently-running agent.
+        SweepStaleProfiles();
 
         // Create a temp profile directory so we get a clean browser with no extensions
         var tempProfile = Path.Combine(Path.GetTempPath(), "canary-chrome-" + Guid.NewGuid().ToString("N")[..8]);
@@ -213,6 +240,31 @@ public static class ChromeLauncher
             try { Directory.Delete(tempProfile, true); } catch { }
             throw;
         }
+    }
+
+    /// <summary>
+    /// Best-effort cleanup of canary-chrome-* temp profile dirs left by
+    /// previous runs (delete-on-dispose can fail while Chrome's children
+    /// drain their file locks). Only dirs untouched for 2+ hours are
+    /// removed so a concurrently-running agent's live profile is never
+    /// raced; locked dirs are skipped silently and retried next launch.
+    /// </summary>
+    private static void SweepStaleProfiles()
+    {
+        try
+        {
+            var cutoff = DateTime.UtcNow - TimeSpan.FromHours(2);
+            foreach (var dir in Directory.EnumerateDirectories(Path.GetTempPath(), "canary-chrome-*"))
+            {
+                try
+                {
+                    if (Directory.GetLastWriteTimeUtc(dir) < cutoff)
+                        Directory.Delete(dir, recursive: true);
+                }
+                catch { /* locked or already gone — try again next launch */ }
+            }
+        }
+        catch { /* temp dir enumeration failed — non-fatal */ }
     }
 
     /// <summary>

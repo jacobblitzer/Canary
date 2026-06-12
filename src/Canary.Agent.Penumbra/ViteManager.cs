@@ -192,6 +192,23 @@ public sealed partial class ViteManager : IDisposable
         catch { /* best effort */ }
         _process.Dispose();
         _process = null;
+
+        // 2026-06-11 spawn-reliability hardening (BUG-0011): the tree-kill
+        // above races toolhelp child enumeration against the cmd → npm →
+        // cmd → node(vite) chain and can orphan the actual vite node
+        // (observed live: vite survived, kept port 3000, and — because it
+        // inherits the harness's console handles — kept any external driver
+        // that redirected canary's output blocked until it died; the
+        // 2026-06-11 retry pass needed an external 20s "janitor" loop for
+        // exactly this). Fallback: if anything still listens on our port,
+        // kill it by port before declaring teardown done.
+        try
+        {
+            var manager = new LocalhostManager();
+            if (manager.EnumeratePorts(new[] { _port }).Any())
+                manager.KillByPortAsync(_port).GetAwaiter().GetResult();
+        }
+        catch { /* best effort — KillStaleListenerAsync guards the next spawn */ }
     }
 
     /// <summary>
@@ -205,27 +222,47 @@ public sealed partial class ViteManager : IDisposable
     private static partial Regex AnsiRegex();
 
     /// <summary>
-    /// If anything is listening on <paramref name="port"/>, kill it.
-    /// Delegates to <see cref="LocalhostManager.KillByPortAsync"/> —
-    /// the shared netstat + taskkill /F /T implementation lives there
-    /// per Phase 4 / §C7 Tier 1 of the debug-overhaul (previously this
-    /// method was duplicated between Penumbra + Qualia ViteManagers).
+    /// If anything is listening on <paramref name="port"/>, kill it, then
+    /// wait until the OS has actually released the listener before
+    /// returning. Delegates the kill to
+    /// <see cref="LocalhostManager.KillByPortAsync"/> — the shared
+    /// netstat + taskkill /F /T implementation lives there per Phase 4 /
+    /// §C7 Tier 1 of the debug-overhaul (previously this method was
+    /// duplicated between Penumbra + Qualia ViteManagers).
     ///
     /// Used by <see cref="StartAsync"/> to scrub orphaned processes
     /// from prior runs so the new Vite always serves files from the
     /// expected projectDir. See the comment in StartAsync for the
     /// failure mode this prevents.
+    ///
+    /// 2026-06-11 spawn-reliability hardening: the kill alone is not
+    /// enough — taskkill returns before the socket is released, so a
+    /// per-test `canary run` loop could spawn the next Vite while the
+    /// previous listener was still draining (--strictPort → EADDRINUSE,
+    /// or worse, the buffered-"ready" race documented in StartAsync).
+    /// Poll up to 5s for the port to actually go free and throw loudly
+    /// if it never does, instead of letting the race pick the failure
+    /// mode downstream.
     /// </summary>
     private static async Task KillStaleListenerAsync(int port, CancellationToken ct)
     {
         var manager = new LocalhostManager();
-        var ok = await manager.KillByPortAsync(port, ct).ConfigureAwait(false);
-        if (!ok)
+        if (!manager.EnumeratePorts(new[] { port }).Any())
+            return; // port already free — common case, skip the kill + wait
+
+        await manager.KillByPortAsync(port, ct).ConfigureAwait(false);
+
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(5);
+        while (DateTime.UtcNow < deadline)
         {
-            // Either the port was free (no-op success path), or the kill failed
-            // and the port is still held. The downstream EADDRINUSE detection
-            // in StartAsync becomes the next line of defense if the latter.
+            if (!manager.EnumeratePorts(new[] { port }).Any())
+                return;
+            await Task.Delay(250, ct).ConfigureAwait(false);
         }
+
+        throw new InvalidOperationException(
+            $"Port {port} is still held by another process after kill + 5s wait. " +
+            "A previous Vite/node instance survived teardown; kill it manually and re-run.");
     }
 
     /// <inheritdoc />

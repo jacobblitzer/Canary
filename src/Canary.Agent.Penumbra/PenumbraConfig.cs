@@ -46,6 +46,19 @@ public sealed class PenumbraConfig
     /// </summary>
     [JsonPropertyName("defaultStabilizeMs")]
     public int DefaultStabilizeMs { get; set; } = 500;
+
+    /// <summary>
+    /// Milliseconds to wait for Page.loadEventFired after a navigation (initial
+    /// load and per-test SetBackend reloads). Penumbra's module top-level init
+    /// includes WebGPU adapter request + Dawn pipeline builds that delay the
+    /// load event by 30–90s on Intel iGPU; the 2026-06-11 sweep showed reloads
+    /// creeping past the old 60s ceiling as the shared browser ages. Default
+    /// 180s — same rationale as the 240s CDP eval ceiling (headroom over the
+    /// slowest observed pipeline build), while WaitForPenumbraReady stays the
+    /// post-load correctness gate.
+    /// </summary>
+    [JsonPropertyName("pageLoadTimeoutMs")]
+    public int PageLoadTimeoutMs { get; set; } = 180_000;
 }
 
 /// <summary>
