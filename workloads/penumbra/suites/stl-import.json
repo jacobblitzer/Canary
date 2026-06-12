@@ -1,7 +1,9 @@
 {
   "name": "stl-import",
-  "description": "STL file import pipeline — load mesh, convert to SDF, render",
+  "description": "Mesh-to-field pipeline - common mesh files import as real SDF grids and render through the atlas",
   "tests": [
-    "stl-import-benchy"
+    "mesh-benchy",
+    "mesh-teapot",
+    "mesh-bunny"
   ]
 }

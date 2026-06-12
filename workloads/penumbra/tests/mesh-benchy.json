@@ -1,0 +1,22 @@
+{
+  "name": "mesh-benchy",
+  "workload": "penumbra",
+  "description": "Mesh-to-field: 3DBenchy STL (~225k tris) imports via the sdf-grid pipeline (normalize -> BVH-signed 96^3 distance grid -> atlas bricks) and renders the actual boat. Replaces stl-import-benchy, whose 'primitive-fit' strategy rendered a bounding box. Loud-throws if the atom doesn't route to atlasBaked.",
+  "setup": {
+    "scene": null,
+    "backend": "webgpu",
+    "canvas": { "width": 960, "height": 540 },
+    "commands": [
+      "(() => { return window.__canaryLoadSTLFromUrl('/3dbenchy.stl').then(function(){ return 'STL_OK'; }); })()",
+      "(() => { const s = window.__canaryGetEvalSnapshot(); const reps = (s && s.atomDispatch && s.atomDispatch.byActiveRep) || {}; if (!reps.atlasBaked) { throw new Error('mesh import did NOT route to atlasBaked; byActiveRep=' + JSON.stringify(reps)); } return 'mesh routed to atlas: ' + JSON.stringify(reps); })()",
+      "window.__canaryHideUI(true)",
+      "window.__canaryWaitForAtlasPipelineReady(180000)"
+    ]
+  },
+  "checkpoints": [
+    { "name": "front",         "camera": { "azimuth": 0,   "elevation": 20, "distance": 15 }, "stabilizeMs": 2000, "tolerance": 0.02 },
+    { "name": "side",          "camera": { "azimuth": 90,  "elevation": 20, "distance": 15 }, "stabilizeMs": 1500, "tolerance": 0.02 },
+    { "name": "three-quarter", "camera": { "azimuth": 45,  "elevation": 30, "distance": 15 }, "stabilizeMs": 1500, "tolerance": 0.02 },
+    { "name": "top-down",      "camera": { "azimuth": 0,   "elevation": 75, "distance": 17 }, "stabilizeMs": 1500, "tolerance": 0.02 }
+  ]
+}
