@@ -1,22 +1,62 @@
 {
   "name": "mesh-teapot",
   "workload": "penumbra",
-  "description": "Mesh-to-field: Utah teapot STL (6,320 tris) imports via the sdf-grid pipeline (normalize -> BVH-signed 96^3 distance grid -> atlas bricks) and renders the actual teapot. Loud-throws if the atom doesn't route to atlasBaked.",
+  "description": "Mesh-to-field: Utah teapot STL (6,320 tris) imports via the sdf-grid pipeline (normalize -> BVH-signed 96^3 distance grid -> atlas bricks) and renders the actual teapot. Loud-throws if the atom doesn't route to atlasBaked. Captures wait for the 192^3 background grid refine to complete (deterministic sharpened baselines, 2026-06-12).",
   "setup": {
     "scene": null,
     "backend": "webgpu",
-    "canvas": { "width": 960, "height": 540 },
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
     "commands": [
       "(() => { return window.__canaryLoadSTLFromUrl('/utah-teapot.stl').then(function(){ return 'STL_OK'; }); })()",
       "(() => { const s = window.__canaryGetEvalSnapshot(); const reps = (s && s.atomDispatch && s.atomDispatch.byActiveRep) || {}; if (!reps.atlasBaked) { throw new Error('mesh import did NOT route to atlasBaked; byActiveRep=' + JSON.stringify(reps)); } return 'mesh routed to atlas: ' + JSON.stringify(reps); })()",
       "window.__canaryHideUI(true)",
-      "window.__canaryWaitForAtlasPipelineReady(180000)"
+      "window.__canaryWaitForAtlasPipelineReady(180000)",
+      "new Promise(function(resolve, reject){ var t0 = Date.now(); (function poll(){ try { if (window.__canaryForceMarkDirty) window.__canaryForceMarkDirty('refine-poll'); var l = window.__canaryGetRenderLoopState && window.__canaryGetRenderLoopState(); var gr = l && l.gridRefine; if (gr && gr.state === 'done') { resolve('grid refine done: ' + JSON.stringify(gr)); return; } if (Date.now() - t0 > 120000) { reject(new Error('grid refine never completed within 120s; gridRefine=' + JSON.stringify(gr))); return; } setTimeout(poll, 150); } catch (e) { reject(e instanceof Error ? e : new Error(String(e))); } })(); })"
     ]
   },
   "checkpoints": [
-    { "name": "front",         "camera": { "azimuth": 0,   "elevation": 20, "distance": 15 }, "stabilizeMs": 2000, "tolerance": 0.02 },
-    { "name": "side",          "camera": { "azimuth": 90,  "elevation": 20, "distance": 15 }, "stabilizeMs": 1500, "tolerance": 0.02 },
-    { "name": "three-quarter", "camera": { "azimuth": 45,  "elevation": 30, "distance": 15 }, "stabilizeMs": 1500, "tolerance": 0.02 },
-    { "name": "top-down",      "camera": { "azimuth": 0,   "elevation": 75, "distance": 17 }, "stabilizeMs": 1500, "tolerance": 0.02 }
+    {
+      "name": "front",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 20,
+        "distance": 15
+      },
+      "stabilizeMs": 2000,
+      "tolerance": 0.02
+    },
+    {
+      "name": "side",
+      "camera": {
+        "azimuth": 90,
+        "elevation": 20,
+        "distance": 15
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": {
+        "azimuth": 45,
+        "elevation": 30,
+        "distance": 15
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "top-down",
+      "camera": {
+        "azimuth": 0,
+        "elevation": 75,
+        "distance": 17
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    }
   ]
 }
