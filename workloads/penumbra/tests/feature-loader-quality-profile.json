@@ -1,7 +1,7 @@
 {
   "name": "feature-loader-quality-profile",
   "workload": "penumbra",
-  "description": "Phase 0 feature loader (ADR 0014) — load 'quality' profile, verify the expected toggles are on, screenshot. Quality profile sets progressiveBrickBaking + meshDrivenClassification + meshBootstrapRaymarch + render.tricubicEnabled + render.subBrickRefinement. Phase 0 stubs no-op; visual output should match all-off baseline modulo tricubicEnabled which is a real toggle that affects rendering.",
+  "description": "Phase 0 feature loader (ADR 0014) — load 'quality' profile, verify the expected toggles are on, screenshot. Per the shipped quality.json (Penumbra packages/runtime/src/feature-profiles/), quality sets progressiveBrickBaking + eventDrivenRender + meshBootstrapRaymarch on (plus render.tricubicEnabled + subBrickRefinement); meshDrivenClassification stays OFF — it is still a stub. (2026-06-11: previously asserted meshDrivenClassification on — stale since the 2026-05-08 graduation rework of the profile catalog; the assertion threw on every run.)",
   "setup": {
     "scene": {
       "index": 1,
@@ -16,7 +16,7 @@
       "window.__canaryHideUI(true)",
       "window.__canaryWaitForAtlasPipelineReady(120000)",
       "window.__canaryLoadFeatureProfile('quality')",
-      "(() => { const all = window.__canaryGetAllFeatureStatus(); const expectedOn = ['progressiveBrickBaking','meshDrivenClassification','meshBootstrapRaymarch']; for (const k of expectedOn) { if (all[k]?.mode !== 'on') throw new Error('expected ' + k + ' on after quality profile, got ' + JSON.stringify(all[k])); } return 'quality profile applied'; })()"
+      "(() => { const all = window.__canaryGetAllFeatureStatus(); const expectedOn = ['progressiveBrickBaking','eventDrivenRender','meshBootstrapRaymarch']; for (const k of expectedOn) { if (all[k]?.mode !== 'on') throw new Error('expected ' + k + ' on after quality profile, got ' + JSON.stringify(all[k])); } const expectedOff = ['meshDrivenClassification','svoStorageBackend','vdbBackend','bc4AtlasCompression']; for (const k of expectedOff) { if (all[k]?.mode === 'on') throw new Error('expected stub ' + k + ' off after quality profile, got ' + JSON.stringify(all[k])); } return 'quality profile applied'; })()"
     ]
   },
   "checkpoints": [

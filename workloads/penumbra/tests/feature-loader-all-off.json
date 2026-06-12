@@ -1,7 +1,7 @@
 {
   "name": "feature-loader-all-off",
   "workload": "penumbra",
-  "description": "Phase 0 feature loader (ADR 0014) baseline — apply the 'default' profile (every feature off), screenshot. Must be pixel-identical to atlas-blob-compute-smoke for the same scene/camera. Load-bearing: this is the regression that proves the Phase 0 scaffolding didn't perturb the default render path.",
+  "description": "Phase 0 feature loader (ADR 0014) baseline — explicitly set ALL 14 feature toggles off, screenshot. Load-bearing: this is the regression that proves the feature scaffolding, when fully disabled, doesn't perturb the render path. (2026-06-11: previously loaded the 'default' profile and asserted all-off — stale since 2026-05-08 b82251d flipped 7 graduated features ON in the default profile; the assertion threw on every run.)",
   "setup": {
     "scene": {
       "index": 1,
@@ -15,8 +15,8 @@
     "commands": [
       "window.__canaryHideUI(true)",
       "window.__canaryWaitForAtlasPipelineReady(120000)",
-      "window.__canaryLoadFeatureProfile('default')",
-      "(() => { const all = window.__canaryGetAllFeatureStatus(); if (!all || all.ok === false) throw new Error('feature registry unavailable: ' + JSON.stringify(all)); for (const [k,v] of Object.entries(all)) { if (v.mode !== 'off') throw new Error('feature ' + k + ' was not off after default profile: ' + JSON.stringify(v)); } return 'all features off'; })()"
+      "window.__canarySetDisplayState({ features: { progressiveBrickBaking: 'off', resolutionRampAtlasBuild: 'off', splatCache: 'off', svoStorageBackend: 'off', vdbBackend: 'off', bvhAtomDispatch: 'off', perfectHashIndirection: 'off', persistentThreadBake: 'off', eventDrivenRender: 'off', bc4AtlasCompression: 'off', silhouetteFirstBake: 'off', dawnPipelineCacheSpike: 'off', meshDrivenClassification: 'off', meshBootstrapRaymarch: 'off' } })",
+      "(() => { const all = window.__canaryGetAllFeatureStatus(); if (!all || all.ok === false) throw new Error('feature registry unavailable: ' + JSON.stringify(all)); for (const [k,v] of Object.entries(all)) { if (v.mode !== 'off') throw new Error('feature ' + k + ' was not off: ' + JSON.stringify(v)); } return 'all features off'; })()"
     ]
   },
   "checkpoints": [

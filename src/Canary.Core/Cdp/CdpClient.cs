@@ -131,13 +131,34 @@ public sealed class CdpClient : IDisposable
         // Check for exceptions — same pattern as the typed overload.
         var exceptionDetails = result?["exceptionDetails"];
         if (exceptionDetails != null)
-        {
-            var text = exceptionDetails["text"]?.GetValue<string>() ?? "Unknown JS error";
-            throw new InvalidOperationException($"JavaScript evaluation failed: {text}");
-        }
+            throw new InvalidOperationException(
+                $"JavaScript evaluation failed: {DescribeException(exceptionDetails)}");
 
         var value = result?["result"]?["value"];
         return value?.ToJsonString();
+    }
+
+    /// <summary>
+    /// Build a human-useful message from CDP <c>exceptionDetails</c>.
+    /// <c>text</c> alone is just "Uncaught" for thrown errors — the actual
+    /// Error message (and first stack line) lives in
+    /// <c>exception.description</c> (objects) or <c>exception.value</c>
+    /// (primitives). Surfaced 2026-06-11: the feature-loader test crashes
+    /// reported only "Uncaught", hiding which setup assertion threw.
+    /// </summary>
+    private static string DescribeException(JsonNode exceptionDetails)
+    {
+        var text = exceptionDetails["text"]?.GetValue<string>() ?? "Unknown JS error";
+        var exception = exceptionDetails["exception"];
+        var detail = exception?["description"]?.GetValue<string>()
+            ?? exception?["value"]?.ToJsonString();
+        if (string.IsNullOrEmpty(detail)) return text;
+
+        // description includes the full JS stack; keep the first 3 lines
+        // (message + top frames) so agent errors stay one-log-line sized.
+        var lines = detail.Split('\n');
+        var trimmed = string.Join(" | ", lines.Take(3).Select(l => l.Trim()));
+        return $"{text}: {trimmed}";
     }
 
     /// <summary>
@@ -155,10 +176,8 @@ public sealed class CdpClient : IDisposable
         // Check for exceptions
         var exceptionDetails = result?["exceptionDetails"];
         if (exceptionDetails != null)
-        {
-            var text = exceptionDetails["text"]?.GetValue<string>() ?? "Unknown JS error";
-            throw new InvalidOperationException($"JavaScript evaluation failed: {text}");
-        }
+            throw new InvalidOperationException(
+                $"JavaScript evaluation failed: {DescribeException(exceptionDetails)}");
 
         var value = result?["result"]?["value"];
         if (value == null) return default;
