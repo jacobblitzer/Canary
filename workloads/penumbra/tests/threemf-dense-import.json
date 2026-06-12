@@ -1,0 +1,44 @@
+{
+  "name": "threemf-dense-import",
+  "workload": "penumbra",
+  "description": "Progressive-first-paint Stage 1 guard — a dense 3MF import (6-sphere min-union blob, ~85 tape instr > DENSE_TAPE_THRESHOLD=50) must auto-route to the ATLAS path (activeRep=atlasBaked under atomMode='auto') and render via the progressive bake. Counterpart: threemf-volumetric-import's sparse fixture (9 instr) must STAY tape. The eval-snapshot assertion throws loudly if routing regresses.",
+  "setup": {
+    "scene": {
+      "index": 0,
+      "sceneName": "Box - Sphere"
+    },
+    "backend": "webgpu",
+    "canvas": {
+      "width": 960,
+      "height": 540
+    },
+    "commands": [
+      "window.__canaryHideUI(true)",
+      "window.__canaryLoadThreeMFFromUrl('/test-dense-blob.3mf').then(function(r){ if (!r || !r.atoms) throw new Error('dense 3MF load returned no atoms: ' + JSON.stringify(r)); return JSON.stringify(r); })",
+      "(() => { const s = window.__canaryGetEvalSnapshot(); const reps = (s && s.atomDispatch && s.atomDispatch.byActiveRep) || {}; if (!reps.atlasBaked) { throw new Error('dense import did NOT route to atlasBaked; byActiveRep=' + JSON.stringify(reps) + ' fields=' + JSON.stringify(s && s.fields)); } return 'dense import routed to atlas: ' + JSON.stringify(reps); })()",
+      "window.__canaryWaitForAtlasPipelineReady(120000)"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "front",
+      "camera": {
+        "azimuth": 20,
+        "elevation": 20,
+        "distance": 9
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    },
+    {
+      "name": "three-quarter",
+      "camera": {
+        "azimuth": 120,
+        "elevation": 30,
+        "distance": 9
+      },
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    }
+  ]
+}
