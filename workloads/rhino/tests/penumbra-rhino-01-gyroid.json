@@ -1,0 +1,40 @@
+{
+  "name": "penumbra-rhino-01-gyroid",
+  "workload": "rhino",
+  "description": "Gate ▣1 — a real CPig gyroid (clipped to a 150-unit sphere) rendered live in the Penumbra viewport. Loads 53_penumbra_preview.json via the Slop loader (Field TPMS gyroid ∩ sphere → Penumbra Preview), runs PenumbraShow, waits for a REAL (non-companion) frame, captures the renderer's dumped PNG via file-source. Requires the Penumbra Rhino plug-in registered for auto-load + the CPig .gha (with Penumbra Preview, GUID …BA200) loaded. NOTE: until the conduit's view auto-fit lands, this relies on the 150-unit clip sphere framing in Rhino's default empty-doc camera (~315 units out); a smaller field would be sub-pixel (see hosts/rhino/LESSONS-rhino-viewer-integration.md §5).",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlmDescription": "A Penumbra SDF render of a gyroid lattice (smooth, repeating, interconnected curved surfaces) filling a roughly spherical region, drawn as an overlay in the Rhino viewport. NOT a plain featureless sphere, NOT an empty grey viewport."
+  },
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/CPig/research/slop_tests/53_penumbra_preview.json" },
+    { "type": "RunCommand", "command": "PenumbraShow" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 60000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "minRevision": 1, "timeoutMs": 180000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "penumbra-gyroid",
+      "atTimeMs": 0,
+      "source": "file",
+      "filePath": "%LOCALAPPDATA%\\Penumbra\\preview-frames\\active.png",
+      "mode": "capture",
+      "tolerance": 0.02
+    }
+  ],
+  "asserts": [
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
+    { "type": "PanelContains", "nickname": "Status", "text": "Pushed" },
+    { "type": "PanelEquals", "nickname": "Connected", "text": "True" }
+  ]
+}

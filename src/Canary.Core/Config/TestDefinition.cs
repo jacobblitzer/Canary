@@ -211,11 +211,21 @@ public sealed class TestCheckpoint
 
     /// <summary>
     /// Nickname of a Grasshopper panel whose text contains the file path to
-    /// use as the candidate image. Required when <see cref="Source"/> is "file";
-    /// ignored otherwise.
+    /// use as the candidate image. Used when <see cref="Source"/> is "file"
+    /// and a dynamic (graph-produced) path is needed; ignored otherwise.
     /// </summary>
     [JsonPropertyName("panelNickname")]
     public string? PanelNickname { get; set; }
+
+    /// <summary>
+    /// Literal file path to use as the candidate image when <see cref="Source"/>
+    /// is "file" and no <see cref="PanelNickname"/> is given. For renderers that
+    /// dump to a deterministic path with no Grasshopper graph (e.g. the Penumbra
+    /// viewport overlay, which Rhino's CaptureToBitmap cannot capture, dumps each
+    /// real frame to a fixed PNG). PanelNickname takes precedence when both set.
+    /// </summary>
+    [JsonPropertyName("filePath")]
+    public string? FilePath { get; set; }
 
     /// <summary>
     /// Comparison mode: "pixel-diff" (default) uses baseline comparison,

@@ -1,0 +1,38 @@
+{
+  "name": "penumbra-rhino-00-smoke",
+  "workload": "rhino",
+  "description": "Penumbra overlay harness smoke (gate ▣0). Runs PenumbraShow so the Penumbra plug-in renders its built-in box-minus-sphere demo as a viewport overlay, waits for a REAL (non-companion) presented frame via WaitForPenumbraFrame, then captures. Proves the whole harness chain — plug-in load, node host, render, conduit blit, frame-ready gate, and Rhino's CaptureToBitmap including the conduit foreground — on the known-good demo, before any fix is tested. Requires the Penumbra Rhino plug-in registered for auto-load in this Rhino instance (like kbridge requires KinematicImporter).",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 800,
+      "height": 600
+    },
+    "vlmDescription": "A Penumbra SDF render drawn as an overlay filling the Rhino viewport: a solid orange/tan box with a large spherical bite carved out of one corner, lit with soft shading. NOT an empty grey Rhino viewport, and NOT a plain featureless sphere."
+  },
+  "actions": [
+    {
+      "type": "RunCommand",
+      "command": "PenumbraShow"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "minRevision": 1,
+      "timeoutMs": 180000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "penumbra-demo",
+      "atTimeMs": 0,
+      "source": "file",
+      "filePath": "%LOCALAPPDATA%\\Penumbra\\preview-frames\\active.png",
+      "mode": "capture",
+      "tolerance": 0.02
+    }
+  ]
+}

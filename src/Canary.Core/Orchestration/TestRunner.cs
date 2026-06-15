@@ -1037,26 +1037,31 @@ public sealed class TestRunner
 
             if (string.Equals(checkpoint.Source, "file", StringComparison.OrdinalIgnoreCase))
             {
-                // File-source checkpoint: read the file path from a GH panel
-                if (string.IsNullOrWhiteSpace(checkpoint.PanelNickname))
+                // File-source checkpoint: resolve a path from a GH panel, or a literal FilePath.
+                string filePath;
+                if (!string.IsNullOrWhiteSpace(checkpoint.PanelNickname))
+                {
+                    _logger.Log($"Reading file path from panel '{checkpoint.PanelNickname}'...");
+                    var panelResp = await agent.ExecuteAsync("GrasshopperGetPanelText",
+                        new Dictionary<string, string> { ["nickname"] = checkpoint.PanelNickname }).ConfigureAwait(false);
+                    if (!panelResp.Success)
+                    {
+                        cpResult.Status = TestStatus.Crashed;
+                        cpResult.ErrorMessage = $"Failed to read panel '{checkpoint.PanelNickname}': {panelResp.Message}";
+                        return cpResult;
+                    }
+                    filePath = (panelResp.Data != null && panelResp.Data.TryGetValue("text", out var t) ? t : string.Empty).Trim();
+                }
+                else if (!string.IsNullOrWhiteSpace(checkpoint.FilePath))
+                {
+                    filePath = Environment.ExpandEnvironmentVariables(checkpoint.FilePath).Trim();
+                }
+                else
                 {
                     cpResult.Status = TestStatus.Crashed;
-                    cpResult.ErrorMessage = "File-source checkpoint requires 'panelNickname'.";
+                    cpResult.ErrorMessage = "File-source checkpoint requires 'panelNickname' or 'filePath'.";
                     return cpResult;
                 }
-
-                _logger.Log($"Reading file path from panel '{checkpoint.PanelNickname}'...");
-                var panelResp = await agent.ExecuteAsync("GrasshopperGetPanelText",
-                    new Dictionary<string, string> { ["nickname"] = checkpoint.PanelNickname }).ConfigureAwait(false);
-
-                if (!panelResp.Success)
-                {
-                    cpResult.Status = TestStatus.Crashed;
-                    cpResult.ErrorMessage = $"Failed to read panel '{checkpoint.PanelNickname}': {panelResp.Message}";
-                    return cpResult;
-                }
-
-                var filePath = (panelResp.Data != null && panelResp.Data.TryGetValue("text", out var t) ? t : string.Empty).Trim();
                 _logger.Log($"File-source path: {filePath}");
 
                 if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
@@ -1285,27 +1290,31 @@ public sealed class TestRunner
 
             if (string.Equals(checkpoint.Source, "file", StringComparison.OrdinalIgnoreCase))
             {
-                // File-source checkpoint: read the file path from a GH panel
-                // and copy it into the candidates directory.
-                if (string.IsNullOrWhiteSpace(checkpoint.PanelNickname))
+                // File-source checkpoint: resolve a path from a GH panel, or a literal FilePath.
+                string filePath;
+                if (!string.IsNullOrWhiteSpace(checkpoint.PanelNickname))
+                {
+                    _logger.Log($"Reading file path from panel '{checkpoint.PanelNickname}'...");
+                    var panelResp = await client.ExecuteAsync("GrasshopperGetPanelText",
+                        new Dictionary<string, string> { ["nickname"] = checkpoint.PanelNickname }, ct).ConfigureAwait(false);
+                    if (!panelResp.Success)
+                    {
+                        cpResult.Status = TestStatus.Crashed;
+                        cpResult.ErrorMessage = $"Failed to read panel '{checkpoint.PanelNickname}': {panelResp.Message}";
+                        return cpResult;
+                    }
+                    filePath = (panelResp.Data != null && panelResp.Data.TryGetValue("text", out var t) ? t : string.Empty).Trim();
+                }
+                else if (!string.IsNullOrWhiteSpace(checkpoint.FilePath))
+                {
+                    filePath = Environment.ExpandEnvironmentVariables(checkpoint.FilePath).Trim();
+                }
+                else
                 {
                     cpResult.Status = TestStatus.Crashed;
-                    cpResult.ErrorMessage = "File-source checkpoint requires 'panelNickname'.";
+                    cpResult.ErrorMessage = "File-source checkpoint requires 'panelNickname' or 'filePath'.";
                     return cpResult;
                 }
-
-                _logger.Log($"Reading file path from panel '{checkpoint.PanelNickname}'...");
-                var panelResp = await client.ExecuteAsync("GrasshopperGetPanelText",
-                    new Dictionary<string, string> { ["nickname"] = checkpoint.PanelNickname }, ct).ConfigureAwait(false);
-
-                if (!panelResp.Success)
-                {
-                    cpResult.Status = TestStatus.Crashed;
-                    cpResult.ErrorMessage = $"Failed to read panel '{checkpoint.PanelNickname}': {panelResp.Message}";
-                    return cpResult;
-                }
-
-                var filePath = (panelResp.Data != null && panelResp.Data.TryGetValue("text", out var t) ? t : string.Empty).Trim();
                 _logger.Log($"File-source path: {filePath}");
 
                 if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))

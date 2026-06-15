@@ -36,6 +36,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperSetToggle" => HandleGrasshopperSetToggle(parameters),
                     "GrasshopperSetPanelText" => HandleGrasshopperSetPanelText(parameters),
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
+                    "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
                     _ => new AgentResponse
                     {
                         Success = false,
@@ -781,6 +782,75 @@ public sealed class RhinoAgent : ICanaryAgent
             try { System.Threading.Thread.Sleep(250); }
             catch { return; }
         }
+    }
+
+    /// <summary>
+    /// Wait until the Penumbra viewport overlay has presented a frame showing the
+    /// REAL field (not the bounding-sphere companion stand-in the atlas path shows
+    /// while baking), so a subsequent screenshot captures the lattice, not a blob.
+    ///
+    /// Peer-agnostic by design: reflects into Penumbra.Bridge.PenumbraBridge
+    /// (loaded by the Penumbra plug-in) rather than referencing it, so Canary keeps
+    /// no compile-time dependency on a specific peer plug-in. Returns failure (not a
+    /// throw) when the Bridge isn't loaded.
+    ///
+    /// Params: timeoutMs (default 120000), minRevision (default 1),
+    /// requireReal (default true — wait for RealRevision; false waits for any presented frame).
+    /// </summary>
+    private static AgentResponse HandleWaitForPenumbraFrame(Dictionary<string, string> parameters)
+    {
+        int timeoutMs = 120000;
+        if (parameters.TryGetValue("timeoutMs", out var ts) && int.TryParse(ts, out var pt)) timeoutMs = pt;
+        long minRevision = 1;
+        if (parameters.TryGetValue("minRevision", out var ms) && long.TryParse(ms, out var pm)) minRevision = pm;
+        bool requireReal = true;
+        if (parameters.TryGetValue("requireReal", out var rs) && bool.TryParse(rs, out var pr)) requireReal = pr;
+
+        System.Type? bridgeType = null;
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try { bridgeType = asm.GetType("Penumbra.Bridge.PenumbraBridge"); }
+            catch { bridgeType = null; }
+            if (bridgeType != null) break;
+        }
+        if (bridgeType == null)
+            return new AgentResponse { Success = false, Message = "Penumbra.Bridge not loaded — is the Penumbra plug-in installed and was PenumbraShow run first?" };
+
+        var getFrameState = bridgeType.GetMethod("GetFrameState",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+        if (getFrameState == null)
+            return new AgentResponse { Success = false, Message = "Penumbra.Bridge.GetFrameState not found (version mismatch?)." };
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        string lastDiag = "(no frame state yet)";
+        while (sw.ElapsedMilliseconds < timeoutMs)
+        {
+            var state = getFrameState.Invoke(null, null);
+            if (state != null)
+            {
+                var st = state.GetType();
+                long realRev = System.Convert.ToInt64(st.GetField("RealRevision").GetValue(state));
+                long presRev = System.Convert.ToInt64(st.GetField("PresentedRevision").GetValue(state));
+                bool disabled = System.Convert.ToBoolean(st.GetField("DisabledByError").GetValue(state));
+                var evalMode = st.GetField("EvalMode").GetValue(state) as string;
+                var status = st.GetField("Status").GetValue(state) as string;
+                lastDiag = $"presented={presRev} real={realRev} evalMode={evalMode} status={status} disabled={disabled}";
+
+                if (disabled)
+                    return new AgentResponse { Success = false, Message = "Penumbra viewer disabled by error: " + status };
+
+                long target = requireReal ? realRev : presRev;
+                if (target >= minRevision)
+                    return new AgentResponse { Success = true, Message = "Penumbra frame ready: " + lastDiag };
+            }
+            RhinoApp.Wait();
+            Thread.Sleep(100);
+        }
+        return new AgentResponse
+        {
+            Success = false,
+            Message = $"Timed out ({timeoutMs}ms) waiting for Penumbra frame (minRevision={minRevision}, requireReal={requireReal}). Last: {lastDiag}"
+        };
     }
 
     private static AgentResponse HandleWaitForGrasshopperSolution(Dictionary<string, string> parameters)

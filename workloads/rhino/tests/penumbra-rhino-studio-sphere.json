@@ -1,0 +1,38 @@
+{
+  "name": "penumbra-rhino-studio-sphere",
+  "workload": "rhino",
+  "description": "Penumbra Rhino Studio — standalone sphere insert (baseline sanity, no Grasshopper). Runs the plug-in command PenumbraSphere (pushes a sphere field, auto-fits), waits for a REAL converged frame, captures active.png. Pairs with penumbra-rhino-studio-gyroid: if the sphere renders+frames but the gyroid doesn't, the issue is gyroid-specific; if neither, it's the studio push/fit path.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 800,
+      "height": 600
+    },
+    "vlmDescription": "A single smooth shaded orange/tan sphere centered and filling most of the Rhino viewport, lit with soft shading. NOT an empty grey viewport, NOT a lattice."
+  },
+  "actions": [
+    {
+      "type": "RunCommand",
+      "command": "_PenumbraSphere"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "minRevision": 1,
+      "timeoutMs": 400000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "studio-sphere",
+      "atTimeMs": 0,
+      "source": "file",
+      "filePath": "%LOCALAPPDATA%\\Penumbra\\preview-frames\\active.png",
+      "mode": "capture",
+      "stabilizeMs": 1500,
+      "tolerance": 0.02
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "penumbra-studio",
+  "description": "Penumbra Rhino Studio debug suite — drives the STANDALONE studio commands (no Grasshopper/Slop/CPig): PenumbraSphere (baseline) then PenumbraGyroid, each auto-fit-framed, gated on a real converged frame, capturing the conduit's active.png. The deterministic in-Rhino reproduction loop for studio-command debugging (replaces manual click-in-Rhino + read-telemetry). Requires the Penumbra Rhino plug-in registered for auto-load. Pair the candidate PNGs with %LocalAppData%\\Penumbra\\preview\\telemetry.ndjson (insert.*/fit.auto/frame.real/error).",
+  "tests": [
+    "penumbra-rhino-studio-sphere",
+    "penumbra-rhino-studio-gyroid"
+  ]
+}

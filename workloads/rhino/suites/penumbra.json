@@ -1,0 +1,8 @@
+{
+  "name": "penumbra",
+  "description": "Penumbra-in-Rhino live preview suite. Drives the Penumbra Rhino plug-in's viewport overlay (PenumbraShow) and the CPig Penumbra Preview component, gating captures on a real (non-companion) frame via WaitForPenumbraFrame. Requires the Penumbra Rhino plug-in registered for auto-load (like kbridge requires KinematicImporter). Gates: ▣0 smoke (demo), ▣1 gyroid lattice, ▣2 camera axis, ▣3 units, … per docs/plans/2026-06-13-rhino-preview-autonomous-hardening.md in the Penumbra repo.",
+  "tests": [
+    "penumbra-rhino-00-smoke",
+    "penumbra-rhino-01-gyroid"
+  ]
+}
