@@ -1,0 +1,7 @@
+{
+  "name": "penumbra-glspike",
+  "description": "Penumbra native-GLSL spike (in-process GLSL ray-march in Rhino's GL context, branch desktop-penumbra-rhino-glsl-spike). Distinct from the `penumbra` suite (that drives the out-of-process Penumbra.Rhino studio overlay + WaitForPenumbraFrame). This suite requires Penumbra.GlSpike.rhp registered for auto-load + the spike artifacts on disk under packages/host-node/spike. The conduit dumps its converged SDF render to %LOCALAPPDATA%\\Penumbra\\GlSpike\\active.png (CaptureToBitmap can't see a conduit overlay), captured file-source. v1 = capture mode until baselines are approved. Throwaway-grade — graduates when the spike becomes a real plugin consuming @penumbra/native.",
+  "tests": [
+    "penumbra-glspike-00-multi"
+  ]
+}
