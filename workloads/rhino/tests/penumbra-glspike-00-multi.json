@@ -1,7 +1,7 @@
 {
   "name": "penumbra-glspike-00-multi",
   "workload": "rhino",
-  "description": "BLOCKED (2026-06-15): the conduit frame-dump this depends on (glGetTexImage readback -> active.png) crashed Rhino natively and was reverted in Penumbra; this test cannot capture until a safe capture mechanism lands (spike-graduation, e.g. RealtimeDisplayMode). Kept as a ready scaffold. --- Penumbra native-GLSL spike (Swath 4) regression: runs PenumbraGlMulti so the in-process GLSL ray-march conduit renders five atoms with distinct evaluators in one frame — four separately-compiled TAPES (sphere/box/torus/gyroid, concatenated into one tape texture with per-atom header offsets) + the Benchy mesh-SDF GRID. Proves the consolidated @penumbra/native compileSceneToGlArtifact path renders correctly in Rhino's GL context (shader compile + multi-tape dispatch + depth + progressive). The conduit can't be seen by CaptureToBitmap (it draws in PostDrawObjects), so on convergence it dumps the SDF render to a fixed PNG; this test file-source-captures that. Requires Penumbra.GlSpike.rhp registered for auto-load, and the scene.multi.json + benchy.grid.f32 artifacts present under packages/host-node/spike. v1 = capture mode (no baseline); approve the candidate, then switch to pixel-diff. NOTE: delete %LOCALAPPDATA%\\Penumbra\\GlSpike\\active.png before the run (shared dump file — a failed converge would capture a stale frame); the conduit dumps once the frame settles to full quality (idle pump), so the checkpoint waits.",
+  "description": "Penumbra native-GLSL spike (Swath 4) regression via VIEWPORT capture (CaptureToBitmap) — no GPU readback, no crash risk. Runs PenumbraGlMulti so the in-process GLSL ray-march conduit renders five atoms in one frame: four separately-compiled TAPES (sphere/box/torus/gyroid, concatenated into one tape texture with per-atom header offsets) + the Benchy mesh-SDF GRID. UNVERIFIED whether CaptureToBitmap includes the conduit's PostDrawObjects GL draw: the LESSONS #2 'overlay not captured' rule is about DrawForeground blitting an EXTERNAL image (the out-of-process studio), but this spike draws REAL GL into Rhino's framebuffer in PostDrawObjects, which the offscreen capture may include. If the candidate is blank/grey, CaptureToBitmap does not see it and the spike needs a dump via a SAFE mechanism (RealtimeDisplayMode at spike-graduation — a raw glGetTexImage readback in the draw callback crashed Rhino natively, reverted). Requires Penumbra.GlSpike.rhp registered for auto-load + the spike artifacts (scene.multi.json + benchy.grid.f32) under packages/host-node/spike. The conduit settles to full quality via its idle pump, so the checkpoint waits before capturing. v1 = capture mode (no baseline); approve the candidate, then switch to pixel-diff.",
   "runMode": "fresh",
   "setup": {
     "viewport": {
@@ -10,7 +10,7 @@
       "width": 1280,
       "height": 800
     },
-    "vlmDescription": "A Rhino viewport showing several distinct ray-marched SDF shapes in one row: a magenta sphere, a magenta rounded box, a magenta torus, a magenta gyroid lattice cube, and a blue toy boat (3DBenchy). Solid shaded surfaces, NOT an empty grey grid and NOT bounding boxes."
+    "vlmDescription": "A Rhino viewport showing several distinct ray-marched SDF shapes in a row: a magenta sphere, a magenta rounded box, a magenta torus, a magenta gyroid lattice cube, and a blue toy boat (3DBenchy). Solid shaded surfaces, NOT an empty grey grid and NOT bounding boxes."
   },
   "actions": [
     {
@@ -22,8 +22,7 @@
     {
       "name": "glspike-multi",
       "atTimeMs": 6000,
-      "source": "file",
-      "filePath": "%LOCALAPPDATA%\\Penumbra\\GlSpike\\active.png",
+      "source": "viewport",
       "mode": "capture",
       "tolerance": 0.05
     }
