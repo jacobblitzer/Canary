@@ -1,0 +1,7 @@
+{
+  "name": "penumbra-glsl",
+  "description": "Penumbra-in-Rhino IN-PROCESS GLSL studio suite (Swath C+). Drives CPig live preview through the native GLSL conduit (PenumbraPreviewBackend Glsl) instead of the deprecated out-of-process image-blit (`penumbra` suite). The CPig field renders by ray-marching directly into Rhino's GL context (native depth, camera-tracked), captured as a plain VIEWPORT screenshot (CaptureToBitmap includes the conduit's PostDrawObjects GL). Requires the Penumbra Rhino plug-in registered for auto-load + the CPig .gha (Penumbra Preview). Run ISOLATED (runMode fresh) — the GLSL frame-ready revision is process-global. v1 mode: capture (no baseline; inspect candidates + telemetry).",
+  "tests": [
+    "penumbra-glsl-01-cpig-gyroid"
+  ]
+}

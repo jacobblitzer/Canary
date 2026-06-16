@@ -1,0 +1,40 @@
+{
+  "name": "penumbra-glsl-01-cpig-gyroid",
+  "workload": "rhino",
+  "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C). Loads 53_penumbra_preview.json via the Slop loader (Field TPMS gyroid ∩ sphere → CPig Penumbra Preview), sets the preview backend to GLSL (PenumbraPreviewBackend Glsl), then Build → CPig pushes its .3mf which routes to a device-free node compile and renders in the in-process GLSL conduit (native depth, camera-tracked) — NOT the out-of-process image-blit overlay. Gates the capture on WaitForPenumbraFrame (now wired for the GLSL conduit too) + captures the VIEWPORT (CaptureToBitmap includes the conduit's PostDrawObjects GL, unlike the OOP DrawForeground blit). Requires: Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID …BA200) loaded; the GLSL backend spawns a device-free node compile host on first push. MVP renders STRUCTURAL (tape) fields — a dense field would log a gl.compile3mf error (use the deprecated `penumbra` OOP suite for those until dense-field packing lands). mode: capture (no baseline; inspect the candidate + the gl.scene.loaded / gl.compile3mf telemetry).",
+  "runMode": "fresh",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlmDescription": "A Penumbra SDF render of a gyroid lattice (smooth, repeating, interconnected curved surfaces) filling a roughly spherical region, ray-marched directly into the Rhino viewport (sharp, shaded, depth-correct). NOT a plain featureless sphere, NOT an empty grey viewport, NOT a flat 2D overlay."
+  },
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/CPig/research/slop_tests/53_penumbra_preview.json" },
+    { "type": "RunCommand", "command": "_PenumbraPreviewBackend _Glsl" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 60000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "minRevision": 1, "timeoutMs": 180000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "glsl-cpig-gyroid",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05
+    }
+  ],
+  "asserts": [
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
+    { "type": "PanelContains", "nickname": "Status", "text": "Pushed" },
+    { "type": "PanelEquals", "nickname": "Connected", "text": "True" }
+  ]
+}
