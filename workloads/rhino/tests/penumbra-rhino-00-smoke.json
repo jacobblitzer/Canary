@@ -1,7 +1,7 @@
 {
   "name": "penumbra-rhino-00-smoke",
   "workload": "rhino",
-  "description": "Penumbra overlay harness smoke (gate ▣0). Runs PenumbraShow so the Penumbra plug-in renders its built-in box-minus-sphere demo as a viewport overlay, waits for a REAL (non-companion) presented frame via WaitForPenumbraFrame, then captures. Proves the whole harness chain — plug-in load, node host, render, conduit blit, frame-ready gate, and Rhino's CaptureToBitmap including the conduit foreground — on the known-good demo, before any fix is tested. Requires the Penumbra Rhino plug-in registered for auto-load in this Rhino instance (like kbridge requires KinematicImporter).",
+  "description": "[DEPRECATED — out-of-process image-blit fallback] Penumbra overlay harness smoke (gate ▣0). Runs PenumbraOopShow (formerly PenumbraShow) so the Penumbra plug-in renders its built-in box-minus-sphere demo as a viewport overlay, waits for a REAL (non-companion) presented frame via WaitForPenumbraFrame, then captures. Proves the whole OOP harness chain — plug-in load, node host, render, conduit blit, frame-ready gate, and Rhino's CaptureToBitmap including the conduit foreground. Superseded by the in-process GLSL studio (PenumbraGl); kept as the working fallback smoke. Requires the Penumbra Rhino plug-in registered for auto-load in this Rhino instance (like kbridge requires KinematicImporter).",
   "runMode": "shared",
   "setup": {
     "file": "fixtures/cpig_slop_loader.gh",
@@ -16,7 +16,7 @@
   "actions": [
     {
       "type": "RunCommand",
-      "command": "PenumbraShow"
+      "command": "PenumbraOopShow"
     },
     {
       "type": "WaitForPenumbraFrame",

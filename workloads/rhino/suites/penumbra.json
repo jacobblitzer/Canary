@@ -1,6 +1,6 @@
 {
   "name": "penumbra",
-  "description": "Penumbra-in-Rhino live preview suite. Drives the Penumbra Rhino plug-in's viewport overlay (PenumbraShow) and the CPig Penumbra Preview component, gating captures on a real (non-companion) frame via WaitForPenumbraFrame. Requires the Penumbra Rhino plug-in registered for auto-load (like kbridge requires KinematicImporter). Gates: ▣0 smoke (demo), ▣1 gyroid lattice, ▣2 camera axis, ▣3 units, … per docs/plans/2026-06-13-rhino-preview-autonomous-hardening.md in the Penumbra repo.",
+  "description": "[DEPRECATED — out-of-process image-blit fallback] Penumbra-in-Rhino live preview suite. Drives the legacy OUT-OF-PROCESS overlay (PenumbraOopShow, formerly PenumbraShow) + the CPig Penumbra Preview component, gating captures on a real (non-companion) frame via WaitForPenumbraFrame. Superseded by the in-process GLSL studio (PenumbraGl — no Canary rhino suite yet); KEPT only because it still uniquely covers the CPig→Penumbra live-preview chain until the GLSL path's CPig integration lands. Requires the Penumbra Rhino plug-in registered for auto-load (like kbridge requires KinematicImporter). Per docs/plans/2026-06-13-rhino-preview-autonomous-hardening.md in the Penumbra repo.",
   "tests": [
     "penumbra-rhino-00-smoke",
     "penumbra-rhino-01-gyroid"
