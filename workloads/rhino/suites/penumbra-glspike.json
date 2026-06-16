@@ -1,7 +1,0 @@
-{
-  "name": "penumbra-glspike",
-  "description": "Penumbra native-GLSL spike (in-process GLSL ray-march in Rhino's GL context, branch desktop-penumbra-rhino-glsl-spike). Distinct from the `penumbra` suite (that drives the out-of-process Penumbra.Rhino studio overlay + WaitForPenumbraFrame). This suite requires Penumbra.GlSpike.rhp registered for auto-load + the spike artifacts on disk under packages/host-node/spike. v1 uses a plain VIEWPORT capture (CaptureToBitmap) — UNVERIFIED whether it includes the conduit's PostDrawObjects GL draw (a raw frame-dump readback crashed Rhino natively + was reverted; if the viewport capture is blank, a safe dump via RealtimeDisplayMode is the spike-graduation follow-up). capture mode until baselines are approved. Throwaway-grade — graduates when the spike becomes a real plugin consuming @penumbra/native.",
-  "tests": [
-    "penumbra-glspike-00-multi"
-  ]
-}
