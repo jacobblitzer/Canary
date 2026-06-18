@@ -1,0 +1,30 @@
+{
+  "name": "cpig-render-01-mesh-field",
+  "workload": "rhino",
+  "description": "A single CPig mesh→field must RENDER a ray-marched SDF surface in the in-process GLSL conduit. Sequence (RunCommand macros via RhinoApp.RunScript): _SelAll _Delete (doc hygiene) → _-MeshSphere 0,0,0 10 (a closed mesh primitive — no NURBS _Mesh dialog to hang on) → _SelLast _CPigFromMesh (preselected mesh consumed immediately; AddFieldAndDisplay sets Backend=Glsl and pushes — the dense field voxel-bakes → 3MF → device-free node compile → reverted compileAtomsToGlArtifact routes the grid to scene.grid → u_sdfGrid render) → WaitForPenumbraFrame (requireReal, RELATIVE — gates that a real GLSL frame was presented; pumps RhinoApp.Idle so the push/compile finish) → _SelNone (drop the field-box selection highlight before capture). One viewport capture, mode:capture. IMPORTANT: WaitForPenumbraFrame passing only proves a frame was DRAWN, not that a surface was HIT (_realRev bumps unconditionally) — the correctness verdict is reading cpig-mesh-field-render.png (or the dormant VLM). If _-MeshSphere leaves a trailing prompt the macro hangs → Pipe disconnected (then adjust the macro / use a .3dm fixture).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface (a smooth solid ball derived from a mesh sphere) drawn into the Rhino viewport. It must NOT be an empty grey viewport, NOT a flat 2D overlay, NOT a wireframe or shaded box mesh, NOT just a bounding-box outline."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_-MeshSphere 0,0,0 10" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Invert _Hide" },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-mesh-field-render",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "vlm",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05,
+      "description": "One ray-marched SDF ball (the mesh→field) near the world origin — solid, not a wireframe box or empty viewport."
+    }
+  ]
+}

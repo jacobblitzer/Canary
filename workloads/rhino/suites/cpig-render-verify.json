@@ -1,0 +1,10 @@
+{
+  "name": "cpig-render-verify",
+  "description": "Self-verify gate: does a single CPig mesh→field actually RENDER an SDF surface in the in-process GLSL conduit (not just present a blank frame)? Drives CPig.Rhino commands: create a closed mesh sphere → _CPigFromMesh (auto-displays via Backend=Glsl, the dense voxel-bake → 3MF → device-free node compile → u_sdfGrid render) → WaitForPenumbraFrame (liveness/sequencing gate; it CANNOT see blank — _realRev bumps unconditionally after the draw) → one viewport capture (mode:capture, no baseline). THE CORRECTNESS CHECK IS READING THE CAPTURED PNG: an agent (or VLM, or pixel-diff vs an approved baseline) confirms a ray-marched surface fills the viewport rather than empty grey. This exists so render changes are verified by SEEING the result, not by trusting the frame counter. Run: canary run --workload rhino --suite cpig-render-verify. Requires Penumbra.Rhino + CPig.Rhino registered for auto-load; cpig_slop_loader.gh launches Rhino cleanly (GH graph idle).",
+  "tests": [
+    "cpig-render-02-tape-sphere",
+    "cpig-render-01-mesh-field",
+    "cpig-render-04-debug-reps-aabb",
+    "cpig-render-06-synthetic-grid"
+  ]
+}

@@ -1,12 +1,13 @@
 {
   "name": "penumbra-glsl-01-cpig-gyroid",
   "workload": "rhino",
-  "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C). Loads 53_penumbra_preview.json via the Slop loader (Field TPMS gyroid ∩ sphere → CPig Penumbra Preview), sets the preview backend to GLSL (PenumbraPreviewBackend Glsl), then Build → CPig pushes its .3mf which routes to a device-free node compile and renders in the in-process GLSL conduit (native depth, camera-tracked) — NOT the out-of-process image-blit overlay. Gates the capture on WaitForPenumbraFrame (now wired for the GLSL conduit too) + captures the VIEWPORT (CaptureToBitmap includes the conduit's PostDrawObjects GL, unlike the OOP DrawForeground blit). Requires: Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID …BA200) loaded; the GLSL backend spawns a device-free node compile host on first push. MVP renders STRUCTURAL (tape) fields — a dense field would log a gl.compile3mf error (use the deprecated `penumbra` OOP suite for those until dense-field packing lands). mode: capture (no baseline; inspect the candidate + the gl.scene.loaded / gl.compile3mf telemetry).",
-  "runMode": "fresh",
+  "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C) — the DENSE (voxel-bake) render path. Loads 53_penumbra_preview.json via the Slop loader (unified Field TPMS gyroid ∩ sphere → CPig Penumbra Preview), sets the preview backend to GLSL (PenumbraPreviewBackend Glsl), then Build → CPig pushes its .3mf which routes to a device-free node compile and renders in the in-process GLSL conduit (native depth, camera-tracked) — NOT the out-of-process image-blit overlay. The unified Field TPMS is PROCEDURAL → it voxel-bakes to a 3MF functionfromimage3d image stack; Penumbra decodes that to a dense SDF grid (bug 0054) and renders it via u_sdfGrid. PREVIEW DISCIPLINE: the Slop fixture sets preview:false on all field nodes so ONLY the Penumbra render appears in the viewport (a visible GH field preview clutters/occludes the SDF + masks whether Penumbra rendered). ASSERTS: deterministic panel asserts (SlopSuccess / Connected / Status=Pushed / no FATAL) prove the CPig→Penumbra push + connection regardless of framing. VISUAL: mode:capture — saves the candidate for manual review (inspect it + gl.scene.loaded telemetry; no image pass/fail). VLM regression is wired but dormant (setup.vlm = ollama qwen2.5vl:7b + a gyroid-vs-sphere vlmDescription) — re-enable by flipping the checkpoint mode back to vlm. DIAGNOSTIC: empty viewport ⇒ the SDF likely rendered unframed/tiny (roadmap A2 auto-fit) or the node host is stale (restart Rhino). Requires: Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID …BA200).",
+  "runMode": "shared",
   "setup": {
     "file": "fixtures/cpig_slop_loader.gh",
     "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
-    "vlmDescription": "A Penumbra SDF render of a gyroid lattice (smooth, repeating, interconnected curved surfaces) filling a roughly spherical region, ray-marched directly into the Rhino viewport (sharp, shaded, depth-correct). NOT a plain featureless sphere, NOT an empty grey viewport, NOT a flat 2D overlay."
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched SDF surface drawn into the Rhino viewport: a GYROID lattice — an intricate, periodic, maze-like structure of smoothly-curved interconnected walls riddled with holes and passages, clipped to a roughly spherical region. The defining feature is the repeating, porous, interconnected lattice topology with many visible holes. It must NOT be a single smooth featureless sphere, ball, or egg; NOT a solid blob; NOT a flat 2D overlay; NOT an empty grey viewport."
   },
   "actions": [
     { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
@@ -26,7 +27,7 @@
       "name": "glsl-cpig-gyroid",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "vlm",
       "stabilizeMs": 1500,
       "tolerance": 0.05
     }

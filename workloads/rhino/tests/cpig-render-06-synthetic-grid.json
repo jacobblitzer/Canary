@@ -1,0 +1,28 @@
+{
+  "name": "cpig-render-06-synthetic-grid",
+  "workload": "rhino",
+  "description": "Phase B4 decisive isolation test for BUG-RENDER-DENSE-01. NO CPig involvement: `_PenumbraGridTest` synthesizes a 64³ signed-distance sphere ENTIRELY IN C# inside Penumbra.Rhino (sphere radius 8 in a [-12,12]³ box, ~135k negative samples + ~127k positive samples → genuine double-signed SDF, surface guaranteed at r=8), packs it into a GridPushRequest, and drives the SAME LoadPushedGrid → conduit.LoadSceneFromObject(artifact, voxels) path the Phase C5 CPig direct-grid pipe uses. Cuts CPig, 3MF, node-host, image3d-decode, Jint, and the entire upstream chain. If the viewport shows a smooth blue ball at origin, the conduit's u_sdfGrid render works for clean synthetic data and the CPig blank is data-side (mesh-distance SDF range / sign / boundary issue). If it blanks, the conduit's u_sdfGrid render is universally broken and the real bug is in PostDrawObjects / sampler binding / shader dispatch for dense-only scenes, regardless of any producer. Single-PNG decisive test.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with a SMOOTH, SOLID, SHADED ball/sphere (a ray-marched SDF surface, typically tinted blue or purple) near the world origin. The defining feature is a continuous closed spherical SURFACE, filled and lit, NOT just an outline. It must NOT be an empty grey viewport, NOT just a wireframe box outline, NOT a gyroid lattice, NOT a faceted polygon mesh."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_PenumbraGridTest" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-synthetic-grid-render",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "vlm",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05,
+      "description": "Decisive: a synthetic 64^3 sphere SDF pushed via PushGrid should render as a ray-marched ball. If blank, conduit's u_sdfGrid render is universally broken (independent of any producer)."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "cpig-render-04-debug-reps-aabb",
+  "workload": "rhino",
+  "description": "Phase B2 isolation test for BUG-RENDER-DENSE-01. Same mesh-field setup as cpig-render-01 but flips the conduit's _debugReps uniform ON via _PenumbraDebugReps before capture. When _debugReps=1 the shader bypasses rep dispatch and draws every atom as its SOLID AABB box (orange under rep-coloring). PASS verdict (orange box visible) = the marcher reaches the dense-grid atom and the bug is in the rep dispatch / sampler binding / gridSample texture upload (B1b lineage). FAIL verdict (still blank) = the marcher itself doesn't reach the atom (camera framing / scene-AABB / depth state — B1a lineage). Decisive single-PNG discriminator between sub-hypotheses.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with a SOLID, FILLED, OPAQUE shaded box (the atom-AABB debug visualization) near the world origin. The box surface must be filled / shaded — colored orange, red, or any solid color — NOT just a transparent wireframe outline with empty interior. The defining feature is that the box's faces are visibly shaded, not see-through. It must NOT be an empty grey viewport, NOT just a thin wireframe box outline, NOT a smooth round ball / sphere, NOT a gyroid lattice."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_-MeshSphere 0,0,0 10" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_PenumbraDebugReps" },
+    { "type": "RunCommand", "command": "_SelLast _Invert _Hide" },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-debug-reps-aabb-render",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "vlm",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05,
+      "description": "Atom AABB debug render: a solid orange / shaded box at origin (Phase B2 discriminator)."
+    }
+  ]
+}

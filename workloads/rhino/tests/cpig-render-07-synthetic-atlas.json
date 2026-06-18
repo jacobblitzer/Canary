@@ -1,0 +1,28 @@
+{
+  "name": "cpig-render-07-synthetic-atlas",
+  "workload": "rhino",
+  "description": "Phase B4 / hypothesis H3 (2026-06-18) decisive A/B vs cpig-render-06-synthetic-grid. Same synthetic 64^3 sphere SDF (radius 8 in a [-12,12]^3 box, double-signed verified), but packed into the per-atom companion atlas (u_atlasGrid, unit 4 → gridSampleAtlas) instead of the shared host grid (u_sdfGrid, unit 3 → gridSample). The conduit's atlasBaked path is what penumbra-glsl-00-sphere uses for the working tape-brick render, so this path is presumed proven. If THIS renders a blue ball but cpig-render-06 renders blank, the bug is specifically in u_sdfGrid (gridSample) — flip the dense-data routing onto gridSampleAtlas universally. If BOTH blank, the conduit's dense rendering is broken regardless of sampler unit (deeper bug). Single-PNG decisive.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with a SMOOTH, SOLID, SHADED ball/sphere (a ray-marched SDF surface, typically tinted blue or purple) near the world origin. The defining feature is a continuous closed spherical SURFACE, filled and lit, NOT just an outline. It must NOT be an empty grey viewport, NOT just a wireframe box outline, NOT a gyroid lattice, NOT a faceted polygon mesh."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_PenumbraAtlasTest" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-synthetic-atlas-render",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "vlm",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05,
+      "description": "Decisive H3: a synthetic 64^3 sphere SDF packed into the per-atom atlas should render via the same path tape sphere uses (gridSampleAtlas). If renders, dense-data routing should flip from u_sdfGrid → u_atlasGrid universally."
+    }
+  ]
+}

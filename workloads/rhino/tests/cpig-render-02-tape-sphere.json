@@ -1,0 +1,28 @@
+{
+  "name": "cpig-render-02-tape-sphere",
+  "workload": "rhino",
+  "description": "Control test: does a STRUCTURAL (tape) CPig field render in the in-process GLSL conduit? CPigSphere exports as a libfive TAPE atom (not a voxel grid), so this isolates whether the blank mesh→field (grid/u_sdfGrid path) is grid-specific or a global conduit/shader failure. _SelAll _Delete → _CPigSphere 0,0,0 10 (auto-displays) → WaitForPenumbraFrame → capture. No source mesh to hide (tape field). Blank-doc launch (no Grasshopper, no flake).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance sphere (a smooth solid ball) drawn into the Rhino viewport. NOT an empty grey viewport, NOT a wireframe box."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-tape-sphere-render",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "vlm",
+      "stabilizeMs": 1500,
+      "tolerance": 0.05,
+      "description": "One ray-marched SDF sphere (tape path) near the origin — solid, not empty."
+    }
+  ]
+}
