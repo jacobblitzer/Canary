@@ -1,0 +1,11 @@
+{
+  "name": "cpig-fieldops",
+  "description": "CPig 'Batch A' per-field OPERATIONS in the in-process GLSL conduit, driven by CPig.Rhino COMMANDS (not a Grasshopper graph — distinct from the penumbra-glsl suite, which drives the GH CPig_PenumbraPreview component). Exercises the operator's actual workflow: create a field (_CPigSphere), COPY it with NATIVE Rhino copy (_Copy / Alt-drag — CPigFieldWatcher's idle reconcile adopts the duplicate into an independent 2nd field), and DELETE a field. The DETERMINISTIC regression guard is WaitForPenumbraFrame after each op: create/copy/delete must each present a new real GLSL frame, else the test is Crashed (this is what would have caught the BUG-0017 'copy made a box mesh + delete did nothing' regression — native copy not adopting / delete not re-displaying = no new frame). Visual checkpoints are mode:capture (no baseline yet) for manual + VLM review; the cpig.copy/cpig.delete/cpig.reconcile/gl.scene.loaded telemetry at %LocalAppData%/Penumbra/preview/telemetry.ndjson is side-channel diagnosis (not test-assertable until Canary Tier-2, task #43). HOW TO RUN: `canary run --workload rhino --suite cpig-fieldops`. runMode shared. Requires the Penumbra.Rhino + CPig.Rhino plug-ins registered for auto-load (the 1:55 CPig build with native-copy adoption + the 12:37 Penumbra Batch A build). NOTE: telemetry-content asserts (e.g. atoms 1→2→1) become possible once Tier-2 lands or a CPig GH panel exposes the live field count; for now WaitForPenumbraFrame + capture/VLM is the surface.",
+  "tests": [
+    "cpig-fieldops-00-create-copy-delete",
+    "cpig-fieldops-01-multi-type-scene",
+    "cpig-fieldops-02-native-copy-per-type",
+    "cpig-fieldops-03-gumball-move-per-type",
+    "cpig-fieldops-04-display-rep-cycle"
+  ]
+}

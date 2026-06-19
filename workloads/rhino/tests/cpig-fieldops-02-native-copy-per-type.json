@@ -1,0 +1,51 @@
+{
+  "name": "cpig-fieldops-02-native-copy-per-type",
+  "workload": "rhino",
+  "description": "Phase 3 regression guard for the BUG-0017 + Penumbra 0055 fix chain — each primitive type (Sphere, Box, Gyroid, TPMS) is created, NATIVE _Copy'd to +50X, then WaitForPenumbraFrame asserts a new GLSL frame presents per copy. CPigFieldWatcher's idle reconcile should ADOPT each duplicate into an independent field (cpig.copy:phase=native-adopt event), incrementing gl.scene.loaded:atoms by 1 each time. If any primitive type fails to adopt the copy, the next WaitForPenumbraFrame times out → test Crashed — that's the regression guard. Side-channel: %LocalAppData%/Penumbra/preview/telemetry.ndjson carries cpig.copy, cpig.reconcile, gl.scene.loaded events per type. Single capture at the end (8 fields visible: 4 originals + 4 copies). mode:capture for manual + VLM review.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with EIGHT ray-marched SDF surfaces visible: two spheres (one near origin, one offset), two boxes (one near origin, one offset), two gyroid lattices clipped to their boxes (one near origin, one offset), two TPMS structures (one near origin, one offset). Each pair must be DISTINCT and INDEPENDENT — not blobs merging together. NOT empty grey viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Copy 0,0,0 50,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_CPigBox -100,-15,-10 -75,15,-10 -75,15,15" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Copy 0,0,0 50,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 0,40,-25 25,65,-25 25,65,0" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Copy 0,0,0 50,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_CPigTPMS Gyroid 30 1 -100,40,-25 -50,90,-25 -50,90,25" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Copy 0,0,0 50,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-fieldops-copy-per-type",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 4000,
+      "tolerance": 0.05,
+      "description": "Eight ray-marched CPig SDFs visible: 4 originals + 4 native-copied independent duplicates of each primitive type."
+    }
+  ]
+}

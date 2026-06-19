@@ -1,0 +1,51 @@
+{
+  "name": "cpig-fieldops-03-gumball-move-per-type",
+  "workload": "rhino",
+  "description": "Phase 3 regression guard for the bounding-box slaving + SDF transform tracking on each primitive type. Each primitive is created, then _Move'd (the deterministic move proxy — fires the same ReplaceRhinoObject event the gumball drag does), and WaitForPenumbraFrame asserts the new frame presents per move. CPigFieldWatcher.OnReplace should recover the new world transform via PlaneToPlane(authored AABB → moved AABB) and re-display; the rendered SDF must follow the moved box. If any primitive's move fails to propagate, the next frame doesn't advance → test Crashed. Catches the Phase 1B regression of 'bounding box not properly slaved' the operator reported on the structural gyroid. Side-channel: cpig.copy is NOT emitted for moves (only ReplaceRhinoObject); look for gl.scene.loaded atom count UNCHANGED across moves (no new atoms) but the move bounds shifted. mode:capture.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with FOUR ray-marched SDF surfaces in a row (sphere, box, gyroid lattice, TPMS structure), each translated to the +X direction. NOT at the world origin; NOT empty viewport. The shapes must be DISTINCT and at their MOVED positions."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 25,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_CPigBox -100,-15,-10 -75,15,-10 -75,15,15" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 25,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 0,40,-25 25,65,-25 25,65,0" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 25,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_CPigTPMS Gyroid 30 1 -100,40,-25 -50,90,-25 -50,90,25" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 25,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-fieldops-move-per-type",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 4000,
+      "tolerance": 0.05,
+      "description": "Four ray-marched CPig SDFs visible at their MOVED positions (each translated +25 in X from authored)."
+    }
+  ]
+}

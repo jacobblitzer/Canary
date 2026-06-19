@@ -1,0 +1,35 @@
+{
+  "name": "cpig-fieldops-01-multi-type-scene",
+  "workload": "rhino",
+  "description": "Phase 1B diagnosis testbed (plan: squishy-frolicking-starfish.md). Builds a multi-type CPig scene exercising all FOUR primitive command paths in one Rhino session: CPigSphere (tape rep), CPigBox (tape rep), CPigGyroid (structural tape rep, origin-centered), CPigTPMS (DENSE u_sdfGrid rep — the just-shipped Penumbra bug 0055 fix). The WaitForPenumbraFrame gate after each command is the deterministic regression guard; if any primitive fails to display, the gate times out and the test is Crashed. Single viewport capture at end shows the final 4-atom scene. Side-channel telemetry %LocalAppData%/Penumbra/preview/telemetry.ndjson carries cpig.build (per-session diag), cpig.rep.live (NEW — per-rep change diag), gl.scene.loaded (atoms,bounds), gl.grid.upload (per dense field, post-fix diag from RayMarchConduit). Catches Penumbra 0055 regression on TPMS dense + multi-rep dispatch on 4 different rep classes simultaneously. mode:capture for manual + VLM review.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with FOUR distinct ray-marched SDF surfaces visible: a smooth sphere, a rectangular box, a periodic gyroid lattice (a TPMS structure with repeating cells), and a dense voxel-baked TPMS field. The surfaces must be DISTINCT shapes — not collapsed into one geometry, not just a wireframe outline."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigBox 25,-15,-10 50,15,-10 50,15,15" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 0,0,-25 0,0,0" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigTPMS Gyroid 30 1 5,40,5 50,80,5 50,80,50" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-fieldops-multi-type",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 4000,
+      "tolerance": 0.05,
+      "description": "Four distinct CPig SDF fields rendered simultaneously: sphere (tape), box (tape), gyroid lattice (structural tape, origin), TPMS (dense u_sdfGrid)."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cpig-fieldops-00-create-copy-delete",
+  "workload": "rhino",
+  "description": "CPig Batch A per-field operations through the IN-PROCESS GLSL conduit, driven by CPig.Rhino COMMANDS (not a Grasshopper graph). Sequence: _CPigSphere (create + AUTO-DISPLAY field A; CPigDisplay/RedisplayFields sets PenumbraBridge.Backend=Glsl itself, so no _PenumbraPreviewBackend needed) -> native Rhino _Copy at +50X (the operator's gesture: the duplicate box is a degraded MeshObject carrying field A's CPigFieldId, which CPigFieldWatcher's idle reconcile ADOPTS into an independent 2nd field -> AdoptNativeCopy: fresh Guid + rebuilt handle + re-push) -> _Delete the copy (reconcile disposes its handle + re-displays the remaining field). THE DETERMINISTIC GATE is WaitForPenumbraFrame (requireReal, RELATIVE) after EACH op: create/copy/delete must each present a NEW real GLSL frame. If copy did not adopt (no re-push) or delete did not re-display, the gate times out and the test is Crashed -- that is the regression guard for Batch A. WaitForPenumbraFrame also pumps RhinoApp.Idle while polling, which is what lets the (idle-scheduled) copy/delete reconcile run. The single viewport capture is the post-delete state (one sphere); mode:capture (no baseline yet) for manual + VLM review. Side-channel telemetry %LocalAppData%/Penumbra/preview/telemetry.ndjson carries cpig.copy(native-adopt)/cpig.delete/cpig.reconcile/gl.scene.loaded(atoms,bounds) for diagnosis (NOT test-assertable until Canary Tier-2). REQUIRES: Penumbra.Rhino + CPig.Rhino plug-ins auto-loaded; the cpig_slop_loader.gh fixture is used ONLY to launch Rhino cleanly (its GH graph stays idle -- Build is never toggled on).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched SDF sphere (a smooth, solid ball) drawn into the Rhino viewport. It must NOT be an empty grey viewport, NOT a flat 2D overlay, NOT a wireframe or shaded box mesh."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Copy 0,0,0 50,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Delete" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-fieldops-after-delete",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 4000,
+      "tolerance": 0.05,
+      "description": "One ray-marched SDF sphere near the world origin (the copy at +50X was created then deleted; one field remains)."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "cpig-fieldops-04-display-rep-cycle",
+  "workload": "rhino",
+  "description": "Phase 1B last-row diagnostic + Phase 3 regression guard for per-field representation cycling. Creates a CPigGyroid (the trickiest case: structural intersection recipe with periodic SDF, exercises the rep dispatch on a non-trivial atom), selects it, and cycles _CPigDisplayRep through ALL 7 per-field reps: auto → tape → atlasBaked → procedural → mesh → pointCloud → companionTape → auto. WaitForPenumbraFrame after each cycle asserts a fresh frame presents. The cpig.rep.live NDJSON event (added Phase 1A) records every rep change with fieldId + new rep + previous rep so the diagnosis matrix can detect rep-change failures from outside Rhino. If any rep produces a blank or doesn't accept, the frame gate times out → test Crashed. Single capture per rep step (7 captures). Side-channel: cpig.rep.live per cycle step.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport with a ray-marched SDF surface rendered in some representation form — could be a smooth gyroid lattice, a box-clipped TPMS, a point cloud of surface samples, a polygon mesh approximation, or a wireframe AABB box. NOT an empty grey viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,-25 25,25,25" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast" },
+
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-fieldops-rep-after-cycle",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 4000,
+      "tolerance": 0.05,
+      "description": "Final state after cycling through all 7 per-field representations on a gyroid — back to auto (the start of the cycle)."
+    }
+  ]
+}
