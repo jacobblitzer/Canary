@@ -1,0 +1,32 @@
+{
+  "name": "cpig-booleans-03-smoothunion-sphere-sphere",
+  "workload": "rhino",
+  "description": "Phase D4 boolean audit (B0). SmoothUnion of two CPig tape spheres with a blend radius of 5. CPigSmoothUnion prompts for the blend radius FIRST, then the field picks — so the macro is `_SelAll _CPigSmoothUnion 5`. Expected: a peanut shape similar to cpig-booleans-00 but with a SMOOTHER, fillet-like join where the two spheres meet (vs the crisp circular crease of plain Union). Failure modes: looks identical to plain Union (smoothK=0 fallthrough), or one sphere disappears, or geometry blows up (smoothK passed to wrong arg).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface showing two overlapping spheres smoothly blended together — a peanut/dumbbell shape with a noticeably smooth fillet-like join at the waist (NOT a crisp crease). NOT a single sphere, NOT a blank viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 15,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigSmoothUnion 5" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-booleans-smoothunion-sphere-sphere",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "SmoothUnion(sphere(0,0,0;r=10), sphere(15,0,0;r=10), k=5) — a peanut with a smooth fillet join (vs crisp crease of plain Union)."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cpig-booleans-01-intersection-sphere-sphere",
+  "workload": "rhino",
+  "description": "Phase D4 boolean audit (B0). Intersection of two overlapping tape spheres -- expect ONLY the lens-shaped overlap region. Sequence: _CPigSphere 0,0,0 10 + _CPigSphere 15,0,0 10 (overlap roughly 5 units wide at x=7.5) -> _SelAll _CPigIntersection. Failure modes: empty viewport (Intersection failed or AABB scoping killed the result), full union (sign inverted), one of the source spheres (Intersection became a no-op).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface showing the lens-shaped intersection of two overlapping spheres -- a single thin almond/lens shape, NOT a full peanut, NOT one whole sphere, NOT a blank viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 15,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigIntersection" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-booleans-intersection-sphere-sphere",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "Intersection(sphere(0,0,0;r=10), sphere(15,0,0;r=10)) -- a thin almond/lens centered around x=7.5."
+    }
+  ]
+}

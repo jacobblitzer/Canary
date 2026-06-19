@@ -1,0 +1,32 @@
+{
+  "name": "cpig-booleans-05-difference-gyroid-sphere",
+  "workload": "rhino",
+  "description": "Phase D4 boolean audit (B0) — CROSS-REP STRESS CASE + SIGN CHECK. Difference of a CPigGyroid (kept) and a tape sphere (subtracted) — should look like a gyroid lattice with a spherical bite carved out of its center. Per research §1.2 the difference is max(gyroid_tree, -(sphere_tree)) — the first picked is the minuend. Failure modes: the sphere is kept and the gyroid is subtracted (sign inverted — known operator complaint per B3), gyroid lattice topology missing in the carved region (AABB or evaluator bug), full viewport blank.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface showing a gyroid lattice (interconnected saddle surfaces) with a SPHERICAL CAVITY carved out of its center — the lattice surrounds a hollow sphere-shaped void. NOT a smooth sphere with a bite, NOT a pure gyroid, NOT a blank viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigDifference" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-booleans-difference-gyroid-sphere",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "Difference(gyroid_lattice([-25,25]^3), sphere(0,0,0;r=10)) — gyroid with a spherical cavity carved out of its center. Operator confirms sign convention is correct."
+    }
+  ]
+}

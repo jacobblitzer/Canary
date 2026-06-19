@@ -1,0 +1,12 @@
+{
+  "name": "cpig-booleans",
+  "description": "Phase D4 of the post-M7 display-correctness pass (MultiVerse/DEBUG-PHASE-2026-06-19-display-correctness.md): operator-attended boolean visual audit. Drives the matrix of (operand-rep-class x boolean op) through CPig.Rhino commands; captures the viewport at the end of each cell so the operator can eyeball correctness. mode:capture for v1 (no baseline); the deterministic regression guard is WaitForPenumbraFrame after every op (a hang or blank Crashes the test). Focus areas per the plan + research dive: (1) sign convention for Difference (B3 was the prompt; B0 is the eval), (2) AABB scoping when operands have very different extents (sphere + gyroid), (3) cross-rep mixing (tape + structural). Six representative cells in this v1 round; a v2 with CPigFromMesh (dense) + SmoothUnion(sphere, gyroid) follows once these are green. Run: `canary run --workload rhino --suite cpig-booleans`. Requires Penumbra.Rhino + CPig.Rhino auto-loaded (the 2026-06-19 D1+D2+D3 build).",
+  "tests": [
+    "cpig-booleans-00-union-sphere-sphere",
+    "cpig-booleans-01-intersection-sphere-sphere",
+    "cpig-booleans-02-difference-sphere-sphere",
+    "cpig-booleans-03-smoothunion-sphere-sphere",
+    "cpig-booleans-04-union-sphere-gyroid",
+    "cpig-booleans-05-difference-gyroid-sphere"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cpig-booleans-02-difference-sphere-sphere",
+  "workload": "rhino",
+  "description": "Phase D4 boolean audit (B0) — SIGN CONVENTION CHECK. Difference of two CPig tape spheres. The CPig convention (research dive §1.2: field_binary_impl 'difference' is max(fa->tree, -(fb->tree))) keeps the FIRST-picked operand and subtracts the second. So _SelAll picks A then B (whichever order Rhino delivers); _CPigDifference keeps A, subtracts B. With A=sphere(0,0,0;r=10) and B=sphere(15,0,0;r=10), expect: a SINGLE sphere centered near origin with a CRESCENT BITE taken out of its +x side (B subtracted). If we see a sphere at +x with a bite from its -x side, the operand order was reversed — that's the surface to watch (research dive B3: prompt doesn't clarify which is minuend).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface showing one sphere with a curved bite taken out of one side (a crescent moon shape, or a sphere minus a sphere). NOT a single intact sphere, NOT a peanut, NOT two separate spheres."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 15,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigDifference" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-booleans-difference-sphere-sphere",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "Difference(sphere_A, sphere_B) — one sphere with a curved bite taken out of one side. Operator should verify WHICH side has the bite to confirm sign convention."
+    }
+  ]
+}

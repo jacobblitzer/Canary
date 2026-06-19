@@ -1,0 +1,32 @@
+{
+  "name": "cpig-booleans-04-union-sphere-gyroid",
+  "workload": "rhino",
+  "description": "Phase D4 boolean audit (B0) — CROSS-REP STRESS CASE (tape sphere + structural-clipped gyroid). Union of a tape sphere with a CPigGyroid (structural TPMS clipped to a box). Both operands are LIBFIVE -> Union stays structural per research §1.2 (LIBFIVE × LIBFIVE -> LIBFIVE). Expected: the gyroid lattice with an extra sphere bulge added on one side. Failure modes: scale mismatch (one operand rendered at very different size), AABB scoped to one operand (the other clipped at the boundary), sign-related artifacts.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface combining a gyroid lattice (interconnected saddle surfaces forming a periodic lattice) with an additional bulging sphere shape merged on one side. NOT a smooth sphere alone, NOT a pure gyroid alone, NOT a blank viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 30,0,0 12" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-booleans-union-sphere-gyroid",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "Union(gyroid_lattice([-25,25]^3, period=20), sphere(30,0,0;r=12)) — a gyroid with a sphere bulge attached on +x. Both should render at correct scale."
+    }
+  ]
+}
