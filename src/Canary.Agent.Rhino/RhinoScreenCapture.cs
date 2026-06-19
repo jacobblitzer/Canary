@@ -39,8 +39,21 @@ public sealed class RhinoScreenCapture
         RhinoApp.Wait();
         Thread.Sleep(200);
 
-        // Strategy 1: RhinoView.CaptureToBitmap — most reliable for active viewport
-        var size = new Size(settings.Width, settings.Height);
+        // Capture at the VIEW'S NATIVE size (not the test-requested settings.Width/Height) so
+        // the Penumbra GLSL conduit's PostDrawObjects sees vp.Size == GL viewport == capture
+        // target. The conduit computes PASS-1 ray-march resolution + PASS-2 composite UV
+        // mapping from vp.Size; when the capture target differs (CaptureToBitmap at a custom
+        // size), the composite shader samples the wrong portion of the FBO and SDFs land at
+        // wrong screen positions (or vanish) relative to Rhino's native geometry draw — even
+        // though wireframes from Rhino's geometry pipeline render correctly into the capture
+        // framebuffer. Using the view's actual ClientRectangle size keeps all three (vp.Size,
+        // GL viewport, framebuffer) in agreement. Trade-off: PNG dimensions vary with operator
+        // window size. Capture-mode tests don't pixel-diff anyway; dimension consistency
+        // matters only for baseline approval which is a later concern.
+        var native = view.ClientRectangle.Size;
+        var size = (native.Width > 0 && native.Height > 0)
+            ? new Size(native.Width, native.Height)
+            : new Size(settings.Width, settings.Height);
         var bitmap = view.CaptureToBitmap(size);
 
         if (bitmap != null)
@@ -50,7 +63,7 @@ public sealed class RhinoScreenCapture
         }
         else
         {
-            // Strategy 2: ViewCapture API
+            // Strategy 2: ViewCapture API at the same native size.
             var captureSettings = new ViewCaptureSettings(view, size, 72);
             using var bitmap2 = ViewCapture.CaptureToBitmap(captureSettings);
 
@@ -60,9 +73,9 @@ public sealed class RhinoScreenCapture
             }
             else
             {
-                // Strategy 3: _-ViewCaptureToFile command
+                // Strategy 3: _-ViewCaptureToFile command at the native size.
                 var path = settings.OutputPath.Replace("\\", "/");
-                var script = $"_-ViewCaptureToFile \"{path}\" _Width={settings.Width} _Height={settings.Height} _Scale=1 _DrawGrid=No _DrawWorldAxes=No _DrawCPlaneAxes=No _TransparentBackground=No _Enter";
+                var script = $"_-ViewCaptureToFile \"{path}\" _Width={size.Width} _Height={size.Height} _Scale=1 _DrawGrid=No _DrawWorldAxes=No _DrawCPlaneAxes=No _TransparentBackground=No _Enter";
                 RhinoApp.RunScript(script, echo: false);
             }
         }

@@ -1086,6 +1086,22 @@ public sealed class TestRunner
                 //       wait for solve → single-frame capture, repeat). True animated GIF.
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
                 await ApplyCheckpointViewportAsync(agent, checkpoint, ct).ConfigureAwait(false);
+                // Per-checkpoint stabilize wait (any source / any agent). Previously stabilizeMs
+                // was only forwarded as a parameter to SetCamera (above, line ~778) and was
+                // silently dropped for non-Camera checkpoints — meaning bumping stabilizeMs in
+                // the test JSON had ZERO effect on the actual capture for ICanaryAgent-driven
+                // tests (Rhino, etc.). Critical for progressive-quality renderers like the
+                // Penumbra GLSL conduit: the post-action capture would fire immediately while
+                // the conduit was still at motion-mode 0.25× resolution, so atoms with thin
+                // features randomly disappeared from the capture even though they rendered fine
+                // interactively. During this Task.Delay the agent sends no JSON-RPC, so Rhino's
+                // message loop is free to fire RhinoApp.Idle events → the conduit's progressive
+                // controller ramps to 1.0× and converges before the capture grabs the frame.
+                if (checkpoint.StabilizeMs.HasValue && checkpoint.StabilizeMs.Value > 0)
+                {
+                    _logger.Log($"  stabilizing {checkpoint.StabilizeMs.Value}ms before capture...");
+                    await Task.Delay(checkpoint.StabilizeMs.Value, ct).ConfigureAwait(false);
+                }
                 var gifEnabled = checkpoint.Capture?.Gif == true;
                 var scrub = checkpoint.Capture?.Scrub;
                 var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
@@ -1336,6 +1352,16 @@ public sealed class TestRunner
                 // the agent-side-loop vs orchestrator-driven scrub split).
                 _logger.Log($"Capturing checkpoint: {checkpoint.Name}");
                 await ApplyCheckpointViewportAsync(client, checkpoint, ct).ConfigureAwait(false);
+                // Per-checkpoint stabilize wait (parallel of the ICanaryAgent path above) —
+                // see the comment there for the full rationale. HarnessClient path (Penumbra
+                // web workload + Pigture). The stabilize is just as load-bearing here: any
+                // progressive renderer (WebGPU compute marcher, Cycles, etc.) needs idle time
+                // before the capture grabs a converged frame.
+                if (checkpoint.StabilizeMs.HasValue && checkpoint.StabilizeMs.Value > 0)
+                {
+                    _logger.Log($"  stabilizing {checkpoint.StabilizeMs.Value}ms before capture...");
+                    await Task.Delay(checkpoint.StabilizeMs.Value, ct).ConfigureAwait(false);
+                }
                 var gifEnabled = checkpoint.Capture?.Gif == true;
                 var scrub = checkpoint.Capture?.Scrub;
                 var gifFrames = checkpoint.Capture?.FrameCount ?? 30;
