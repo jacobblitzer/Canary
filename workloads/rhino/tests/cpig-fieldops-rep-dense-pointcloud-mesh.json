@@ -1,0 +1,47 @@
+{
+  "name": "cpig-fieldops-rep-dense-pointcloud-mesh",
+  "workload": "rhino",
+  "description": "Phase D1 (display-correctness) regression guard. Creates a DENSE CPig atom (a mesh→field via _CPigFromMesh, which voxel-bakes to a 3MF image3d → importer decodes to SDFAtom.volumeGrid → compileAtomsToGlArtifact's dense branch packs as a per-atom atlas brick — the M4 multi-dense path). Then selects the field box and cycles _CPigDisplayRep through the canonical 7 reps: auto → tape → atlasBaked → procedural → mesh → pointCloud → companionTape → auto. WaitForPenumbraFrame between each cycle is the deterministic regression guard — pre-D1, pointCloud + mesh on a dense atom rendered as the bounding-sphere fallback (compileAtomsToGlArtifact's dense branch left pointCount=triCount=0 → ResolveRep collapsed to COMPANION → sphere); post-D1, dense atoms generate surfacePointCloudFromGrid + surfaceMeshFromGrid via trilinear-on-the-voxel-grid Newton-projection / marching-cubes (in @penumbra/core). Mesh rep renders as a faceted thin shell (MC over the downsampled grid); pointCloud rep renders as a native Rhino PointCloud per D2 (LoadPushedArtifact now emits Track-C overlays for producer scenes, not just demo PenumbraGl scenes). Captures mode:capture for v1 (manual review); VLM-dormant. If a cycle hangs the WaitForPenumbraFrame times out → test Crashed.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D ray-marched signed-distance surface rendered in Rhino: either a faceted polygon mesh approximation of a ball OR a scatter of surface points forming a ball shape OR a smooth ray-marched ball. NOT an empty grey viewport, NOT a wireframe bounding box, NOT a flat 2D overlay."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_-MeshSphere 0,0,0 10" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Invert _Hide" },
+    { "type": "RunCommand", "command": "_SelLast" },
+
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_CPigDisplayRep" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+
+    { "type": "RunCommand", "command": "_SelNone" }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-fieldops-rep-dense-after-cycle",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 10000,
+      "tolerance": 0.05,
+      "description": "Final state after cycling _CPigDisplayRep through all 7 reps on a dense atom (mesh→field) — back to auto. Captures the auto rep; intermediate steps were gated by WaitForPenumbraFrame so a hang/blank on any rep would have failed the test."
+    }
+  ]
+}

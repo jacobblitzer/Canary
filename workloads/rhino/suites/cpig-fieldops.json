@@ -6,6 +6,7 @@
     "cpig-fieldops-01-multi-type-scene",
     "cpig-fieldops-02-native-copy-per-type",
     "cpig-fieldops-03-gumball-move-per-type",
-    "cpig-fieldops-04-display-rep-cycle"
+    "cpig-fieldops-04-display-rep-cycle",
+    "cpig-fieldops-rep-dense-pointcloud-mesh"
   ]
 }
