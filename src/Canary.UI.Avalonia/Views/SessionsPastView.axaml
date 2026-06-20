@@ -34,15 +34,41 @@
 
       <GridSplitter Grid.Column="1" Background="#404040" />
 
-      <TextBox Grid.Column="2"
-               Text="{Binding Preview, Mode=OneWay}"
-               IsReadOnly="True"
-               AcceptsReturn="True"
-               TextWrapping="NoWrap"
-               FontFamily="Consolas, Menlo, monospace"
-               FontSize="13"
-               Background="#141414"
-               Foreground="#C8C8C8" />
+      <!-- Operator UX (2026-06-19): copy-friendly session id + dir strip above the preview pane.
+           Before this the only way to grab the session path was to right-click in the DataGrid cell,
+           which Avalonia's DataGrid doesn't actually expose as selectable text. -->
+      <Grid Grid.Column="2" RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Background="#1F1F1F" Padding="6,4">
+          <Grid ColumnDefinitions="Auto,*,Auto,Auto,*,Auto" IsVisible="{Binding HasSelection}">
+            <TextBlock Grid.Column="0" Text="Session id:" Foreground="#888" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding SelectedSessionId, Mode=OneWay}"
+                     IsReadOnly="True" BorderThickness="0" Background="Transparent"
+                     Foreground="#E0E0E0" FontFamily="Consolas, Menlo, monospace" FontSize="12"
+                     Padding="0" VerticalAlignment="Center" />
+            <Button Grid.Column="2" Content="Copy id" Command="{Binding CopySessionIdCommand}"
+                    Margin="6,0,0,0" Padding="6,2" />
+            <TextBlock Grid.Column="3" Text="Dir:" Foreground="#888" VerticalAlignment="Center" Margin="12,0,6,0" />
+            <TextBox Grid.Column="4"
+                     Text="{Binding SelectedSessionDir, Mode=OneWay}"
+                     IsReadOnly="True" BorderThickness="0" Background="Transparent"
+                     Foreground="#E0E0E0" FontFamily="Consolas, Menlo, monospace" FontSize="12"
+                     Padding="0" VerticalAlignment="Center" />
+            <Button Grid.Column="5" Content="Copy dir" Command="{Binding CopySessionDirCommand}"
+                    Margin="6,0,0,0" Padding="6,2" />
+          </Grid>
+        </Border>
+
+        <TextBox Grid.Row="1"
+                 Text="{Binding Preview, Mode=OneWay}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="NoWrap"
+                 FontFamily="Consolas, Menlo, monospace"
+                 FontSize="13"
+                 Background="#141414"
+                 Foreground="#C8C8C8" />
+      </Grid>
     </Grid>
 
     <Border Grid.Row="2" Background="#007ACC" Padding="8,4">

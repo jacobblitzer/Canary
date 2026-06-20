@@ -38,6 +38,9 @@ public partial class SessionsPastViewModel : ObservableObject
 
     partial void OnSelectedRowChanged(SessionRow? value)
     {
+        OnPropertyChanged(nameof(HasSelection));
+        OnPropertyChanged(nameof(SelectedSessionId));
+        OnPropertyChanged(nameof(SelectedSessionDir));
         if (value == null) { Preview = string.Empty; return; }
         var reportPath = SessionPaths.ReportPath(value.SessionDir);
         try
@@ -50,6 +53,42 @@ public partial class SessionsPastViewModel : ObservableObject
         {
             Preview = $"(failed to read report: {ex.Message})";
         }
+    }
+
+    /// <summary>Operator UX (2026-06-19): expose the selected row's id + dir as bindable strings, with
+    /// Copy commands the View can wire to clipboard. Solves "I can't copy/paste the address" — the
+    /// DataGrid cell didn't expose selectable text, so the path was visible but ungrabbable.</summary>
+    public bool HasSelection => SelectedRow != null;
+    public string SelectedSessionId => SelectedRow?.SessionId ?? string.Empty;
+    public string SelectedSessionDir => SelectedRow?.SessionDir ?? string.Empty;
+
+    [RelayCommand]
+    private async Task CopySessionId()
+    {
+        if (SelectedRow == null) return;
+        await SetClipboardAsync(SelectedRow.SessionId);
+        StatusText = $"Copied session id: {SelectedRow.SessionId}";
+    }
+
+    [RelayCommand]
+    private async Task CopySessionDir()
+    {
+        if (SelectedRow == null) return;
+        await SetClipboardAsync(SelectedRow.SessionDir);
+        StatusText = $"Copied session dir: {SelectedRow.SessionDir}";
+    }
+
+    private static async Task SetClipboardAsync(string text)
+    {
+        try
+        {
+            // Namespace `Canary.UI.Avalonia` would shadow `Avalonia.*` — use global:: to escape.
+            var topLevel = global::Avalonia.Application.Current?.ApplicationLifetime is global::Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                ? global::Avalonia.Controls.TopLevel.GetTopLevel(desktop.MainWindow)
+                : null;
+            if (topLevel?.Clipboard != null) await topLevel.Clipboard.SetTextAsync(text);
+        }
+        catch { /* best-effort */ }
     }
 
     public void SetWorkloadsDir(string? workloadsDir)
