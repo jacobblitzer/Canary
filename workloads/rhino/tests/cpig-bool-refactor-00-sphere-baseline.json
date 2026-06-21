@@ -1,0 +1,27 @@
+{
+  "name": "cpig-bool-refactor-00-sphere-baseline",
+  "workload": "rhino",
+  "description": "Baseline smoke test for the Phase 1 FieldWrapper refactor — a single CPigSphere must still create + auto-display. Verifies FieldWrapper::Kind::LIBFIVE leaf path (= unchanged from pre-refactor: libfive_tree_eval_f) and the LIBFIVE write-path in evaluate(). If the refactor broke leaf evaluation, no GLSL frame presents and WaitForPenumbraFrame times out.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "sphere-baseline",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "One CPig SDF sphere (radius 10 at origin), ray-marched via the LIBFIVE leaf path."
+    }
+  ]
+}

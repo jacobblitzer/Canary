@@ -1,0 +1,31 @@
+{
+  "name": "cpig-bool-refactor-01-union-libfive",
+  "workload": "rhino",
+  "description": "CPigUnion of two libfive primitives (sphere + sphere). Exercises the LIBFIVE FAST PATH in field_binary_impl (implicit_field.cpp:738 — both operands libfive → libfive_tree min composition → Kind::LIBFIVE result, NOT Kind::UNION). Phase 1 left this path unchanged; Phase 2's SINGLE_LEVELSET mode is opt-in and CPig.Rhino's RedisplayFields still passes AUTO, so the export still emits ONE libfive ImplicitFunction LevelSet. WaitForPenumbraFrame after each step gates real frame presentation.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere -15,0,0 12" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 15,0,0 12" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "union-libfive",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Union of two CPig SDF spheres at +/-15,0,0 (peanut shape). Both operands libfive → composed via libfive tree min → ONE tape atom."
+    }
+  ]
+}

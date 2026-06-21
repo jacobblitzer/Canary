@@ -1,0 +1,29 @@
+{
+  "name": "cpig-bool-refactor-06-offset",
+  "workload": "rhino",
+  "description": "CPigOffset(sphere, +5) — grows the sphere's surface outward. Exercises field_offset_impl LIBFIVE arm (implicit_field.cpp:831 — libfive tree - distance constant → Kind::LIBFIVE result, no Phase 1 structural Kind::OFFSET triggered for libfive operands). The procedural arm of OFFSET (which Phase 1 promoted to Kind::OFFSET) is only triggered when the operand is non-libfive — covered indirectly elsewhere. Visual: a single sphere of effective radius 15 (= 10 + 5 offset).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _CPigOffset 5 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "offset-grow",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Sphere (r=10) offset by +5 → effective r=15 sphere. Libfive tree - constant fast path."
+    }
+  ]
+}

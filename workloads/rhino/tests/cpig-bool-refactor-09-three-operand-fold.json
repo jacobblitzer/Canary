@@ -1,0 +1,33 @@
+{
+  "name": "cpig-bool-refactor-09-three-operand-fold",
+  "workload": "rhino",
+  "description": "CPigUnion of three libfive spheres in a single pick. Exercises the N-ARY FOLD in RunBooleanFromPicks (CPigModelingCommands.cs:219-237 — accumulator pattern ((c0 op c1) op c2) ...). Each intermediate composite is disposed in-loop; the final composite owns the result. Phase 1 still works through this fold (all libfive → libfive fast path). TEST GATE: 3-pick union completes, real frame presents. Visual: three-sphere blob.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere -18,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 18,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "three-operand-union",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Union of three spheres along the X axis (-18, 0, +18). Visible as a single connected SDF surface (peanut-of-three). Tests the N-ary fold inside RunBooleanFromPicks."
+    }
+  ]
+}

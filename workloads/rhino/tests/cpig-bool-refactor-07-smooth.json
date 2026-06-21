@@ -1,0 +1,29 @@
+{
+  "name": "cpig-bool-refactor-07-smooth",
+  "workload": "rhino",
+  "description": "CPigSmooth(sphere, radius=3) — gaussian-blurs the sphere's SDF. Exercises field_smooth_blur_impl (implicit_field.cpp:1867+) — gaussian-blur of an SDF is not expressible in libfive, so this ALWAYS produces a procedural composite. Phase 1 promoted this from PROCEDURAL closure to Kind::SMOOTH structured composite. evaluate()'s Kind::SMOOTH arm runs the same kernel-sample loop as the prior closure. The TEST GATE: did the smoothed-sphere field render? Visual: a slightly inflated sphere (smoothing rounds + grows the level set slightly).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _CPigSmooth 3 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "smooth",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 10000,
+      "tolerance": 0.05,
+      "description": "Sphere (r=10) gaussian-smoothed with radius=3 (3x3x3 sample kernel). Visible as a sphere with subtly larger effective radius. Phase 1 Kind::SMOOTH structured composite via evaluate() kernel-sample loop."
+    }
+  ]
+}

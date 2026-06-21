@@ -1,0 +1,33 @@
+{
+  "name": "cpig-bool-refactor-08-moved-operand",
+  "workload": "rhino",
+  "description": "BUG-0019 + BUG-0020 regression guard. Pattern: create sphere at one location, create box at another, _Move the box (registry World transform set), then _CPigUnion. Pre-fix, the moved operand's world translation was DROPPED at the boolean step (the composite landed at the AUTHORED positions). BUG-0019 added the translate-wrapper Relocate path; BUG-0020 made EstimateBBox propagate bounds through the forward transform. Phase 1's Kind::TRANSFORM structured composite carries the m_inv matrix in op_meta and evaluate() applies it. The TEST GATE: union completes and a real frame presents. Visual: sphere and box at their moved positions, unioned (no NaN, no tiny clipped sliver at origin).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 12" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigBox 30,-10,-10 50,10,-10 50,10,10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 -30,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "moved-operand-union",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Union of sphere at origin with box that was created at +30 then moved to 0 (overlapping the sphere). Must show the box overlapping the sphere at the MOVED position, not at the authored +30 position. BUG-0019/0020 regression guard."
+    }
+  ]
+}

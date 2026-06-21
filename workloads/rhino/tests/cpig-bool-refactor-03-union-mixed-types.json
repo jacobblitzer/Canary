@@ -1,0 +1,31 @@
+{
+  "name": "cpig-bool-refactor-03-union-mixed-types",
+  "workload": "rhino",
+  "description": "CPigUnion of LIBFIVE sphere + PROCEDURAL unified TPMS. Exercises the STRUCTURED COMPOSITE PATH in field_binary_impl (implicit_field.cpp:759+ — mixed types → Kind::UNION structured composite, NOT the procedural-closure that Phase 1 replaced). Phase 1's evaluate() Kind::UNION arm must produce identical results to the prior closure (min over children). RedisplayFields still passes composite_mode=AUTO so the export voxel-bakes the composite as one dense atom (today's known behavior — bug 0021 — not yet fixed; the visible fix lands in Phase 8). The TEST GATE here is: did the boolean COMPLETE without crashing or producing NaN? WaitForPenumbraFrame confirms a real frame presented.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 15" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigTPMS Gyroid 20 1 -30,-30,-30 30,30,-30 30,30,30" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "union-mixed-types",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 10000,
+      "tolerance": 0.05,
+      "description": "Sphere (libfive) unioned with unified Gyroid TPMS (procedural). Composes via Kind::UNION structured composite. Today's AUTO export voxel-bakes the whole composite (bug 0021 — the gyroid lattice fattens to a solid block; visible fix lands in Phase 8). Pass criterion for this test: boolean completes, a real frame presents."
+    }
+  ]
+}

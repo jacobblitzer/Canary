@@ -1,0 +1,16 @@
+{
+  "name": "cpig-bool-refactor",
+  "description": "Regression guard for the Option 3 structural-composite refactor (CPig docs/research/2026-06-20-option-3-structural-composite-export.md). Exercises every modeling-commands code path the Phase 1 FieldWrapper refactor touched (UNION/INTERSECTION/SUBTRACT/SMOOTH_UNION/OFFSET/SMOOTH/TRANSFORM kinds via field_binary_impl, field_offset_impl, field_smooth_blur_impl, field_transform_impl) PLUS the operator-answer regressions (smoothK<=0 collapse to UNION; BUG-0019/0020 moved-operand placement). Each test is mode:capture — NO VLM, NO pixel-diff — saves a viewport screenshot for manual review without a baseline. The DETERMINISTIC gate is WaitForPenumbraFrame (requireReal, RELATIVE) after every modeling op: create/boolean/offset/smooth must each present a NEW real GLSL frame. If the refactor broke a code path the field never re-renders, the gate times out and the test is Crashed -- THAT is the regression signal. Side-channel telemetry at %LocalAppData%/Penumbra/preview/telemetry.ndjson carries cpig.field.added / cpig.boolean.start / cpig.boolean.aabb / cpig.boolean.created / gl.scene.loaded for diagnosis. HOW TO RUN: `canary run --workload rhino --suite cpig-bool-refactor`. runMode shared. Requires Penumbra.Rhino + CPig.Rhino plug-ins registered for auto-load (the 2026-06-20T16:38+ CPig build with Phase 1 structured kinds + Phase 2 SINGLE_LEVELSET path).",
+  "tests": [
+    "cpig-bool-refactor-00-sphere-baseline",
+    "cpig-bool-refactor-01-union-libfive",
+    "cpig-bool-refactor-02-intersection-libfive",
+    "cpig-bool-refactor-03-union-mixed-types",
+    "cpig-bool-refactor-04-smoothunion-k5",
+    "cpig-bool-refactor-05-smoothunion-k0-collapse",
+    "cpig-bool-refactor-06-offset",
+    "cpig-bool-refactor-07-smooth",
+    "cpig-bool-refactor-08-moved-operand",
+    "cpig-bool-refactor-09-three-operand-fold"
+  ]
+}

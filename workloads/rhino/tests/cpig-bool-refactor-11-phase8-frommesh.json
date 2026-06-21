@@ -1,0 +1,33 @@
+{
+  "name": "cpig-bool-refactor-11-phase8-frommesh",
+  "workload": "rhino",
+  "description": "PHASE 8 verification using _CPigFromMesh (BVH-procedural) — the operator's reported scene pattern (libfive sphere ∪ procedural mesh-distance field). BVH evaluation is cheap per eval (vs libfive interpretation that timed out test 10's smooth bake), so the 32³ voxel bake of the mesh-distance leaf finishes inside Canary's agent timeout. Flow: _MeshSphere creates a Rhino mesh sphere → _CPigFromMesh picks it → adds a Kind::PROCEDURAL FieldWrapper. Then a libfive _CPigSphere. Then _CPigUnion — the boolean's mixed-type FieldWrappers → Phase 1 Kind::UNION structured composite → Phase 3 N_LEVELSETS_PLUS_OPTREE export emits ONE LevelSet per leaf (libfive sphere as implicitfunction + procedural mesh as functionfromimage3d) + the optree.json sidecar. Phase 4-7 chain feeds Phase 5's GLSL marcher to compose per-fragment. Expected: gl.scene.loaded with atoms:2, mixed reps (e.g. \"tape,atlasBaked\"), \"pushed 1 field(s) as 2 atom(s)\" in the boolean.complete status message.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigBakeResolution 32 _Enter" },
+    { "type": "RunCommand", "command": "_CPigSphere -10,0,0 8" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_MeshSphere 10,0,0 8 _Enter _Enter" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "phase8-frommesh",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Union of libfive sphere (at -10,0,0) and BVH-procedural mesh sphere (at 10,0,0). Phase 8 should emit 2 atoms — tape sphere + atlasBaked mesh — not collapse to one dense bake."
+    }
+  ]
+}

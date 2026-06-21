@@ -1,0 +1,31 @@
+{
+  "name": "cpig-bool-refactor-02-intersection-libfive",
+  "workload": "rhino",
+  "description": "CPigIntersection of sphere + box (both libfive). Exercises field_binary_impl op=1 (max) via libfive fast path → Kind::LIBFIVE result. Phase 1 left this path unchanged. The expected SDF is the rounded-edge cube where the sphere clips the box corners. Visual: rounded cube. If Phase 1 broke libfive composition, no frame presents and the gate times out.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 15" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigBox -12,-12,-12 12,12,-12 12,12,12" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigIntersection _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "intersection-libfive",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Sphere (r=15) intersected with box (24-unit cube). Result is a rounded cube (sphere clips box corners). Libfive ∩ libfive fast path; ONE tape atom."
+    }
+  ]
+}

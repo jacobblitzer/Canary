@@ -1,0 +1,31 @@
+{
+  "name": "cpig-bool-refactor-05-smoothunion-k0-collapse",
+  "workload": "rhino",
+  "description": "CRITICAL REGRESSION GUARD for Phase 1 operator answer #1 (2026-06-20): CPigSmoothUnion with smoothK=0 must COLLAPSE to a regular UNION (no NaN, no divide-by-zero). Pre-Phase-1 closure evaluated smin with k=0 → h*h/(4*k) divides by zero → NaN propagates through the marcher → empty viewport. Phase 1's field_binary_impl case 3 explicitly checks `if (k > 0.0f) Kind::SMOOTH_UNION else Kind::UNION`. If this regression returns, the SDF evaluates to NaN, no surface is found, no real frame presents, gate times out, test Crashes. Visual: identical to a regular union of two libfive spheres (peanut shape) — proves the collapse worked.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere -10,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 10,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigSmoothUnion 0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "smoothunion-k0-collapse",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "SmoothUnion(sphere, sphere, k=0) — must render IDENTICALLY to a regular union (peanut shape, sharp seam). If empty viewport / NaN field, the Phase 1 k=0 → UNION collapse regressed."
+    }
+  ]
+}

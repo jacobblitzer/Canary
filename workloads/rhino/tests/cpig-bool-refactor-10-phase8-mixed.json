@@ -1,0 +1,34 @@
+{
+  "name": "cpig-bool-refactor-10-phase8-mixed",
+  "workload": "rhino",
+  "description": "PHASE 8 verification — a TRUE mixed-type composite that forces FieldWrapper::Kind::UNION (structured), not the libfive fast-path. Pattern: _CPigSphere → _CPigSmooth on it (Phase 1 promotes this to Kind::SMOOTH procedural composite) → _CPigSphere (libfive) → _CPigUnion (libfive ∪ procedural → Kind::UNION structured composite). The Phase 3 exporter in N_LEVELSETS_PLUS_OPTREE mode should emit 2 LevelSets (one per leaf) + the op tree sidecar; CPig.Rhino reads back the leaf count; Bridge gets fieldIds with the composite's id repeated twice; Penumbra's GLSL marcher composes per-fragment. Expected telemetry: gl.scene.loaded with atoms:2, rep showing mixed reps (e.g. \"atlasBaked,tape\" — one tape sphere + one dense smoothed sphere).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigBakeResolution 32 _Enter" },
+    { "type": "RunCommand", "command": "_CPigSphere -8,0,0 8" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigSmooth 3 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 8,0,0 8" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "phase8-mixed",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Union of a libfive sphere and a SMOOTH-wrapped sphere (Kind::SMOOTH procedural). The composite is mixed-type → Phase 8 N_LEVELSETS_PLUS_OPTREE → 2 atoms (tape + dense). Expected visual: a peanut-of-two-spheres where one half is crisp tape and the other slightly inflated/blurred from the smoothing."
+    }
+  ]
+}

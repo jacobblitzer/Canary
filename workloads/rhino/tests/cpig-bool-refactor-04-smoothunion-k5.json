@@ -1,0 +1,31 @@
+{
+  "name": "cpig-bool-refactor-04-smoothunion-k5",
+  "workload": "rhino",
+  "description": "CPigSmoothUnion with k=5 (positive blend radius) on two libfive spheres. Both operands libfive → libfive smoothunion fast path (implicit_field.cpp:744-749 — quadratic smin composed as a libfive tree → Kind::LIBFIVE result). Phase 1 left this path unchanged. Visual: two spheres with a smooth blended bridge between them.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere -10,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigSphere 10,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigSmoothUnion 5 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "smoothunion-k5",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Smooth union of two spheres at +/-10 with k=5. Visible smooth blend bridge between the two spheres (libfive smin composition)."
+    }
+  ]
+}
