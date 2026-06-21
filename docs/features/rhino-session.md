@@ -16,8 +16,21 @@ Files shipped:
 - `src/Canary.Harness/Session/SessionAgentFactory.cs` — new `"rhino"` case in the agent-type switch.
 - `src/Canary.Harness/Cli/SessionCommand.cs` — `--workload` help text updated to list rhino.
 
-**Deferred to v2:**
-- Telemetry source (Rhino command-line history + Slop log tail → `telemetry.ndjson`). The factory accepts an `ITelemetrySink` but discards it for Rhino in v1.
+## v2 (partial — Penumbra preview telemetry, 2026-06-17)
+
+`RhinoSessionAgent` now implements `ITelemetryAware` and tails Penumbra's in-Rhino preview NDJSON
+(`%LocalAppData%\Penumbra\preview\telemetry.ndjson`, via `PenumbraPreviewTelemetryTail` in
+`src/Canary.Core/Telemetry/`) into the session's `telemetry.ndjson`; `SessionReportWriter` renders a
+"Penumbra preview telemetry" section in `SESSION_REPORT.md`. So a hand-driven CPig/Penumbra-in-Rhino session
+is debuggable from the report — `scene.loaded` (+tape/+grid + bounds), `gl.field.transform` (gumball moves),
+`rep.live` (display-rep switches), `frame.real`, `render.error`. Penumbra events are wrapped as
+`Kind=Log, Source="penumbra"` (the domain kind in `Data.event`), since Penumbra's free-form `kind` doesn't map
+onto Canary's `TelemetryKind` enum. The tail baselines at the file's current end (this session's events only)
+and stops on agent dispose. `SessionAgentFactory.CreateRhinoAsync` now REGISTERS the session sink (it
+previously discarded it).
+
+**Still deferred to v2:**
+- The OTHER Rhino telemetry sources: Rhino command-line history + the Slop `LogHub` / `cpig_debug.log` tail.
 - `--file <path.gh>` / `--mech <path.kin.json>` shortcuts that pre-open a fixture in Rhino. Today the operator opens whatever they want from inside Rhino after the session arms.
 - Bring-Rhino-to-foreground hint at session-start so the operator doesn't have to alt-tab to find it.
 
@@ -87,7 +100,7 @@ Most code already exists. New work:
 1. **`Canary.Agent.Rhino` REPL hooks** — a way to receive a capture trigger from outside the test pipeline. Reuse the existing named-pipe RPC; add a `SessionCapture` action that takes a session dir + frame index and writes the PNG there.
 2. **`Canary.Core/Session/RhinoSessionRunner.cs`** — analogue of `QualiaSessionRunner` / `PenumbraSessionRunner` (see `src/Canary.Core/Session/`). Boots Rhino, attaches to the named pipe, runs the REPL.
 3. **`Canary.Harness` `session` verb** — extend the existing `session start --workload <w>` dispatch to handle `rhino`.
-4. **`Canary.UI.Avalonia` Sessions tab** — Rhino entry in the workload picker. Already exists; needs no change beyond having the runner exist.
+4. **`Canary.UI.Avalonia` Sessions tab** — Rhino entry in the workload picker. **(Fixed 2026-06-17: the v1 ship MISSED this — `SessionsLiveViewModel.SetWorkloads` filtered the picker to `qualia-cdp`/`penumbra-cdp` only, so the Sessions tab offered no rhino option even though the factory + CLI supported it. Now includes `"rhino"`.)**
 5. **Telemetry source.** Qualia/Penumbra get CDP Console + Log + Network. Rhino's analogue is the Rhino command history + the Slop log panel content. Need to decide whether to tail `C:\Repos\CPig\cpig_debug.log` and the Slop log panel into the session's `telemetry.ndjson`, or skip telemetry for v1.
 
 ## Out of scope (v1)

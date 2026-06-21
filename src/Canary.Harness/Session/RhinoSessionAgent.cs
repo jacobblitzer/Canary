@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Canary.Agent;
 using Canary.Config;
 using Canary.Orchestration;
+using Canary.Telemetry;
 
 namespace Canary.Harness.Session;
 
@@ -19,15 +20,26 @@ namespace Canary.Harness.Session;
 ///   process (matching the test-runner cleanup pattern).
 /// - No telemetry source yet (Rhino command-line + Slop log tail deferred to v2).
 /// </summary>
-internal sealed class RhinoSessionAgent : ICanaryAgent, IAsyncDisposable
+internal sealed class RhinoSessionAgent : ICanaryAgent, ITelemetryAware, IAsyncDisposable
 {
     private readonly Process _process;
     private readonly HarnessClient _client;
+    private PenumbraPreviewTelemetryTail? _penumbraTail;
 
     private RhinoSessionAgent(Process process, HarnessClient client)
     {
         _process = process;
         _client = client;
+    }
+
+    /// <summary>v2 telemetry source: tail Penumbra's in-Rhino preview NDJSON into the session sink so the
+    /// SESSION_REPORT captures scene.loaded (+tape/+grid, bounds), gl.field.transform (gumball moves),
+    /// rep.live (display-rep switches), frame.real, and render.error — the Rhino analogue of the CDP Console
+    /// stream the Qualia/Penumbra agents register. Tails from the file's current end (this session's events
+    /// only). No-op + harmless if the Penumbra plug-in isn't loaded / never renders (empty telemetry = signal).</summary>
+    public void RegisterTelemetrySink(ITelemetrySink sink)
+    {
+        try { _penumbraTail = PenumbraPreviewTelemetryTail.Start(sink); } catch { }
     }
 
     public static async Task<RhinoSessionAgent> CreateAsync(WorkloadConfig workload, CancellationToken ct)
@@ -76,6 +88,7 @@ internal sealed class RhinoSessionAgent : ICanaryAgent, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        try { _penumbraTail?.Dispose(); } catch { }
         try { _client.Dispose(); } catch { }
         if (!_process.HasExited)
         {

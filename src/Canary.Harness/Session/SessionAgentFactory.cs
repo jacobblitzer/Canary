@@ -28,11 +28,11 @@ public sealed class SessionAgentFactory : ISessionAgentFactory
     private static async Task<SessionAgentBundle> CreateRhinoAsync(
         WorkloadConfig workload, ITelemetrySink telemetrySink, CancellationToken ct)
     {
-        // v1 scope (2026-06-02): launch Rhino + connect the named-pipe agent.
-        // Telemetry source for Rhino (command-line history + Slop log tail)
-        // deferred to v2 — see docs/features/rhino-session.md.
-        _ = telemetrySink;
+        // Launch Rhino + connect the named-pipe agent, then register the session telemetry sink so the agent
+        // tails Penumbra's in-Rhino preview NDJSON into telemetry.ndjson (v2 telemetry source — Penumbra
+        // scene/move/rep/frame/error events; the Rhino-command-history + Slop-log-tail sources remain a follow-up).
         var agent = await RhinoSessionAgent.CreateAsync(workload, ct).ConfigureAwait(false);
+        agent.RegisterTelemetrySink(telemetrySink);
         return new SessionAgentBundle
         {
             Agent = agent,

@@ -19,3 +19,7 @@ nul
 
 # Per-machine Windows shortcuts (bake absolute paths — per-clone state)
 *.lnk
+
+# Agent-run validation/retry probes (per-session artifacts)
+.retry-*
+.compute-*.log

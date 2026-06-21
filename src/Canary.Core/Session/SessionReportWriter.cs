@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Canary.Session;
@@ -14,10 +16,10 @@ public static class SessionReportWriter
             JsonSerializer.Serialize(session, JsonOptions));
         AtomicWriteAllText(
             SessionPaths.ReportPath(sessionDir),
-            BuildMarkdown(session));
+            BuildMarkdown(session, sessionDir));
     }
 
-    public static string BuildMarkdown(SessionData s)
+    public static string BuildMarkdown(SessionData s, string? sessionDir = null)
     {
         var sb = new StringBuilder();
         sb.AppendLine("---");
@@ -79,7 +81,71 @@ public static class SessionReportWriter
                 sb.AppendLine();
             }
         }
+
+        // Penumbra preview telemetry (v2): events the Penumbra Rhino plug-in emitted during this session,
+        // tailed into telemetry.ndjson by RhinoSessionAgent — the Rhino analogue of the CDP Console stream
+        // (scene.loaded with +tape/+grid + bounds, gl.field.transform for gumball moves, rep.live for display-
+        // rep switches, frame.real, render.error). Lets the agent debug a hand-driven session from the report.
+        if (sessionDir != null)
+        {
+            sb.AppendLine("## Penumbra preview telemetry");
+            sb.AppendLine();
+            var events = ReadPenumbraEvents(SessionPaths.TelemetryPath(sessionDir));
+            if (events.Count == 0)
+            {
+                sb.AppendLine("_(no Penumbra preview events captured — the Penumbra Rhino plug-in wasn't loaded, or nothing rendered this session)_");
+            }
+            else
+            {
+                sb.AppendLine($"{events.Count} event(s) · full stream: [{SessionPaths.TelemetryNdjsonFileName}]({SessionPaths.TelemetryNdjsonFileName})");
+                sb.AppendLine();
+                sb.AppendLine("```");
+                const int max = 80;
+                int start = Math.Max(0, events.Count - max);
+                if (start > 0) sb.AppendLine($"… {start} earlier event(s) omitted; see {SessionPaths.TelemetryNdjsonFileName} …");
+                for (int i = start; i < events.Count; i++) sb.AppendLine(events[i]);
+                sb.AppendLine("```");
+            }
+            sb.AppendLine();
+        }
         return sb.ToString();
+    }
+
+    /// <summary>Read the Penumbra-sourced records from a session's telemetry.ndjson and format each as a
+    /// compact "HH:mm:ss [level] event payload" line for the SESSION_REPORT. Robust to partial/garbled lines.</summary>
+    private static List<string> ReadPenumbraEvents(string telemetryPath)
+    {
+        var lines = new List<string>();
+        if (!File.Exists(telemetryPath)) return lines;
+        string[] raw;
+        try { raw = File.ReadAllLines(telemetryPath); } catch { return lines; }
+        foreach (var line in raw)
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            try
+            {
+                if (JsonNode.Parse(line) is not JsonObject o) continue;
+                if (TryStr(o["source"]) != "penumbra") continue;
+                var data = o["data"] as JsonObject;
+                string evt = TryStr(data?["event"]) ?? "event";
+                string payload = data?["payload"]?.ToJsonString() ?? "";
+                if (payload.Length > 300) payload = payload.Substring(0, 300) + "…";
+                string level = TryStr(o["level"]) ?? "info";
+                string lvl = level == "info" ? "" : $"[{level}] ";
+                string ts = "";
+                var t = TryStr(o["t"]);
+                if (t != null && DateTime.TryParse(t, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dt))
+                    ts = dt.ToLocalTime().ToString("HH:mm:ss");
+                lines.Add($"{ts}  {lvl}{evt}  {payload}".TrimEnd());
+            }
+            catch { /* skip a garbled line */ }
+        }
+        return lines;
+    }
+
+    private static string? TryStr(JsonNode? node)
+    {
+        try { return node?.GetValue<string>(); } catch { return null; }
     }
 
     public static SessionData? TryReadJson(string sessionDir)

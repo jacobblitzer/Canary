@@ -348,3 +348,23 @@ Existing hooks the suite uses without modification:
 Run with `canary run --workload qualia --suite settings-resolver`. All
 13 are structural (no pixel-diff or VLM); they take a screenshot as a
 record-keeping marker but the verdict is JS-assertion-driven.
+
+## Solution document lifecycle (ADR 0039, 2026-06-17)
+
+Qualia gained an Open/Save document loop (a solution = a vault folder;
+`<name>.qualia.json` is its project file). C1 (core state) + C2 (Open)
+shipped; C3–C5 (Save / Save As / polish) queued. Two additive,
+read-only Qualia-side hooks expose the binding + dirty state so a suite
+can assert that opening a solution binds it and clears dirty, and that
+edits re-dirty it (the file IO itself is Tauri-gated, so drive the app
+and read these):
+
+- `__canaryGetCurrentSolution()` → `{ path, lastSavedAt } | null`
+  (null = unsaved/unbound graph; New / Import / demo leave it null).
+- `__canaryIsDirty()` → `boolean` (unsaved content edits since the last
+  load / clear / open / save; selection / scope-switch / sim-pause /
+  bulk-layout do NOT dirty — see ADR 0039).
+
+Both are thin wrappers over `EventStore.currentSolution` / `isDirty`.
+No wire-format change to existing hooks. A dedicated suite is not
+authored yet; these are here for when C3+ adds save-loop tests.

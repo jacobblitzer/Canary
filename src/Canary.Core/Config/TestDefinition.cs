@@ -21,15 +21,17 @@ public sealed class TestDefinition
     public TestSetup? Setup { get; set; }
 
     /// <summary>
-    /// "fresh" (default) launches a new app instance per test. "shared" allows
-    /// consecutive tests sharing the same workload + setup.file to run inside
-    /// one app instance — only the first test launches and opens the fixture;
-    /// subsequent tests reuse the running app and only run their actions.
-    /// Tests in "shared" mode should start their actions list with a cleanup
-    /// step (e.g. Slop Cleanup toggle pulse) so prior test state is wiped.
+    /// "shared" (DEFAULT) runs consecutive tests of the same workload + setup.file inside ONE app
+    /// instance — only the first test launches and opens the fixture; subsequent tests reuse the running
+    /// app and only run their actions. This is how suites should run: one Rhino, tests chained, fast.
+    /// Tests in "shared" mode MUST start their actions list with a cleanup step (e.g. a Slop Cleanup
+    /// toggle pulse) so prior test state is wiped.
+    /// "fresh" launches a new app instance per test — use ONLY for a test that holds process-global state
+    /// that can't be reset in-session (e.g. the Qualia breadcrumb nav). NOTE: a suite uses the single-launch
+    /// shared path only when ALL its tests are "shared"; one "fresh" test forces the whole suite per-test.
     /// </summary>
     [JsonPropertyName("runMode")]
-    public string RunMode { get; set; } = "fresh";
+    public string RunMode { get; set; } = "shared";
 
     [JsonPropertyName("recording")]
     public string Recording { get; set; } = string.Empty;

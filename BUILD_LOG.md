@@ -1,5 +1,37 @@
 # Build Log — Canary
 
+## 2026-06-17 — Rhino session telemetry: surface the real event name (phase) in SESSION_REPORT — SHIPPED
+
+Follow-up to the telemetry-capture ship below: the first session showed every Penumbra event as "Log" because the
+tail used Penumbra's coarse top-level `kind` ("Log") as the event label, while the real event is its `data.phase`
+("gl.scene.loaded", "rep.live", …). `PenumbraPreviewTelemetryTail.ParsePenumbraLine` now sets the captured record's
+`Data.event = data.phase` (falling back to `kind`), so the SESSION_REPORT reads the actual events. (Pairs with the
+Penumbra-side enrichment that adds rep + bounds to `gl.scene.loaded` + emits `rep.live` from the GLSL path.)
+`dotnet build Canary.sln -c Release` → 0 errors.
+
+## 2026-06-17 — Rhino session telemetry v2 (partial): capture Penumbra in-Rhino preview NDJSON — SHIPPED
+
+- **Date**: 2026-06-17
+- **Requested by**: operator — "oops there's no canary functionality for rhino. Build that into canary, while i run it by hand for now" (to debug the CPig.Rhino move + Penumbra-rep work via a Canary rhino session).
+- **Gap found**: (a) the UI **Sessions tab didn't even OFFER rhino** — `SessionsLiveViewModel.SetWorkloads` filtered the workload picker to `qualia-cdp`/`penumbra-cdp` only (the 2026-06-02 ship wired the factory `"rhino"` case + the CLI `--workload`, but missed this UI filter), so the operator saw "there's no rhino available for sessions". (b) Even via the CLI path, a rhino session's `telemetry.ndjson` was nearly empty — `RhinoSessionAgent` didn't implement `ITelemetryAware` and `SessionAgentFactory.CreateRhinoAsync` DISCARDED the session sink (`_ = telemetrySink`). So a hand-driven session captured no behavioral trace of what Penumbra rendered.
+- **Scope**:
+  - `SessionsLiveViewModel.SetWorkloads` (`src/Canary.UI.Avalonia/ViewModels/`) filter now includes `"rhino"` → the Sessions tab lists "Rhino 8". (The CLI `canary session start --workload rhino` already worked.)
+  - NEW `src/Canary.Core/Telemetry/PenumbraPreviewTelemetryTail.cs` — polling tail of `%LocalAppData%\Penumbra\preview\telemetry.ndjson` (the Penumbra Rhino plug-in's `NdjsonLog`); baselines at the file's current end (this session's events only), forwards each appended event to an `ITelemetrySink`. Penumbra's free-form `kind` (scene.loaded/frame.real/gl.field.transform/rep.live/render.error) doesn't map onto Canary's `TelemetryKind` enum → wrapped as `Kind=Log, Source="penumbra"` with the domain kind in `Data.event`, payload in `Data.payload`.
+  - `RhinoSessionAgent` now implements `ITelemetryAware`; `RegisterTelemetrySink` starts the tail, `DisposeAsync` stops it. `SessionAgentFactory.CreateRhinoAsync` registers the session sink (was discarding it).
+  - `SessionReportWriter.BuildMarkdown(s, sessionDir?)` renders a "Penumbra preview telemetry" section (last 80 penumbra events as `HH:mm:ss [level] event payload`) + links `telemetry.ndjson`. Optional `sessionDir` param → other callers unaffected.
+- **Status**: `dotnet build Canary.sln -c Release` → 0 errors.
+- **Operator gate**: `canary session start --workload rhino` → drive CPigSphere/CPigDisplay/move/CPigDisplayRep by hand → `q` → `SESSION_REPORT.md` now shows the Penumbra events (scene `+tape`/`+grid` + bounds, `gl.field.transform` on move, `rep.live` on CPigDisplayRep). Requires the Penumbra Rhino plug-in loaded (it writes the NDJSON). **Still v2**: Rhino command-history + Slop log-tail sources.
+
+## 2026-06-16 — runMode:shared is the DEFAULT + WaitForPenumbraFrame made relative — SHIPPED
+
+- **Date**: 2026-06-16
+- **Requested by**: operator — penumbra-glsl tests "ran one after another, in separate Rhinos; they should chain in the same Rhino. Canary has a way to do this — find it, and make sure this is how all suites run in the future."
+- **Scope**: `TestDefinition.RunMode` default `"fresh"` → `"shared"` (`src/Canary.Core/Config/TestDefinition.cs`). Every suite now chains in ONE app instance unless a test explicitly sets `"runMode": "fresh"`. The single-launch shared path engages only when ALL of a suite's tests are shared (`RunCommand.cs` dispatch, unchanged) — one `fresh` test still forces the whole suite per-test.
+- **Blast radius (mapped, zero regressions)**: 81 rhino tests were already explicit `shared`; 2 omitted rhino (smoke-test, salimon) + 95 omitted qualia tests are stateless → inherit shared safely; the only intentional `fresh` is `qualia-v4-breadcrumb-nested` (explicit, process-global nav state — untouched). The 2 `penumbra-glsl-*` tests were the only rhino `fresh` holdouts → flipped to `shared`.
+- **The blocker that had forced fresh**: the in-process GLSL frame-ready revision (`RealRevision`) is process-global and never reset, and `WaitForPenumbraFrame` gated absolutely (`target >= minRevision`, default 1) — so a chained test 2 passed INSTANTLY on test 1's stale revision and captured a stale frame. **Fix**: `HandleWaitForPenumbraFrame` (`src/Canary.Agent.Rhino/RhinoAgent.cs`) is now RELATIVE — it snapshots the revision on the first read and returns once it INCREASES; `minRevision` is deprecated/ignored (still parsed so old JSONs don't error). The progressive multi-frame render reliably pushes the revision past the baseline.
+- **Status**: `dotnet build Canary.sln -c Release` → 0 errors. Agent (Canary.Agent.Rhino) + harness + Core rebuilt. No test-data migration needed.
+- **Operator gate**: `canary run --workload rhino --suite penumbra-glsl` now runs both tests in ONE Rhino (restart Rhino first for the new agent + the A1/A2 Penumbra `.rhp`). Canary CLAUDE.md updated (Quick Reference runMode rule + the penumbra-glsl section).
+
 ## 2026-06-11 — BUG-0013 compute-smoke starvation fix (eventDrivenRender) — SHIPPED
 
 - **Date**: 2026-06-11

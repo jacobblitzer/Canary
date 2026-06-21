@@ -43,7 +43,7 @@
       "atTimeMs": 0,
       "source": "viewport",
       "mode": "capture",
-      "stabilizeMs": 4000,
+      "stabilizeMs": 10000,
       "tolerance": 0.05,
       "description": "Eight ray-marched CPig SDFs visible: 4 originals + 4 native-copied independent duplicates of each primitive type."
     }

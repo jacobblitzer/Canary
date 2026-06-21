@@ -87,7 +87,10 @@ public partial class SessionsLiveViewModel : ObservableObject
         Workloads.Clear();
         foreach (var w in workloads)
         {
-            if (w.AgentType is "qualia-cdp" or "penumbra-cdp")
+            // Workloads that support supervised sessions (match SessionAgentFactory's switch). Rhino was
+            // added to the factory + CLI in 2026-06-02 but this UI filter was missed, so the Sessions tab
+            // offered only the two CDP workloads ("no rhino available for sessions").
+            if (w.AgentType is "qualia-cdp" or "penumbra-cdp" or "rhino")
             {
                 Workloads.Add(new WorkloadOption { Name = w.Name, DisplayName = w.DisplayName });
             }

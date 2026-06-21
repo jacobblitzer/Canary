@@ -801,8 +801,11 @@ public sealed class RhinoAgent : ICanaryAgent
     {
         int timeoutMs = 120000;
         if (parameters.TryGetValue("timeoutMs", out var ts) && int.TryParse(ts, out var pt)) timeoutMs = pt;
-        long minRevision = 1;
-        if (parameters.TryGetValue("minRevision", out var ms) && long.TryParse(ms, out var pm)) minRevision = pm;
+        // minRevision is DEPRECATED + no longer gates. The wait is now RELATIVE: it snapshots the revision at
+        // action start and returns once the revision INCREASES past it. This makes the same action correct in a
+        // SHARED Rhino (chained tests) — test 2 waits for ITS OWN new frame instead of passing immediately on
+        // test 1's stale, process-global, never-reset revision. (Still parsed so old test JSONs don't error.)
+        parameters.TryGetValue("minRevision", out _);
         bool requireReal = true;
         if (parameters.TryGetValue("requireReal", out var rs) && bool.TryParse(rs, out var pr)) requireReal = pr;
 
@@ -823,6 +826,7 @@ public sealed class RhinoAgent : ICanaryAgent
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         string lastDiag = "(no frame state yet)";
+        long baseline = -1;   // revision snapshotted on the first read; we return once it INCREASES (relative gate)
         while (sw.ElapsedMilliseconds < timeoutMs)
         {
             var state = getFrameState.Invoke(null, null);
@@ -840,8 +844,9 @@ public sealed class RhinoAgent : ICanaryAgent
                     return new AgentResponse { Success = false, Message = "Penumbra viewer disabled by error: " + status };
 
                 long target = requireReal ? realRev : presRev;
-                if (target >= minRevision)
-                    return new AgentResponse { Success = true, Message = "Penumbra frame ready: " + lastDiag };
+                if (baseline < 0) baseline = target;        // first read: snapshot the starting revision
+                else if (target > baseline)                 // a NEW frame rendered past the baseline
+                    return new AgentResponse { Success = true, Message = $"Penumbra frame ready (baseline={baseline}): " + lastDiag };
             }
             RhinoApp.Wait();
             Thread.Sleep(100);
@@ -849,7 +854,7 @@ public sealed class RhinoAgent : ICanaryAgent
         return new AgentResponse
         {
             Success = false,
-            Message = $"Timed out ({timeoutMs}ms) waiting for Penumbra frame (minRevision={minRevision}, requireReal={requireReal}). Last: {lastDiag}"
+            Message = $"Timed out ({timeoutMs}ms) waiting for a NEW Penumbra frame past baseline={baseline} (requireReal={requireReal}). Last: {lastDiag}"
         };
     }
 

@@ -43,7 +43,7 @@
       "atTimeMs": 0,
       "source": "viewport",
       "mode": "capture",
-      "stabilizeMs": 4000,
+      "stabilizeMs": 10000,
       "tolerance": 0.05,
       "description": "Four ray-marched CPig SDFs visible at their MOVED positions (each translated +25 in X from authored)."
     }
