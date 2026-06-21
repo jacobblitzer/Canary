@@ -1,0 +1,38 @@
+{
+  "name": "cpig-bool-refactor-13-save-reopen-composite-frommesh",
+  "workload": "rhino",
+  "description": "BUG-0021 regression guard. Builds the same composite as test 11 (libfive sphere at -10,0,0 + mesh-distance sphere at 10,0,0, joined by CPigUnion), then SAVES the .3dm, closes the doc with -_New _None _EnterEnd, RE-OPENS the .3dm, and captures the viewport. Verifies Option A's recipe-only restore (drop of the D5b whole-composite VDB bake) preserves the structural 2-atom composite across the .3dm lifecycle. Pre-fix: the field restored as ONE collapsed VDB atom (pre-Option-3 fattened-block look). Post-fix: same 2 atoms as in-session. Telemetry to grep on review (workloads/rhino/results/.../telemetry.ndjson): cpig.restore.started (snapshotObjectCount), cpig.restore.applied (recipeOp=\"union\", worldNonIdentity, repOverride), cpig.restore.completed (restored=1, dropped=0, promoted=1), cpig.field.redisplay (live=1, fields[].recipeOp=\"union\"), gl.scene.loaded (atoms:2). FAILURE MODE the test catches: a regression returns BUG-0021 -> cpig.restore.dropped or gl.scene.loaded atoms:1 (one collapsed dense VDB). FIRST-BRING-UP NOTE: save/reopen macros need operator manual verification per docs/features/rhino-setup-commands-macros.md -- the -_New / -_Open exact step-by-step is not in the existing macro recipes. If the test crashes 'Pipe disconnected', the macro parked at a sub-prompt. After capture mode passes and operator approves, promote to pixel-diff in a follow-up commit. Temp .3dm path: C:/Users/Jacob/AppData/Local/Temp/canary_cpig_bug0021_test13.3dm (operator-machine local; portable form is a follow-up if test 13 graduates beyond this workstation).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigBakeResolution 32 _Enter" },
+    { "type": "RunCommand", "command": "_CPigSphere -10,0,0 8" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_MeshSphere 10,0,0 8 _Enter _Enter" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "-_SaveAs C:/Users/Jacob/AppData/Local/Temp/canary_cpig_bug0021_test13.3dm _Enter" },
+    { "type": "RunCommand", "command": "-_New _None _EnterEnd" },
+    { "type": "RunCommand", "command": "-_Open C:/Users/Jacob/AppData/Local/Temp/canary_cpig_bug0021_test13.3dm _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "phase8-frommesh-saved-reopened",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Same composite as test 11 (union of CPigSphere(-10,0,0,8) + CPigFromMesh(meshsphere 10,0,0,8)) but SAVED + REOPENED from .3dm. Expected: SDF still renders as 2 distinct atoms (crisp libfive sphere tape + dense mesh atlas brick) at their original positions. FAILURE MODE the test catches: the composite collapses to a single dense VDB atom on reopen (pre-fix BUG-0021 behavior -- D5b whole-composite VDB restore took precedence over recipe rebuild). Promote from capture -> pixel-diff after operator approves the captured baseline."
+    }
+  ]
+}
