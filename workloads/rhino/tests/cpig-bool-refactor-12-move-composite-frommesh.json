@@ -1,0 +1,35 @@
+{
+  "name": "cpig-bool-refactor-12-move-composite-frommesh",
+  "workload": "rhino",
+  "description": "REGRESSION GUARD for the 'wirebox moved, field didn't' bug (operator-reported 2026-06-20). Mirrors test 11's scene — _CPigSphere(-10,0,0 r=8) UNION _CPigFromMesh(_MeshSphere 10,0,0 r=8) — then issues _Move on the composite's wirebox (translate +50,0,0). The MOVE event fires CPigFieldWatcher.OnReplace → SetWorld(unionId, T(+50,0,0)) → RedisplayFields → 3MF export with per-field build-item transform = T → Penumbra importer applies per-LevelSet item.transform → per-atom xform = T → GLSL evalLeaf applies u_invXform[i] inside the function. Each leaf transforms independently, both with the same T, so both leaves of the union move together. Expected capture: the SDF (sphere∪mesh) rendered around (40, 0, 0)..(60, 0, 0) — i.e. SHIFTED in +X, not at the authored origin-centered position. Telemetry to grep on review: cpig.move.applied (translation=[50,0,0]), cpig.field.redisplay (fields[0].translation=[50,0,0]), gl.scene.loaded (atoms:2). If cpig.move.bail or cpig.move.exception fires, OnReplace short-circuited — the per-event payload pinpoints which check killed it (geometry-mismatch / plane-invalid / unknown-id / unhandled exception type+message+stack).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigBakeResolution 32 _Enter" },
+    { "type": "RunCommand", "command": "_CPigSphere -10,0,0 8" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_MeshSphere 10,0,0 8 _Enter _Enter" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 120000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 50,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "phase8-frommesh-moved",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Same union as test 11, but the composite wirebox is translated +50 in X via _Move BEFORE capture. The SDF should follow the wirebox to the moved position (sphere + mesh-distance lobes rendered ~around (40,0,0)..(60,0,0)). FAILURE MODE the test catches: the wirebox renders at the moved spot but the SDF stays at the authored origin (the operator-reported bug — CPigFieldWatcher.OnReplace silently failed for the composite)."
+    }
+  ]
+}

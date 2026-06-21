@@ -11,6 +11,9 @@
     "cpig-bool-refactor-06-offset",
     "cpig-bool-refactor-07-smooth",
     "cpig-bool-refactor-08-moved-operand",
-    "cpig-bool-refactor-09-three-operand-fold"
+    "cpig-bool-refactor-09-three-operand-fold",
+    "cpig-bool-refactor-10-phase8-mixed",
+    "cpig-bool-refactor-11-phase8-frommesh",
+    "cpig-bool-refactor-12-move-composite-frommesh"
   ]
 }
