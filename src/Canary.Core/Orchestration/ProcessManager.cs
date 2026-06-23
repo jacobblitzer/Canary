@@ -28,6 +28,15 @@ public sealed class ProcessManager
     {
         lock (_lock)
         {
+            // 2026-06-23 — pre-emptively kill node.exe children of each tracked process
+            // (typically Rhino) BEFORE killing the parent, so they die with their parent
+            // rather than become orphans we have to mop up. Operator opt-out:
+            // CANARY_DISABLE_ORPHAN_KILL=1.
+            foreach (var proc in _tracked)
+            {
+                try { if (!proc.HasExited) OrphanNodeCleaner.KillChildrenOf(proc.Id, "pre-killAll"); } catch { }
+            }
+
             foreach (var proc in _tracked)
             {
                 try
@@ -71,6 +80,11 @@ public sealed class ProcessManager
             }
 
             _tracked.Clear();
+
+            // Post-kill sweep — catches anything still orphaned (e.g., a Rhino that crashed
+            // earlier in this session before we could kill its children, or a node host whose
+            // parent PID was lost during tree-kill).
+            try { OrphanNodeCleaner.KillOrphans("post-killAll"); } catch { }
         }
     }
 

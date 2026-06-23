@@ -14,6 +14,12 @@ public static class AppLauncher
     /// </summary>
     public static Process Launch(WorkloadConfig config)
     {
+        // 2026-06-23 — pre-launch orphan sweep. Kills any node.exe processes whose parent
+        // is dead before we spawn the next Rhino. Catches the accumulating leak from prior
+        // sessions where Rhino was force-killed before its Penumbra node host could shut
+        // down (or just crashed). Operator opt-out: CANARY_DISABLE_ORPHAN_KILL=1.
+        try { OrphanNodeCleaner.KillOrphans("pre-launch"); } catch { }
+
         var startInfo = new ProcessStartInfo
         {
             FileName = config.AppPath,

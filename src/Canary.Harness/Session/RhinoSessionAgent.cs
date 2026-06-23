@@ -64,8 +64,12 @@ internal sealed class RhinoSessionAgent : ICanaryAgent, ITelemetryAware, IAsyncD
             client?.Dispose();
             if (launched != null && !launched.HasExited)
             {
+                // 2026-06-23 — error-path: agent setup failed. Kill node.exe children of the
+                // half-launched Rhino BEFORE killing it; sweep any orphans afterward.
+                try { Canary.Orchestration.OrphanNodeCleaner.KillChildrenOf(launched.Id, "create-error-path"); } catch { }
                 try { launched.Kill(entireProcessTree: true); } catch { }
                 launched.Dispose();
+                try { Canary.Orchestration.OrphanNodeCleaner.KillOrphans("create-error-path"); } catch { }
             }
         }
     }
@@ -92,9 +96,16 @@ internal sealed class RhinoSessionAgent : ICanaryAgent, ITelemetryAware, IAsyncD
         try { _client.Dispose(); } catch { }
         if (!_process.HasExited)
         {
+            // 2026-06-23 — kill node.exe children of THIS Rhino BEFORE killing it, so
+            // they die with their parent rather than orphan. Operator opt-out:
+            // CANARY_DISABLE_ORPHAN_KILL=1.
+            try { Canary.Orchestration.OrphanNodeCleaner.KillChildrenOf(_process.Id, "session-dispose"); } catch { }
             try { _process.Kill(entireProcessTree: true); } catch { }
             try { await _process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false); } catch { }
         }
         _process.Dispose();
+        // Post-kill sweep — catches anything still orphaned (e.g., the Rhino crashed
+        // earlier before we could call KillChildrenOf).
+        try { Canary.Orchestration.OrphanNodeCleaner.KillOrphans("session-dispose"); } catch { }
     }
 }
