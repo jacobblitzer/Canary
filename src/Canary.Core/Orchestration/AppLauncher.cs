@@ -27,6 +27,46 @@ public static class AppLauncher
             UseShellExecute = false,
         };
 
+        // 2026-06-23 — auto-resolve PENUMBRA_* env vars from the User-scope registry.
+        // Canary.UI inherits its env block at spawn time; if it was started before the
+        // operator updated PENUMBRA_HOST_DEV in the registry, the inherited (stale) value
+        // propagates to every Rhino Canary spawns -> Rhino's node host loads the wrong
+        // repo's main.ts -> wrong artifacts -> hours of debugging. Caught live in Canary
+        // session 20260623-150708-51d0. Reading the User reg + overriding here makes
+        // Canary's spawned Rhino always match a fresh Explorer launch, regardless of how
+        // stale Canary.UI's inherited env is. Operator opt-out:
+        // CANARY_USE_INHERITED_PENUMBRA_ENV=1 (intentional A/B testing of legacy env).
+        bool useInherited = string.Equals(
+            Environment.GetEnvironmentVariable("CANARY_USE_INHERITED_PENUMBRA_ENV"), "1",
+            StringComparison.OrdinalIgnoreCase);
+        if (!useInherited)
+        {
+            string[] penumbraVars = { "PENUMBRA_HOST_DEV", "PENUMBRA_USE_NATIVE_DLL", "PENUMBRA_PIPELINE_CACHE_DIR" };
+            foreach (var v in penumbraVars)
+            {
+                try
+                {
+                    string? userValue = Environment.GetEnvironmentVariable(v, EnvironmentVariableTarget.User);
+                    string? procValue = Environment.GetEnvironmentVariable(v);
+                    if (!string.IsNullOrEmpty(userValue))
+                    {
+                        if (!string.Equals(userValue, procValue ?? "", StringComparison.Ordinal))
+                        {
+                            startInfo.EnvironmentVariables[v] = userValue;
+                            Console.WriteLine($"[canary-env] override {v}: '{procValue ?? "(unset)"}' -> '{userValue}' (from User reg)");
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(procValue))
+                    {
+                        // User reg unset but proc has a value -> clear it to match user state.
+                        startInfo.EnvironmentVariables.Remove(v);
+                        Console.WriteLine($"[canary-env] clear {v}: was '{procValue}' (User reg is unset)");
+                    }
+                }
+                catch { }
+            }
+        }
+
         var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException($"Failed to start process: {config.AppPath}");
 
