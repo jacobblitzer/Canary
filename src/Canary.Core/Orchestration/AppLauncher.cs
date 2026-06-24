@@ -36,12 +36,33 @@ public static class AppLauncher
         // Canary's spawned Rhino always match a fresh Explorer launch, regardless of how
         // stale Canary.UI's inherited env is. Operator opt-out:
         // CANARY_USE_INHERITED_PENUMBRA_ENV=1 (intentional A/B testing of legacy env).
+        //
+        // 2026-06-24 — ENUMERATE the PENUMBRA_* env-var space instead of hardcoding a list.
+        // Original implementation hardcoded {HOST_DEV, USE_NATIVE_DLL, PIPELINE_CACHE_DIR}
+        // and silently failed to forward any later additions (HOST_FSM_TS, ALLOW_VERSION_SKEW,
+        // and future ones). The cascade-toggle bug recurring across 5+ sessions traced to
+        // PENUMBRA_HOST_FSM_TS not being in the hardcoded list. Now we discover the var space
+        // dynamically: every PENUMBRA_* var present in the User registry OR the current
+        // process env is considered. Adding a new Penumbra env var requires ZERO Canary
+        // changes. Cross-repo scope chosen deliberately (the `PENUMBRA_` prefix is the
+        // namespace boundary; no other project uses it).
         bool useInherited = string.Equals(
             Environment.GetEnvironmentVariable("CANARY_USE_INHERITED_PENUMBRA_ENV"), "1",
             StringComparison.OrdinalIgnoreCase);
         if (!useInherited)
         {
-            string[] penumbraVars = { "PENUMBRA_HOST_DEV", "PENUMBRA_USE_NATIVE_DLL", "PENUMBRA_PIPELINE_CACHE_DIR" };
+            var penumbraVars = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                foreach (var k in Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User).Keys)
+                    if (k is string s && s.StartsWith("PENUMBRA_", StringComparison.OrdinalIgnoreCase))
+                        penumbraVars.Add(s);
+                foreach (var k in Environment.GetEnvironmentVariables().Keys)
+                    if (k is string s && s.StartsWith("PENUMBRA_", StringComparison.OrdinalIgnoreCase))
+                        penumbraVars.Add(s);
+            }
+            catch { }
+            Console.WriteLine($"[canary-env] auto-resolve scanning {penumbraVars.Count} PENUMBRA_* var(s) from User reg + proc env");
             foreach (var v in penumbraVars)
             {
                 try
@@ -54,6 +75,12 @@ public static class AppLauncher
                         {
                             startInfo.EnvironmentVariables[v] = userValue;
                             Console.WriteLine($"[canary-env] override {v}: '{procValue ?? "(unset)"}' -> '{userValue}' (from User reg)");
+                        }
+                        else
+                        {
+                            // Already aligned; forward explicitly anyway so child sees it even if
+                            // the user-reg version was set AFTER Canary.UI started (rare belt-and-braces).
+                            startInfo.EnvironmentVariables[v] = userValue;
                         }
                     }
                     else if (!string.IsNullOrEmpty(procValue))

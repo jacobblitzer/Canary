@@ -37,10 +37,10 @@
 
 ## AppLauncher env auto-resolve
 
-- **Touching:** `src/Canary.Agent.Common/AppLauncher.cs` or any env-var Canary spawns child processes with
-- **Trace:** `AppLauncher.Launch` auto-resolves `PENUMBRA_HOST_DEV` / `PENUMBRA_USE_NATIVE_DLL` / `PENUMBRA_PIPELINE_CACHE_DIR` from User-scope registry into the spawned process env. This bypasses Canary.UI's inherited env (which may be stale from when Canary.UI started). Opt-out: `CANARY_USE_INHERITED_PENUMBRA_ENV=1`. Bug 0057's lesson — env-var inheritance in Windows.
-- **Why:** without auto-resolve, Canary tests run with whatever env Canary.UI started with — typically stale.
-- **Last bit:** 2026-06-24
+- **Touching:** `src/Canary.Core/Orchestration/AppLauncher.cs` or any env-var Canary spawns child processes with
+- **Trace:** `AppLauncher.Launch` ENUMERATES every `PENUMBRA_*` env var present in the User-scope registry OR the current process env, then forwards/overrides each into the spawned process env. **2026-06-24 — was a hardcoded 3-element list; recurring bug across 5+ sessions because every new `PENUMBRA_*` var (HOST_FSM_TS, ALLOW_VERSION_SKEW, etc.) silently failed to forward.** Now enumeration-based: adding a new Penumbra env var requires ZERO changes here. Opt-out: `CANARY_USE_INHERITED_PENUMBRA_ENV=1`. Console line `[canary-env] auto-resolve scanning N PENUMBRA_* var(s)` confirms the scan happened.
+- **Why:** without auto-resolve, Canary-spawned Rhino runs with whatever env Canary.UI started with — typically stale. The hardcoded-list trap meant new Penumbra features silently didn't activate in Canary tests.
+- **Last bit:** 2026-06-24 (enumeration-based; was hardcoded list before)
 
 ## OrphanNodeCleaner
 
