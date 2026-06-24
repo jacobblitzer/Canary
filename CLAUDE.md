@@ -2,6 +2,9 @@
 
 ## Project: Canary — Cross-Application Visual Regression Testing Harness
 
+### Before Any Work
+**Trap-tracker:** read [`CODE-TRACING-CHECKLIST.md`](CODE-TRACING-CHECKLIST.md) before any non-trivial change. Per `MultiVerse/SUPERVISOR.md` Discipline 6, also UPDATE the checklist when this session discovers a new load-bearing path.
+
 ### Quick Reference
 - **Build**: `dotnet build Canary.sln` (must be 0 errors, 0 warnings)
 - **Test**: `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`
