@@ -232,7 +232,7 @@ This repo is **infrastructure** — no formal release; milestone tags only (e.g.
 
 ### Skills available
 
-See [`MultiVerse/SKILLS.md`](../MultiVerse/SKILLS.md) for the canonical catalog. The `multiverse-supervisor` skill enforces [`MultiVerse/SUPERVISOR.md`](../MultiVerse/SUPERVISOR.md) at session start for any non-Conversation work.
+See [`MultiVerse/SKILLS.md`](../MultiVerse/SKILLS.md) for the canonical catalog. The `multiverse-supervisor` skill enforces [`MultiVerse/SUPERVISOR.md`](../MultiVerse/SUPERVISOR.md) at session start for any non-Conversation work. **Newest — Discipline 7 (ground before you assert / anti-roll-past):** before any consequential, multifactorial, or state-asserting answer or plan, verify each claim at the running source (T0 — the code path that executes, the flag's default value), not a doc status field or a subagent summary (T2); "exists / compiles / shipped" (≤T1) is never "is the live default" (T0); a contradiction is stop-and-resolve.
 
 ### Commit Messages
 Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`.
