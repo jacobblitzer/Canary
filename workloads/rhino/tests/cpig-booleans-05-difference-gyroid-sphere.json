@@ -1,22 +1,33 @@
-{
+﻿{
   "name": "cpig-booleans-05-difference-gyroid-sphere",
   "workload": "rhino",
-  "description": "Phase D4 boolean audit (B0) — CROSS-REP STRESS CASE + SIGN CHECK. Difference of a CPigGyroid (kept) and a tape sphere (subtracted) — should look like a gyroid lattice with a spherical bite carved out of its center. Per research §1.2 the difference is max(gyroid_tree, -(sphere_tree)) — the first picked is the minuend. Failure modes: the sphere is kept and the gyroid is subtracted (sign inverted — known operator complaint per B3), gyroid lattice topology missing in the carved region (AABB or evaluator bug), full viewport blank.",
+  "description": "Phase D4 boolean audit (B0) â€” CROSS-REP STRESS CASE + SIGN CHECK. Difference of a CPigGyroid (kept) and a tape sphere (subtracted) â€” should look like a gyroid lattice with a spherical bite carved out of its center. Per research Â§1.2 the difference is max(gyroid_tree, -(sphere_tree)) â€” the first picked is the minuend. Failure modes: the sphere is kept and the gyroid is subtracted (sign inverted â€” known operator complaint per B3), gyroid lattice topology missing in the carved region (AABB or evaluator bug), full viewport blank.",
   "runMode": "shared",
   "setup": {
     "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
     "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
-    "vlmDescription": "A 3D ray-marched signed-distance surface showing a gyroid lattice (interconnected saddle surfaces) with a SPHERICAL CAVITY carved out of its center — the lattice surrounds a hollow sphere-shaped void. NOT a smooth sphere with a bite, NOT a pure gyroid, NOT a blank viewport."
+    "vlmDescription": "A 3D ray-marched signed-distance surface showing a gyroid lattice (interconnected saddle surfaces) with a SPHERICAL CAVITY carved out of its center â€” the lattice surrounds a hollow sphere-shaped void. NOT a smooth sphere with a bite, NOT a pure gyroid, NOT a blank viewport."
   },
   "actions": [
     { "type": "RunCommand", "command": "_SelAll _Delete" },
-    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25" },
-    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25 50" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
     { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
     { "type": "RunCommand", "command": "_SelAll _CPigDifference" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
-    { "type": "RunCommand", "command": "_SelNone" }
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "-_4View _Enter" },
+    { "type": "RunCommand", "command": "-_MaxViewport" },
+    { "type": "RunCommand", "command": "-_SetView _World _Perspective" },
+    { "type": "RunCommand", "command": "-_Sphere 0,0,0 45" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_SelLast" },
+    { "type": "RunCommand", "command": "-_Zoom _Selected" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 35 _EnterEnd" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 50 _EnterEnd" },
+    { "type": "RunCommand", "command": "_Delete" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
   ],
   "checkpoints": [
     {
@@ -26,7 +37,7 @@
       "mode": "capture",
       "stabilizeMs": 5000,
       "tolerance": 0.05,
-      "description": "Difference(gyroid_lattice([-25,25]^3), sphere(0,0,0;r=10)) — gyroid with a spherical cavity carved out of its center. Operator confirms sign convention is correct."
+      "description": "Difference(gyroid_lattice([-25,25]^3), sphere(0,0,0;r=10)) â€” gyroid with a spherical cavity carved out of its center. Operator confirms sign convention is correct."
     }
   ]
 }

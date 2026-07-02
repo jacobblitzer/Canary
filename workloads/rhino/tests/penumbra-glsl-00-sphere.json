@@ -1,13 +1,13 @@
-{
+﻿{
   "name": "penumbra-glsl-00-sphere",
   "workload": "rhino",
-  "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C) — the STRUCTURAL (tape) render path + a shape POSITIVE CONTROL. Loads 54_penumbra_sphere.json via the Slop loader (a single Field Primitive sphere → CPig Penumbra Preview), sets the preview backend to GLSL, Build → CPig pushes a .3mf whose libfive primitive exports STRUCTURALLY (a compiled tape, not a voxel-bake) and renders in the in-process GLSL conduit. Pairs with penumbra-glsl-01-cpig-gyroid as a discrimination test: this one FAILS if the render is a lattice/blank (it must be a smooth sphere); the gyroid one FAILS if the render is a sphere (bug 0054). Together they prove the GLSL conduit renders the actual field shape on BOTH paths (tape here, dense grid there). PREVIEW DISCIPLINE: the Slop fixture sets preview:false on all field nodes so ONLY the Penumbra render appears in the viewport. ASSERTS: deterministic panel asserts (SlopSuccess / Connected / Status=Pushed / no FATAL). VISUAL: mode:capture — saves the candidate for manual review. VLM regression is wired but dormant (setup.vlm = ollama qwen2.5vl:7b + a sphere-vs-lattice vlmDescription) — re-enable by flipping the checkpoint mode back to vlm. Requires the Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID …BA200).",
+  "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C) â€” the STRUCTURAL (tape) render path + a shape POSITIVE CONTROL. Loads 54_penumbra_sphere.json via the Slop loader (a single Field Primitive sphere â†’ CPig Penumbra Preview), sets the preview backend to GLSL, Build â†’ CPig pushes a .3mf whose libfive primitive exports STRUCTURALLY (a compiled tape, not a voxel-bake) and renders in the in-process GLSL conduit. Pairs with penumbra-glsl-01-cpig-gyroid as a discrimination test: this one FAILS if the render is a lattice/blank (it must be a smooth sphere); the gyroid one FAILS if the render is a sphere (bug 0054). Together they prove the GLSL conduit renders the actual field shape on BOTH paths (tape here, dense grid there). PREVIEW DISCIPLINE: the Slop fixture sets preview:false on all field nodes so ONLY the Penumbra render appears in the viewport. ASSERTS: deterministic panel asserts (SlopSuccess / Connected / Status=Pushed / no FATAL). VISUAL: mode:capture â€” saves the candidate for manual review. VLM regression is wired but dormant (setup.vlm = ollama qwen2.5vl:7b + a sphere-vs-lattice vlmDescription) â€” re-enable by flipping the checkpoint mode back to vlm. Requires the Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID â€¦BA200).",
   "runMode": "shared",
   "setup": {
     "file": "fixtures/cpig_slop_loader.gh",
     "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
     "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
-    "vlmDescription": "A 3D ray-marched SDF surface drawn into the Rhino viewport: a single SMOOTH SPHERE — one solid round ball with a continuous, unbroken, shaded surface. The defining feature is one smooth closed spherical surface. It must NOT be a lattice; NOT a porous, maze-like, or gyroid structure; NOT have holes, passages, or repeating cells; NOT be an empty grey viewport."
+    "vlmDescription": "A 3D ray-marched SDF surface drawn into the Rhino viewport: a single SMOOTH SPHERE â€” one solid round ball with a continuous, unbroken, shaded surface. The defining feature is one smooth closed spherical surface. It must NOT be a lattice; NOT a porous, maze-like, or gyroid structure; NOT have holes, passages, or repeating cells; NOT be an empty grey viewport."
   },
   "actions": [
     { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
@@ -20,14 +20,25 @@
     { "type": "RunCommand", "command": "_PenumbraPreviewBackend _Glsl" },
     { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
     { "type": "WaitForGrasshopperSolution", "timeoutMs": 60000 },
-    { "type": "WaitForPenumbraFrame", "requireReal": true, "minRevision": 1, "timeoutMs": 180000 }
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "minRevision": 1, "timeoutMs": 110000 },
+    { "type": "RunCommand", "command": "-_4View _Enter" },
+    { "type": "RunCommand", "command": "-_MaxViewport" },
+    { "type": "RunCommand", "command": "-_SetView _World _Perspective" },
+    { "type": "RunCommand", "command": "-_Sphere 0,0,0 400" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_SelLast" },
+    { "type": "RunCommand", "command": "-_Zoom _Selected" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 35 _EnterEnd" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 50 _EnterEnd" },
+    { "type": "RunCommand", "command": "_Delete" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
   ],
   "checkpoints": [
     {
       "name": "glsl-cpig-sphere",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "vlm",
+      "mode": "capture",
       "stabilizeMs": 1500,
       "tolerance": 0.05
     }

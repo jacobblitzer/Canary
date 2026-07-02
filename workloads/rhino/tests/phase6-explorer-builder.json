@@ -1,0 +1,70 @@
+{
+  "name": "phase6-explorer-builder",
+  "workload": "rhino",
+  "description": "ONE-SHOT BUILDER (2026-07-02), not a regression test: authors the Phase-6 Explorer document (phase6-explorer.3dm) — 9 stations of CPig fields side by side for operator-attended A/B poking (see fixtures/phase6-explorer-RUNBOOK.md). Stations are built left-to-right at 120-unit spacing; each completed station is LOCKED so the next station's `_SelAll <boolean>` only sees its own operands (locked objects are not selectable); everything is unlocked before save. Difference stations S8/S9 keep their operands UNCONSUMED (F11: _CPigDifference phase-B pick is not scriptable — the operator runs those two live). Re-running requires deleting the saved .3dm first (dashed SaveAs would park on the overwrite prompt). Macro grammar per the 2026-07-02 command study: CPigGyroid/CPigTPMS end with GetBox corner→corner→HEIGHT; CPigTPMS leads with a type option keyword.",
+  "runMode": "fresh",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 120,0,0 10" },
+    { "type": "RunCommand", "command": "_CPigSphere 135,0,0 10" },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 240,0,0 10" },
+    { "type": "RunCommand", "command": "_CPigSphere 255,0,0 10" },
+    { "type": "RunCommand", "command": "_SelAll _CPigIntersection" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 360,0,0 10" },
+    { "type": "RunCommand", "command": "_CPigSphere 375,0,0 10" },
+    { "type": "RunCommand", "command": "_SelAll _CPigSmoothUnion 5" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 455,-25,-25 505,25,25 50" },
+    { "type": "RunCommand", "command": "_CPigSphere 510,0,0 12" },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 600,0,0 10" },
+    { "type": "RunCommand", "command": "_CPigSphere 615,0,0 10" },
+    { "type": "RunCommand", "command": "_CPigSphere 607,12,0 10" },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigTPMS _SchwarzP 30 1.5 695,-25,-25 745,25,25 50" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigSphere 840,0,0 12" },
+    { "type": "RunCommand", "command": "_CPigSphere 852,0,0 8" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 935,-25,-25 985,25,25 50" },
+    { "type": "RunCommand", "command": "_CPigSphere 960,0,0 10" },
+    { "type": "RunCommand", "command": "_SelAll _Lock" },
+
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_Unlock" },
+    { "type": "RunCommand", "command": "_CPigDisplay" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
+    { "type": "RunCommand", "command": "-_Zoom _Extents" },
+    { "type": "SaveDocument", "path": "C:/Repos/Canary/workloads/rhino/fixtures/phase6-explorer.3dm" }
+  ],
+  "checkpoints": [
+    {
+      "name": "phase6-explorer-built",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 3000,
+      "description": "Build-verification snapshot of the 9-station explorer document after one _CPigDisplay push. Not a regression checkpoint."
+    }
+  ]
+}

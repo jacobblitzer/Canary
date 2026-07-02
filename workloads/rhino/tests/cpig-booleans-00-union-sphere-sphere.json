@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "cpig-booleans-00-union-sphere-sphere",
   "workload": "rhino",
   "description": "Phase D4 (operator-attended boolean visual audit). Simplest cell of the matrix: Union of two overlapping CPig tape spheres. Sequence: _SelAll _Delete (doc hygiene) -> _CPigSphere 0,0,0 10 -> _CPigSphere 15,0,0 10 (overlap by 5 units along +x) -> _SelAll _CPigUnion (Union consumes both inputs and creates one composite field). WaitForPenumbraFrame between each op so a hang would Crash the test. Expected visual: a 'peanut' shape -- two spheres merged with a smooth-but-not-blended join at x=7.5. Failure modes to watch (per plan B0): wrong AABB scoping (one sphere clipped), wrong rendered scale, blank viewport (boolean compiled but didn't push).",
@@ -11,12 +11,23 @@
   "actions": [
     { "type": "RunCommand", "command": "_SelAll _Delete" },
     { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
-    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
     { "type": "RunCommand", "command": "_CPigSphere 15,0,0 10" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
     { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
-    { "type": "RunCommand", "command": "_SelNone" }
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "-_4View _Enter" },
+    { "type": "RunCommand", "command": "-_MaxViewport" },
+    { "type": "RunCommand", "command": "-_SetView _World _Perspective" },
+    { "type": "RunCommand", "command": "-_Sphere 0,0,0 45" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_SelLast" },
+    { "type": "RunCommand", "command": "-_Zoom _Selected" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 35 _EnterEnd" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 50 _EnterEnd" },
+    { "type": "RunCommand", "command": "_Delete" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
   ],
   "checkpoints": [
     {

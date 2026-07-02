@@ -37,6 +37,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperSetPanelText" => HandleGrasshopperSetPanelText(parameters),
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
+                    "SaveDocument" => HandleSaveDocument(parameters),
                     _ => new AgentResponse
                     {
                         Success = false,
@@ -193,6 +194,34 @@ public sealed class RhinoAgent : ICanaryAgent
             Success = result,
             Message = result ? $"Executed: {command}" : $"Command failed: {command}"
         };
+    }
+
+    /// <summary>Save the active document to a .3dm path via RhinoDoc.WriteFile — deterministic,
+    /// no command-line prompt to park on (the reason the `-_SaveAs` MACRO was unreliable). Creates
+    /// the target directory if missing. Param: path (absolute .3dm path).</summary>
+    private static AgentResponse HandleSaveDocument(Dictionary<string, string> parameters)
+    {
+        var doc = RhinoDoc.ActiveDoc;
+        if (doc == null) return new AgentResponse { Success = false, Message = "No active document." };
+        if (!parameters.TryGetValue("path", out var path) || string.IsNullOrWhiteSpace(path))
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'path'." };
+        try
+        {
+            var dir = System.IO.Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+            var opts = new global::Rhino.FileIO.FileWriteOptions();
+            bool ok = doc.WriteFile(path, opts);
+            return new AgentResponse
+            {
+                Success = ok && System.IO.File.Exists(path),
+                Message = ok ? $"Saved: {path}" : $"WriteFile returned false for {path}"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new AgentResponse { Success = false, Message = $"SaveDocument threw: {ex.Message}" };
+        }
     }
 
     private static AgentResponse HandleSetViewport(Dictionary<string, string> parameters)
@@ -808,6 +837,22 @@ public sealed class RhinoAgent : ICanaryAgent
         parameters.TryGetValue("minRevision", out _);
         bool requireReal = true;
         if (parameters.TryGetValue("requireReal", out var rs) && bool.TryParse(rs, out var pr)) requireReal = pr;
+        // quietMs (optional, default 0 = legacy first-new-frame behavior): converged-wait mode.
+        // After at least one new frame past the baseline, keep pumping RhinoApp idle (which is what
+        // drives the conduit's refine ramp) until the revision stops advancing for quietMs. The
+        // conduit is event-driven — at steady state it stops scheduling redraws — so "revision went
+        // quiet after progressing" IS convergence. Added 2026-07-02 (Phase 6 finding F8: captures
+        // fired on the FIRST post-push frame, which is the 30%-resolution motion frame, and the
+        // checkpoint stabilize sleep pumps nothing, so the viewport parked coarse in BOTH FSMs).
+        int quietMs = 0;
+        if (parameters.TryGetValue("quietMs", out var qs) && int.TryParse(qs, out var pq)) quietMs = pq;
+        // requireSteady (optional, default false): gate on TRUE convergence — the conduit publishes
+        // the last drawn frame's FSM state in FrameState.Status ("scene steady q=100% steps=192").
+        // Robust where quietMs is not: dense-path refinement can stall on async work longer than any
+        // quiet window, but Status only says "steady" once the FSM actually converged. This action
+        // pumps RhinoApp idle while polling, which is what drives the refine ramp forward.
+        bool requireSteady = false;
+        if (parameters.TryGetValue("requireSteady", out var ss) && bool.TryParse(ss, out var ps)) requireSteady = ps;
 
         System.Type? bridgeType = null;
         foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
@@ -827,6 +872,8 @@ public sealed class RhinoAgent : ICanaryAgent
         var sw = System.Diagnostics.Stopwatch.StartNew();
         string lastDiag = "(no frame state yet)";
         long baseline = -1;   // revision snapshotted on the first read; we return once it INCREASES (relative gate)
+        long lastSeen = -1;   // quietMs mode: last revision observed (quiet timer restarts on any advance)
+        var quietSw = new System.Diagnostics.Stopwatch();
         while (sw.ElapsedMilliseconds < timeoutMs)
         {
             var state = getFrameState.Invoke(null, null);
@@ -843,10 +890,93 @@ public sealed class RhinoAgent : ICanaryAgent
                 if (disabled)
                     return new AgentResponse { Success = false, Message = "Penumbra viewer disabled by error: " + status };
 
+                if (requireSteady)
+                {
+                    if (status != null && status.Contains(" steady"))
+                        return new AgentResponse { Success = true, Message = "Penumbra STEADY (converged last-drawn frame): " + lastDiag };
+                    // Diagnostic probe (2026-07-02 hang investigation): ground-truth the loop from
+                    // inside — thread identity, frame state per iteration, and whether the posted
+                    // redraws ever execute. %TEMP%\canary-steady-probe.log.
+                    try
+                    {
+                        System.IO.File.AppendAllText(
+                            System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canary-steady-probe.log"),
+                            DateTime.Now.ToString("HH:mm:ss.fff") + " loop tid=" + Thread.CurrentThread.ManagedThreadId + " " + lastDiag + Environment.NewLine);
+                    }
+                    catch { }
+                    // Drive the refine ramp: post a redraw to the UI thread, then pump. If this
+                    // handler IS the UI thread, Wait() processes the queued post; if it isn't, the
+                    // UI thread processes it on its own loop. Never call Views.Redraw() directly
+                    // cross-thread (blocks).
+                    try
+                    {
+                        RhinoApp.InvokeOnUiThread((System.Action)(() =>
+                        {
+                            try
+                            {
+                                // ACTIVE VIEW ONLY (2026-07-02 probe finding): Views.Redraw() repaints
+                                // every viewport, and the conduit's per-frame motion detector compares
+                                // consecutive draws' cameras — alternating viewport matrices read as
+                                // perpetual camera motion, so the FSM NEVER leaves 30%/40 coarse
+                                // (2,114-frame probe, quality never ramped). One viewport = one camera
+                                // = the ramp can complete. Same blind spot explains the operator's
+                                // "sphere doesn't appear until I pan" — file conduit-side.
+                                global::Rhino.RhinoDoc.ActiveDoc?.Views.ActiveView?.Redraw();
+                                System.IO.File.AppendAllText(
+                                    System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canary-steady-probe.log"),
+                                    DateTime.Now.ToString("HH:mm:ss.fff") + " redraw-exec tid=" + Thread.CurrentThread.ManagedThreadId + Environment.NewLine);
+                            }
+                            catch { }
+                        }));
+                    }
+                    catch { }
+                    RhinoApp.Wait();
+                    Thread.Sleep(150);
+                    continue;
+                }
+
                 long target = requireReal ? realRev : presRev;
-                if (baseline < 0) baseline = target;        // first read: snapshot the starting revision
-                else if (target > baseline)                 // a NEW frame rendered past the baseline
-                    return new AgentResponse { Success = true, Message = $"Penumbra frame ready (baseline={baseline}): " + lastDiag };
+                if (baseline < 0)
+                {
+                    baseline = target; lastSeen = target;   // first read: snapshot
+                    if (quietMs > 0) quietSw.Restart();     // quiet mode: timer runs from the start —
+                    // "no revision advance for quietMs WHILE THIS ACTION PUMPS RhinoApp idle" means the
+                    // FSM has nothing left to refine (already-steady scenes produce no frames at all;
+                    // gating the timer on a first new frame hangs on them — 2026-07-02 sphere crash).
+                }
+                else if (quietMs <= 0)
+                {
+                    if (target > baseline)                  // legacy: first new frame is enough
+                        return new AgentResponse { Success = true, Message = $"Penumbra frame ready (baseline={baseline}): " + lastDiag };
+                    // Same F10-family root cause as the steady wait (2026-07-02): the frame this
+                    // wait is waiting FOR requires a redraw, and nothing pumps one while the agent
+                    // holds this loop. Post an active-view redraw (proven mechanism from the
+                    // requireSteady path) so the just-pushed scene actually paints.
+                    try
+                    {
+                        RhinoApp.InvokeOnUiThread((System.Action)(() =>
+                        {
+                            try { global::Rhino.RhinoDoc.ActiveDoc?.Views.ActiveView?.Redraw(); } catch { }
+                        }));
+                    }
+                    catch { }
+                }
+                else
+                {
+                    if (target != lastSeen)                 // advancing (refine ramp / bakes) — restart quiet timer
+                    {
+                        lastSeen = target;
+                        quietSw.Restart();
+                    }
+                    else if (quietSw.ElapsedMilliseconds >= quietMs)
+                        return new AgentResponse
+                        {
+                            Success = true,
+                            Message = target > baseline
+                                ? $"Penumbra CONVERGED (baseline={baseline}, settled at rev={lastSeen} after {quietMs}ms quiet): " + lastDiag
+                                : $"Penumbra already steady (rev={lastSeen} unchanged for {quietMs}ms under idle pumping): " + lastDiag
+                        };
+                }
             }
             RhinoApp.Wait();
             Thread.Sleep(100);
@@ -854,7 +984,7 @@ public sealed class RhinoAgent : ICanaryAgent
         return new AgentResponse
         {
             Success = false,
-            Message = $"Timed out ({timeoutMs}ms) waiting for a NEW Penumbra frame past baseline={baseline} (requireReal={requireReal}). Last: {lastDiag}"
+            Message = $"Timed out ({timeoutMs}ms) waiting for a NEW Penumbra frame past baseline={baseline} (requireReal={requireReal}, quietMs={quietMs}). Last: {lastDiag}"
         };
     }
 

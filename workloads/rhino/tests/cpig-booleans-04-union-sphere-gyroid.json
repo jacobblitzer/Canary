@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "cpig-booleans-04-union-sphere-gyroid",
   "workload": "rhino",
-  "description": "Phase D4 boolean audit (B0) — CROSS-REP STRESS CASE (tape sphere + structural-clipped gyroid). Union of a tape sphere with a CPigGyroid (structural TPMS clipped to a box). Both operands are LIBFIVE -> Union stays structural per research §1.2 (LIBFIVE × LIBFIVE -> LIBFIVE). Expected: the gyroid lattice with an extra sphere bulge added on one side. Failure modes: scale mismatch (one operand rendered at very different size), AABB scoped to one operand (the other clipped at the boundary), sign-related artifacts.",
+  "description": "Phase D4 boolean audit (B0) â€” CROSS-REP STRESS CASE (tape sphere + structural-clipped gyroid). Union of a tape sphere with a CPigGyroid (structural TPMS clipped to a box). Both operands are LIBFIVE -> Union stays structural per research Â§1.2 (LIBFIVE Ã— LIBFIVE -> LIBFIVE). Expected: the gyroid lattice with an extra sphere bulge added on one side. Failure modes: scale mismatch (one operand rendered at very different size), AABB scoped to one operand (the other clipped at the boundary), sign-related artifacts.",
   "runMode": "shared",
   "setup": {
     "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
@@ -10,13 +10,24 @@
   },
   "actions": [
     { "type": "RunCommand", "command": "_SelAll _Delete" },
-    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25" },
-    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25 50" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
     { "type": "RunCommand", "command": "_CPigSphere 30,0,0 12" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
     { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 60000 },
-    { "type": "RunCommand", "command": "_SelNone" }
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "-_4View _Enter" },
+    { "type": "RunCommand", "command": "-_MaxViewport" },
+    { "type": "RunCommand", "command": "-_SetView _World _Perspective" },
+    { "type": "RunCommand", "command": "-_Sphere 0,0,0 45" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_SelLast" },
+    { "type": "RunCommand", "command": "-_Zoom _Selected" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 35 _EnterEnd" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 50 _EnterEnd" },
+    { "type": "RunCommand", "command": "_Delete" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
   ],
   "checkpoints": [
     {
@@ -26,7 +37,7 @@
       "mode": "capture",
       "stabilizeMs": 5000,
       "tolerance": 0.05,
-      "description": "Union(gyroid_lattice([-25,25]^3, period=20), sphere(30,0,0;r=12)) — a gyroid with a sphere bulge attached on +x. Both should render at correct scale."
+      "description": "Union(gyroid_lattice([-25,25]^3, period=20), sphere(30,0,0;r=12)) â€” a gyroid with a sphere bulge attached on +x. Both should render at correct scale."
     }
   ]
 }
