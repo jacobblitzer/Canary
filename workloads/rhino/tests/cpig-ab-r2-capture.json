@@ -1,0 +1,36 @@
+{
+  "name": "cpig-ab-r2-capture",
+  "workload": "rhino",
+  "description": "R2.1 Tier-2 A-side capture (MultiVerse/prompts/r2-cpig-core-split-2026-07-03.md section 1.3). Drives the managed chain (CPig.Rhino commands -> CPigFieldDocument.RedisplayFields -> CpigThreeMFExport.ExportMany -> Bridge PushThreeMF) through a 3-field scene plus a move, so every push overwrites the single-slot %TEMP%/CPig/RhinoDisplay/display.3mf with a multi-field 3MF that includes a NON-IDENTITY build-item placement after the move stanza (the ExportMany constraint: the single-field Export path executes zero Rhino.Geometry code and would hash-match even with a broken adapter). THE ARTIFACT OF RECORD IS display.3mf, NOT PIXELS: run CPig/scripts/ab_archive_watcher.py BEFORE this suite so each push's 3MF is archived per-overwrite (SHA256-deduped, share-violation retried); correlate archives with cpig.push.done seq + contentSha256 in the Penumbra NDJSON telemetry. Compare A-side vs B-side archives with CPig/scripts/hash_3mf_parts.py (per-part SHA256, p:UUID normalized in 3D/3dmodel.model only). Bake resolution pinned via _CPigBakeResolution (process-scoped, default 128) so A and B runs bake identically. Scene: sphere (libfive tape) + box at +30..+50 X (second distinct field) + gyroid clipped to the [-25..0]^3 box (third field), then _SelLast reselects the last-created gyroid IN THE SAME MACRO as _Move (gl.load.post.deselect kills selection between actions - the cpig-bool-refactor-12 pattern) and translates it +20 X. GATING (review finding, 2026-07-03): every mutating action gates on a requireReal-ONLY wait - the RELATIVE new-frame gate, the committed convention (cpig-bool-refactor-08/-12 move gates; repmatrix inter-action gates). requireReal proves the NEW push compiled+presented and the async gl.load.post.deselect already fired before the next action runs, which (a) keeps the _SelLast/_Move macro out of the deselect race and (b) re-establishes multi-second spacing between display.3mf overwrites so the archiver's 0.25s poll cannot straddle two of them. requireSteady is deliberately NOT used between actions: the agent's requireSteady branch (RhinoAgent.cs WaitForPenumbraFrame) returns on the FIRST poll whose last-drawn frame reads 'steady' with bakes drained and never reaches the relative revision gate (requireReal is ignored when requireSteady is set), so an inter-action steady wait can false-pass on the STALE previous scene during the 100-500ms async-compile window. The requireReal+requireSteady combo is reserved for the FINAL settle wait before the capture, matching the repmatrix convention. POST-RUN: reconcile archives against telemetry with CPig/scripts/ab_reconcile_archive.py (see the suite HOW TO RUN) so any archiver polling miss is a LOUD failure, not a silent hole in the A/B record. Checkpoint is mode:capture - no baseline, screenshot saved for manual review only. runMode shared. Requires Penumbra.Rhino + CPig.Rhino registered for auto-load and libpng16.dll present in the deployed native set (verified in %AppData%/Grasshopper/Libraries 2026-07-03; the repo staging at CPig/build/native/win-x64 is missing it).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "three distinct solid SDF shapes in one shaded viewport: a smooth sphere near the origin, a rectangular box off to one side, and a periodic gyroid lattice (interwoven smooth curved channels) filling a cube region offset from the sphere. NOT an empty grey viewport, NOT a single shape."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigBakeResolution 32 _Enter" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigBox 30,-10,-10 50,10,-10 50,10,10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 0,0,-25 0,0,0" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 20,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "ab-r2-final-scene",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Informational only - the A/B artifact of record is the archived display.3mf sequence, not this screenshot. Expected: sphere at origin, box at +30..+50 X, gyroid lattice cube shifted +20 X from its authored [-25..0]^3 position (the _Move stanza puts a non-identity placement into the hashed ExportMany path). If the gyroid renders at the AUTHORED position while its wirebox moved, that is the cpig-bool-refactor-12 regression, not an A/B issue."
+    }
+  ]
+}
