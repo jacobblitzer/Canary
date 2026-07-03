@@ -12,6 +12,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — `canary approve` per-suite bulk mode + D7 rep-matrix suite (R1.3, 2026-07-03)
+- `canary approve --workload <w> --suite <s>` (no `--test`) bulk-approves EVERY test listed in
+  `workloads/<w>/suites/<s>.json`, trying the suite-scoped results layout first and falling back
+  to the SHARED layout (`results/<test>/` — where all shared-runMode rhino suites write). Prints
+  each blessed checkpoint file per test; tests with no candidates are reported and skipped.
+  `--test` is now optional (at least one of `--test`/`--suite` required).
+  `BaselineManager.ApproveTestFiles` (additive) returns the blessed file names.
+- **D7 rep-matrix**: 24 generated `cpig-repmatrix-<type>-<rep>` tests —
+  (sphere|box|gyroid|mesh) × (auto|tape|atlasBaked|mesh|pointCloud|companionTape); the
+  `procedural` column is pruned (field-independent fbm debug rep, dispatch already locked by
+  cpig-fieldops-04). Degrade-by-design cells (dense field × tape → companion stand-in) are
+  kept deliberately. Generator: `scripts/gen_rep_matrix_tests.py` (idempotent). Aggregate
+  suite `cpig-display-matrix` (24 + D1 dense-rep guard + 4 scriptable boolean cells), all
+  capture-mode until the operator approves baselines (STOP-POINT R1.3), then checkpoints flip
+  capture→pixel-diff. Contact sheet: `scripts/gen_contact_sheet.py`.
+
 ### Changed — WaitForPenumbraFrame requireSteady now also requires bakes drained (R1.2, 2026-07-03)
 - The pinned reflection seam (`RhinoAgent.ReadFrameState`) additionally reads Penumbra's
   additive `FrameState.BakesOutstanding` (null-tolerant: older plugins lack the field; null =

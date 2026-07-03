@@ -1,0 +1,99 @@
+{
+  "name": "cpig-repmatrix-box-auto",
+  "workload": "rhino",
+  "description": "D7 rep-matrix cell (box x auto), R1.3 2026-07-03. Creates a structural tape box ([-12..12]^3), applies the deterministic solo-perspective camera recipe (decoy-sphere framing, cloned from cpig-booleans), then no rep change ('auto' is the fresh-field default), gates on steady+bakes-drained, captures. mode:capture until the operator approves baselines (STOP-POINT R1.3), then flips to pixel-diff. Degrade-by-design cells (dense field asked as tape -> companion stand-in) are kept deliberately: the documented fallback is the behavior to lock. Regenerate: scripts/gen_rep_matrix_tests.py.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 800,
+      "height": 600
+    },
+    "vlm": {
+      "provider": "ollama",
+      "model": "qwen2.5vl:7b"
+    },
+    "vlmDescription": "a solid ray-marched SDF cube with flat faces and sharp edges, drawn as a solid surface (the default representation). NOT an empty grey viewport."
+  },
+  "actions": [
+    {
+      "type": "RunCommand",
+      "command": "_SelAll _Delete"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigBox -12,-12,-12 12,12,-12 12,12,12"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 110000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_4View _Enter"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_MaxViewport"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_SetView _World _Perspective"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Sphere 0,0,0 45"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelLast"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _Selected"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_ViewportProperties _Lens 35 _EnterEnd"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_ViewportProperties _Lens 50 _EnterEnd"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_Delete"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "requireSteady": true,
+      "timeoutMs": 90000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-repmatrix-box-auto",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "box field rendered with the 'auto' per-field representation."
+    }
+  ]
+}

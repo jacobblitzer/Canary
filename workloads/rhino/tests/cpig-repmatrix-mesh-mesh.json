@@ -1,0 +1,147 @@
+{
+  "name": "cpig-repmatrix-mesh-mesh",
+  "workload": "rhino",
+  "description": "D7 rep-matrix cell (mesh x mesh), R1.3 2026-07-03. Creates a DENSE mesh-derived field (_CPigFromMesh of a MeshSphere r=10; voxel-bakes on export), applies the deterministic solo-perspective camera recipe (decoy-sphere framing, cloned from cpig-booleans), then select + 4x _CPigDisplayRep (cycle reaches 'mesh' from the fresh-field 'auto' default), gates on steady+bakes-drained, captures. mode:capture until the operator approves baselines (STOP-POINT R1.3), then flips to pixel-diff. Degrade-by-design cells (dense field asked as tape -> companion stand-in) are kept deliberately: the documented fallback is the behavior to lock. Regenerate: scripts/gen_rep_matrix_tests.py.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": {
+      "projection": "Perspective",
+      "displayMode": "Shaded",
+      "width": 800,
+      "height": 600
+    },
+    "vlm": {
+      "provider": "ollama",
+      "model": "qwen2.5vl:7b"
+    },
+    "vlmDescription": "a smooth ray-marched SDF ball derived from a mesh sphere, drawn as a coarse faceted marching-cubes shell, visibly polygonal. NOT an empty grey viewport."
+  },
+  "actions": [
+    {
+      "type": "RunCommand",
+      "command": "_SelAll _Delete"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_-MeshSphere 0,0,0 10"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelLast _CPigFromMesh"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 110000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelLast _Invert _Hide"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_4View _Enter"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_MaxViewport"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_SetView _World _Perspective"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Sphere 0,0,0 45"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelLast"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _Selected"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_ViewportProperties _Lens 35 _EnterEnd"
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_ViewportProperties _Lens 50 _EnterEnd"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_Delete"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigDisplayRep"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigDisplayRep"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigDisplayRep"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigDisplayRep"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "requireSteady": true,
+      "timeoutMs": 90000
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-repmatrix-mesh-mesh",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.05,
+      "description": "mesh field rendered with the 'mesh' per-field representation."
+    }
+  ]
+}
