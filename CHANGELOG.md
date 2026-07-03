@@ -12,6 +12,43 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Session flight recorder Phase A (2026-07-02)
+
+`canary session start --workload rhino` grew into a flight recorder (Phase A of
+`MultiVerse/prompts/canary-session-flight-recorder-2026-07-02.md` — Canary-only; the Penumbra-side
+Phase B lands after Penumbra V5 Phase 6 closes):
+
+- **`--file <abs path>`** — opens a document right after launch via the agent's `OpenFile`; path +
+  SHA256 recorded. Rhino workload only.
+- **`manifest.json` per session** (superset of `session.json`): opened file + hash, machine, Canary
+  version, app path + PID, the launcher's exact env decisions, session ref, exit record, and fields
+  harvested from Penumbra telemetry (`pluginGitSha`/`bundleGitSha`/`skewVerdict`; GPU identity once
+  Penumbra emits it). Written at start (v0), finalized at end. New `SessionManifestWriter`.
+- **Survivor-side death record**: the spawned Rhino PID is watched (`IProcessBackedAgent`); exit
+  before close-out → exit code + time + `diedUnexpectedly` into the manifest, a REPL notice, and a
+  report banner. Covers hard kills AND native GPU faults, which fire no in-process hooks.
+- **Capture markers**: each session capture samples Penumbra frame state immediately before AND
+  after the pixel grab (new one-shot agent action `GetPenumbraFrameState`, sharing ONE reflection
+  seam with `WaitForPenumbraFrame`) plus active view + view list — captures are attributable to the
+  FSM state they photographed (TOCTOU guard + F10 forensics).
+- **Telemetry rescue**: Penumbra truncates its global preview NDJSON on every plugin load; the
+  previous session's file is now copied aside before every Canary Rhino spawn (sessions → session
+  dir `telemetry-prior.ndjson`; test runs → capped `%LocalAppData%\Canary\telemetry-rescue\`).
+- **F7b fix — Rhino TEST runs record Penumbra telemetry**: `TestRunner` starts a
+  `PenumbraPreviewTelemetryTail` into the per-suite sink at both Rhino launch sites (per-suite
+  `telemetry.ndjson` was created but stayed 0 bytes for Rhino runs).
+- **`PENUMBRA_SESSION_REF`** injected per spawn via new `AppLauncher.LaunchWithEnv(config, extraEnv)`
+  — applied AFTER the PENUMBRA_* registry-alignment loop, which actively STRIPS process-only vars
+  (the silent-env trap class; see CODE-TRACING-CHECKLIST). Penumbra starts stamping telemetry
+  envelopes with it in flight-recorder Phase B.
+- **SESSION_REPORT.md**: manifest summary + Debug Pointers sections; per-capture `view= / frame:`
+  lines.
+
+Fixed in passing: `SupervisedSession.DisposeAsync` never disposed `IAsyncDisposable`-only agents
+(`RhinoSessionAgent`) — session dispose leaked the Rhino process (pre-existing; surfaced by review);
+a stale UI test asserting the pre-2026-06-02 sessions workload filter (rhino now included, matching
+the shipped filter).
+
 ### Added — Rhino session captures Penumbra in-Rhino preview telemetry (2026-06-17)
 
 A Canary Rhino supervised session (`canary session start --workload rhino`) now tails Penumbra's in-Rhino preview NDJSON (`%LocalAppData%\Penumbra\preview\telemetry.ndjson`) into the session's `telemetry.ndjson` and renders a "Penumbra preview telemetry" section in `SESSION_REPORT.md` — so a hand-driven CPig/Penumbra-in-Rhino session is debuggable from the report (`scene.loaded` +tape/+grid + bounds, `gl.field.transform` gumball moves, `rep.live` display-rep switches, `frame.real`, `render.error`). New `PenumbraPreviewTelemetryTail` (`src/Canary.Core/Telemetry/`); `RhinoSessionAgent` now implements `ITelemetryAware` (the factory previously discarded the Rhino session sink). The Rhino-command-history + Slop-log-tail telemetry sources remain deferred to v2. See `docs/features/rhino-session.md`.

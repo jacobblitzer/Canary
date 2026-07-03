@@ -37,6 +37,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperSetPanelText" => HandleGrasshopperSetPanelText(parameters),
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
+                    "GetPenumbraFrameState" => HandleGetPenumbraFrameState(parameters),
                     "SaveDocument" => HandleSaveDocument(parameters),
                     _ => new AgentResponse
                     {
@@ -854,20 +855,9 @@ public sealed class RhinoAgent : ICanaryAgent
         bool requireSteady = false;
         if (parameters.TryGetValue("requireSteady", out var ss) && bool.TryParse(ss, out var ps)) requireSteady = ps;
 
-        System.Type? bridgeType = null;
-        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            try { bridgeType = asm.GetType("Penumbra.Bridge.PenumbraBridge"); }
-            catch { bridgeType = null; }
-            if (bridgeType != null) break;
-        }
-        if (bridgeType == null)
-            return new AgentResponse { Success = false, Message = "Penumbra.Bridge not loaded — is the Penumbra plug-in installed and was PenumbraShow run first?" };
-
-        var getFrameState = bridgeType.GetMethod("GetFrameState",
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+        var getFrameState = ResolveGetFrameState(out var resolveError);
         if (getFrameState == null)
-            return new AgentResponse { Success = false, Message = "Penumbra.Bridge.GetFrameState not found (version mismatch?)." };
+            return new AgentResponse { Success = false, Message = resolveError ?? "Penumbra.Bridge.GetFrameState unavailable." };
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         string lastDiag = "(no frame state yet)";
@@ -876,15 +866,14 @@ public sealed class RhinoAgent : ICanaryAgent
         var quietSw = new System.Diagnostics.Stopwatch();
         while (sw.ElapsedMilliseconds < timeoutMs)
         {
-            var state = getFrameState.Invoke(null, null);
-            if (state != null)
+            var frame = ReadFrameState(getFrameState);
+            if (frame != null)
             {
-                var st = state.GetType();
-                long realRev = System.Convert.ToInt64(st.GetField("RealRevision").GetValue(state));
-                long presRev = System.Convert.ToInt64(st.GetField("PresentedRevision").GetValue(state));
-                bool disabled = System.Convert.ToBoolean(st.GetField("DisabledByError").GetValue(state));
-                var evalMode = st.GetField("EvalMode").GetValue(state) as string;
-                var status = st.GetField("Status").GetValue(state) as string;
+                long realRev = frame.RealRevision;
+                long presRev = frame.PresentedRevision;
+                bool disabled = frame.DisabledByError;
+                var evalMode = frame.EvalMode;
+                var status = frame.Status;
                 lastDiag = $"presented={presRev} real={realRev} evalMode={evalMode} status={status} disabled={disabled}";
 
                 if (disabled)
@@ -986,6 +975,122 @@ public sealed class RhinoAgent : ICanaryAgent
             Success = false,
             Message = $"Timed out ({timeoutMs}ms) waiting for a NEW Penumbra frame past baseline={baseline} (requireReal={requireReal}, quietMs={quietMs}). Last: {lastDiag}"
         };
+    }
+
+    /// <summary>Snapshot of Penumbra.Bridge.PenumbraBridge.GetFrameState() read via reflection.</summary>
+    private sealed class BridgeFrameState
+    {
+        public long RealRevision;
+        public long PresentedRevision;
+        public bool DisabledByError;
+        public string? EvalMode;
+        public string? Status;
+    }
+
+    /// <summary>
+    /// THE single reflection seam into Penumbra.Bridge.GetFrameState (pinned as one contract —
+    /// R1 audit-c). Every consumer (WaitForPenumbraFrame, GetPenumbraFrameState) resolves through
+    /// here; do not duplicate the assembly scan or the field reads elsewhere.
+    /// </summary>
+    private static System.Reflection.MethodInfo? ResolveGetFrameState(out string? error)
+    {
+        System.Type? bridgeType = null;
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try { bridgeType = asm.GetType("Penumbra.Bridge.PenumbraBridge"); }
+            catch { bridgeType = null; }
+            if (bridgeType != null) break;
+        }
+        if (bridgeType == null)
+        {
+            error = "Penumbra.Bridge not loaded — is the Penumbra plug-in installed and was PenumbraShow run first?";
+            return null;
+        }
+        var mi = bridgeType.GetMethod("GetFrameState",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+        if (mi == null)
+        {
+            error = "Penumbra.Bridge.GetFrameState not found (version mismatch?).";
+            return null;
+        }
+        error = null;
+        return mi;
+    }
+
+    private static BridgeFrameState? ReadFrameState(System.Reflection.MethodInfo getFrameState)
+    {
+        var state = getFrameState.Invoke(null, null);
+        if (state == null) return null;
+        var st = state.GetType();
+        return new BridgeFrameState
+        {
+            RealRevision = System.Convert.ToInt64(st.GetField("RealRevision").GetValue(state)),
+            PresentedRevision = System.Convert.ToInt64(st.GetField("PresentedRevision").GetValue(state)),
+            DisabledByError = System.Convert.ToBoolean(st.GetField("DisabledByError").GetValue(state)),
+            EvalMode = st.GetField("EvalMode").GetValue(state) as string,
+            Status = st.GetField("Status").GetValue(state) as string,
+        };
+    }
+
+    /// <summary>
+    /// One-shot, non-blocking frame-state + viewport read (flight-recorder Phase A): the session
+    /// capture path calls this immediately before AND after each pixel grab so a capture can be
+    /// tied to the exact FSM state it photographed. Always Success=true — absence of the Bridge
+    /// is reported in Data.bridge, because a missing Penumbra plug-in is itself evidence, not an
+    /// error that should abort a capture.
+    /// </summary>
+    private static AgentResponse HandleGetPenumbraFrameState(Dictionary<string, string> parameters)
+    {
+        var data = new Dictionary<string, string>();
+
+        // Rhino view identity — independent of Penumbra, always available (F10-class forensics:
+        // "which viewport was active when this was captured, and what views existed?").
+        try
+        {
+            var doc = RhinoDoc.ActiveDoc;
+            if (doc != null)
+            {
+                data["activeView"] = doc.Views.ActiveView?.ActiveViewport?.Name ?? "(none)";
+                var names = new List<string>();
+                foreach (var v in doc.Views)
+                {
+                    var n = v?.ActiveViewport?.Name;
+                    // Explicit null test: net48 reference assemblies lack IsNullOrEmpty's
+                    // NotNullWhen annotation, so the compiler can't narrow through it.
+                    if (n != null && n.Length > 0) names.Add(n);
+                }
+                data["views"] = string.Join(";", names);
+            }
+        }
+        catch { }
+
+        var getFrameState = ResolveGetFrameState(out var error);
+        if (getFrameState == null)
+        {
+            data["bridge"] = "unavailable";
+            return new AgentResponse { Success = true, Message = error ?? "Penumbra.Bridge not loaded.", Data = data };
+        }
+
+        BridgeFrameState? frame;
+        try { frame = ReadFrameState(getFrameState); }
+        catch (Exception ex)
+        {
+            data["bridge"] = "read-failed";
+            return new AgentResponse { Success = true, Message = $"GetFrameState read failed: {ex.Message}", Data = data };
+        }
+        if (frame == null)
+        {
+            data["bridge"] = "no-state";
+            return new AgentResponse { Success = true, Message = "GetFrameState returned null (no conduit active yet).", Data = data };
+        }
+
+        data["bridge"] = "ok";
+        data["realRevision"] = frame.RealRevision.ToString();
+        data["presentedRevision"] = frame.PresentedRevision.ToString();
+        data["disabledByError"] = frame.DisabledByError.ToString();
+        data["evalMode"] = frame.EvalMode ?? "";
+        data["status"] = frame.Status ?? "";
+        return new AgentResponse { Success = true, Message = "frame state read", Data = data };
     }
 
     private static AgentResponse HandleWaitForGrasshopperSolution(Dictionary<string, string> parameters)

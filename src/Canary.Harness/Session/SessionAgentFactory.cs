@@ -8,9 +8,16 @@ namespace Canary.Harness.Session;
 
 public sealed class SessionAgentFactory : ISessionAgentFactory
 {
+    public Task<SessionAgentBundle> CreateAndInitializeAsync(
+        string workloadConfigPath,
+        ITelemetrySink telemetrySink,
+        CancellationToken ct)
+        => CreateAndInitializeAsync(workloadConfigPath, telemetrySink, context: null, ct);
+
     public async Task<SessionAgentBundle> CreateAndInitializeAsync(
         string workloadConfigPath,
         ITelemetrySink telemetrySink,
+        SessionLaunchContext? context,
         CancellationToken ct)
     {
         var workload = await WorkloadConfig.LoadAsync(workloadConfigPath).ConfigureAwait(false);
@@ -18,7 +25,7 @@ public sealed class SessionAgentFactory : ISessionAgentFactory
         {
             "qualia-cdp" => await CreateQualiaAsync(workloadConfigPath, telemetrySink, ct).ConfigureAwait(false),
             "penumbra-cdp" => await CreatePenumbraAsync(workloadConfigPath, telemetrySink, ct).ConfigureAwait(false),
-            "rhino" => await CreateRhinoAsync(workload, telemetrySink, ct).ConfigureAwait(false),
+            "rhino" => await CreateRhinoAsync(workload, telemetrySink, context, ct).ConfigureAwait(false),
             _ => throw new InvalidOperationException(
                 $"Supervised sessions are not supported for agentType '{workload.AgentType}'. " +
                 "Supported: qualia-cdp, penumbra-cdp, rhino."),
@@ -26,17 +33,18 @@ public sealed class SessionAgentFactory : ISessionAgentFactory
     }
 
     private static async Task<SessionAgentBundle> CreateRhinoAsync(
-        WorkloadConfig workload, ITelemetrySink telemetrySink, CancellationToken ct)
+        WorkloadConfig workload, ITelemetrySink telemetrySink, SessionLaunchContext? context, CancellationToken ct)
     {
         // Launch Rhino + connect the named-pipe agent, then register the session telemetry sink so the agent
         // tails Penumbra's in-Rhino preview NDJSON into telemetry.ndjson (v2 telemetry source — Penumbra
         // scene/move/rep/frame/error events; the Rhino-command-history + Slop-log-tail sources remain a follow-up).
-        var agent = await RhinoSessionAgent.CreateAsync(workload, ct).ConfigureAwait(false);
+        var agent = await RhinoSessionAgent.CreateAsync(workload, context, ct).ConfigureAwait(false);
         agent.RegisterTelemetrySink(telemetrySink);
         return new SessionAgentBundle
         {
             Agent = agent,
             Url = null, // Rhino has no URL; the SESSION_REPORT header omits this row.
+            Launch = agent.LaunchInfo,
         };
     }
 

@@ -24,24 +24,29 @@ public static class SessionCommand
     {
         var workloadOpt = new Option<string>("--workload", "Workload to launch (qualia | penumbra | rhino).") { IsRequired = true };
         var urlOpt = new Option<string?>("--url", "URL override for the report header (defaults to the workload's Vite URL).");
+        var fileOpt = new Option<string?>("--file",
+            "Absolute path to a document to open right after launch (rhino workload only, e.g. a .3dm). " +
+            "Recorded in the session manifest so the session is debuggable from its folder alone.");
 
         var c = new Command("start", "Launch the workload under supervision + enter the capture REPL.")
         {
             workloadOpt,
             urlOpt,
+            fileOpt,
         };
 
         c.SetHandler(async ctx =>
         {
             var workload = ctx.ParseResult.GetValueForOption(workloadOpt)!;
             var url = ctx.ParseResult.GetValueForOption(urlOpt);
-            ctx.ExitCode = await RunStartAsync(workload, url, Program.CancellationToken).ConfigureAwait(false);
+            var file = ctx.ParseResult.GetValueForOption(fileOpt);
+            ctx.ExitCode = await RunStartAsync(workload, url, file, Program.CancellationToken).ConfigureAwait(false);
         });
 
         return c;
     }
 
-    private static async Task<int> RunStartAsync(string workload, string? urlOverride, CancellationToken ct)
+    private static async Task<int> RunStartAsync(string workload, string? urlOverride, string? filePath, CancellationToken ct)
     {
         var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
         var configPath = Path.Combine(workloadsDir, workload, "workload.json");
@@ -51,13 +56,37 @@ public static class SessionCommand
             return 1;
         }
 
+        if (filePath != null)
+        {
+            if (!string.Equals(workload, "rhino", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.Error.WriteLine("Error: --file is only supported for the rhino workload.");
+                return 1;
+            }
+            if (!Path.IsPathRooted(filePath))
+            {
+                // The spawned Rhino's working directory differs from ours — a relative path
+                // would silently resolve somewhere else.
+                Console.Error.WriteLine($"Error: --file must be an absolute path (got '{filePath}').");
+                return 1;
+            }
+            if (!File.Exists(filePath))
+            {
+                Console.Error.WriteLine($"Error: --file not found: {filePath}");
+                return 1;
+            }
+        }
+
         var factory = new SessionAgentFactory();
 
         Console.WriteLine($"[Canary] Starting supervised session for workload '{workload}'...");
         SupervisedSession session;
         try
         {
-            session = await SupervisedSession.StartAsync(workloadsDir, workload, configPath, factory, ct).ConfigureAwait(false);
+            session = await SupervisedSession.StartAsync(
+                workloadsDir, workload, configPath, factory,
+                filePath != null ? new SessionStartOptions { OpenFilePath = filePath } : null,
+                ct).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -75,6 +104,7 @@ public static class SessionCommand
         {
             Console.WriteLine();
             Console.WriteLine($"[supervised session armed] sessionId={session.SessionId} workload={workload} url={session.Url ?? "(unknown)"}");
+            if (filePath != null) Console.WriteLine($"   file: {filePath}");
             Console.WriteLine("   c = capture     a = capture + open in viewer     n = capture with note     q = end + write report");
             if (Console.IsInputRedirected)
                 Console.WriteLine("   (stdin is redirected — line-mode REPL: one command character per line)");
@@ -109,8 +139,17 @@ public static class SessionCommand
             return;
         }
 
+        bool exitNoticePrinted = false;
         while (!ct.IsCancellationRequested)
         {
+            // Flight-recorder death notice: kills and native crashes fire no in-process hooks in
+            // the target app, so the survivor (us) watches the process and tells the operator.
+            if (!exitNoticePrinted && session.ProcessExitNotice is { } notice)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"  [!] {notice}");
+                exitNoticePrinted = true;
+            }
             if (!Console.KeyAvailable)
             {
                 await Task.Delay(50, ct).ConfigureAwait(false);

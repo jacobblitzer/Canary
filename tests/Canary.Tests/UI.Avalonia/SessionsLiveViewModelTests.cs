@@ -68,10 +68,13 @@ public class SessionsLiveViewModelTests
         };
         vm.SetWorkloads("/tmp/x", workloads);
 
-        Assert.Equal(2, vm.Workloads.Count);
+        // Rhino sessions were added 2026-06-02 (SessionAgentFactory switch + this UI filter);
+        // this test had gone stale asserting the pre-rhino filter (found failing pre-existing
+        // on master during the flight-recorder Phase A branch, 2026-07-02).
+        Assert.Equal(3, vm.Workloads.Count);
         Assert.Contains(vm.Workloads, w => w.Name == "qualia");
         Assert.Contains(vm.Workloads, w => w.Name == "penumbra");
-        Assert.DoesNotContain(vm.Workloads, w => w.Name == "rhino");
+        Assert.Contains(vm.Workloads, w => w.Name == "rhino");
         Assert.NotNull(vm.SelectedWorkload);
     }
 

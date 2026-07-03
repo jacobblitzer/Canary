@@ -28,19 +28,33 @@
 - **Why:** macro failures look like Canary harness failures. They're not — they're prompt-state-leak failures.
 - **Last bit:** 2026-06-24
 
-## WaitForPenumbraFrame (reflection contract)
+## Penumbra frame-state reflection contract (WaitForPenumbraFrame + GetPenumbraFrameState)
 
-- **Touching:** `Canary.Agent.Rhino` `WaitForPenumbraFrame` action
-- **Trace:** reads `PenumbraBridge.GetFrameState()` via REFLECTION on public fields: `RealRevision`, `PresentedRevision`, `EvalMode`, `Status`, `DisabledByError`, `BakeLevel` (Phase 5 v1.1 addition). RENAMING any field on Penumbra's side silently breaks Canary at next test run — no compile error. Cross-repo contract listed in `Penumbra/spec/PEERS.md` (and Penumbra-perf equivalent).
+- **Touching:** `Canary.Agent.Rhino` `WaitForPenumbraFrame` or `GetPenumbraFrameState` actions
+- **Trace:** `RhinoAgent.ResolveGetFrameState` + `ReadFrameState` are THE single reflection seam
+  into `PenumbraBridge.GetFrameState()` (factored 2026-07-02, flight-recorder Phase A; do NOT
+  duplicate the assembly scan or field reads — audit-c pins one seam). Fields actually read:
+  `RealRevision`, `PresentedRevision`, `EvalMode`, `Status`, `DisabledByError` (the earlier
+  `BakeLevel` claim was stale — no such read exists in RhinoAgent.cs). Two consumers:
+  `WaitForPenumbraFrame` (blocking wait, quietMs/requireSteady gates) and
+  `GetPenumbraFrameState` (one-shot, feeds session capture markers + active-view/view-list).
+  RENAMING any field on Penumbra's side silently breaks Canary at next test run — no compile
+  error. Cross-repo contract listed in `Penumbra/spec/PEERS.md` (and Penumbra-perf equivalent).
 - **Why:** silent breakage. Renames need a coordinated cross-repo commit.
-- **Last bit:** 2026-06-24
+- **Last bit:** 2026-07-02 (seam factored + second consumer added; BakeLevel claim corrected)
 
 ## AppLauncher env auto-resolve
 
 - **Touching:** `src/Canary.Core/Orchestration/AppLauncher.cs` or any env-var Canary spawns child processes with
 - **Trace:** `AppLauncher.Launch` ENUMERATES every `PENUMBRA_*` env var present in the User-scope registry OR the current process env, then forwards/overrides each into the spawned process env. **2026-06-24 — was a hardcoded 3-element list; recurring bug across 5+ sessions because every new `PENUMBRA_*` var (HOST_FSM_TS, ALLOW_VERSION_SKEW, etc.) silently failed to forward.** Now enumeration-based: adding a new Penumbra env var requires ZERO changes here. Opt-out: `CANARY_USE_INHERITED_PENUMBRA_ENV=1`. Console line `[canary-env] auto-resolve scanning N PENUMBRA_* var(s)` confirms the scan happened.
 - **Why:** without auto-resolve, Canary-spawned Rhino runs with whatever env Canary.UI started with — typically stale. The hardcoded-list trap meant new Penumbra features silently didn't activate in Canary tests.
-- **Last bit:** 2026-06-24 (enumeration-based; was hardcoded list before)
+- **TRAP (2026-07-02):** the auto-resolve loop actively STRIPS any `PENUMBRA_*` var present only
+  in the process env but not the User registry ("clear to match user state"). A per-spawn var
+  (e.g. `PENUMBRA_SESSION_REF`) set via ordinary process env therefore NEVER reaches the child —
+  silently. The ONLY sanctioned route is `AppLauncher.LaunchWithEnv(config, extraEnv)`: entries
+  are applied AFTER the loop and exempt from the strip. `Launch(config)` remains the plain
+  equivalent. `LaunchResult.AppliedEnv` records every decision for the session manifest.
+- **Last bit:** 2026-07-02 (LaunchWithEnv/extraEnv bypass added; strip trap documented)
 
 ## OrphanNodeCleaner
 

@@ -9,17 +9,24 @@ namespace Canary.Session;
 public static class SessionReportWriter
 {
     public static void Write(string sessionDir, SessionData session)
+        => Write(sessionDir, session, manifest: null);
+
+    public static void Write(string sessionDir, SessionData session, SessionManifest? manifest)
     {
         Directory.CreateDirectory(sessionDir);
         AtomicWriteAllText(
             SessionPaths.SessionJsonPath(sessionDir),
             JsonSerializer.Serialize(session, JsonOptions));
+        if (manifest != null)
+        {
+            try { SessionManifestWriter.Write(sessionDir, manifest); } catch { }
+        }
         AtomicWriteAllText(
             SessionPaths.ReportPath(sessionDir),
-            BuildMarkdown(session, sessionDir));
+            BuildMarkdown(session, sessionDir, manifest));
     }
 
-    public static string BuildMarkdown(SessionData s, string? sessionDir = null)
+    public static string BuildMarkdown(SessionData s, string? sessionDir = null, SessionManifest? manifest = null)
     {
         var sb = new StringBuilder();
         sb.AppendLine("---");
@@ -27,6 +34,13 @@ public static class SessionReportWriter
         sb.AppendLine($"sessionId: {s.SessionId}");
         sb.AppendLine($"workload: {s.Workload}");
         if (!string.IsNullOrEmpty(s.Url)) sb.AppendLine($"url: {s.Url}");
+        if (!string.IsNullOrEmpty(s.OpenedFile)) sb.AppendLine($"openedFile: {s.OpenedFile}");
+        if (manifest?.SessionRef != null) sb.AppendLine($"sessionRef: {manifest.SessionRef}");
+        if (manifest is { ExitedBeforeCloseout: true })
+        {
+            sb.AppendLine($"exitedBeforeCloseout: true");
+            sb.AppendLine($"diedUnexpectedly: {(manifest.DiedUnexpectedly ? "true" : "false")}");
+        }
         sb.AppendLine($"startedAt: {s.StartedAtUtc:O}");
         if (s.EndedAtUtc.HasValue)
         {
@@ -41,6 +55,7 @@ public static class SessionReportWriter
         sb.AppendLine();
         sb.AppendLine($"# Supervised session — {s.Workload} ({s.StartedAtUtc:yyyy-MM-dd HH:mm})");
         sb.AppendLine();
+        AppendManifestSection(sb, s, manifest, sessionDir);
         sb.AppendLine("## Close-out notes");
         sb.AppendLine();
         sb.AppendLine(string.IsNullOrWhiteSpace(s.CloseoutNotes) ? "_(none)_" : s.CloseoutNotes);
@@ -59,6 +74,14 @@ public static class SessionReportWriter
                 var displaySlug = string.IsNullOrEmpty(c.Slug) ? "(no annotation)" : c.Slug;
                 sb.AppendLine($"### {c.Sequence:D3} — {c.CapturedAtUtc:HH:mm:ss} — {displaySlug}");
                 sb.AppendLine();
+                if (!string.IsNullOrEmpty(c.ActiveView) || !string.IsNullOrEmpty(c.FrameStatus))
+                {
+                    var bits = new List<string>();
+                    if (!string.IsNullOrEmpty(c.ActiveView)) bits.Add($"view={c.ActiveView}");
+                    if (!string.IsNullOrEmpty(c.FrameStatus)) bits.Add($"frame: {c.FrameStatus}");
+                    sb.AppendLine($"_{string.Join(" · ", bits)}_");
+                    sb.AppendLine();
+                }
                 var imageRel = !string.IsNullOrEmpty(c.AnnotatedPngFile)
                     ? $"{SessionPaths.CapturesSubdir}/{c.AnnotatedPngFile}"
                     : $"{SessionPaths.CapturesSubdir}/{c.PngFile}";
@@ -110,6 +133,63 @@ public static class SessionReportWriter
         }
         return sb.ToString();
     }
+
+    /// <summary>Session manifest summary + debug pointers (flight-recorder Phase A) — the first
+    /// thing a debugging agent reads: what ran, on what, with what env, and where the evidence is.</summary>
+    private static void AppendManifestSection(StringBuilder sb, SessionData s, SessionManifest? m, string? sessionDir)
+    {
+        if (m == null && sessionDir == null) return;
+
+        if (m != null)
+        {
+            sb.AppendLine("## Session manifest");
+            sb.AppendLine();
+            if (m.ExitedBeforeCloseout)
+            {
+                sb.AppendLine(m.DiedUnexpectedly
+                    ? $"> **⚠ App DIED before close-out** — exit code {m.ProcessExitCode} at {m.ProcessExitAtUtc:O}. The telemetry below runs up to the moment of death."
+                    : $"> App exited cleanly before close-out (exit 0 at {m.ProcessExitAtUtc:O}) — likely closed by the operator.");
+                sb.AppendLine();
+            }
+            sb.AppendLine("| Field | Value |");
+            sb.AppendLine("|---|---|");
+            if (m.SessionRef != null) sb.AppendLine($"| sessionRef (`PENUMBRA_SESSION_REF`) | `{m.SessionRef}` |");
+            if (m.OpenedFile != null) sb.AppendLine($"| opened file | `{m.OpenedFile}` |");
+            if (m.OpenedFileSha256 != null) sb.AppendLine($"| file sha256 | `{m.OpenedFileSha256}` |");
+            if (m.MachineName != null) sb.AppendLine($"| machine | {m.MachineName} |");
+            if (m.AppPath != null) sb.AppendLine($"| app | `{m.AppPath}` (pid {m.ProcessId?.ToString() ?? "?"}) |");
+            if (m.Harvested != null)
+            {
+                foreach (var kv in m.Harvested.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+                    sb.AppendLine($"| {kv.Key} (harvested) | `{kv.Value}` |");
+            }
+            else if (string.Equals(m.Workload, "rhino", StringComparison.OrdinalIgnoreCase))
+            {
+                sb.AppendLine("| harvested SHAs/GPU | _(none — no Penumbra scene push happened this session; SHAs arrive with the first push until the Phase B banner fix)_ |");
+            }
+            if (m.AppliedEnv is { Count: > 0 })
+            {
+                sb.AppendLine($"| launcher env decisions | {string.Join(", ", m.AppliedEnv.Select(kv => $"`{kv.Key}={Truncate(kv.Value, 60)}`"))} |");
+            }
+            sb.AppendLine();
+        }
+
+        if (sessionDir != null)
+        {
+            sb.AppendLine("## Debug pointers");
+            sb.AppendLine();
+            sb.AppendLine($"- Telemetry (this session): [{SessionPaths.TelemetryNdjsonFileName}]({SessionPaths.TelemetryNdjsonFileName})");
+            if (File.Exists(SessionPaths.TelemetryPriorPath(sessionDir)))
+                sb.AppendLine($"- Telemetry (PREVIOUS session, rescued pre-launch): [{SessionPaths.TelemetryPriorFileName}]({SessionPaths.TelemetryPriorFileName})");
+            if (File.Exists(SessionPaths.ManifestPath(sessionDir)))
+                sb.AppendLine($"- Machine-readable manifest: [{SessionPaths.ManifestFileName}]({SessionPaths.ManifestFileName})");
+            sb.AppendLine($"- Captures: [{SessionPaths.CapturesSubdir}/]({SessionPaths.CapturesSubdir}/)");
+            sb.AppendLine();
+        }
+    }
+
+    private static string Truncate(string s, int max)
+        => s.Length <= max ? s : s.Substring(0, max) + "…";
 
     /// <summary>Read the Penumbra-sourced records from a session's telemetry.ndjson and format each as a
     /// compact "HH:mm:ss [level] event payload" line for the SESSION_REPORT. Robust to partial/garbled lines.</summary>

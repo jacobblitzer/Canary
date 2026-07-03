@@ -5,6 +5,18 @@ using Canary.Config;
 namespace Canary.Orchestration;
 
 /// <summary>
+/// What <see cref="AppLauncher.LaunchWithEnv"/> actually did: the spawned process plus the exact
+/// env-var decisions applied to it (auto-resolved PENUMBRA_* overrides/clears + injected extras).
+/// Recorded into the session manifest so a debugging agent knows what env the child REALLY got.
+/// </summary>
+public sealed class LaunchResult
+{
+    public required Process Process { get; init; }
+    /// <summary>var name → value applied (or "(cleared)" when removed to match User-registry state).</summary>
+    public required IReadOnlyDictionary<string, string> AppliedEnv { get; init; }
+}
+
+/// <summary>
 /// Launches the target application and waits for the agent to become available.
 /// </summary>
 public static class AppLauncher
@@ -13,6 +25,16 @@ public static class AppLauncher
     /// Launch the target application as specified in the workload config.
     /// </summary>
     public static Process Launch(WorkloadConfig config)
+        => LaunchWithEnv(config, extraEnv: null).Process;
+
+    /// <summary>
+    /// Launch with per-spawn env injection (flight-recorder Phase A). <paramref name="extraEnv"/>
+    /// entries are applied AFTER the PENUMBRA_* auto-resolve loop and are EXEMPT from its
+    /// clear-to-match-User-registry rule — that loop actively STRIPS any PENUMBRA_* var present
+    /// only in the process env (see below), which is exactly wrong for a per-session value like
+    /// PENUMBRA_SESSION_REF that can never live in the machine-global User registry.
+    /// </summary>
+    public static LaunchResult LaunchWithEnv(WorkloadConfig config, IReadOnlyDictionary<string, string>? extraEnv)
     {
         // 2026-06-23 — pre-launch orphan sweep. Kills any node.exe processes whose parent
         // is dead before we spawn the next Rhino. Catches the accumulating leak from prior
@@ -20,6 +42,7 @@ public static class AppLauncher
         // down (or just crashed). Operator opt-out: CANARY_DISABLE_ORPHAN_KILL=1.
         try { OrphanNodeCleaner.KillOrphans("pre-launch"); } catch { }
 
+        var appliedEnv = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var startInfo = new ProcessStartInfo
         {
             FileName = config.AppPath,
@@ -74,6 +97,7 @@ public static class AppLauncher
                         if (!string.Equals(userValue, procValue ?? "", StringComparison.Ordinal))
                         {
                             startInfo.EnvironmentVariables[v] = userValue;
+                            appliedEnv[v] = userValue;
                             Console.WriteLine($"[canary-env] override {v}: '{procValue ?? "(unset)"}' -> '{userValue}' (from User reg)");
                         }
                         else
@@ -81,14 +105,34 @@ public static class AppLauncher
                             // Already aligned; forward explicitly anyway so child sees it even if
                             // the user-reg version was set AFTER Canary.UI started (rare belt-and-braces).
                             startInfo.EnvironmentVariables[v] = userValue;
+                            appliedEnv[v] = userValue;
                         }
                     }
                     else if (!string.IsNullOrEmpty(procValue))
                     {
                         // User reg unset but proc has a value -> clear it to match user state.
                         startInfo.EnvironmentVariables.Remove(v);
+                        appliedEnv[v] = "(cleared)";
                         Console.WriteLine($"[canary-env] clear {v}: was '{procValue}' (User reg is unset)");
                     }
+                }
+                catch { }
+            }
+        }
+
+        // Per-spawn injection LAST so it wins over (and is exempt from) the registry-alignment
+        // pass above. This is the only sanctioned way to hand the child a per-session var like
+        // PENUMBRA_SESSION_REF — setting it in Canary's own process env gets STRIPPED by the
+        // clear-to-match-user-state branch (flight-recorder verifier finding, 2026-07-02).
+        if (extraEnv != null)
+        {
+            foreach (var kv in extraEnv)
+            {
+                try
+                {
+                    startInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                    appliedEnv[kv.Key] = kv.Value;
+                    Console.WriteLine($"[canary-env] inject {kv.Key}='{kv.Value}' (per-spawn)");
                 }
                 catch { }
             }
@@ -97,7 +141,7 @@ public static class AppLauncher
         var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException($"Failed to start process: {config.AppPath}");
 
-        return process;
+        return new LaunchResult { Process = process, AppliedEnv = appliedEnv };
     }
 
     /// <summary>

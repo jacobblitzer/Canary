@@ -1,5 +1,29 @@
 # Build Log — Canary
 
+## 2026-07-02 — Session flight recorder Phase A — BUILT, unit-green, operator Gate A pending
+
+Phase A of `MultiVerse/prompts/canary-session-flight-recorder-2026-07-02.md`, on branch
+`desktop-canary-flight-recorder-a`. Scope: `--file` on `canary session start`; per-session
+`manifest.json` (+`SessionManifestWriter` with telemetry harvest); survivor-side death record
+(`IProcessBackedAgent`, Exited watch, REPL notice, report banner); capture markers (new
+`GetPenumbraFrameState` agent action; single reflection seam shared with `WaitForPenumbraFrame`);
+pre-spawn telemetry rescue (`PenumbraTelemetryRescue`, session dir + capped global dir); F7b
+(TestRunner tails Penumbra NDJSON into the per-suite sink at both Rhino launch sites);
+`AppLauncher.LaunchWithEnv` injected-env path carrying `PENUMBRA_SESSION_REF` (exempt from the
+registry-alignment strip). Two review-found fixes shipped with it: `SupervisedSession.DisposeAsync`
+never disposed IAsyncDisposable-only agents (leaked Rhino on session dispose — pre-existing), and
+`AttachAnnotation` would have wiped the new capture fields. One stale UI test corrected
+(sessions workload filter includes rhino since 2026-06-02; found failing pre-existing on master).
+`dotnet build Canary.sln` → 0 errors 0 warnings; `dotnet test --filter Category=Unit` → 315/315
+(6 new). Verification pipeline: 3 recon agents (breadth) + main-session region reads before
+implementation; 2 adversarial diff reviewers after (2 majors + 5 minors, all addressed or logged).
+**Gate A (operator-attended): session with `--file phase6-explorer.3dm` + a taskkill variant —
+NOT yet run** (agent-session Rhino launches flake per `canary_launch_from_session`; and the
+operator's Phase 6 STOP-POINT 6.2 soak is in progress — the smoke rides the next operator session).
+Residue: CanaryVersion records assembly informational version (no per-commit git SHA stamped at
+build — msbuild SourceRevisionId wiring is a follow-up); rescue cap eviction under >10 consecutive
+per-test runs noted in review (mitigated by empty-source skip + session-dir separation).
+
 ## 2026-06-17 — Rhino session telemetry: surface the real event name (phase) in SESSION_REPORT — SHIPPED
 
 Follow-up to the telemetry-capture ship below: the first session showed every Penumbra event as "Log" because the

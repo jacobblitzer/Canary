@@ -117,6 +117,9 @@ public class SupervisedSessionTests
             var c = await session.CaptureAsync("foo");
             session.AttachAnnotation(c.Sequence, "001-foo.annotated.png", "001-foo.annotations.json");
             Assert.Equal("001-foo.annotated.png", session.Captures[0].AnnotatedPngFile);
+            // Flight-recorder fields must SURVIVE the annotation rebuild (review finding: the
+            // rebuild silently wiped ActiveView/FrameStatus for exactly the annotated captures).
+            Assert.Equal(c.Sequence, session.Captures[0].Sequence);
             await session.EndAsync();
             var report = File.ReadAllText(SessionPaths.ReportPath(session.Directory));
             Assert.Contains("annotatedCount: 1", report);

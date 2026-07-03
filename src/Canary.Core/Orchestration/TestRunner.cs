@@ -120,6 +120,7 @@ public sealed class TestRunner
         Process? appProcess = null;
         HarnessClient? client = null;
         Task? watchdogTask = null;
+        PenumbraPreviewTelemetryTail? penumbraTail = null;
         var watchdogCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         bool appDead = false;
 
@@ -138,7 +139,7 @@ public sealed class TestRunner
         {
             // 1. Launch application
             _logger.Log($"Launching {workload.DisplayName}...");
-            appProcess = AppLauncher.Launch(workload);
+            appProcess = LaunchWorkloadApp(workload, out penumbraTail);
             _processManager.Track(appProcess);
 
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
@@ -380,12 +381,54 @@ public sealed class TestRunner
             }
             watchdogCts.Dispose();
             client?.Dispose();
+            penumbraTail?.Dispose();
         }
 
         result.Duration = sw.Elapsed;
         if (testDirSaved != null)
             await SavePerRunArtifactsAsync(result, workload, testDirSaved, startedUtc, DateTime.UtcNow).ConfigureAwait(false);
         return result;
+    }
+
+    /// <summary>
+    /// Launch the workload app; for Rhino workloads, also (a) stamp the spawn with a correlation
+    /// ref (PENUMBRA_SESSION_REF, via the launcher's injected-env path — the PENUMBRA_* auto-forward
+    /// STRIPS process-only vars) and (b) start tailing Penumbra's in-Rhino preview NDJSON into this
+    /// run's telemetry sink (flight-recorder Phase A / F7b — per-suite telemetry.ndjson was created
+    /// but never fed for Rhino test runs). Caller disposes the returned tail in its finally.
+    /// </summary>
+    private Process LaunchWorkloadApp(WorkloadConfig workload, out PenumbraPreviewTelemetryTail? penumbraTail)
+    {
+        penumbraTail = null;
+        bool isRhino = string.Equals(workload.AgentType, "rhino", StringComparison.OrdinalIgnoreCase);
+        Dictionary<string, string>? extraEnv = null;
+        string? spawnRef = null;
+        if (isRhino)
+        {
+            // Rescue the global Penumbra telemetry BEFORE the spawn truncates it (plugin load
+            // re-creates the file). Test runs rescue to the capped global dir; supervised
+            // sessions rescue into their own session dir instead (SupervisedSession.StartAsync)
+            // — rescuing here too would double-copy and churn the global cap.
+            try { PenumbraTelemetryRescue.RescueGlobal(); } catch { }
+            spawnRef = $"run-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid().ToString("N").Substring(0, 4)}";
+            extraEnv = new Dictionary<string, string> { ["PENUMBRA_SESSION_REF"] = spawnRef };
+        }
+        var launch = AppLauncher.LaunchWithEnv(workload, extraEnv);
+        if (isRhino)
+        {
+            try { penumbraTail = PenumbraPreviewTelemetryTail.Start(TelemetrySink); } catch { }
+            try
+            {
+                TelemetrySink.Write(new Canary.Telemetry.TelemetryRecord
+                {
+                    Kind = Canary.Telemetry.TelemetryKind.Log,
+                    Source = "canary-harness",
+                    Data = new { text = "rhino spawned", pid = launch.Process.Id, sessionRef = spawnRef },
+                });
+            }
+            catch { }
+        }
+        return launch.Process;
     }
 
     /// <summary>
@@ -466,13 +509,14 @@ public sealed class TestRunner
         Process? appProcess = null;
         HarnessClient? client = null;
         Task? watchdogTask = null;
+        PenumbraPreviewTelemetryTail? penumbraTail = null;
         var watchdogCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         bool appDead = false;
 
         try
         {
             _logger.Log($"Launching {workload.DisplayName} (shared session for {tests.Count} test(s))...");
-            appProcess = AppLauncher.Launch(workload);
+            appProcess = LaunchWorkloadApp(workload, out penumbraTail);
             _processManager.Track(appProcess);
 
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
@@ -647,6 +691,7 @@ public sealed class TestRunner
             }
             watchdogCts.Dispose();
             client?.Dispose();
+            penumbraTail?.Dispose();
         }
 
         _logger.LogSummary($"Results: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new");

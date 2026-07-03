@@ -9,6 +9,11 @@ public static class SessionPaths
     public const string ReportFileName = "SESSION_REPORT.md";
     public const string SessionJsonFileName = "session.json";
     public const string TelemetryNdjsonFileName = "telemetry.ndjson";
+    public const string ManifestFileName = "manifest.json";
+    // Pre-launch rescue copy of the GLOBAL Penumbra preview NDJSON: the Penumbra plug-in
+    // truncates %LocalAppData%\Penumbra\preview\telemetry.ndjson on every plugin load, so the
+    // PREVIOUS session's evidence survives only if copied here before this session's Rhino spawns.
+    public const string TelemetryPriorFileName = "telemetry-prior.ndjson";
 
     public static string GenerateSessionId(DateTime utcNow)
     {
@@ -35,6 +40,12 @@ public static class SessionPaths
 
     public static string TelemetryPath(string sessionDir)
         => Path.Combine(sessionDir, TelemetryNdjsonFileName);
+
+    public static string ManifestPath(string sessionDir)
+        => Path.Combine(sessionDir, ManifestFileName);
+
+    public static string TelemetryPriorPath(string sessionDir)
+        => Path.Combine(sessionDir, TelemetryPriorFileName);
 
     public static string CapturePngFile(int sequence, DateTime utcNow, string? slug)
         => $"{sequence:D3}-{utcNow:HH-mm-ss}{SlugSuffix(slug)}.png";
