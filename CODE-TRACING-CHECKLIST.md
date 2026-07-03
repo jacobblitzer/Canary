@@ -35,13 +35,17 @@
   into `PenumbraBridge.GetFrameState()` (factored 2026-07-02, flight-recorder Phase A; do NOT
   duplicate the assembly scan or field reads — audit-c pins one seam). Fields actually read:
   `RealRevision`, `PresentedRevision`, `EvalMode`, `Status`, `DisabledByError` (the earlier
-  `BakeLevel` claim was stale — no such read exists in RhinoAgent.cs). Two consumers:
-  `WaitForPenumbraFrame` (blocking wait, quietMs/requireSteady gates) and
-  `GetPenumbraFrameState` (one-shot, feeds session capture markers + active-view/view-list).
+  `BakeLevel` claim was stale — no such read exists in RhinoAgent.cs), plus `BakesOutstanding`
+  as the ONLY null-tolerant read (additive 2026-07-03, Penumbra bug 0058/R1.2 — `GetField` may
+  return null on older plugins; null = "unknown", never coerce to 0 for gating). `requireSteady`
+  now gates on Status containing " steady" AND `BakesOutstanding` null-or-0 (bake-complete
+  capture gate). Two consumers: `WaitForPenumbraFrame` (blocking wait, quietMs/requireSteady
+  gates) and `GetPenumbraFrameState` (one-shot, feeds session capture markers +
+  active-view/view-list; emits `bakesOutstanding` = number or "n/a").
   RENAMING any field on Penumbra's side silently breaks Canary at next test run — no compile
   error. Cross-repo contract listed in `Penumbra/spec/PEERS.md` (and Penumbra-perf equivalent).
 - **Why:** silent breakage. Renames need a coordinated cross-repo commit.
-- **Last bit:** 2026-07-02 (seam factored + second consumer added; BakeLevel claim corrected)
+- **Last bit:** 2026-07-03 (BakesOutstanding null-tolerant read + requireSteady bake gate, R1.2)
 
 ## AppLauncher env auto-resolve
 

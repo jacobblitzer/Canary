@@ -874,15 +874,22 @@ public sealed class RhinoAgent : ICanaryAgent
                 bool disabled = frame.DisabledByError;
                 var evalMode = frame.EvalMode;
                 var status = frame.Status;
-                lastDiag = $"presented={presRev} real={realRev} evalMode={evalMode} status={status} disabled={disabled}";
+                lastDiag = $"presented={presRev} real={realRev} evalMode={evalMode} status={status} disabled={disabled} bakes={(frame.BakesOutstanding?.ToString() ?? "n/a")}";
 
                 if (disabled)
                     return new AgentResponse { Success = false, Message = "Penumbra viewer disabled by error: " + status };
 
                 if (requireSteady)
                 {
-                    if (status != null && status.Contains(" steady"))
-                        return new AgentResponse { Success = true, Message = "Penumbra STEADY (converged last-drawn frame): " + lastDiag };
+                    // Bake-complete gate (R1.2, Penumbra bug 0058): "steady" alone means the FSM's
+                    // quality ramp converged — cascade refinement can still be landing bricks (or
+                    // silently failing), which is exactly the state the 0058 matrix photographed.
+                    // Require BakesOutstanding==0 too, when the plugin reports it; null = plugin
+                    // predates the additive FrameState field → fall back to steady-only (old
+                    // behavior, no false failure against an older Penumbra).
+                    bool bakesDone = frame.BakesOutstanding == null || frame.BakesOutstanding == 0;
+                    if (status != null && status.Contains(" steady") && bakesDone)
+                        return new AgentResponse { Success = true, Message = "Penumbra STEADY (converged last-drawn frame, bakes drained): " + lastDiag };
                     // Diagnostic probe (2026-07-02 hang investigation): ground-truth the loop from
                     // inside — thread identity, frame state per iteration, and whether the posted
                     // redraws ever execute. %TEMP%\canary-steady-probe.log.
@@ -985,6 +992,10 @@ public sealed class RhinoAgent : ICanaryAgent
         public bool DisabledByError;
         public string? EvalMode;
         public string? Status;
+        /// <summary>Cascade bakes still expected to land (Penumbra FrameState.BakesOutstanding,
+        /// additive 2026-07-03 / bug 0058). Null = the loaded plugin predates the field —
+        /// consumers must treat null as "unknown", NOT as 0 or as a failure.</summary>
+        public long? BakesOutstanding;
     }
 
     /// <summary>
@@ -1022,6 +1033,10 @@ public sealed class RhinoAgent : ICanaryAgent
         var state = getFrameState.Invoke(null, null);
         if (state == null) return null;
         var st = state.GetType();
+        // BakesOutstanding is ADDITIVE (2026-07-03): older Penumbra plugins don't have the field,
+        // so its absence is a valid state (null), not an error. All other fields are the frozen
+        // pre-existing contract and stay hard reads.
+        var bakesField = st.GetField("BakesOutstanding");
         return new BridgeFrameState
         {
             RealRevision = System.Convert.ToInt64(st.GetField("RealRevision").GetValue(state)),
@@ -1029,6 +1044,7 @@ public sealed class RhinoAgent : ICanaryAgent
             DisabledByError = System.Convert.ToBoolean(st.GetField("DisabledByError").GetValue(state)),
             EvalMode = st.GetField("EvalMode").GetValue(state) as string,
             Status = st.GetField("Status").GetValue(state) as string,
+            BakesOutstanding = bakesField != null ? System.Convert.ToInt64(bakesField.GetValue(state)) : (long?)null,
         };
     }
 
@@ -1090,6 +1106,8 @@ public sealed class RhinoAgent : ICanaryAgent
         data["disabledByError"] = frame.DisabledByError.ToString();
         data["evalMode"] = frame.EvalMode ?? "";
         data["status"] = frame.Status ?? "";
+        // "n/a" = plugin predates the additive BakesOutstanding field (bug 0058 / R1.2).
+        data["bakesOutstanding"] = frame.BakesOutstanding?.ToString() ?? "n/a";
         return new AgentResponse { Success = true, Message = "frame state read", Data = data };
     }
 

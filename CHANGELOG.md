@@ -12,6 +12,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed — WaitForPenumbraFrame requireSteady now also requires bakes drained (R1.2, 2026-07-03)
+- The pinned reflection seam (`RhinoAgent.ReadFrameState`) additionally reads Penumbra's
+  additive `FrameState.BakesOutstanding` (null-tolerant: older plugins lack the field; null =
+  unknown, gate falls back to steady-only). `requireSteady` succeeds only when Status contains
+  " steady" AND `BakesOutstanding` is null-or-0 — closes the bug-0058 capture-vs-bake-completion
+  race (captures fired at FSM-steady while cascade bakes were still landing/erroring).
+  `GetPenumbraFrameState` emits `bakesOutstanding` (number or "n/a").
+- The 6 `cpig-fieldops` tests adopted a final `requireSteady: true` pre-capture gate
+  (90s timeout), matching the tests that already had one.
+
 ### Added — Session flight recorder Phase A (2026-07-02)
 
 `canary session start --workload rhino` grew into a flight recorder (Phase A of
