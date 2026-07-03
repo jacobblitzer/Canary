@@ -12,6 +12,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — GetFrameState pinned-contract drift test (R1.4, 2026-07-03)
+- `tests/Canary.Tests/Contracts/FrameStateContractTests.cs`: (1) source-parses the sibling
+  Penumbra checkout's `PenumbraBridge.cs` and fails if any PINNED FrameState field (7 incl.
+  `BakesOutstanding`) is missing — skips only when the sibling checkout is entirely absent;
+  a present-but-unparseable file FAILS LOUD (contract anchor moved); (2) fails if RhinoAgent
+  grows a `GetField("…")` read outside the pinned set. Pin mirror: Penumbra
+  `spec/PEERS.md` § GetFrameState.
+
 ### Changed — R1.3 CLOSED: baselines approved, suites can now FAIL (2026-07-03)
 - Operator approved 23/29 `cpig-display-matrix` baselines (STOP-POINT R1.3). 19 checkpoints
   flipped capture→pixel-diff at tolerance **0.005** (0.05 was decorative: a 20% sphere-radius
