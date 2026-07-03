@@ -1,5 +1,19 @@
 # Phase-6 Explorer — operator runbook (2026-07-02)
 
+> **ADDENDUM (2026-07-02 evening — post-FLIP, flight-recorder Phase A live): the A/B registry
+> procedure below is SUPERSEDED for the 6.2 soak.** STOP-POINT 6.1 was signed off on attended
+> evidence; the §3 FLIP shipped (defaults ON when unset — registry vars now redundant); bug 0058
+> was downgraded (capture-timing class, does not reproduce attended). For the soak you run ONE
+> session in your normal config, no registry flips:
+> `canary session start --workload rhino --file C:\Repos\Canary\workloads\rhino\fixtures\phase6-explorer.3dm`
+> (the new `--file` opens the doc for you — skip the manual `_Open`; still run `_CPigDisplay`
+> after it loads, then walk the stations). **Expectations updated:** S1–S6, S8, S9 should all
+> look CORRECT (peanut / lens / fillet / lattice+bulge / cloverleaf / bites); S7 stays the soft
+> ball (flag-INDEPENDENT dense-bake defect, tracked separately). Anything else wrong = say so
+> before signing off 6.2; fall back with `PENUMBRA_USE_NATIVE_DLL=0` / `PENUMBRA_HOST_FSM_TS=0`.
+> Sessions now also write `manifest.json` + `telemetry-prior.ndjson` + per-capture frame-state
+> markers (flight recorder Phase A).
+
 **What this is:** one Rhino document, nine CPig field stations side by side, for *poking* —
 orbit, toggle, compare, take notes. It is NOT a regression test: no checkpoints, no
 assertions, nothing passes or fails. Regression versions come later, after bug 0058 is fixed
