@@ -52,6 +52,23 @@ The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`work
 - Visual regression mode is the default; VLM mode is opt-in per test definition.
 - Hook renames (e.g. `__canaryModule*` → `__canaryPersona*` per Canary commit 074196c) trigger the Cross-Repo Change Protocol — both repos update in coordination.
 
+**Addendum (R1.7, 2026-07-03 — the current contract index):**
+- **Browser hooks are now a versioned catalog:** `Penumbra/docs/spec/canary-js-api.md` (66
+  hooks, v1; AGENT-flagged ones are hard-coded into Canary.Agent.Penumbra, additive-only;
+  conformance vitest Penumbra-side).
+- **The IN-RHINO contract** (rhino workload, in-process GLSL studio): Canary reflects into
+  `Penumbra.Bridge.GetFrameState()` — the PINNED 7-field table (incl. `BakesOutstanding`,
+  additive 2026-07-03) lives in `Penumbra/spec/PEERS.md` § GetFrameState; Canary's drift lock
+  is `tests/Canary.Tests/Contracts/FrameStateContractTests.cs`. `WaitForPenumbraFrame
+  requireSteady` = Status " steady" AND bakes drained.
+- **Rhino-workload Penumbra suites:** `penumbra-glsl` + `cpig-display-matrix` (31 tests; 19
+  pixel-diff gates at tolerance 0.005). NOTE: shared-runMode suites keep per-test baselines at
+  `workloads/rhino/results/<test>/baselines/` (NOT committed — results/ is gitignored;
+  archived to Drive per the audit-c rule at approval time).
+- **Session flight recorder:** `docs/session-flight-recorder.md` — manifest schema, MCP 12
+  tools (`get_session_manifest`/`get_session_telemetry`), snapshot-on-capture (both sides),
+  the 186-kind generated event catalog. §5 black-box acceptance PASSED 2026-07-03.
+
 ## Qualia (`C:\Repos\Qualia\`)
 
 **Role:** 3D graph editor (React + Vite + Three.js + WebGPU, with Tauri
