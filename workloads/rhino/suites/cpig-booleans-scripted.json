@@ -1,10 +1,12 @@
-{
+﻿{
   "name": "cpig-booleans-scripted",
-  "description": "Phase 6 gate subset of cpig-booleans (2026-07-02): the four cells whose CPig commands are fully SCRIPTABLE unattended — union / intersection / smoothUnion use a single preselection-honoring GetMultiple, so `_SelAll _CPigX` drives them. EXCLUDED: cpig-booleans-02 + 05 (difference) — `_CPigDifference` is a TWO-PHASE interactive pick (D4 UX fix 2026-06-19) whose SUBTRACTION-set prompt disables preselection (`EnablePreSelect(false)` in FieldOps.RunDifferenceTwoPhase), so no macro can drive phase B; those two cells run operator-ATTENDED only (their original D4 design) until CPig grows a RunMode.Scripted path (R1 ask; Phase 6 forbids touching CPig). Tests carry converged capture gating (WaitForPenumbraFrame requireSteady) + solo-perspective camera recipe + scene-scale decoy framing. Run: `canary run --workload rhino --suite cpig-booleans-scripted`.",
+  "description": "Phase 6 gate subset of cpig-booleans (2026-07-02): the four cells whose CPig commands are fully SCRIPTABLE unattended \u2014 union / intersection / smoothUnion use a single preselection-honoring GetMultiple, so `_SelAll _CPigX` drives them. F11 RESOLVED (R1.5, 2026-07-03): cpig-booleans-02 + 05 (difference) are now scriptable \u2014 CPigDifference grew a RunMode.Scripted path (preselection; EARLIEST-CREATED selected field is KEPT, rest subtracted), so `_SelAll _CPigDifference` works. Historical note: they were excluded \u2014 `_CPigDifference` is a TWO-PHASE interactive pick (D4 UX fix 2026-06-19) whose SUBTRACTION-set prompt disables preselection (`EnablePreSelect(false)` in FieldOps.RunDifferenceTwoPhase), so no macro can drive phase B; those two cells run operator-ATTENDED only (their original D4 design) until CPig grows a RunMode.Scripted path (R1 ask; Phase 6 forbids touching CPig). Tests carry converged capture gating (WaitForPenumbraFrame requireSteady) + solo-perspective camera recipe + scene-scale decoy framing. Run: `canary run --workload rhino --suite cpig-booleans-scripted`.",
   "tests": [
     "cpig-booleans-00-union-sphere-sphere",
     "cpig-booleans-01-intersection-sphere-sphere",
+    "cpig-booleans-02-difference-sphere-sphere",
     "cpig-booleans-03-smoothunion-sphere-sphere",
-    "cpig-booleans-04-union-sphere-gyroid"
+    "cpig-booleans-04-union-sphere-gyroid",
+    "cpig-booleans-05-difference-gyroid-sphere"
   ]
 }

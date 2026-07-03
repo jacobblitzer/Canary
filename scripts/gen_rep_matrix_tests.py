@@ -61,8 +61,12 @@ TYPES = {
     },
 }
 
-# Cloned verbatim from cpig-booleans-00 (deterministic solo-perspective framing; the decoy
-# sphere gives _Zoom _Selected a scene-scale target, then dies before capture).
+# Cloned from cpig-booleans-00 (deterministic solo-perspective framing; the decoy sphere gives
+# _Zoom _Selected a scene-scale target, then dies before capture). RACE-PROOFED 2026-07-03
+# (R1.5): the decoy is selected BY TYPE (_SelSrf — it is the only NURBS surface in these docs;
+# CPig fields are custom mesh objects) immediately before EACH dependent op, because a CPig
+# async re-push's load-side deselect can land between _SelLast and the op that consumes the
+# selection (observed: Zoom->Nothing, Delete->Nothing, decoy survived into the capture).
 CAMERA_RECIPE = [
     "_SelNone",
     "-_4View _Enter",
@@ -70,10 +74,12 @@ CAMERA_RECIPE = [
     "-_SetView _World _Perspective",
     "-_Sphere 0,0,0 45",
     "_SelNone",
-    "_SelLast",
+    "_SelSrf",
     "-_Zoom _Selected",
     "-_ViewportProperties _Lens 35 _EnterEnd",
     "-_ViewportProperties _Lens 50 _EnterEnd",
+    "_SelNone",
+    "_SelSrf",
     "_Delete",
 ]
 
@@ -203,8 +209,13 @@ def main() -> None:
             "cpig-fieldops-rep-dense-pointcloud-mesh",
             "cpig-booleans-00-union-sphere-sphere",
             "cpig-booleans-01-intersection-sphere-sphere",
+            # F11 (R1.5, 2026-07-03): the two difference cells joined once -_CPigDifference
+            # became scriptable (RunMode.Scripted preselection path); capture-mode until the
+            # operator approves their baselines.
+            "cpig-booleans-02-difference-sphere-sphere",
             "cpig-booleans-03-smoothunion-sphere-sphere",
             "cpig-booleans-04-union-sphere-gyroid",
+            "cpig-booleans-05-difference-gyroid-sphere",
         ],
     }
     suite_path = os.path.join(SUITES_DIR, "cpig-display-matrix.json")

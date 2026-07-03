@@ -64,7 +64,7 @@
     },
     {
       "type": "RunCommand",
-      "command": "_SelLast"
+      "command": "_SelSrf"
     },
     {
       "type": "RunCommand",
@@ -77,6 +77,14 @@
     {
       "type": "RunCommand",
       "command": "-_ViewportProperties _Lens 50 _EnterEnd"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelNone"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelSrf"
     },
     {
       "type": "RunCommand",

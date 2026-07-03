@@ -12,6 +12,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed — difference cells scriptable + camera recipe race-proofed (R1.5, 2026-07-03)
+- `cpig-booleans-02/05` now run scripted (`_SelAll -_CPigDifference` — the hyphen engages
+  CPig's new RunMode.Scripted preselection path; earliest-created field kept) and joined
+  `cpig-booleans-scripted` (6 tests) + `cpig-display-matrix` (31; capture-mode until baseline
+  approval). Verified 6/6 + 31/31.
+- The decoy-sphere camera recipe (all booleans tests + the repmatrix generator) selects the
+  decoy BY TYPE (`_SelSrf`) immediately before Zoom and before Delete: a CPig async re-push's
+  load-side deselect could land between `_SelLast` and the dependent op (observed:
+  Zoom/Delete→Nothing, decoy survived into a 30%-diff capture). Pixel-invariant vs existing
+  baselines (0.0% greens).
+
 ### Added — GetFrameState pinned-contract drift test (R1.4, 2026-07-03)
 - `tests/Canary.Tests/Contracts/FrameStateContractTests.cs`: (1) source-parses the sibling
   Penumbra checkout's `PenumbraBridge.cs` and fails if any PINNED FrameState field (7 incl.

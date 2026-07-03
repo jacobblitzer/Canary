@@ -29,7 +29,9 @@
     "cpig-fieldops-rep-dense-pointcloud-mesh",
     "cpig-booleans-00-union-sphere-sphere",
     "cpig-booleans-01-intersection-sphere-sphere",
+    "cpig-booleans-02-difference-sphere-sphere",
     "cpig-booleans-03-smoothunion-sphere-sphere",
-    "cpig-booleans-04-union-sphere-gyroid"
+    "cpig-booleans-04-union-sphere-gyroid",
+    "cpig-booleans-05-difference-gyroid-sphere"
   ]
 }
