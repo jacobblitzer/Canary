@@ -103,9 +103,9 @@
       "name": "cpig-repmatrix-sphere-tape",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "sphere field rendered with the 'tape' per-field representation."
     }
   ]

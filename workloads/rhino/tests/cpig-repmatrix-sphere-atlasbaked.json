@@ -89,6 +89,10 @@
     },
     {
       "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
       "command": "_CPigDisplayRep"
     },
     {
@@ -112,9 +116,9 @@
       "name": "cpig-repmatrix-sphere-atlasbaked",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "sphere field rendered with the 'atlasBaked' per-field representation."
     }
   ]

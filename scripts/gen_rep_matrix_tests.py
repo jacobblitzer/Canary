@@ -120,8 +120,12 @@ def build_test(type_key: str, rep: str, mode: str = "capture") -> dict:
     for c in CAMERA_RECIPE:
         actions.append({"type": "RunCommand", "command": c})
     if k > 0:
-        actions.append({"type": "RunCommand", "command": "_SelAll"})
+        # Re-select before EVERY cycle invocation: each artifact re-push fires
+        # gl.load.post.deselect, and an unselected _CPigDisplayRep silently falls into
+        # SCENE-GLOBAL mode (different cycle!) — the rep then lands one step short
+        # (2026-07-03 run-2 failure: gyroid-companiontape captured the pointCloud state).
         for _ in range(k):
+            actions.append({"type": "RunCommand", "command": "_SelAll"})
             actions.append({"type": "RunCommand", "command": "_CPigDisplayRep"})
             actions.append({"type": "WaitForPenumbraFrame", "requireReal": True, "timeoutMs": 60000})
     actions.append({"type": "RunCommand", "command": "_SelNone"})
@@ -153,7 +157,7 @@ def build_test(type_key: str, rep: str, mode: str = "capture") -> dict:
             "source": "viewport",
             "mode": mode,
             "stabilizeMs": 5000,
-            "tolerance": 0.05,
+            "tolerance": 0.005,
             "description": f"{type_key} field rendered with the '{rep}' per-field representation.",
         }],
     }
@@ -163,12 +167,19 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", default="capture", choices=["capture", "pixel-diff", "vlm"],
                     help="checkpoint mode for all 24 tests (capture pre-baseline; pixel-diff after approval)")
+    ap.add_argument("--hold", default="",
+                    help="comma-separated field TYPES (or full cell names) held at capture mode regardless of "
+                         "--mode — e.g. --hold mesh keeps the dense row capture-only while Penumbra bug 0059 "
+                         "(live rep switch inert on dense atoms) is open")
     args = ap.parse_args()
+    held = {h.strip() for h in args.hold.split(",") if h.strip()}
 
     written = []
     for type_key in TYPES:
         for rep in REPS:
-            test = build_test(type_key, rep, args.mode)
+            name = f"cpig-repmatrix-{type_key}-{rep.lower()}"
+            cell_mode = "capture" if (type_key in held or name in held) else args.mode
+            test = build_test(type_key, rep, cell_mode)
             path = os.path.join(TESTS_DIR, test["name"] + ".json")
             with open(path, "w", encoding="utf-8", newline="\n") as f:
                 json.dump(test, f, indent=2)

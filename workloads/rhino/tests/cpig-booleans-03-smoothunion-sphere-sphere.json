@@ -34,9 +34,9 @@
       "name": "cpig-booleans-smoothunion-sphere-sphere",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "SmoothUnion(sphere(0,0,0;r=10), sphere(15,0,0;r=10), k=5) â€” a peanut with a smooth fillet join (vs crisp crease of plain Union)."
     }
   ]

@@ -34,9 +34,9 @@
       "name": "cpig-booleans-union-sphere-sphere",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "Union(sphere(0,0,0;r=10), sphere(15,0,0;r=10)) -- a peanut shape spanning roughly [-10..+25] on x."
     }
   ]

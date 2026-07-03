@@ -89,12 +89,7 @@
     },
     {
       "type": "RunCommand",
-      "command": "_CPigDisplayRep"
-    },
-    {
-      "type": "WaitForPenumbraFrame",
-      "requireReal": true,
-      "timeoutMs": 60000
+      "command": "_SelAll"
     },
     {
       "type": "RunCommand",
@@ -107,12 +102,33 @@
     },
     {
       "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
       "command": "_CPigDisplayRep"
     },
     {
       "type": "WaitForPenumbraFrame",
       "requireReal": true,
       "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigDisplayRep"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelAll"
     },
     {
       "type": "RunCommand",
@@ -139,9 +155,9 @@
       "name": "cpig-repmatrix-box-pointcloud",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "box field rendered with the 'pointCloud' per-field representation."
     }
   ]

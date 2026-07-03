@@ -39,9 +39,9 @@
       "name": "cpig-fieldops-rep-dense-after-cycle",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 10000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "Final state after cycling _CPigDisplayRep through all 7 reps on a dense atom (mesh→field) — back to auto. Captures the auto rep; intermediate steps were gated by WaitForPenumbraFrame so a hang/blank on any rep would have failed the test."
     }
   ]

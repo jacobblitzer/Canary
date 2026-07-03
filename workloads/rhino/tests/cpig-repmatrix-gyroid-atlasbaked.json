@@ -89,6 +89,10 @@
     },
     {
       "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
       "command": "_CPigDisplayRep"
     },
     {
@@ -114,7 +118,7 @@
       "source": "viewport",
       "mode": "capture",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "gyroid field rendered with the 'atlasBaked' per-field representation."
     }
   ]

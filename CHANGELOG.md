@@ -12,6 +12,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed — R1.3 CLOSED: baselines approved, suites can now FAIL (2026-07-03)
+- Operator approved 23/29 `cpig-display-matrix` baselines (STOP-POINT R1.3). 19 checkpoints
+  flipped capture→pixel-diff at tolerance **0.005** (0.05 was decorative: a 20% sphere-radius
+  break passed at 1.8% diff; at 0.005 it FAILS — gate-can-fail proven break→FAIL→revert→green).
+  10 cells held capture-mode pending Penumbra engine bugs: 6 mesh-row (0059, dense rep switch
+  inert) + 4 companion/atlas (0061, nondeterministic renders 3.75–7% run-to-run). Generator
+  gained `--hold`; rep-cycle tests now re-select before EVERY `_CPigDisplayRep` (re-push
+  deselect silently dropped invocations into the scene-global cycle). Approved baselines
+  archived to the Drive per the audit-c pre-migration rule. Penumbra 0060 filed (intermittent
+  BakesOutstanding wedge → loud requireSteady timeout; gate kept strict by design).
+
 ### Added — `canary approve` per-suite bulk mode + D7 rep-matrix suite (R1.3, 2026-07-03)
 - `canary approve --workload <w> --suite <s>` (no `--test`) bulk-approves EVERY test listed in
   `workloads/<w>/suites/<s>.json`, trying the suite-scoped results layout first and falling back

@@ -97,12 +97,7 @@
     },
     {
       "type": "RunCommand",
-      "command": "_CPigDisplayRep"
-    },
-    {
-      "type": "WaitForPenumbraFrame",
-      "requireReal": true,
-      "timeoutMs": 60000
+      "command": "_SelAll"
     },
     {
       "type": "RunCommand",
@@ -115,12 +110,33 @@
     },
     {
       "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
       "command": "_CPigDisplayRep"
     },
     {
       "type": "WaitForPenumbraFrame",
       "requireReal": true,
       "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelAll"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_CPigDisplayRep"
+    },
+    {
+      "type": "WaitForPenumbraFrame",
+      "requireReal": true,
+      "timeoutMs": 60000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_SelAll"
     },
     {
       "type": "RunCommand",
@@ -149,7 +165,7 @@
       "source": "viewport",
       "mode": "capture",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "mesh field rendered with the 'pointCloud' per-field representation."
     }
   ]

@@ -34,9 +34,9 @@
       "name": "cpig-booleans-intersection-sphere-sphere",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "Intersection(sphere(0,0,0;r=10), sphere(15,0,0;r=10)) -- a thin almond/lens centered around x=7.5."
     }
   ]

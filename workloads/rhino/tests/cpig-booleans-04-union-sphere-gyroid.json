@@ -34,9 +34,9 @@
       "name": "cpig-booleans-union-sphere-gyroid",
       "atTimeMs": 0,
       "source": "viewport",
-      "mode": "capture",
+      "mode": "pixel-diff",
       "stabilizeMs": 5000,
-      "tolerance": 0.05,
+      "tolerance": 0.005,
       "description": "Union(gyroid_lattice([-25,25]^3, period=20), sphere(30,0,0;r=12)) â€” a gyroid with a sphere bulge attached on +x. Both should render at correct scale."
     }
   ]
