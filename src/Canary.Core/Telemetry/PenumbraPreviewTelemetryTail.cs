@@ -47,6 +47,7 @@ public sealed class PenumbraPreviewTelemetryTail : IDisposable
     private async Task TailLoopAsync(CancellationToken ct)
     {
         int processed = -1;   // -1 = not yet baselined; else count of COMPLETE lines already consumed
+        int retrySameLine = 0;
         while (!ct.IsCancellationRequested)
         {
             try
@@ -55,8 +56,16 @@ public sealed class PenumbraPreviewTelemetryTail : IDisposable
                 {
                     string content = ReadAllSharedText(_path);
                     var parts = content.Split('\n');
-                    // The final part is a partial (still-being-written) line unless the file ends with '\n'.
-                    int complete = content.EndsWith('\n') ? parts.Length : parts.Length - 1;
+                    // The final Split element is either "" (content ends with '\n') or a partial
+                    // still-being-written line — EITHER WAY it is not a complete line, so the
+                    // complete-line count is parts.Length - 1 unconditionally. The old
+                    // `EndsWith('\n') ? parts.Length : parts.Length - 1` overcounted by one for
+                    // newline-terminated content, which skewed `processed` one PAST the next
+                    // unseen line — in any multi-line burst the earlier lines were never visited
+                    // (R1.6 catch, 2026-07-03: cpig.session.snapshot vanished from two live
+                    // sessions while its 4ms-later rhino.command neighbor landed; unit repro
+                    // TailSnapshotReproTests).
+                    int complete = parts.Length - 1;
                     if (complete < 0) complete = 0;
 
                     if (processed < 0)
@@ -65,16 +74,33 @@ public sealed class PenumbraPreviewTelemetryTail : IDisposable
                     }
                     else
                     {
-                        if (complete < processed) processed = 0;   // truncated / rotated → re-read from start
-                        for (int i = processed; i < complete; i++)
+                        if (complete < processed) { processed = 0; retrySameLine = 0; }   // truncated / rotated → re-read from start
+                        bool stalled = false;
+                        int i = processed;
+                        for (; i < complete; i++)
                         {
-                            var rec = ParsePenumbraLine(parts[i]);
+                            var line = parts[i];
+                            var rec = ParsePenumbraLine(line);
+                            if (rec == null && line.Trim().Length > 0)
+                            {
+                                // R1.6 catch (2026-07-03): a shared read can observe a line TORN
+                                // mid-write; the old code advanced past it unconditionally, silently
+                                // dropping the record forever (a cpig.session.snapshot vanished this
+                                // way while its 4ms-later neighbor landed). Stop at the unparseable
+                                // line and re-read it next tick — the write will have completed.
+                                // Persistently malformed lines get 3 attempts, then are skipped so
+                                // genuine garbage can't wedge the tail.
+                                if (retrySameLine < 3) { retrySameLine++; stalled = true; break; }
+                                retrySameLine = 0;   // give up on this line, move on
+                                continue;
+                            }
+                            retrySameLine = 0;
                             if (rec != null)
                             {
                                 try { _sink.Write(rec); } catch { /* one bad write shouldn't kill the tail */ }
                             }
                         }
-                        processed = complete;
+                        processed = stalled ? i : complete;
                     }
                 }
             }

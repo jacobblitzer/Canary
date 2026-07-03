@@ -22,6 +22,8 @@ var tools = new McpTool[]
     new KillLocalhostPortTool(),
     new ListSessionsTool(),
     new GetSessionReportTool(),
+    new GetSessionManifestTool(),      // R1.6 flight-recorder Phase D
+    new GetSessionTelemetryTool(),     // R1.6 flight-recorder Phase D
 };
 
 var protocol = new McpProtocol(tools);

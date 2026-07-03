@@ -111,3 +111,113 @@ internal sealed class GetSessionReportTool : McpTool
         return Task.FromResult($"No SESSION_REPORT.md found for session id '{sessionId}'.");
     }
 }
+
+// R1.6 flight-recorder Phase D (2026-07-03) — the two tools that make a session folder
+// fully readable from Claude Code without shelling out: the manifest (identity: opened file
+// + SHA, machine, PID, env decisions, exit record, harvested Penumbra SHAs) and the raw
+// telemetry stream (filterable by domain-event prefix, because tailed Penumbra/CPig records
+// are Kind=Log with the domain kind nested at Data.event).
+
+internal sealed class GetSessionManifestTool : McpTool
+{
+    public override string Name => "get_session_manifest";
+    public override string Description => "Fetch manifest.json for a supervised session by id: opened file + SHA256, machine, app+PID, launcher env decisions (incl. PENUMBRA_SESSION_REF), exit record (diedUnexpectedly on kill/crash), and harvested Penumbra identity (plugin/bundle SHAs, skew verdict, GPU).";
+    public override string InputSchemaJson => """
+        {
+          "type": "object",
+          "properties": {
+            "sessionId": { "type": "string", "description": "The yyyyMMdd-HHmmss-xxxx session id." }
+          },
+          "required": ["sessionId"]
+        }
+        """;
+
+    public override Task<string> InvokeAsync(JsonObject args)
+    {
+        var sessionId = args["sessionId"]?.GetValue<string>() ?? throw new ArgumentException("sessionId is required");
+        var root = WorkloadsRoot.Discover();
+        if (!Directory.Exists(root))
+            return Task.FromResult($"No workloads dir at: {root}");
+
+        foreach (var workloadDir in Directory.EnumerateDirectories(root))
+        {
+            var sessionDir = Path.Combine(workloadDir, SessionPaths.SessionsSubdir, sessionId);
+            var manifest = SessionPaths.ManifestPath(sessionDir);
+            if (File.Exists(manifest))
+                return Task.FromResult(File.ReadAllText(manifest));
+        }
+
+        return Task.FromResult($"No manifest.json found for session id '{sessionId}' (pre-flight-recorder session, or wrong id).");
+    }
+}
+
+internal sealed class GetSessionTelemetryTool : McpTool
+{
+    public override string Name => "get_session_telemetry";
+    public override string Description => "Read a supervised session's telemetry.ndjson (raw NDJSON lines), optionally filtered by event prefix. Tailed Penumbra/CPig records are Kind=Log with the domain kind at Data.event (e.g. gl.scene.snapshot, cpig.push.done) — the filter matches Data.event first and falls back to the record Kind. Returns the LAST N matches (tail).";
+    public override string InputSchemaJson => """
+        {
+          "type": "object",
+          "properties": {
+            "sessionId":   { "type": "string", "description": "The yyyyMMdd-HHmmss-xxxx session id." },
+            "eventPrefix": { "type": "string", "description": "Case-insensitive prefix filter on Data.event (fallback: record Kind). E.g. 'cpig.push', 'gl.scene.snapshot', 'gl.fsm'. Omit for all records." },
+            "tail":        { "type": "integer", "description": "Return only the LAST N matching lines; default 200, max 2000." },
+            "prior":       { "type": "boolean", "description": "Read telemetry-prior.ndjson (the PREVIOUS session's rescued Penumbra log) instead of telemetry.ndjson." }
+          },
+          "required": ["sessionId"]
+        }
+        """;
+
+    public override Task<string> InvokeAsync(JsonObject args)
+    {
+        var sessionId = args["sessionId"]?.GetValue<string>() ?? throw new ArgumentException("sessionId is required");
+        var eventPrefix = args["eventPrefix"]?.GetValue<string>();
+        var tail = Math.Min(Math.Max(args["tail"]?.GetValue<int>() ?? 200, 1), 2000);
+        var prior = args["prior"]?.GetValue<bool>() ?? false;
+
+        var root = WorkloadsRoot.Discover();
+        if (!Directory.Exists(root))
+            return Task.FromResult($"No workloads dir at: {root}");
+
+        foreach (var workloadDir in Directory.EnumerateDirectories(root))
+        {
+            var sessionDir = Path.Combine(workloadDir, SessionPaths.SessionsSubdir, sessionId);
+            var file = prior
+                ? Path.Combine(sessionDir, SessionPaths.TelemetryPriorFileName)
+                : SessionPaths.TelemetryPath(sessionDir);
+            if (!File.Exists(file)) continue;
+
+            var matches = new List<string>();
+            int total = 0, malformed = 0;
+            foreach (var line in File.ReadLines(file))
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                total++;
+                if (eventPrefix == null) { matches.Add(line); continue; }
+                string? evt = null, kind = null;
+                try
+                {
+                    var node = JsonNode.Parse(line);
+                    kind = node?["kind"]?.GetValue<string>();
+                    evt = node?["data"]?["event"]?.GetValue<string>();
+                }
+                catch { malformed++; continue; }
+                var key = evt ?? kind ?? string.Empty;
+                if (key.StartsWith(eventPrefix, StringComparison.OrdinalIgnoreCase))
+                    matches.Add(line);
+            }
+
+            var start = Math.Max(0, matches.Count - tail);
+            var shown = matches.Skip(start).ToList();
+            var header =
+                $"# session {sessionId} — {Path.GetFileName(file)}: {total} record(s), " +
+                $"{matches.Count} match(es) for prefix '{eventPrefix ?? "(none)"}'" +
+                (start > 0 ? $", showing the LAST {shown.Count} (raise tail= for more)" : "") +
+                (malformed > 0 ? $", {malformed} malformed line(s) skipped" : "") +
+                "\n";
+            return Task.FromResult(header + string.Join("\n", shown));
+        }
+
+        return Task.FromResult($"No {(prior ? SessionPaths.TelemetryPriorFileName : SessionPaths.TelemetryNdjsonFileName)} found for session id '{sessionId}'.");
+    }
+}

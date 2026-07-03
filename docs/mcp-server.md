@@ -27,6 +27,8 @@ Phase 6 of the debug-overhaul implementation (design §C6).
 | `kill_localhost_port` | Tree-kill the holder of a TCP port. |
 | `list_sessions` | Supervised sessions (one row per `workloads/<w>/sessions/<id>/session.json`). Filter by `workload`, `limit`. Added 2026-05-27 with the supervised-session feature. |
 | `get_session_report` | Full `SESSION_REPORT.md` contents for a specific `sessionId`. Added 2026-05-27. |
+| `get_session_manifest` | `manifest.json` verbatim for a `sessionId`: opened file + SHA256, machine, app+PID, applied env (incl. `PENUMBRA_SESSION_REF`), exit record, harvested Penumbra SHAs. Added R1.6 (2026-07-03). |
+| `get_session_telemetry` | Raw NDJSON lines from a session's `telemetry.ndjson` (or `telemetry-prior.ndjson` with `prior:true`), filtered by `eventPrefix` on `Data.event` (Kind fallback), last-N `tail` (default 200, max 2000). Added R1.6. See `docs/session-flight-recorder.md`. |
 
 ## Setup
 
@@ -64,6 +66,13 @@ location finds the surrounding repo root naturally. If you copy the
 exe elsewhere, set `cwd` or `args` so the server can locate the
 intended `docs/feedback/` + `workloads/`.
 
+**`CANARY_WORKLOADS_DIR` override (R1.6, 2026-07-03):** when set (and the directory exists)
+it takes precedence over the walk-up discovery for EVERY workloads-reading tool
+(`list_recent_runs`, `get_run_report`, `list_sessions`, `get_session_report`,
+`get_session_manifest`, `get_session_telemetry`). Intended for serving a workloads tree the
+exe does not live under and for hermetic tests — a stale value silently redirects all those
+tools, so unset it when done.
+
 ## Spawn registry (Tier 2 localhost provenance)
 
 `list_running_apps` + `list_localhost_ports` read from the spawn
@@ -92,7 +101,7 @@ printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion
 
 Expect two JSON-RPC responses on stdout: the server's `initialize`
 result (protocolVersion 2024-11-05, server name `canary`) and a
-`tools/list` result with 8 tool entries.
+`tools/list` result with 12 tool entries.
 
 ## Wire protocol
 

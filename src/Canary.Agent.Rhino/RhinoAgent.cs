@@ -38,6 +38,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
                     "GetPenumbraFrameState" => HandleGetPenumbraFrameState(parameters),
+                    "DumpPenumbraSceneState" => HandleDumpPenumbraSceneState(parameters),
                     "SaveDocument" => HandleSaveDocument(parameters),
                     _ => new AgentResponse
                     {
@@ -999,19 +1000,67 @@ public sealed class RhinoAgent : ICanaryAgent
     }
 
     /// <summary>
+    /// Flight-recorder R1.6 (2026-07-03) — trigger Penumbra's on-demand scene snapshot
+    /// (`Bridge.DumpSceneState()` → `gl.scene.snapshot` NDJSON). Session captures call this
+    /// (best-effort) right before the pixel grab so the render-side field inventory + per-view
+    /// cameras land in the tailed telemetry adjacent to the Screenshot record. Always
+    /// Success=true — absence of the Bridge/sink is evidence, not an abort (mirrors
+    /// GetPenumbraFrameState's philosophy).
+    /// </summary>
+    private static AgentResponse HandleDumpPenumbraSceneState(Dictionary<string, string> parameters)
+    {
+        var data = new Dictionary<string, string>();
+        var bridgeType = ResolveBridgeType();
+        if (bridgeType == null)
+        {
+            data["bridge"] = "unavailable";
+            return new AgentResponse { Success = true, Message = "Penumbra.Bridge not loaded.", Data = data };
+        }
+        try
+        {
+            var mi = bridgeType.GetMethod("DumpSceneState",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            if (mi == null)
+            {
+                data["bridge"] = "no-dump-verb";
+                return new AgentResponse { Success = true, Message = "DumpSceneState not present (older Penumbra).", Data = data };
+            }
+            var ok = mi.Invoke(null, null);
+            data["bridge"] = "ok";
+            data["emitted"] = (ok as bool? ?? false).ToString();
+            return new AgentResponse { Success = true, Message = "scene snapshot requested", Data = data };
+        }
+        catch (Exception ex)
+        {
+            data["bridge"] = "invoke-failed";
+            return new AgentResponse { Success = true, Message = $"DumpSceneState failed: {ex.Message}", Data = data };
+        }
+    }
+
+    /// <summary>Shared assembly scan for the Penumbra.Bridge type (one scan, several verbs).</summary>
+    private static System.Type? ResolveBridgeType()
+    {
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            try
+            {
+                var t = asm.GetType("Penumbra.Bridge.PenumbraBridge");
+                if (t != null) return t;
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    /// <summary>
     /// THE single reflection seam into Penumbra.Bridge.GetFrameState (pinned as one contract —
     /// R1 audit-c). Every consumer (WaitForPenumbraFrame, GetPenumbraFrameState) resolves through
-    /// here; do not duplicate the assembly scan or the field reads elsewhere.
+    /// here; do not duplicate the assembly scan or the field reads elsewhere. (The assembly scan
+    /// itself is factored into ResolveBridgeType, shared with DumpPenumbraSceneState — R1.6.)
     /// </summary>
     private static System.Reflection.MethodInfo? ResolveGetFrameState(out string? error)
     {
-        System.Type? bridgeType = null;
-        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            try { bridgeType = asm.GetType("Penumbra.Bridge.PenumbraBridge"); }
-            catch { bridgeType = null; }
-            if (bridgeType != null) break;
-        }
+        System.Type? bridgeType = ResolveBridgeType();
         if (bridgeType == null)
         {
             error = "Penumbra.Bridge not loaded — is the Penumbra plug-in installed and was PenumbraShow run first?";

@@ -11,6 +11,11 @@ internal static class WorkloadsRoot
 {
     public static string Discover()
     {
+        // R1.6: explicit override first — lets the MCP exe serve a workloads tree it does not
+        // live under (and makes tool tests hermetic). Falls back to the walk-up discovery.
+        var overrideDir = Environment.GetEnvironmentVariable("CANARY_WORKLOADS_DIR");
+        if (!string.IsNullOrEmpty(overrideDir) && Directory.Exists(overrideDir)) return overrideDir;
+
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {

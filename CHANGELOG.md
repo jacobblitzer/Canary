@@ -12,6 +12,30 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — flight-recorder Phases C+D (R1.6, 2026-07-03)
+- **Snapshot-on-capture:** every session capture fires, best-effort, right before the pixels:
+  Penumbra `gl.scene.snapshot` (new `DumpPenumbraSceneState` agent action, reflection via the
+  shared bridge-type resolver) + CPig `cpig.session.snapshot` (`-_CPigDumpState`); the capture's
+  telemetry record carries `sceneSnapshot`/`cpigSnapshot` emitted-flags.
+- **MCP grew to 12 tools:** `get_session_manifest` (manifest.json verbatim) and
+  `get_session_telemetry` (event-prefix filter on `Data.event` with Kind fallback, tail-N
+  default 200/max 2000, `prior:true` for the rescued previous-session log). Plus a
+  `CANARY_WORKLOADS_DIR` override for WorkloadsRoot discovery (hermetic tests + serving a
+  workloads tree the exe does not live under).
+- **New doc `docs/session-flight-recorder.md`** — manifest schema, MCP usage, snapshot/push
+  identity semantics, and the 186-kind GENERATED event catalog
+  (`python scripts/gen_event_catalog.py`; wrapper-aware + dynamic `prefix*` entries).
+
+### Fixed — telemetry tail dropped earlier lines of multi-line bursts (Phase-A bug, 2026-07-03)
+- `PenumbraPreviewTelemetryTail` overcounted complete lines by one for newline-terminated
+  content (`EndsWith('
+') ? parts.Length : parts.Length-1` — Split's trailing empty element),
+  skewing `processed` one PAST the next unseen line: in any burst the earlier lines were never
+  visited. Found by R1.6's live verification (a `cpig.session.snapshot` vanished twice while
+  its 4ms-later neighbor landed); fixed to `parts.Length - 1` unconditionally + a bounded
+  torn-read retry (unparseable non-empty line → re-read next tick, 3 attempts). Permanent
+  regression lock: `TailSnapshotReproTests` (the exact production lines).
+
 ### Changed — difference cells scriptable + camera recipe race-proofed (R1.5, 2026-07-03)
 - `cpig-booleans-02/05` now run scripted (`_SelAll -_CPigDifference` — the hyphen engages
   CPig's new RunMode.Scripted preselection path; earliest-created field kept) and joined

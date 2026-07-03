@@ -179,6 +179,19 @@ public sealed class SupervisedSession : IAsyncDisposable
         // null when the agent predates GetPenumbraFrameState or the Bridge isn't loaded.
         Dictionary<string, string>? frameBefore = IsRhino ? await TryGetFrameStateAsync().ConfigureAwait(false) : null;
 
+        // R1.6 snapshot-on-capture (flight-recorder Phase D): ask BOTH sides to dump their full
+        // state into the tailed telemetry right before the pixels — Penumbra's gl.scene.snapshot
+        // (field inventory + per-view cameras + framing verdicts) via the Bridge, and CPig's
+        // cpig.session.snapshot (registry: ids, recipe ops, reps, translations) via the scripted
+        // command. Best-effort both: a session on a machine without one of the plugins still
+        // captures; the flags below record what actually fired.
+        bool? sceneSnapshot = null, cpigSnapshot = null;
+        if (IsRhino)
+        {
+            sceneSnapshot = await TryDumpSceneStateAsync().ConfigureAwait(false);
+            cpigSnapshot = await TryRunCommandAsync("-_CPigDumpState").ConfigureAwait(false);
+        }
+
         await _agent.CaptureScreenshotAsync(new CaptureSettings { OutputPath = pngPath }).ConfigureAwait(false);
 
         Dictionary<string, string>? frameAfter = IsRhino ? await TryGetFrameStateAsync().ConfigureAwait(false) : null;
@@ -226,6 +239,8 @@ public sealed class SupervisedSession : IAsyncDisposable
                 frameStateBefore = frameBefore,
                 frameStateAfter = frameAfter,
                 stateChanged,
+                sceneSnapshot,     // R1.6: gl.scene.snapshot requested (null = non-Rhino session)
+                cpigSnapshot,      // R1.6: cpig.session.snapshot requested via -_CPigDumpState
             },
         });
 
@@ -242,6 +257,33 @@ public sealed class SupervisedSession : IAsyncDisposable
             return resp.Data is { Count: > 0 } ? resp.Data : null;
         }
         catch { return null; }
+    }
+
+    /// <summary>R1.6 — request Penumbra's gl.scene.snapshot (best-effort; false = not emitted,
+    /// null-equivalent absence is folded into false for the marker).</summary>
+    private async Task<bool> TryDumpSceneStateAsync()
+    {
+        try
+        {
+            var resp = await _agent.ExecuteAsync(
+                "DumpPenumbraSceneState", new Dictionary<string, string>()).ConfigureAwait(false);
+            return resp.Data != null && resp.Data.TryGetValue("emitted", out var e)
+                && string.Equals(e, "True", StringComparison.OrdinalIgnoreCase);
+        }
+        catch { return false; }
+    }
+
+    /// <summary>R1.6 — run a Rhino command macro best-effort (used for -_CPigDumpState;
+    /// absence of the CPig plugin makes the command unknown → false, never an abort).</summary>
+    private async Task<bool> TryRunCommandAsync(string command)
+    {
+        try
+        {
+            var resp = await _agent.ExecuteAsync("RunCommand",
+                new Dictionary<string, string> { ["command"] = command }).ConfigureAwait(false);
+            return resp.Success;
+        }
+        catch { return false; }
     }
 
     private static string? Get(Dictionary<string, string>? d, string key)
