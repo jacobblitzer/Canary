@@ -10,7 +10,10 @@
 > after it loads, then walk the stations). **Expectations updated:** S1–S6, S8, S9 should all
 > look CORRECT (peanut / lens / fillet / lattice+bulge / cloverleaf / bites); S7 stays the soft
 > ball (flag-INDEPENDENT dense-bake defect, tracked separately). Anything else wrong = say so
-> before signing off 6.2; fall back with `PENUMBRA_USE_NATIVE_DLL=0` / `PENUMBRA_HOST_FSM_TS=0`.
+> before signing off 6.2. ~~fall back with `PENUMBRA_USE_NATIVE_DLL=0` / `PENUMBRA_HOST_FSM_TS=0`~~
+> **(dead since Phase 6 §4, 2026-07-02: those flags are read by NOTHING — the legacy paths are
+> deleted; rollback is the Penumbra git tag `penumbra-v5-phase6-preremoval` + reship, and the
+> whole A/B section below is now history.)**
 > Sessions now also write `manifest.json` + `telemetry-prior.ndjson` + per-capture frame-state
 > markers (flight recorder Phase A).
 

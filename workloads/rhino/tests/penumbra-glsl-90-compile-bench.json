@@ -1,0 +1,40 @@
+{
+  "name": "penumbra-glsl-90-compile-bench",
+  "workload": "rhino",
+  "description": "Phase 6 section-5.3 shader-compile measurement vehicle (NOT a regression test; run standalone with --test, never in the penumbra-glsl suite). Loads the same structural sphere scene as penumbra-glsl-00, waits for steady, then runs _PenumbraGlCompileBench 20: the conduit recompiles+relinks the RETAINED production-scene fragment shader into throwaway programs, one per frame, emitting gl.compile-bench.sample/.summary NDJSON (captured into this run's per-suite telemetry via the flight-recorder run-tail). COLD number = this run's first gl.build.compile-link.pass1 event (clear the Intel driver shader cache before launching for a true cold); WARM = the bench p50/p95. Threshold for the measured shader-compile gate is picked by the operator from these numbers (recommendation: >= p95 x 1.5), per the amended V5 decision 8 (operator-run local gate, no CI wiring).",
+  "runMode": "fresh",
+  "setup": {
+    "file": "fixtures/cpig_slop_loader.gh",
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 }
+  },
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/CPig/research/slop_tests/54_penumbra_sphere.json" },
+    { "type": "RunCommand", "command": "_PenumbraPreviewBackend _Glsl" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 60000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 },
+    { "type": "RunCommand", "command": "PenumbraGlCompileBench 20" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 30000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "compile-bench-viewport",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 500,
+      "tolerance": 0.05
+    }
+  ],
+  "asserts": [
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" }
+  ]
+}
