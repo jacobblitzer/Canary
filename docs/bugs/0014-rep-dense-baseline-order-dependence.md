@@ -48,3 +48,22 @@ test-content changes that need re-approval mid-refactor); candidates at
 Suite-membership order-dependence is a general hazard: any test whose baseline was approved from
 a shared-suite run may silently depend on predecessor state. The repmatrix generator's re-select +
 camera-recipe discipline exists precisely because of this class; rep-dense predates it.
+
+## Wider class (found during R2.5 verification, 2026-07-03)
+
+The same **`diff=0.00%, ssim=0.0000` degenerate compare** (candidate content matches but the
+comparison degenerates — dimension/animation-baseline mismatch, or capture taken mid-`refining`
+before a `requireSteady` gate) affects two more suites, both **pre-existing and independent of the
+R2 CPig.Core split**:
+- **`cpig-kinematics`** (0/13): 4-view animation tests; telemetry proves the mechanism ran (109
+  commands, `cpig.restore.completed`, **zero `TypeLoad`/`MissingMethod`** — so R2's moved-type
+  binding into the Kinematics consumer is fine); the failure is the degenerate compare, not the
+  render. Also depends on the documented heavy env (KinematicImporter `.gha` + cm units).
+- **`cpig-render-verify`** (0/4): candidate for `cpig-render-01-mesh-field` was captured at
+  `q=20% … refining` (no `requireSteady` gate) → empty-bbox-so-far, while the properly-gated
+  `cpig-display-matrix` mesh rows render correctly 31/31 at 0.0%.
+
+All three suites need a baseline re-approval (operator-attended) + a `requireSteady`/camera-recipe
+retrofit; parked (R2 rule: no test-content changes needing re-approval mid-refactor). The
+R2-relevant pixel gates that DO align (display-matrix, booleans, the A/B per-part hashes) are all
+green, so R2 correctness is established independently of these three.
