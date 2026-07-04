@@ -1,0 +1,38 @@
+{
+  "name": "cpig-ab-r2-relocate",
+  "workload": "rhino",
+  "description": "R2.4 pre-step Tier-2 A-side capture for the RELOCATE path (MultiVerse/prompts/r2-cpig-core-split-2026-07-03.md section 4: 'add a copy/boolean-relocate stanza so Relocate sits in the hashed path too'). Exercises BOTH live callers of RecipeBuilder.Relocate upstream of the hashed display.3mf bytes, BEFORE R2.4 moves RecipeBuilder down to CPig.Core.Recipes (Relocate goes flat double[12] + Rhino shim per ratified R2.1c; heads-up from R2.3 - the flat Relocate must invert Rhino-side because Core.Transform takes the PRE-inverted matrix): (1) _SelLast _CPigCopy - CPigCopyCommand.cs:71 relocates the cloned sphere recipe by +1.2x the source local-box X extent (r=10 sphere -> box extent 20 -> copy lands at +24 X as an AUTHORED-position relocated recipe, no build-item transform; preselection is honored because OnlyCPigFields sets EnablePreSelect(true,true) + EnableClearObjectsOnEntry(false), CPigModelingCommands.cs:33-34); (2) _SelAll _CPigUnion _Enter after a _SelLast _Move of the box - CPigModelingCommands.cs:212 relocates the MOVED operand (registry World non-identity -> RecipeBuilder.Relocate folds the translation into the box recipe -> rebuild -> fold), while the unmoved sphere + copy pass through at identity; the 3-operand fold is the committed cpig-bool-refactor-09 pattern. NOTE (measured on the A-side capture, 2026-07-03): an ALL-LIBFIVE union folds through the libfive fast path into Kind::LIBFIVE (the cpig-bool-refactor-01 documented behavior), so push 5 exports as ONE LevelSet whose SINGLE tape carries the relocated box baked in - NOT a 3-leaf structured composite; the optree sidecar is still present (leafCount 1), so TryReadOpTreeLeafCounts - also moving in R2.4 - still executes in the hashed path, trivially. Scene geometry: sphere r=10 at origin; copy at +24 X (spans 14..34); box authored at x 30..50 then _Move -30 X to x 0..20 (overlapping BOTH spheres), so the union is ONE connected bar-with-two-bulges blob - a wrong/no-op relocation on either path visibly changes the exported bytes AND the render. EXPECTED PUSHES (5, each a distinct display.3mf overwrite): 1 sphere; 2 +copy (Relocate caller 1 in the bytes); 3 +box; 4 post-move (NON-IDENTITY build-item placement - the ExportMany constraint from cpig-ab-r2-capture; verified on the A-side: item transform '1 0 0 0 1 0 0 0 1 -30 0 0'); 5 union composite (Relocate caller 2 baked into the folded single tape). THE ARTIFACT OF RECORD IS display.3mf, NOT PIXELS: run CPig/scripts/ab_archive_watcher.py --out CPig/tests/ab-r2/tier2-relocate-a (tier2-relocate-b on the B side) BEFORE this test; reconcile with CPig/scripts/ab_reconcile_archive.py (mandatory - a polling miss must be LOUD); compare sides with CPig/scripts/hash_3mf_parts.py (per-part SHA256, p:UUID normalized in 3D/3dmodel.model only). Bake resolution pinned 32 like cpig-ab-r2-capture (all leaves here are libfive tape - the pin is inert but keeps the protocol uniform). GATING is the cpig-ab-r2-capture convention verbatim: requireReal-ONLY waits after every mutating action (proves the NEW push compiled+presented and gl.load.post.deselect already fired - keeps _SelLast/_SelAll macros out of the deselect race and re-establishes multi-second spacing between slot overwrites for the 0.25s archiver poll); requireReal+requireSteady reserved for the FINAL settle wait (the agent's requireSteady branch ignores requireReal and can false-pass on a stale scene mid-run). MACRO PROVENANCE (every token from a passing committed test or CPig.Rhino source): _SelAll _Delete + _CPigBakeResolution 32 _Enter + _CPigSphere 0,0,0 10 (cpig-ab-r2-capture); _CPigBox 30,-10,-10 50,10,-10 50,10,10 + _SelLast _Move 0,0,0 -30,0,0 _Enter + _SelAll _CPigUnion _Enter (cpig-bool-refactor-08); select-then-command-in-ONE-macro (cpig-bool-refactor-12 / cpig-ab-r2-capture); _CPigCopy (CPigCopyCommand.cs EnglishName, refuses only baked/mesh recipes - the sphere here is recipe-relocatable). Checkpoint is mode:capture - no baseline, screenshot for manual review only. runMode shared. Requires Penumbra.Rhino + CPig.Rhino registered for auto-load.",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "ONE connected smooth solid: a horizontal rectangular bar with a smooth sphere bulging from each end (dumbbell-like union of two spheres bridged by a box). NOT three separate shapes, NOT two disconnected spheres, NOT an empty grey viewport."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigBakeResolution 32 _Enter" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _CPigCopy" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigBox 30,-10,-10 50,10,-10 50,10,10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _Move 0,0,0 -30,0,0 _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion _Enter" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "ab-r2-relocate-final-scene",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 8000,
+      "tolerance": 0.05,
+      "description": "Informational only - the A/B artifact of record is the archived display.3mf sequence, not this screenshot. Expected: ONE connected union blob - box (moved from authored x 30..50 to x 0..20) bridging the origin sphere (r=10) and its _CPigCopy relocated to +24 X. If the copy sits ON TOP of the source sphere, Relocate caller 1 (CPigCopyCommand.cs:71) regressed; if the box unions at the AUTHORED +30..+50 position (disconnected slab to the right), Relocate caller 2 (CPigModelingCommands.cs:212, the bool-refactor-08 BUG-0019/0020 class) regressed."
+    }
+  ]
+}
