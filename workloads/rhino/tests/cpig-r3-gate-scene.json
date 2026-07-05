@@ -1,0 +1,34 @@
+{
+  "name": "cpig-r3-gate-scene",
+  "workload": "rhino",
+  "description": "R3 §6 gate scene — curved part (imported STL) + conformal octet lattice + Field→Mesh with the meshes-cleanly predicate. Gate evidence: renders correctly + meshes cleanly. Wall-thickness and self-support are run as separate diagnostic steps (not capture-gated). Uses scripted _CPig* commands (Rhino-first lane).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport showing a curved boat-shaped part with an octet truss lattice infill conforming to the part shape, rendered as a ray-marched SDF surface. The lattice fills the interior with visible strut structure. NOT an empty viewport, NOT a single solid shape without lattice."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "-_Import \"C:\\Repos\\3dLibrary\\speedboat.stl\" _Enter" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_CPigLattice 0 5 5 5 10 1.0 1" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelAll _CPigUnion" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "RunCommand", "command": "_SelLast _CPigFieldToMesh 2.0" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-r3-gate-scene-final",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 10000,
+      "tolerance": 0.005,
+      "description": "Gate scene: curved boat part + conformal octet lattice union + meshed result."
+    }
+  ]
+}
