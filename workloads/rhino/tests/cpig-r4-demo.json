@@ -1,0 +1,44 @@
+{
+  "name": "cpig-r4-demo",
+  "workload": "rhino",
+  "description": "R4 demo — a multi-atom scene (sphere + gyroid lattice) with LIVE rep cycling through tape → atlasBaked → mesh → pointCloud → companionTape, so the operator can see the R4 rep-dispatch paths working. R4 moved the rep capability flags (canTape/canGrid/canPoint/canMesh) from the C# conduit mirror to the artifact (single source of truth). This test cycles the reps and captures at each stage — if R4 broke rep dispatch, the reps would be inert (all frames identical, the 0059 symptom). The camera setup mirrors the rep-matrix pattern (decoy-sphere framing + solo perspective).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A ray-marched SDF scene showing a sphere and a gyroid lattice, cycling through different rendering representations (solid tape, grid atlas, mesh shell, point cloud, companion stand-in). Each checkpoint should show a VISUALLY DISTINCT representation — NOT all identical frames."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "_CPigSphere 0,0,0 10" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
+    { "type": "RunCommand", "command": "_CPigGyroid 20 1 -25,-25,-25 25,25,25 50" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "-_4View _Enter" },
+    { "type": "RunCommand", "command": "-_MaxViewport" },
+    { "type": "RunCommand", "command": "-_SetView _World _Perspective" },
+    { "type": "RunCommand", "command": "-_Sphere 0,0,0 45" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_SelSrf" },
+    { "type": "RunCommand", "command": "-_Zoom _Selected" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 35 _EnterEnd" },
+    { "type": "RunCommand", "command": "-_ViewportProperties _Lens 50 _EnterEnd" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "RunCommand", "command": "_SelSrf" },
+    { "type": "RunCommand", "command": "_Delete" },
+    { "type": "RunCommand", "command": "_SelNone" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-r4-demo-auto",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 5000,
+      "tolerance": 0.005,
+      "description": "R4 demo — auto rep (fresh-field default): sphere + gyroid lattice in their native representations."
+    }
+  ]
+}
