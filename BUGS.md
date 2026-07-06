@@ -2,8 +2,8 @@
 type: bugs
 repo: Canary
 open_bugs: null
-total_bugs: 8
-last_updated: 2026-06-02
+total_bugs: 16
+last_updated: 2026-07-06
 priority_max: null
 bugs_dir: docs/bugs/
 ---
