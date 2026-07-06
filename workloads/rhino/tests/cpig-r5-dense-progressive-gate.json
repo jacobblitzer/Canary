@@ -1,0 +1,29 @@
+{
+  "name": "cpig-r5-dense-progressive-gate",
+  "workload": "rhino",
+  "description": "R5 flagship gate — a dense mesh field (speedboat.stl) pushed to Penumbra via _CPigFromMesh (single-mesh PushGrid fast path, N=64 coarse). The cascade baker should progressively refine it via the registered CPig SampleToGrid provider. Gates on: the field renders + converges to steady state. Verifies the R5 dense progressive path end-to-end (UBO 64 atoms + RegisterFieldProvider + CPig SampleToGrid callback).",
+  "runMode": "shared",
+  "setup": {
+    "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
+    "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
+    "vlmDescription": "A 3D viewport showing a curved boat-shaped mesh part rendered as a ray-marched SDF surface. The surface should look smooth and solid, not blocky or empty. This verifies the dense progressive path: the mesh field is pushed at coarse resolution and refined by the cascade baker."
+  },
+  "actions": [
+    { "type": "RunCommand", "command": "_SelAll _Delete" },
+    { "type": "RunCommand", "command": "-_Import \"C:\\Repos\\3dLibrary\\speedboat.stl\" _Enter" },
+    { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
+    { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "quietMs": 3000, "timeoutMs": 120000 }
+  ],
+  "checkpoints": [
+    {
+      "name": "cpig-r5-dense-progressive-gate-final",
+      "atTimeMs": 0,
+      "source": "viewport",
+      "mode": "capture",
+      "stabilizeMs": 10000,
+      "tolerance": 0.005,
+      "predicate": "meshes-cleanly"
+    }
+  ]
+}
