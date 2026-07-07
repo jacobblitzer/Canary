@@ -41,6 +41,17 @@ public sealed class CanaryRhinoPlugin : PlugIn
 
         RhinoApp.WriteLine($"[Canary] Starting agent on pipe '{pipeName}'...");
 
+        // Bypass native-crash JIT debugger dialogs (bug 0016): when a native access
+        // violation fires inside a Grasshopper component (e.g. cpig_native.dll),
+        // Windows shows a "choose a debugger" JIT dialog that blocks the UI thread.
+        // The harness then times out with a generic "did not respond" because the
+        // RPC handler (which runs on the UI thread) can't return. SEM_NOGPFAULTERRORBOX
+        // + SEM_NOOPENFILEERRORBOX make the process terminate immediately on a native
+        // fault instead of showing a dialog — the harness sees the pipe disconnect
+        // and reports a clear error. This also disables the GPF error box so we don't
+        // hang waiting for a user to dismiss it during an automated test run.
+        SuppressCrashDialogs();
+
         _cts = new CancellationTokenSource();
         var agent = new RhinoAgent();
         _server = new AgentServer(pipeName, agent);
@@ -96,5 +107,46 @@ public sealed class CanaryRhinoPlugin : PlugIn
         _cts?.Dispose();
         _popupCts?.Dispose();
         base.OnShutdown();
+    }
+
+    // ── Native crash dialog suppression (bug 0016) ──────────────────────────
+
+    /// <summary>
+    /// Windows error mode flags — SEM_NOGPFAULTERRORBOX makes the process
+    /// terminate silently on a GPF/access violation instead of showing a JIT
+    /// debugger dialog that blocks the UI thread during automated test runs.
+    /// </summary>
+    private const uint SEM_FAILCRITICALERRORS = 0x0001;
+    private const uint SEM_NOGPFAULTERRORBOX = 0x0002;
+    private const uint SEM_NOOPENFILEERRORBOX = 0x8000;
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern uint SetErrorMode(uint uMode);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern uint GetErrorMode();
+
+    /// <summary>
+    /// Suppresses Windows JIT debugger dialogs for native crashes. When a native
+    /// access violation fires (e.g. in cpig_native.dll), the process terminates
+    /// immediately instead of showing a "choose a debugger" dialog. This prevents
+    /// the harness from hanging for the full RPC timeout waiting for a dialog no
+    /// one will dismiss. The pipe disconnects, and the harness reports a clear error.
+    /// </summary>
+    private static void SuppressCrashDialogs()
+    {
+        try
+        {
+            // Preserve existing flags, add the two that suppress crash dialogs.
+            uint existing = GetErrorMode();
+            uint desired = existing | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS;
+            SetErrorMode(desired);
+            RhinoApp.WriteLine($"[Canary] Crash dialogs suppressed (error mode: {desired:X}). " +
+                               "Native faults will terminate instead of showing a JIT debugger dialog.");
+        }
+        catch (Exception ex)
+        {
+            RhinoApp.WriteLine($"[Canary] Warning: could not suppress crash dialogs: {ex.Message}");
+        }
     }
 }

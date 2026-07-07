@@ -189,7 +189,38 @@ public sealed class HarnessClient : IDisposable
         }
         catch (IOException ex)
         {
-            throw new IOException("Pipe disconnected while awaiting response.", ex);
+            // If the pipe disconnects mid-RPC, the Rhino process likely crashed
+            // (native access violation in a component, e.g. cpig_native.dll).
+            // The crash-dialog suppression (SEM_NOGPFAULTERRORBOX) makes Rhino
+            // terminate immediately instead of showing a JIT dialog, so we see
+            // the disconnect. Report a clear crash message.
+            if (TargetProcessId != 0)
+            {
+                try
+                {
+                    var proc = Process.GetProcessById(TargetProcessId);
+                    // Process still alive but pipe disconnected — it may be in
+                    // the process of shutting down or the pipe broke for another reason.
+                    throw new IOException(
+                        $"Pipe disconnected while awaiting response to '{method}'. " +
+                        $"Rhino process (PID {TargetProcessId}) is still running — " +
+                        "may be a slow shutdown or a partial crash. " +
+                        "If tests are hanging, check whether Rhino's UI is responsive.", ex);
+                }
+                catch (ArgumentException)
+                {
+                    // Process doesn't exist — it crashed. This is the expected
+                    // path when SEM_NOGPFAULTERRORBOX lets a native fault terminate
+                    // the process instead of showing a JIT debugger dialog.
+                    throw new IOException(
+                        $"Pipe disconnected: Rhino process (PID {TargetProcessId}) has exited — " +
+                        "likely a native crash (access violation in a component, e.g. cpig_native.dll). " +
+                        "Check the Canary telemetry + Rhino command history for the last action before the crash. " +
+                        "The crash dialog was suppressed by SEM_NOGPFAULTERRORBOX so the process terminated " +
+                        "instead of hanging on a JIT debugger prompt.", ex);
+                }
+            }
+            throw new IOException($"Pipe disconnected while awaiting response to '{method}'.", ex);
         }
 
         if (responseLine == null)
