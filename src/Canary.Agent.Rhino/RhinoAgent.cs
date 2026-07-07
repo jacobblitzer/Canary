@@ -97,13 +97,21 @@ public sealed class RhinoAgent : ICanaryAgent
     }
 
     /// <summary>
+    /// Configurable UI-thread marshal timeout in ms. Default 180s (original hard-coded
+    /// value). The harness sets this from WorkloadConfig.ExecuteTimeoutMs so slow GH
+    /// solutions (e.g. Field Point Cloud octree) don't hit the 180s cap before the
+    /// harness-side ExecuteTimeoutMs fires. Set via <see cref="UiTimeoutMs"/>.
+    /// </summary>
+    public static int UiTimeoutMs { get; set; } = 180000;
+
+    /// <summary>
     /// Marshals a function to Rhino's UI thread and waits for the result.
-    /// 180s timeout is intentional — the original 30s was too short for cold
-    /// GH first-load (plugin discovery happens on the UI thread and can
-    /// exceed 60s when several heavy plugins like fTetWild/CGAL are
-    /// installed). Throws TimeoutException on expiry rather than returning
-    /// default(T), so AgentServer surfaces it as an ErrorResponse instead
-    /// of producing the "Response result was null" mystery on the client.
+    /// Timeout is <see cref="UiTimeoutMs"/> (default 180s, configurable from workload config).
+    /// The original 30s was too short for cold GH first-load (plugin discovery happens on
+    /// the UI thread and can exceed 60s when several heavy plugins like fTetWild/CGAL are
+    /// installed). Throws TimeoutException on expiry rather than returning default(T), so
+    /// AgentServer surfaces it as an ErrorResponse instead of producing the
+    /// "Response result was null" mystery on the client.
     /// </summary>
     private static T InvokeOnUi<T>(Func<T> func)
     {
@@ -127,10 +135,11 @@ public sealed class RhinoAgent : ICanaryAgent
             }
         }));
 
-        bool completed = done.Wait(TimeSpan.FromSeconds(180));
+        bool completed = done.Wait(TimeSpan.FromMilliseconds(UiTimeoutMs));
         if (!completed)
-            throw new TimeoutException("Rhino UI thread did not run the agent action within 180s. " +
-                                       "Likely a modal dialog or solver hang on the UI thread.");
+            throw new TimeoutException($"Rhino UI thread did not run the agent action within {UiTimeoutMs / 1000}s. " +
+                                       "Likely a modal dialog or solver hang on the UI thread. " +
+                                       "If this is a slow GH solution (not a hang), bump executeTimeoutMs in the workload config.");
 
         if (caught != null)
             throw caught;

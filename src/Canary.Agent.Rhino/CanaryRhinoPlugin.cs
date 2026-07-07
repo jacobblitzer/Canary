@@ -52,6 +52,19 @@ public sealed class CanaryRhinoPlugin : PlugIn
         // hang waiting for a user to dismiss it during an automated test run.
         SuppressCrashDialogs();
 
+        // Bump the RhinoAgent's InvokeOnUi timeout to match the harness execute timeout.
+        // The original hard-coded 180s was too short for slow GH solutions (Field Point
+        // Cloud octree at depth 7 takes >180s). The harness sends ExecuteTimeoutMs via
+        // an env var (set by RhinoSessionAgent/TestRunner on launch) so the agent-side
+        // UI marshal timeout matches the harness-side RPC timeout. Default 180s if
+        // the env var isn't set (backwards compatible).
+        int uiTimeout = 180000;
+        var envTimeout = Environment.GetEnvironmentVariable("CANARY_EXECUTE_TIMEOUT_MS");
+        if (int.TryParse(envTimeout, out var parsed) && parsed > 0)
+            uiTimeout = parsed;
+        RhinoAgent.UiTimeoutMs = uiTimeout;
+        RhinoApp.WriteLine($"[Canary] InvokeOnUi timeout: {uiTimeout / 1000}s (from CANARY_EXECUTE_TIMEOUT_MS env).");
+
         // Install crash capture: intercept unhandled exceptions + native faults and
         // log the FULL crash details (exception type, message, stack trace, faulting
         // module) to a crash file BEFORE the process terminates. The harness reads

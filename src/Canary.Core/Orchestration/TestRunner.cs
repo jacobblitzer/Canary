@@ -414,7 +414,14 @@ public sealed class TestRunner
             // — rescuing here too would double-copy and churn the global cap.
             try { PenumbraTelemetryRescue.RescueGlobal(); } catch { }
             spawnRef = $"run-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid().ToString("N").Substring(0, 4)}";
-            extraEnv = new Dictionary<string, string> { ["PENUMBRA_SESSION_REF"] = spawnRef };
+            extraEnv = new Dictionary<string, string>
+            {
+                ["PENUMBRA_SESSION_REF"] = spawnRef,
+                // Pass the execute timeout to the Rhino agent so its InvokeOnUi marshal
+                // timeout matches the harness-side RPC timeout (bug 0016: the agent's
+                // hard-coded 180s fired before the harness's 300s, masking the real issue).
+                ["CANARY_EXECUTE_TIMEOUT_MS"] = workload.ExecuteTimeoutMs.ToString(),
+            };
         }
         var launch = AppLauncher.LaunchWithEnv(workload, extraEnv);
         if (isRhino)
