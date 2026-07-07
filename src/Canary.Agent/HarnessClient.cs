@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
@@ -17,6 +18,13 @@ public sealed class HarnessClient : IDisposable
     private NamedPipeClientStream? _pipeClient;
     private StreamReader? _reader;
     private StreamWriter? _writer;
+
+    /// <summary>
+    /// The PID of the target app process (extracted from the pipe name), used for
+    /// breakpoint-detection diagnostics when an RPC times out. Set by RhinoSessionAgent
+    /// after launch. Zero = unknown (skip the check).
+    /// </summary>
+    public int TargetProcessId { get; set; }
     private int _nextId;
 
     /// <summary>
@@ -171,13 +179,13 @@ public sealed class HarnessClient : IDisposable
             var completed = await Task.WhenAny(readTask, delayTask).ConfigureAwait(false);
 
             if (completed != readTask)
-                throw new TimeoutException($"Agent did not respond within {_timeout.TotalSeconds}s for method '{method}'.");
+                throw new TimeoutException(BuildTimeoutMessage(method));
 
             responseLine = await readTask.ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            throw new TimeoutException($"Agent did not respond within {_timeout.TotalSeconds}s for method '{method}'.");
+            throw new TimeoutException(BuildTimeoutMessage(method));
         }
         catch (IOException ex)
         {
@@ -201,6 +209,75 @@ public sealed class HarnessClient : IDisposable
             throw new InvalidOperationException("Response result was null.");
         return response.Result.Value.Deserialize<T>()
             ?? throw new InvalidOperationException($"Failed to deserialize response result to {typeof(T).Name}.");
+    }
+
+    /// <summary>
+    /// Builds a timeout error message that includes breakpoint detection.
+    /// When the target process has a debugger attached, the most likely cause of an
+    /// RPC timeout is a Debugger.Break() in a Grasshopper component's SolveInstance —
+    /// which blocks the UI thread, and RhinoApp.Wait() on the RPC thread then blocks
+    /// waiting for the UI thread to pump messages. The operator sees "did not respond
+    /// within Xs" with no hint that a breakpoint is the cause. This checks the target
+    /// process for a debugger and appends a clear hint.
+    /// </summary>
+    private string BuildTimeoutMessage(string method)
+    {
+        var baseMsg = $"Agent did not respond within {_timeout.TotalSeconds}s for method '{method}'.";
+
+        // Check if the target process has a debugger attached. A debugger-attached
+        // process is the strongest signal that a Debugger.Break() fired inside a
+        // component and is blocking the solution.
+        if (TargetProcessId != 0)
+        {
+            try
+            {
+                var proc = Process.GetProcessById(TargetProcessId);
+                // The most reliable check: if the process is being debugged, its
+                // threads are often in a wait state. We can also check whether any
+                // debugger process (vsjitdebugger, devenv, etc.) is running.
+                bool debuggerRunning = IsDebuggerPresentOnSystem();
+                if (debuggerRunning)
+                {
+                    return baseMsg + " LIKELY BREAKPOINT: a debugger is attached to the target process " +
+                           $"(PID {TargetProcessId}). A Debugger.Break() in a Grasshopper component " +
+                           "may be blocking the solution. Check the Rhino window — if a 'No debugger " +
+                           "available / JIT debugger' dialog is showing, dismiss it and remove the " +
+                           "Debugger.Break() from the component source. Search for " +
+                           "'Debugger.Break' in CPig.Grasshopper/Components/ and CPig.Interop/.";
+                }
+            }
+            catch { /* process may have exited */ }
+        }
+
+        return baseMsg + " This may be a breakpoint (Debugger.Break in a component) or a genuinely slow solution. " +
+               "If Rhino's UI is frozen, check for a JIT-debugger dialog.";
+    }
+
+    /// <summary>
+    /// Checks whether any common debugger process is running on the system.
+    /// Not perfect (can't detect all debuggers), but catches the common ones that
+    /// attach to a crashed process: VS JIT debugger, Visual Studio, Rider, etc.
+    /// </summary>
+    private static bool IsDebuggerPresentOnSystem()
+    {
+        try
+        {
+            var procs = Process.GetProcesses();
+            foreach (var p in procs)
+            {
+                try
+                {
+                    var name = p.ProcessName.ToLowerInvariant();
+                    if (name.Contains("vsjitdebugger") || name.Contains("devenv") ||
+                        name.Contains("rider") || name.Contains("vsdbg") ||
+                        name.Contains("mono-debugger") || name.Contains("lldb"))
+                        return true;
+                }
+                catch { }
+            }
+        }
+        catch { }
+        return false;
     }
 
     /// <inheritdoc/>

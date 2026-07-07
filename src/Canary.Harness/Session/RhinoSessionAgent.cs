@@ -115,7 +115,11 @@ internal sealed class RhinoSessionAgent : ICanaryAgent, ITelemetryAware, IProces
                 AppliedEnv = launch.AppliedEnv,
             };
             var pipeName = $"{workload.PipeName}-{launched.Id}";
-            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs));
+            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs))
+            {
+                // Pass the target PID so breakpoint detection can fire on timeout (bug 0016).
+                TargetProcessId = launched.Id
+            };
             await client.ConnectAsync(workload.StartupTimeoutMs, ct).ConfigureAwait(false);
             var hb = await client.HeartbeatAsync(ct).ConfigureAwait(false);
             if (!hb.Ok)

@@ -1176,6 +1176,19 @@ public sealed class RhinoAgent : ICanaryAgent
             };
         }
 
+        // Breakpoint detection (bug 0016): if a debugger is attached to this process,
+        // a Debugger.Break() in a component's SolveInstance will block the UI thread.
+        // RhinoApp.Wait() below pumps the message loop and will block waiting for the
+        // UI thread — so the harness-side RPC times out with a generic "did not respond"
+        // message and the operator has no idea a breakpoint fired. Warn up-front.
+        if (System.Diagnostics.Debugger.IsAttached)
+        {
+            RhinoApp.WriteLine("[Canary] WARNING: a debugger is attached to Rhino. If a Debugger.Break() " +
+                               "fires inside a Grasshopper component, the solution will hang and Canary " +
+                               "will time out. Remove Debugger.Break() calls from component source before " +
+                               "running Canary tests.");
+        }
+
         // Wait for the canvas to QUIESCE: not just the first PostProcess, but
         // a stable run of consecutive PostProcess polls. Slop's BUILD callback
         // runs via doc.ScheduleSolution(10ms, ...), which means after the
