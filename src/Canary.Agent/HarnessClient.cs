@@ -212,10 +212,14 @@ public sealed class HarnessClient : IDisposable
                     // Process doesn't exist — it crashed. This is the expected
                     // path when SEM_NOGPFAULTERRORBOX lets a native fault terminate
                     // the process instead of showing a JIT debugger dialog.
+                    // Read the crash log (if the agent wrote one before dying) and
+                    // surface the REAL crash details — not just "pipe disconnected."
+                    string crashDetails = ReadCrashLog(TargetProcessId);
                     throw new IOException(
                         $"Pipe disconnected: Rhino process (PID {TargetProcessId}) has exited — " +
                         "likely a native crash (access violation in a component, e.g. cpig_native.dll). " +
-                        "Check the Canary telemetry + Rhino command history for the last action before the crash. " +
+                        crashDetails +
+                        " Check the Canary telemetry + Rhino command history for the last action before the crash. " +
                         "The crash dialog was suppressed by SEM_NOGPFAULTERRORBOX so the process terminated " +
                         "instead of hanging on a JIT debugger prompt.", ex);
                 }
@@ -309,6 +313,39 @@ public sealed class HarnessClient : IDisposable
         }
         catch { }
         return false;
+    }
+
+    /// <summary>
+    /// Reads the Canary crash log written by the Rhino agent's crash capture
+    /// (AppDomain.UnhandledException + FirstChanceException + VectoredExceptionHandler).
+    /// Returns the crash details as a formatted string, or empty if no log exists.
+    /// The crash log path matches <c>CanaryRhinoPlugin.CrashLogPath</c> — it's a
+    /// known temp path so the harness can read it even after the agent process dies.
+    /// </summary>
+    private static string ReadCrashLog(int pid)
+    {
+        try
+        {
+            string crashLogPath = System.IO.Path.Combine(
+                System.IO.Path.GetTempPath(), "Canary", "canary-crash.log");
+            if (!System.IO.File.Exists(crashLogPath))
+                return "";
+
+            var content = System.IO.File.ReadAllText(crashLogPath);
+            if (string.IsNullOrWhiteSpace(content))
+                return "";
+
+            // Truncate very long crash logs so the error message stays readable.
+            // The first 4000 chars should contain the root-cause exception + stack.
+            if (content.Length > 4000)
+                content = content.Substring(0, 4000) + "\n... (truncated; full log at " + crashLogPath + ")";
+
+            return "\n\n=== CRASH DETAILS (from agent crash capture) ===\n" + content + "\n=== END CRASH DETAILS ===\n\n";
+        }
+        catch
+        {
+            return "";
+        }
     }
 
     /// <inheritdoc/>

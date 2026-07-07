@@ -52,6 +52,13 @@ public sealed class CanaryRhinoPlugin : PlugIn
         // hang waiting for a user to dismiss it during an automated test run.
         SuppressCrashDialogs();
 
+        // Install crash capture: intercept unhandled exceptions + native faults and
+        // log the FULL crash details (exception type, message, stack trace, faulting
+        // module) to a crash file BEFORE the process terminates. The harness reads
+        // this file on pipe disconnect and surfaces the real crash info — instead of
+        // the generic "did not respond" that hides what actually broke.
+        InstallCrashCapture();
+
         _cts = new CancellationTokenSource();
         var agent = new RhinoAgent();
         _server = new AgentServer(pipeName, agent);
@@ -148,5 +155,250 @@ public sealed class CanaryRhinoPlugin : PlugIn
         {
             RhinoApp.WriteLine($"[Canary] Warning: could not suppress crash dialogs: {ex.Message}");
         }
+    }
+
+    // ── Crash capture (bug 0016: surface the real crash info) ──────────────
+
+    /// <summary>
+    /// Path where crash details are written when the process is about to die.
+    /// The harness reads this file on pipe disconnect and surfaces the content.
+    /// </summary>
+    public static string CrashLogPath { get; } = System.IO.Path.Combine(
+        System.IO.Path.GetTempPath(), "Canary", "canary-crash.log");
+
+    /// <summary>
+    /// Installs global exception handlers that capture the FULL crash details
+    /// (exception type, message, stack trace, inner exceptions, faulting module)
+    /// and write them to <see cref="CrashLogPath"/> before the process terminates.
+    /// Without this, a native fault or unhandled exception kills Rhino silently and
+    /// the harness can only report "pipe disconnected" — losing the actual error.
+    /// </summary>
+    private static void InstallCrashCapture()
+    {
+        // Clear any stale crash log from a previous run.
+        try { if (System.IO.File.Exists(CrashLogPath)) System.IO.File.Delete(CrashLogPath); }
+        catch { }
+
+        // Managed unhandled exceptions (e.g. NullReferenceException in a component).
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            try
+            {
+                var ex = e.ExceptionObject as Exception;
+                WriteCrashLog("AppDomain.UnhandledException", ex, e.IsTerminating);
+            }
+            catch { }
+        };
+
+        // Unobserved task exceptions (async void, fire-and-forget Task.Run).
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            try
+            {
+                WriteCrashLog("TaskScheduler.UnobservedTaskException", e.Exception, terminating: false);
+                e.SetObserved(); // don't crash for unobserved — log and continue
+            }
+            catch { }
+        };
+
+        // First-chance exceptions: log every AccessViolationException /
+        // AccessViolation at the moment it's thrown, before it's caught or
+        // unwinds. This catches native faults that would otherwise disappear.
+        AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
+        {
+            try
+            {
+                var ex = e.Exception;
+                if (ex is AccessViolationException || ex is System.Runtime.InteropServices.SEHException)
+                {
+                    WriteCrashLog("AppDomain.FirstChanceException (native fault)", ex, terminating: false);
+                }
+            }
+            catch { }
+        };
+
+        // Native structured exception handling via VectoredExceptionRecord.
+        // This catches access violations from native DLLs (cpig_native.dll etc.)
+        // that don't surface as managed exceptions.
+        InstallVectoredExceptionHandler();
+
+        RhinoApp.WriteLine($"[Canary] Crash capture installed. Crash log: {CrashLogPath}");
+    }
+
+    /// <summary>
+    /// Writes crash details to <see cref="CrashLogPath"/>. Includes the exception
+    /// type, message, stack trace, inner exceptions, and timestamp.
+    /// </summary>
+    private static void WriteCrashLog(string source, Exception? ex, bool terminating)
+    {
+        try
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"=== Canary Crash Log ===");
+            sb.AppendLine($"Timestamp: {DateTime.UtcNow:O}");
+            sb.AppendLine($"Source: {source}");
+            sb.AppendLine($"Terminating: {terminating}");
+            sb.AppendLine($"PID: {System.Diagnostics.Process.GetCurrentProcess().Id}");
+            sb.AppendLine();
+            if (ex != null)
+            {
+                AppendException(sb, ex, depth: 0);
+            }
+            else
+            {
+                sb.AppendLine("Exception object was null.");
+            }
+            sb.AppendLine();
+            sb.AppendLine("=== End Crash Log ===");
+
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(CrashLogPath)!);
+            // Append so multiple faults in one session accumulate (first = root cause).
+            System.IO.File.AppendAllText(CrashLogPath, sb.ToString());
+            RhinoApp.WriteLine($"[Canary] Crash details written to {CrashLogPath}");
+        }
+        catch { /* never throw from a crash handler */ }
+    }
+
+    private static void AppendException(System.Text.StringBuilder sb, Exception ex, int depth)
+    {
+        var indent = new string(' ', depth * 2);
+        sb.AppendLine($"{indent}Exception [{depth}]: {ex.GetType().FullName}");
+        sb.AppendLine($"{indent}Message: {ex.Message}");
+        sb.AppendLine($"{indent}Source: {ex.Source}");
+        sb.AppendLine($"{indent}TargetSite: {ex.TargetSite?.Name} in {ex.TargetSite?.DeclaringType?.FullName}");
+        sb.AppendLine($"{indent}StackTrace:");
+        if (!string.IsNullOrEmpty(ex.StackTrace))
+            foreach (var line in ex.StackTrace.Split('\n'))
+                sb.AppendLine($"{indent}  {line.TrimEnd()}");
+        else
+            sb.AppendLine($"{indent}  (no stack trace)");
+
+        // Native exception HRESULT (for access violations: 0x80004003 E_POINTER,
+        // 0xE06D7363 C++ exception, etc.)
+        try
+        {
+            sb.AppendLine($"{indent}HRESULT: 0x{System.Runtime.InteropServices.Marshal.GetHRForException(ex):X8}");
+        }
+        catch { }
+
+        if (ex is System.Runtime.InteropServices.ExternalException ext)
+        {
+            sb.AppendLine($"{indent}ErrorCode: 0x{ext.ErrorCode:X8}");
+        }
+
+        if (ex.InnerException != null)
+        {
+            sb.AppendLine($"{indent}Inner:");
+            AppendException(sb, ex.InnerException, depth + 1);
+        }
+    }
+
+    // ── Vectored exception handling for native faults ──────────────────────
+
+    private const uint EXCEPTION_ACCESS_VIOLATION = 0xC0000005;
+    private const uint STATUS_ACCESS_VIOLATION = EXCEPTION_ACCESS_VIOLATION;
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern System.IntPtr AddVectoredExceptionHandler(uint first, VectoredHandlerDelegate handler);
+
+    private delegate uint VectoredHandlerDelegate(System.IntPtr exceptionInfo);
+
+    private static VectoredHandlerDelegate? _vectoredHandler;
+
+    /// <summary>
+    /// Installs a vectored exception handler that catches native access violations
+    /// and other hardware exceptions BEFORE the CLR's unhandled-exception filter.
+    /// This is the only way to capture a fault in a native DLL (cpig_native.dll)
+    /// that doesn't surface as a managed exception.
+    /// </summary>
+    private static void InstallVectoredExceptionHandler()
+    {
+        try
+        {
+            _vectoredHandler = (exceptionInfo) =>
+            {
+                try
+                {
+                    // EXCEPTION_RECORD: read the exception code from the structure.
+                    // The layout of EXCEPTION_POINTERS is { EXCEPTION_RECORD*, CONTEXT* }.
+                    // EXCEPTION_RECORD starts with: DWORD ExceptionCode; DWORD ExceptionFlags;
+                    var recordPtr = System.Runtime.InteropServices.Marshal.ReadIntPtr(exceptionInfo);
+                    if (recordPtr != System.IntPtr.Zero)
+                    {
+                        int code = System.Runtime.InteropServices.Marshal.ReadInt32(recordPtr);
+                        // 0xC0000005 = access violation. Log all, but flag the common ones.
+                        // Compare as uint because the codes are > int.MaxValue (0xC0000005).
+                        uint codeUnsigned = (uint)code;
+                        string codeName = codeUnsigned switch
+                        {
+                            EXCEPTION_ACCESS_VIOLATION => "ACCESS_VIOLATION (0xC0000005)",
+                            0xC000001Du => "ILLEGAL_INSTRUCTION (0xC000001D)",
+                            0xC0000025u => "NONCONTINUABLE_EXCEPTION (0xC0000025)",
+                            0xC0000094u => "INT_DIVIDE_BY_ZERO (0xC0000094)",
+                            0xC0000096u => "PRIVILEGED_INSTRUCTION (0xC0000096)",
+                            0xC00000FDu => "STACK_OVERFLOW (0xC00000FD)",
+                            _ => $"0x{codeUnsigned:X8}"
+                        };
+
+                        // For access violations, bits 0-1 of ExceptionInformation[0] tell
+                        // if it was a read (0) or write (1). ExceptionInformation[1] is the
+                        // faulting address.
+                        string accessDetail = "";
+                        if (codeUnsigned == EXCEPTION_ACCESS_VIOLATION)
+                        {
+                            try
+                            {
+                                long accessType = System.Runtime.InteropServices.Marshal.ReadInt32(recordPtr, 4 + 4); // after flags
+                                long faultAddr = System.Runtime.InteropServices.Marshal.ReadInt64(recordPtr, 4 + 4 + 4 * 2);
+                                accessDetail = $" — {(accessType == 0 ? "read" : "write")} at 0x{faultAddr:X}";
+                            }
+                            catch { }
+                        }
+
+                        WriteCrashLogNative(
+                            $"VectoredExceptionHandler — NATIVE FAULT: {codeName}{accessDetail}",
+                            code);
+                    }
+                }
+                catch { }
+                // EXCEPTION_CONTINUE_SEARCH = 0 — let other handlers run too
+                return 0;
+            };
+
+            // 1 = first in chain (call before existing handlers)
+            var handle = AddVectoredExceptionHandler(1, _vectoredHandler);
+            if (handle != System.IntPtr.Zero)
+                RhinoApp.WriteLine("[Canary] Vectored exception handler installed for native fault capture.");
+            else
+                RhinoApp.WriteLine("[Canary] Warning: AddVectoredExceptionHandler returned null — native fault capture disabled.");
+        }
+        catch (Exception ex)
+        {
+            RhinoApp.WriteLine($"[Canary] Warning: could not install vectored exception handler: {ex.Message}");
+        }
+    }
+
+    private static void WriteCrashLogNative(string source, int exceptionCode)
+    {
+        try
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"=== Canary Crash Log (native) ===");
+            sb.AppendLine($"Timestamp: {DateTime.UtcNow:O}");
+            sb.AppendLine($"Source: {source}");
+            sb.AppendLine($"ExceptionCode: 0x{exceptionCode:X8}");
+            sb.AppendLine($"PID: {System.Diagnostics.Process.GetCurrentProcess().Id}");
+            sb.AppendLine();
+            sb.AppendLine("This is a native fault (likely from cpig_native.dll or another native dependency).");
+            sb.AppendLine("The process will terminate — check the last Canary action in telemetry to");
+            sb.AppendLine("identify which Grasshopper component triggered the crash.");
+            sb.AppendLine();
+            sb.AppendLine("=== End Crash Log ===");
+
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(CrashLogPath)!);
+            System.IO.File.AppendAllText(CrashLogPath, sb.ToString());
+            RhinoApp.WriteLine($"[Canary] Native fault captured: {source}");
+        }
+        catch { }
     }
 }
