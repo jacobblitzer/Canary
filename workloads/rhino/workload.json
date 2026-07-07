@@ -6,6 +6,7 @@
   "agentType": "rhino",
   "pipeName": "canary-rhino",
   "startupTimeoutMs": 90000,
+  "executeTimeoutMs": 300000,
   "windowTitle": "Rhinoceros",
   "viewportClass": "Eto.Wpf.Forms.Controls.WpfViewportHandler",
   "setupCommands": []

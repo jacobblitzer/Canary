@@ -29,6 +29,15 @@ public sealed class WorkloadConfig
     [JsonPropertyName("startupTimeoutMs")]
     public int StartupTimeoutMs { get; set; } = 30000;
 
+    /// <summary>
+    /// Per-RPC response timeout in ms. The hard-coded 120s default was too short for
+    /// headless agent-session launches (bug 0016) where Rhino plugin loading is slow.
+    /// Bump to 300s in the workload config for Rhino. This caps how long the harness
+    /// waits for any single Execute/Capture action to return a response line.
+    /// </summary>
+    [JsonPropertyName("executeTimeoutMs")]
+    public int ExecuteTimeoutMs { get; set; } = 120000;
+
     [JsonPropertyName("windowTitle")]
     public string WindowTitle { get; set; } = string.Empty;
 

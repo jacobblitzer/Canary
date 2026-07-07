@@ -115,7 +115,7 @@ internal sealed class RhinoSessionAgent : ICanaryAgent, ITelemetryAware, IProces
                 AppliedEnv = launch.AppliedEnv,
             };
             var pipeName = $"{workload.PipeName}-{launched.Id}";
-            client = new HarnessClient(pipeName, TimeSpan.FromSeconds(120));
+            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs));
             await client.ConnectAsync(workload.StartupTimeoutMs, ct).ConfigureAwait(false);
             var hb = await client.HeartbeatAsync(ct).ConfigureAwait(false);
             if (!hb.Ok)
