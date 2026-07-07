@@ -88,8 +88,10 @@ The `TestRunner` 120s + `InvokeOnUi` 180s fired before the configured 300s, so t
 **The `cpig-59-field-point-cloud-r6` hang** was actually a GH type-conversion error (FieldPointCloud outputs `GH_PointCloud`, Custom Preview expects `GH_Point`-compatible geometry). The conversion error balloon caused the solution to keep re-running. Fixed in the Slop test (removed Custom Preview wiring — `cbbf027`). Test now completes in 24s (was 200s+).
 
 **Verification:**
-- `cpig-58-connected-components-r6`: PASS (25.6s, NEW)
-- `cpig-59-field-point-cloud-r6`: runs in 24s (SlopSuccess=False is a Slop definition issue, not a Canary issue — the Field Point Cloud component needs a different Hint input)
+- `cpig-58-connected-components-r6`: PASS (25.6s, NEW) ✅
+- `cpig-59-field-point-cloud-r6`: runs in 24s (no longer hangs) ✅ — BUT `SlopSuccess=False` is a SEPARATE issue (the GH solution fails, not a timeout). Tracked in **bug 0017**. The timeout fixes here were valid (three hard-coded timeouts are now configurable), but they didn't fix the test — they just stopped it from hanging. The remaining failure is a GH type-conversion / component error that needs the SlopLog content + GH error balloon to diagnose (visual inspection required).
+
+**Note:** The crash-capture infrastructure (VectoredExceptionHandler, AppDomain handlers, crash log) was built speculatively for this bug but never fired (no crash log was ever written — the test doesn't crash, it fails gracefully). The infrastructure is retained as valuable for future native faults, but it was not the fix for this issue.
 
 ## Fix directions (for another session)
 
