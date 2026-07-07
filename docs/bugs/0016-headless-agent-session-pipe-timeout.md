@@ -1,10 +1,11 @@
 ---
 date: 2026-07-06
 tags: [bug, canary, rhino, agent-session, headless, slop-tests]
-status: open
+status: resolved
 project: canary
 severity: medium
-component: "Canary.Harness — RhinoSessionAgent named-pipe connection"
+component: "Canary.Harness — RhinoSessionAgent + TestRunner + RhinoAgent InvokeOnUi"
+fix-commit: 2be407c
 ---
 
 # 0016 — headless agent-session Canary runs crash with 120s pipe timeout (blocks Slop test verification)
@@ -67,13 +68,28 @@ This also blocks the "do a few slop definitions using cpig to make sure that you
 have things correct" verification loop: the agent can author + structurally
 validate the Slop JSONs, but cannot close the loop by running them.
 
-## Repro
+## Resolution (2026-07-07)
 
-From a Hermes agent session:
-```
-canary run --workload rhino --test cpig-14-graph --headless
-```
-Expected: PASS (works interactively). Actual: CRASH (120s pipe timeout).
+**Root cause:** THREE hard-coded timeouts were masking each other:
+1. `TestRunner.cs:152/524` — hard-coded `TimeSpan.FromSeconds(120)` for `HarnessClient` (the UI uses `TestRunner`, not `RhinoSessionAgent`)
+2. `RhinoAgent.InvokeOnUi` — hard-coded 180s UI-thread marshal timeout
+3. `RhinoSessionAgent.cs:118` — hard-coded 120s (already fixed in `2312e70`)
+
+The `TestRunner` 120s + `InvokeOnUi` 180s fired before the configured 300s, so the config change had no effect until all three were made configurable.
+
+**Fix (6 commits):**
+- `2312e70` — `WorkloadConfig.ExecuteTimeoutMs` + `RhinoSessionAgent` wiring
+- `8c0a886` — Breakpoint detection (`Debugger.IsAttached` + debugger-process scan)
+- `55f37d2` — Crash dialog suppression (`SEM_NOGPFAULTERRORBOX`) + pipe-disconnect detection
+- `3308961` — Full crash capture (`AppDomain.UnhandledException` + `FirstChanceException` + `VectoredExceptionHandler` → crash log)
+- `17e75f4` — `TestRunner` uses `ExecuteTimeoutMs` (the real 120s hardcode)
+- `2be407c` — `InvokeOnUi` 180s made configurable via `CANARY_EXECUTE_TIMEOUT_MS` env var
+
+**The `cpig-59-field-point-cloud-r6` hang** was actually a GH type-conversion error (FieldPointCloud outputs `GH_PointCloud`, Custom Preview expects `GH_Point`-compatible geometry). The conversion error balloon caused the solution to keep re-running. Fixed in the Slop test (removed Custom Preview wiring — `cbbf027`). Test now completes in 24s (was 200s+).
+
+**Verification:**
+- `cpig-58-connected-components-r6`: PASS (25.6s, NEW)
+- `cpig-59-field-point-cloud-r6`: runs in 24s (SlopSuccess=False is a Slop definition issue, not a Canary issue — the Field Point Cloud component needs a different Hint input)
 
 ## Fix directions (for another session)
 
