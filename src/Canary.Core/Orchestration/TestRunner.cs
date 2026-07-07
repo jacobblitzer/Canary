@@ -145,11 +145,14 @@ public sealed class TestRunner
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
 
             // 2. Connect to agent (waits for pipe to appear during app startup).
-            // 120s per-call timeout is generous for cold-start ops like
-            // OpenGrasshopperDefinition (first GH load discovers all plugins
-            // on the UI thread; can take 30-60s before reply gets sent).
-            _logger.Log($"Connecting to agent on pipe '{pipeName}' (timeout: {workload.StartupTimeoutMs}ms)...");
-            client = new HarnessClient(pipeName, TimeSpan.FromSeconds(120));
+            // The per-call timeout comes from the workload config (executeTimeoutMs,
+            // default 120s). For Rhino with slow GH solutions (e.g. Field Point
+            // Cloud octree at depth 7), bump to 300s in the workload config.
+            _logger.Log($"Connecting to agent on pipe '{pipeName}' (startup timeout: {workload.StartupTimeoutMs}ms, execute timeout: {workload.ExecuteTimeoutMs}ms)...");
+            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs))
+            {
+                TargetProcessId = appProcess.Id
+            };
             await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
             _logger.Log("Agent connected.");
 
@@ -520,8 +523,11 @@ public sealed class TestRunner
             _processManager.Track(appProcess);
 
             var pipeName = $"{workload.PipeName}-{appProcess.Id}";
-            _logger.Log($"Connecting to agent on pipe '{pipeName}' (timeout: {workload.StartupTimeoutMs}ms)...");
-            client = new HarnessClient(pipeName, TimeSpan.FromSeconds(120));
+            _logger.Log($"Connecting to agent on pipe '{pipeName}' (startup timeout: {workload.StartupTimeoutMs}ms, execute timeout: {workload.ExecuteTimeoutMs}ms)...");
+            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs))
+            {
+                TargetProcessId = appProcess.Id
+            };
             await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
             _logger.Log("Agent connected.");
 
