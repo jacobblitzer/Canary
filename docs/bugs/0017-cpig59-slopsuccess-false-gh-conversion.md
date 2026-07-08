@@ -1,7 +1,8 @@
 ---
 date: 2026-07-07
 tags: [bug, canary, slop, cpig, field-point-cloud, type-conversion, gh-error-balloon]
-status: open
+status: resolved
+fix-commit: a49e038 (CPig) + 412f5c9 (Canary)
 project: cpig
 severity: medium
 component: "CPig Slop test 59_field_point_cloud_r6.json"
@@ -10,7 +11,20 @@ related: "Canary bug 0016 (resolved — timeout infra now configurable)"
 
 # 0017 — cpig-59-field-point-cloud-r6 SlopSuccess=False (GH type-conversion / mysterious "breakpoint")
 
-## Symptom
+## Resolution (2026-07-08)
+
+**Root cause:** R6 Phase B thinning commit `e915ca5` changed `CPig_FieldPointCloud` output 0 from `AddGenericParameter("Point Cloud", "PC", item)` to `AddPointParameter("Points", "P", list)`, but `SolveInstance` still builds a `Rhino.Geometry.PointCloud` and sets it via `DA.SetData(0, pc)`. A `PointCloud` cannot convert to `GH_Point`, so GH fires the "Grasshopper breakpoint" catch-all dialog every run.
+
+**Fix (CPig `a49e038`):** Restored `AddGenericParameter("Point Cloud", "PC", ..., GH_ParamAccess.item)` — the exact pre-R6 declaration. `Param_GenericObject` accepts the `PointCloud` without conversion. The breakpoint never fires.
+
+**Canary support (`412f5c9`):** The PopupDismisser now detects "Grasshopper breakpoint" dialogs by title and BM_CLICKs the Close button (VK_RETURN doesn't work on the custom WinForms form). This is a defense-in-depth fallback — it catches breakpoints from other causes too, but with the CPig source fix, cpig-59 no longer triggers it.
+
+**Verification:**
+- 129/129 CPig.Core.Tests pass (gate green).
+- cpig-59 runs clean through Canary: 23.3s, Status New (not Failed), DiagnosticDump null, **no dismisser-scan.log created** (no breakpoint detected).
+- Build hygiene note: Rhino loads the Canary plugin from `bin\Debug\net48\` (not Release). Must build Debug too, or the stale Debug binary with old instrumentation keeps getting loaded. Fixed by building Debug before the re-run.
+
+## Symptoms
 
 `cpig-59-field-point-cloud-r6` returns `SlopSuccess=False` when run through Canary (GUI-open, ~24s). The test does NOT crash or hang anymore (Canary bug 0016 timeout fixes resolved that). The Slop loader builds the graph but a component fails during GH solution, causing the `SlopSuccess` panel to read "False".
 
