@@ -53,6 +53,15 @@ public sealed class TestResult
     public string? CompositeImagePath { get; set; }
     public string? ErrorMessage { get; set; }
     public TimeSpan Duration { get; set; }
+
+    /// <summary>
+    /// GH diagnostic dump (component runtime messages + all panel text)
+    /// captured when an assert fails. Null when the test passed or no dump
+    /// was requested. Surfaces GH 'breakpoint'-dialog error text that
+    /// otherwise only appears as a modal dialog invisible to the agent.
+    /// R6.5 Phase G experiment (bug 0018).
+    /// </summary>
+    public string? DiagnosticDump { get; set; }
 }
 
 /// <summary>

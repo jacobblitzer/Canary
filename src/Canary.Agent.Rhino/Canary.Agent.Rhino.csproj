@@ -31,10 +31,26 @@
   <Target Name="DeployToRhino" AfterTargets="Build" Condition="Exists('$(APPDATA)\McNeel\Rhinoceros\8.0\Plug-ins')">
     <MakeDir Directories="$(RhinoPluginDir)" />
     <ItemGroup>
-      <DeployFiles Include="$(OutputPath)**\*.*" />
+      <DeployFiles Include="$(TargetDir)**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(RhinoPluginDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <Message Importance="high" Text="Deployed Canary agent to $(RhinoPluginDir)" />
+  </Target>
+
+  <!-- Ship to G:\My Drive\Builds\Canary (mirrors CPig.Rhino + Penumbra.Rhino
+       ShipToDrive). Runs for BOTH Debug and Release so the Debug/Release
+       registration mismatch can't bite us — whatever config we build, the
+       binary lands where Rhino is registered to load it from. The operator
+       re-registers Rhino to load from G:\My Drive\Builds\Canary. -->
+  <Target Name="ShipToDrive" AfterTargets="Build" Condition="Exists('G:\My Drive\Builds')">
+    <ItemGroup>
+      <ShipFiles Include="$(TargetDir)**\*.*" Exclude="$(TargetDir)**\*.pdb" />
+    </ItemGroup>
+    <MakeDir Directories="G:\My Drive\Builds\Canary" />
+    <Copy SourceFiles="@(ShipFiles)"
+          DestinationFiles="@(ShipFiles->'G:\My Drive\Builds\Canary\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="[ship] Canary.Agent.Rhino.rhp + deps -> G:\My Drive\Builds\Canary" />
   </Target>
 
 </Project>

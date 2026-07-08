@@ -36,6 +36,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperSetToggle" => HandleGrasshopperSetToggle(parameters),
                     "GrasshopperSetPanelText" => HandleGrasshopperSetPanelText(parameters),
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
+                    "GrasshopperGetDiagnosticDump" => HandleGrasshopperGetDiagnosticDump(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
                     "GetPenumbraFrameState" => HandleGetPenumbraFrameState(parameters),
                     "DumpPenumbraSceneState" => HandleDumpPenumbraSceneState(parameters),
@@ -682,6 +683,12 @@ public sealed class RhinoAgent : ICanaryAgent
             "FileNotFoundException", // .NET assembly missing — bubbles up to dialogs
             "Rhino Error",       // generic Rhino error dialog
             "Rhinoceros Error",  // (variant)
+            // NOTE: "breakpoint" is NOT in the VK_RETURN keyword list — the GH
+            // "Grasshopper breakpoint" dialog is a custom WinForms form whose
+            // default button isn't Close, so Enter doesn't dismiss it. It's
+            // detected by the title-keyword scan below (isBreakpointDialog)
+            // and dismissed via BM_CLICK on the "Close" button in the body-text
+            // fallback. See bug 0017/0018 + the hasBreakpointText branch.
             // Removed 2026-06-02: "Component conflict", "Component ID", "ID conflict".
             // The "Component ID conflict" modal HAS those substrings in its title, but
             // its default button is Replace All — destructive (overwrites installed
@@ -718,12 +725,19 @@ public sealed class RhinoAgent : ICanaryAgent
                         }
                     }
 
+                    // The GH "Grasshopper breakpoint" dialog (conversion-error /
+                    // thread-crossing catch-all, bug 0017/0018) is a custom WinForms
+                    // form, not a #32770 MessageBox. VK_RETURN doesn't dismiss it
+                    // (its default button isn't Close). Detect it by title and route
+                    // to the body-text fallback so we can BM_CLICK the Close button.
+                    bool isBreakpointDialog = title.IndexOf("breakpoint", StringComparison.OrdinalIgnoreCase) >= 0;
+
                     // Skip the main Rhino window (its title contains the doc path).
                     // The match heuristic above shouldn't pick it up, but belt-and-braces.
                     if (title.EndsWith("Rhinoceros 8", StringComparison.OrdinalIgnoreCase)) return true;
                     if (title.EndsWith("Grasshopper", StringComparison.OrdinalIgnoreCase)) return true;
 
-                    if (match)
+                    if (match && !isBreakpointDialog)
                     {
                         dismissed.Add(hWnd);
                         PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_RETURN, IntPtr.Zero);
@@ -738,6 +752,7 @@ public sealed class RhinoAgent : ICanaryAgent
 
                     IntPtr skipAllBtn = IntPtr.Zero; // "Component ID conflict" → Skip All
                     IntPtr noBtn      = IntPtr.Zero; // "Grasshopper IO" yes/no → No
+                    IntPtr closeBtn   = IntPtr.Zero; // "Grasshopper breakpoint" → Close
                     bool hasConflictText = false;    // 2026-06-01 GH GUID-conflict modal
                     bool hasGhIoText     = false;    // 2026-06-02 GH "IO generated N messages" modal
                     EnumChildWindows(hWnd, (child, _) =>
@@ -759,6 +774,11 @@ public sealed class RhinoAgent : ICanaryAgent
                               || childText.Equals("&No", StringComparison.OrdinalIgnoreCase))
                         {
                             noBtn = child;
+                        }
+                        else if (childText.Equals("Close", StringComparison.OrdinalIgnoreCase)
+                              || childText.Equals("&Close", StringComparison.OrdinalIgnoreCase))
+                        {
+                            closeBtn = child;
                         }
 
                         // Body-text markers (substring match — labels can be
@@ -809,6 +829,25 @@ public sealed class RhinoAgent : ICanaryAgent
                         {
                             // No "No" button found — send ESC, which typically
                             // closes a Yes/No dialog the same way as No.
+                            const int VK_ESCAPE = 0x1B;
+                            PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_ESCAPE, IntPtr.Zero);
+                            PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_ESCAPE, IntPtr.Zero);
+                        }
+                    }
+                    else if (isBreakpointDialog)
+                    {
+                        // GH "Grasshopper breakpoint" — conversion-error / thread-
+                        // crossing catch-all (bug 0017/0018). The dialog blocks the
+                        // UI thread during a solution; the PopupDismisser catches it
+                        // within 250ms and clicks Close so the solution can re-run.
+                        // VK_RETURN doesn't work (custom WinForms form, default button
+                        // isn't Close), so we BM_CLICK the Close button directly.
+                        dismissed.Add(hWnd);
+                        if (closeBtn != IntPtr.Zero)
+                            PostMessage(closeBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+                        else
+                        {
+                            // Fallback: ESC often closes a single-button dialog.
                             const int VK_ESCAPE = 0x1B;
                             PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_ESCAPE, IntPtr.Zero);
                             PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_ESCAPE, IntPtr.Zero);
@@ -1553,5 +1592,117 @@ public sealed class RhinoAgent : ICanaryAgent
             }
         }
         return new AgentResponse { Success = false, Message = $"Panel with nickname '{nickname}' not found." };
+    }
+
+    /// <summary>
+    /// Diagnostic dump (R6.5 Phase G experiment, bug 0018): reads the GH error
+    /// surface that 'Grasshopper breakpoint' dialogs come from. Collects every
+    /// component's RuntimeMessages (Error/Warning/Remark) plus every panel's
+    /// live text, and returns it as a single text blob in Data["dump"].
+    ///
+    /// Purpose: when a Slop test returns SlopSuccess=False, the cause is often
+    /// a GH type-conversion error or thread-crossing exception that shows as a
+    /// 'Grasshopper breakpoint' modal dialog — invisible to Canary telemetry
+    /// and to the SlopLog panel. This dump surfaces the error text the
+    /// component/param already produced, so the agent can read the root cause
+    /// without a human screenshot. See Canary/docs/bugs/0018 (pending).
+    /// </summary>
+    private static AgentResponse HandleGrasshopperGetDiagnosticDump(Dictionary<string, string> parameters)
+    {
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active Grasshopper document." };
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== GH Diagnostic Dump ===");
+        sb.AppendLine($"Objects: {doc.ObjectCount}");
+        sb.AppendLine();
+
+        // --- Component runtime messages ---
+        sb.AppendLine("--- Runtime Messages ---");
+        int msgCount = 0;
+        try
+        {
+            foreach (var obj in doc.Objects)
+            {
+                if (!(obj is Grasshopper.Kernel.IGH_ActiveObject active)) continue;
+                foreach (Grasshopper.Kernel.GH_RuntimeMessageLevel level in
+                    new[] { Grasshopper.Kernel.GH_RuntimeMessageLevel.Error,
+                            Grasshopper.Kernel.GH_RuntimeMessageLevel.Warning,
+                            Grasshopper.Kernel.GH_RuntimeMessageLevel.Remark })
+                {
+                    System.Collections.Generic.IList<string> msgs;
+                    try { msgs = active.RuntimeMessages(level); }
+                    catch { continue; }
+                    if (msgs == null || msgs.Count == 0) continue;
+                    string levelName = level.ToString();
+                    foreach (var m in msgs)
+                    {
+                        sb.AppendLine($"[{levelName}] {active.NickName}: {m}");
+                        msgCount++;
+                    }
+                }
+            }
+        }
+        catch (Exception ex) { sb.AppendLine($"(RuntimeMessages read failed: {ex.Message})"); }
+        if (msgCount == 0) sb.AppendLine("(none)");
+        sb.AppendLine();
+
+        // --- Panel contents (every panel, by nickname) ---
+        sb.AppendLine("--- Panel Contents ---");
+        int panelCount = 0;
+        foreach (var obj in doc.Objects)
+        {
+            if (!(obj is Grasshopper.Kernel.Special.GH_Panel panel)) continue;
+            string nickname = panel.NickName ?? "(unnamed)";
+            string text = string.Empty;
+            string source = "UserText";
+            try
+            {
+                if (panel.VolatileDataCount > 0)
+                {
+                    var psb = new System.Text.StringBuilder();
+                    bool first = true;
+                    foreach (var goo in panel.VolatileData.AllData(true))
+                    {
+                        if (!first) psb.Append('\n');
+                        first = false;
+                        psb.Append(goo?.ToString() ?? string.Empty);
+                    }
+                    text = psb.ToString();
+                    source = "VolatileData";
+                }
+            }
+            catch { }
+            if (string.IsNullOrEmpty(text))
+            {
+                text = panel.UserText ?? string.Empty;
+                source = "UserText";
+            }
+            string display = string.IsNullOrEmpty(text) ? "(empty)" : text;
+            sb.AppendLine($"[{nickname}] ({source}, {text.Length} chars): {display}");
+            panelCount++;
+        }
+        if (panelCount == 0) sb.AppendLine("(no panels)");
+        sb.AppendLine();
+        sb.AppendLine("=== End Dump ===");
+
+        string dump = sb.ToString();
+        // Truncate the inline Message so the harness log stays readable;
+        // the full blob is in Data["dump"].
+        string shortMsg = dump.Length > 600 ? dump.Substring(0, 600) + "...(truncated, see Data[dump])" : dump;
+        return new AgentResponse
+        {
+            Success = true,
+            Message = $"Diagnostic dump ({msgCount} messages, {panelCount} panels, {dump.Length} chars).",
+            Data = new Dictionary<string, string>
+            {
+                ["dump"] = dump,
+                ["messageCount"] = msgCount.ToString(),
+                ["panelCount"] = panelCount.ToString()
+            }
+        };
     }
 }

@@ -351,6 +351,36 @@ public sealed class TestRunner
                 }
             }
 
+            // R6.5 Phase G experiment (bug 0018): if any assert failed, capture a
+            // GH diagnostic dump (component RuntimeMessages + all panel text) so
+            // the agent can read the root cause instead of seeing only opaque
+            // "Assert failed: PanelEquals 'SlopSuccess': expected 'True', got 'False'".
+            // Wired into RunTestAsync (the --test path, uses HarnessClient).
+            if (result.Status == TestStatus.Failed && client != null)
+            {
+                try
+                {
+                    var dumpResp = await client.ExecuteAsync("GrasshopperGetDiagnosticDump",
+                        new Dictionary<string, string>(), cancellationToken).ConfigureAwait(false);
+                    if (dumpResp.Success && dumpResp.Data.TryGetValue("dump", out var dump))
+                    {
+                        result.DiagnosticDump = dump;
+                        _logger.Log("  --- GH Diagnostic Dump ---");
+                        foreach (var line in dump.Replace("\r\n", "\n").Split('\n'))
+                            _logger.Log("  " + line);
+                        _logger.Log("  --- End Dump ---");
+                    }
+                    else if (!dumpResp.Success)
+                    {
+                        _logger.Log($"  (diagnostic dump unavailable: {dumpResp.Message})");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"  Warning: diagnostic dump failed: {ex.Message}");
+                }
+            }
+
             // 7. Build composite image if there are checkpoint results
             if (result.CheckpointResults.Count > 0)
             {

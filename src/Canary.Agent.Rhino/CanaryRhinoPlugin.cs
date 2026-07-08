@@ -214,28 +214,38 @@ public sealed class CanaryRhinoPlugin : PlugIn
             catch { }
         };
 
-        // First-chance exceptions: log every AccessViolationException /
-        // AccessViolation at the moment it's thrown, before it's caught or
-        // unwinds. This catches native faults that would otherwise disappear.
-        AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
-        {
-            try
-            {
-                var ex = e.Exception;
-                if (ex is AccessViolationException || ex is System.Runtime.InteropServices.SEHException)
-                {
-                    WriteCrashLog("AppDomain.FirstChanceException (native fault)", ex, terminating: false);
-                }
-            }
-            catch { }
-        };
+        // DISABLED for bug 0018 investigation (2026-07-07): the FirstChanceException
+        // handler and the VectoredExceptionHandler both fire on EVERY managed
+        // exception (incl. the breakpoint's conversion error, CLR code 0xE0434352)
+        // and C++ exception (0xE06D7363). Running a handler inside the CLR's
+        // first-chance / vectored exception path appears to destabilize the
+        // exception pipeline — Rhino dies at ~21s ("Pipe closed by agent") right
+        // when the breakpoint should appear, instead of GH catching the conversion
+        // error and showing the breakpoint dialog. Re-enable to investigate a
+        // genuine native crash; keep disabled while GH breakpoints are in play.
+        //
+        // // First-chance exceptions: log every AccessViolationException /
+        // // AccessViolation at the moment it's thrown, before it's caught or
+        // // unwinds. This catches native faults that would otherwise disappear.
+        // AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
+        // {
+        //     try
+        //     {
+        //         var ex = e.Exception;
+        //         if (ex is AccessViolationException || ex is System.Runtime.InteropServices.SEHException)
+        //         {
+        //             WriteCrashLog("AppDomain.FirstChanceException (native fault)", ex, terminating: false);
+        //         }
+        //     }
+        //     catch { }
+        // };
+        //
+        // // Native structured exception handling via VectoredExceptionRecord.
+        // // This catches access violations from native DLLs (cpig_native.dll etc.)
+        // // that don't surface as managed exceptions.
+        // InstallVectoredExceptionHandler();
 
-        // Native structured exception handling via VectoredExceptionRecord.
-        // This catches access violations from native DLLs (cpig_native.dll etc.)
-        // that don't surface as managed exceptions.
-        InstallVectoredExceptionHandler();
-
-        RhinoApp.WriteLine($"[Canary] Crash capture installed. Crash log: {CrashLogPath}");
+        RhinoApp.WriteLine($"[Canary] Crash capture installed (first-chance + vectored DISABLED for bug 0018). Crash log: {CrashLogPath}");
     }
 
     /// <summary>
