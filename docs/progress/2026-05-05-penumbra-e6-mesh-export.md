@@ -1,7 +1,7 @@
 ---
 date: 2026-05-05
 status: shipped
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra E6 mesh-export determinism (Wave 3 Phase 5d, shipped 2026-05-05)

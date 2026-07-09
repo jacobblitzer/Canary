@@ -179,7 +179,7 @@
 ### Checkpoint 12.4: Update Spec Documents
 - Update `spec/SUPERVISOR.md` with Phase 8–12 gate checklists + dependency matrix
 - Update `spec/ARCHITECTURE.md` with Core + UI in architecture
-- Update `CLAUDE.md` with new namespaces and current phase
+- Update `AGENTS.md` with new namespaces and current phase
 
 ### Checkpoint 12.5: Final Regression
 - Verify CLI still works after Core extraction

@@ -305,7 +305,7 @@ dev-test harness + console ring buffer are the substitute.
 | Slop | Not used. |
 | CPig | Not used. |
 
-Per the Cross-Repo Change Protocol (`MultiVerse/CLAUDE.md` § 7), any
+Per the Cross-Repo Change Protocol (`MultiVerse/AGENTS.md` § 7), any
 hook addition, rename, or removal lands as a coordinated commit pair
 (Qualia hook change + Canary agent / `AGENT_NOTES.md` / this spec
 update) plus a one-line entry in `MultiVerse/BUILD_LOG.md`.

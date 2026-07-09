@@ -1,7 +1,7 @@
 ---
 date: 2026-05-03
 status: shipped
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra display-preset workload (Phase 5 shipped 2026-05-03)

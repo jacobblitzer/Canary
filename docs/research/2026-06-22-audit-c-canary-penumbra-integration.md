@@ -48,12 +48,12 @@ side-channel:
 | **NDJSON preview telemetry tail** — diagnostic-only | `Canary.Telemetry.PenumbraPreviewTelemetryTail` (file-tail of `%LocalAppData%\Penumbra\preview\telemetry.ndjson`) | `src/Canary.Core/Telemetry/PenumbraPreviewTelemetryTail.cs`, used by `RhinoSessionAgent` |
 
 Penumbra has driven >50 cross-repo asks through Canary over the last 6
-weeks (per `CLAUDE.md` "Active Penumbra integration initiatives"). The
+weeks (per `AGENTS.md` "Active Penumbra integration initiatives"). The
 contract risk surface is large.
 
 ## Sources consulted
 
-- `C:\Repos\Canary\CLAUDE.md` (full operator + agent contract)
+- `C:\Repos\Canary\AGENTS.md` (full operator + agent contract)
 - `C:\Repos\Canary\workloads\penumbra\workload.json` + 136 test JSONs in `workloads/penumbra/tests/`
 - `C:\Repos\Canary\workloads\penumbra\suites\*.json` (25 suites)
 - `C:\Repos\Canary\workloads\rhino\suites\penumbra.json`, `penumbra-glsl.json`, `cpig-fieldops.json`, `cpig-bool-refactor.json`
@@ -140,7 +140,7 @@ The C# code references **one** Penumbra-rooted path:
 |---|---|
 | `src/Canary.Core/Telemetry/PenumbraPreviewTelemetryTail.cs` (`DefaultPath`) | `%LocalAppData%\Penumbra\preview\telemetry.ndjson` |
 
-**No `G:\My Drive\builds\Penumbra` or build-artifact path references** anywhere in the live tree. The "binary location" for the Penumbra Rhino plug-in is implicit: it must be **registered for auto-load** in the Canary Rhino instance (documented in `CLAUDE.md` and per-test `description` blocks). Canary never copies, builds, or paths-into the `.rhp`.
+**No `G:\My Drive\builds\Penumbra` or build-artifact path references** anywhere in the live tree. The "binary location" for the Penumbra Rhino plug-in is implicit: it must be **registered for auto-load** in the Canary Rhino instance (documented in `AGENTS.md` and per-test `description` blocks). Canary never copies, builds, or paths-into the `.rhp`.
 
 The web workload uses `penumbraConfig.projectDir` (default `C:\Repos\Penumbra` in workload.json) to point Vite at a checkout — that's a source path, not a binary path.
 
@@ -184,7 +184,7 @@ Canary consumes Penumbra telemetry through two streams:
 
 #### Stream C — File NDJSON (`%LocalAppData%\Penumbra\preview\telemetry.ndjson`)
 
-The IN-RHINO Penumbra plug-in writes this; **Canary tails it but does not assert on it.** Captured into supervised-session `telemetry.ndjson` so the SESSION_REPORT renders a "Penumbra preview telemetry" section. Observed phases the parser knows to surface (per `CLAUDE.md` rhino-session feature doc, `PenumbraPreviewTelemetryTail.cs`, and `cpig-fieldops` + `cpig-bool-refactor` suite docs):
+The IN-RHINO Penumbra plug-in writes this; **Canary tails it but does not assert on it.** Captured into supervised-session `telemetry.ndjson` so the SESSION_REPORT renders a "Penumbra preview telemetry" section. Observed phases the parser knows to surface (per `AGENTS.md` rhino-session feature doc, `PenumbraPreviewTelemetryTail.cs`, and `cpig-fieldops` + `cpig-bool-refactor` suite docs):
 
 - `host.start` — Penumbra Rhino plug-in came up (carries `hostDir`, `cacheDir`).
 - `host.warn.stray` — stray-node warning.
@@ -286,7 +286,7 @@ The "gate" today is **manual + agent-driven**:
 - Results are written to `workloads/<w>/results/<suite>/` and reviewed via the Canary UI (HTML report, per-test runs).
 - The Canary debug-overhaul shipped 2026-05-24 introduced MCP server tools (`list_runs`, `get_run`, `list_sessions`, `get_session_report`, `list_feedback`, etc.) so an agent can poll past-run + session results without screen-scraping. That's the closest thing to a "CI surface" — agent-driven, not pipeline-driven.
 
-The Canary repo also follows a cross-repo update protocol (`CLAUDE.md` "Cross-Repo Change Protocol") that requires any contract-changing PR to update the affected repo's `CLAUDE.md` and `spec/PEERS.md`. That's the human/agent contract gate.
+The Canary repo also follows a cross-repo update protocol (`AGENTS.md` "Cross-Repo Change Protocol") that requires any contract-changing PR to update the affected repo's `AGENTS.md` and `spec/PEERS.md`. That's the human/agent contract gate.
 
 ## Analysis — which Penumbra changes FORCE Canary changes?
 
@@ -313,7 +313,7 @@ The Canary repo also follows a cross-repo update protocol (`CLAUDE.md` "Cross-Re
 | `PenumbraOopShow` / `_PenumbraPreviewBackend _Glsl` Rhino commands | **YES if command names change.** | Test JSONs call these by name via `RhinoApp.RunScript`. Already migrated once (`PenumbraShow` → `PenumbraOopShow`, 2026-06-13 cleanup). |
 | `%LocalAppData%\Penumbra\preview-frames\active.png` file dump | **YES** — both `penumbra-rhino-00-smoke` + `penumbra-rhino-01-gyroid` capture this file. | If the OOP path is retired (the `penumbra-glsl` suite is the replacement) the smoke test stays only as long as it's the working fallback; once removed, those checkpoints fail. **Mitigation**: the existing rhino-session feature doc tags these as DEPRECATED. |
 | `%LocalAppData%\Penumbra\preview\telemetry.ndjson` envelope | **NO** if the envelope stays `{t, kind, level, source, data}` and `data.phase` keeps the human-readable phase name. | `PenumbraPreviewTelemetryTail.ParsePenumbraLine` is structurally tolerant — it extracts `data.phase` (falls back to `kind`) and wraps the entire payload. As long as JSON-per-line + same envelope shape are preserved, new phase names appear in the SESSION_REPORT verbatim with no Canary change. |
-| `%LocalAppData%\Penumbra\pipeline-cache` (shader compile cache) | **No** — Canary doesn't reference this path. It's mentioned in CLAUDE.md docs only as operator context. | |
+| `%LocalAppData%\Penumbra\pipeline-cache` (shader compile cache) | **No** — Canary doesn't reference this path. It's mentioned in AGENTS.md docs only as operator context. | |
 
 ### B. FSM + cascade scheduler refactored into a TS kernel
 
@@ -329,7 +329,7 @@ This is mostly an INTERNAL refactor. Canary cares about it only where the kernel
 Today Penumbra uses Jint inside Rhino to host scene-compiler JS in-process. Canary doesn't talk to Jint — but the **Bridge** between Penumbra's JS-side scene state and Canary is the reflection target. Two paths post-Jint:
 
 1. **Native + QuickJS in-process** (the planned host). `Penumbra.Bridge.PenumbraBridge.GetFrameState()` still callable via reflection → no Canary change required if the symbol survives.
-2. **Out-of-process native host** (less likely per CLAUDE.md "N0 build GO"). Canary's `WaitForPenumbraFrame` needs a new transport (file-polling on the existing `telemetry.ndjson` would work — block on a new `frame.real` event past a baseline timestamp). That's a NEW action handler in `Canary.Agent.Rhino`; the existing one would log "Bridge not loaded".
+2. **Out-of-process native host** (less likely per AGENTS.md "N0 build GO"). Canary's `WaitForPenumbraFrame` needs a new transport (file-polling on the existing `telemetry.ndjson` would work — block on a new `frame.real` event past a baseline timestamp). That's a NEW action handler in `Canary.Agent.Rhino`; the existing one would log "Bridge not loaded".
 
 Other Jint-removal risks:
 
@@ -353,7 +353,7 @@ Other Jint-removal risks:
 
 1. **Land the new host with Jint-PARITY surface first.** Ship `__canary*` shims that delegate to the new kernel; ship `Penumbra.Bridge.PenumbraBridge.GetFrameState()` with the same field names. Run `canary run --workload penumbra --suite smoke` + `--suite full` + `canary run --workload rhino --suite penumbra-glsl` — green is the gate.
 2. **Then refactor the kernel internals**, asserting `__canary*` outputs remain bit-identical for the camera-orbit + display-mode tests. The pixel-diff baselines themselves are a regression guard for "shape of rendered output."
-3. **Then announce + execute any contract-changing renames** (e.g. dropping deprecated hooks). One PR per rename, with the Canary test JSONs + agent code updated in the same PR per CLAUDE.md cross-repo protocol. Don't change the contract in the Penumbra side without simultaneously updating Canary.
+3. **Then announce + execute any contract-changing renames** (e.g. dropping deprecated hooks). One PR per rename, with the Canary test JSONs + agent code updated in the same PR per AGENTS.md cross-repo protocol. Don't change the contract in the Penumbra side without simultaneously updating Canary.
 4. **Once `penumbra-rhino` (OOP) suite's reason-to-exist disappears** (the `penumbra-glsl` suite covers CPig→Penumbra live preview end-to-end), DELETE the OOP suite and the two preview-frames file-source tests. That removes the `%LocalAppData%\Penumbra\preview-frames\active.png` dependency entirely.
 
 ## Conclusions

@@ -1,7 +1,7 @@
 ---
 date: 2026-05-07
 status: shipped
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra Phase 0 feature loader (ADR 0015, shipped 2026-05-07)

@@ -24,7 +24,7 @@ src/Canary.Core/Cdp/
 workloads/penumbra/
 ├── workload.json                   ← REPLACE existing (adds penumbraConfig section)
 ├── AGENT_NOTES.md                  ← REPLACE existing (updated with CDP architecture)
-├── CLAUDE_CODE_RUNNER.md           ← NEW — automation prompts for Claude Code
+├── CLAUDE_CODE_RUNNER.md           ← NEW — automation prompts for any AI coding agent
 └── tests/
     ├── tape-csg-orbit.json         ← Scene 0, 4 camera angles
     ├── atlas-blob-orbit.json       ← Scene 1, 4 camera angles

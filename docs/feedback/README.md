@@ -43,7 +43,7 @@ inbox/2026-05-24-007-pencil-toon-bg-too-bright/
 
 1. **Create:** operator clicks Annotate on a result image → draws +
    types a title and notes → clicks Save → the item lands in `inbox/`.
-2. **Discover:** Claude session-start (per the project CLAUDE.md hook):
+2. **Discover:** Claude session-start (per the project AGENTS.md hook):
    "If `docs/feedback/inbox/` is non-empty, list new items before
    proceeding."
 3. **Triage:** Claude reads, edits frontmatter (`project`, `tags`,

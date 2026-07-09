@@ -21,7 +21,7 @@ VLM tests answer **"does this look like what it's supposed to look like?"** Pixe
 | Visual regression (pixel-diff) | Same as last time? | ~1-2 s | Code-stability tripwire after refactors / dependency bumps. |
 | VLM | Looks correct? | ~5-15 s (Ollama) / ~1-2 s (Claude) | Validating new components, post-bugfix verification, "does this make sense?" smoke. |
 
-Pick the right mode for the job — see [`MultiVerse/CLAUDE.md` § Testing modes](../../../MultiVerse/CLAUDE.md#testing-modes--vlm-vs-visual-regression) for the canonical workflow guidance.
+Pick the right mode for the job — see [`MultiVerse/AGENTS.md` § Testing modes](../../../MultiVerse/AGENTS.md#testing-modes--vlm-vs-visual-regression) for the canonical workflow guidance.
 
 VLM mode unlocks scenarios that are impractical for pixel-diff:
 - Verifying *what* a screenshot shows rather than matching a pixel layout.

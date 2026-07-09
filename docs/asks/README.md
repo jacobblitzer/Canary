@@ -35,7 +35,7 @@ Body sections (recommended):
 ## Lifecycle
 1. **Open.** Canary side (or an operator on Canary's behalf) creates `<NNNN>-slug.md`. Status: open.
 2. **Spawn coordinated-work prompt.** Operator instantiates `MultiVerse/prompts/_template-canary-coordinated-work.md` parameterized by `(peer, ask-id)`. Saves the instantiated prompt as `MultiVerse/prompts/canary-ask-<peer>-<id>-YYYY-MM-DD.md`. Updates ask frontmatter: `status: in-progress`, `prompt: <instantiated-path>`.
-3. **Land.** Operator runs the prompt in the peer repo's Claude Code. Work lands. Ask frontmatter flips: `status: landed`, `landed: YYYY-MM-DD`. Append-only `### Resolution` section in body.
+3. **Land.** Operator runs the prompt in the peer repo's any AI coding agent. Work lands. Ask frontmatter flips: `status: landed`, `landed: YYYY-MM-DD`. Append-only `### Resolution` section in body.
 4. **Archive (optional).** After 90 days, landed asks may move to `docs/asks/<peer>/_archive/YYYY/`.
 
 ## MCP query interface

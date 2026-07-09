@@ -87,7 +87,7 @@ Subcommands (all defined in `Cli/`):
 | `canary approve` | `--workload` (req), `--test` (req), `--suite` (optional) | 0 always. | Promotes `workloads/<w>/results/<test>/candidates/*.png` to baselines (path TBD — see BaselineManager). |
 | `canary report` | `--workload` (optional) | 0 always. | Opens most recent `report.html` via `Process.Start` with `UseShellExecute=true`. |
 
-**Working-directory dependency:** `RunCommand.RunAsync` uses `Directory.GetCurrentDirectory()` to find `workloads/` — the CLI MUST be run from `C:\Repos\Canary` (matches the `CLAUDE.md` "Quick Reference" hint).
+**Working-directory dependency:** `RunCommand.RunAsync` uses `Directory.GetCurrentDirectory()` to find `workloads/` — the CLI MUST be run from `C:\Repos\Canary` (matches the `AGENTS.md` "Quick Reference" hint).
 
 **Ctrl+C handling:** `Program.OnCancelKeyPress` sets a single static `Cts`; `RunCommand` registers an additional handler that calls `pm.KillAll()` on the workload's `ProcessManager`.
 
@@ -175,7 +175,7 @@ workloads/<w>/results/[<suite>/]junit.xml     <- JUnitReportGenerator
 **Side-channels (orthogonal to the result tree):**
 - `C:\Repos\CPig\logs\agent_viewport_diag.log` — Rhino agent appends per-SetViewport diagnostic lines (cross-repo path; hardcoded).
 - Slop LogHub file (per CPig test JSON convention; path depends on the test).
-- Rhino's `cpig_debug.log` and `%LOCALAPPDATA%\CPig\trace.log` (per CLAUDE.md "Known Pitfalls").
+- Rhino's `cpig_debug.log` and `%LOCALAPPDATA%\CPig\trace.log` (per AGENTS.md "Known Pitfalls").
 
 ### result.json shape (confirmed from a live `diag-pencil-baseline` run)
 
@@ -287,7 +287,7 @@ The implementations are STRUCTURALLY identical (one is essentially a copy-paste 
 
 ### Existing ad-hoc kill paths
 
-- `taskkill //IM Canary.UI.exe //F` (per `CLAUDE.md` "How to reproduce bugs") — operator pattern, no code.
+- `taskkill //IM Canary.UI.exe //F` (per `AGENTS.md` "How to reproduce bugs") — operator pattern, no code.
 - `ForceKillProcesses()` on TestRunnerPanel — UI button that calls `_pm?.KillAll()`.
 - `_workloadContextMenu` "Close Workload" item — same path.
 

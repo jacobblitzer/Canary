@@ -174,7 +174,7 @@ RH-2 multi-display perf sweep, and pipeline diagnostic dumps.
 - All `workloads/rhino/tests/*.json` test definitions reference Slop's panel-nickname convention
 
 **Slop-side files:**
-- `SLOP_PROMPT.md` — canonical JSON schema (despite the name, this is the schema doc, not a prompt — see Slop's CLAUDE.md)
+- `SLOP_PROMPT.md` — canonical JSON schema (despite the name, this is the schema doc, not a prompt — see Slop's AGENTS.md)
 - `SLOP_STYLE.md` — authoring conventions Canary tests follow
 - `fodder/catalog/gh_catalog_*.json` — Grasshopper component catalog Canary tests resolve GUIDs against
 
@@ -197,5 +197,5 @@ YYYY-MM-DD | <kind> | Canary → AffectedRepos | one-line summary
 ## Related
 
 - Per-workload specs: `spec/CPIG_WORKLOAD.md`, `spec/PENUMBRA_WORKLOAD.md`, `spec/PIGTURE_WORKLOAD.md`
-- VLM convention: `MultiVerse/STANDARD.md` §16 (visual artifacts) and `MultiVerse/CLAUDE.md` "Writing good VLM descriptions" (or §16 once the latter promotes).
+- VLM convention: `MultiVerse/STANDARD.md` §16 (visual artifacts) and `MultiVerse/AGENTS.md` "Writing good VLM descriptions" (or §16 once the latter promotes).
 - Cross-Repo Change Protocol: `MultiVerse/STANDARD.md` §7.

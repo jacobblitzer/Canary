@@ -1,8 +1,8 @@
-# CLAUDE_CODE_RUNNER.md — Running Canary with Claude Code
+# CLAUDE_CODE_RUNNER.md — Running Canary with any AI coding agent
 
 ## Overview
 
-This document describes how to use Claude Code to build Canary with minimal human intervention. The spec files form a closed-loop system: Claude Code reads specs, builds code, runs tests, checks against the Supervisor, and advances.
+This document describes how to use any AI coding agent to build Canary with minimal human intervention. The spec files form a closed-loop system: any AI coding agent reads specs, builds code, runs tests, checks against the Supervisor, and advances.
 
 ---
 
@@ -159,7 +159,7 @@ You (Jake) should personally review at these points:
 
 ## Expected Timeline
 
-| Phase | Claude Code Work | Human Review | Total |
+| Phase | any AI coding agent Work | Human Review | Total |
 |-------|-----------------|-------------|-------|
 | 0 | 10 min | 2 min | 12 min |
 | 1 | 30-45 min | 5 min | 45 min |

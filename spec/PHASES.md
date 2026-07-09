@@ -334,7 +334,7 @@
 - Add optional `setup.vlmDescription` field on `TestDefinition.Setup`; `ProcessVlmCheckpointAsync` falls back to it when a checkpoint has no `description`.
 - Refactor `ProcessCheckpointAsync` + `ProcessAgentCheckpointAsync` to take an optional `forceMode: CheckpointMode?` parameter; centralize the loop in `DispatchClientCheckpointAsync` / `DispatchAgentCheckpointAsync`.
 - Mode resolution rule: per-checkpoint `mode == "vlm"` always wins; otherwise `--mode` flag applies; otherwise pixel-diff. `--mode both` runs each checkpoint twice and emits two `CheckpointResult` rows (the VLM one suffixed with `-vlm`).
-- Documentation: canonical "Testing modes — VLM vs. Visual Regression" section in `MultiVerse/CLAUDE.md`; back-references in CPig, Canary, Slop, and Pigture CLAUDE.md.
+- Documentation: canonical "Testing modes — VLM vs. Visual Regression" section in `MultiVerse/AGENTS.md`; back-references in CPig, Canary, Slop, and Pigture AGENTS.md.
 
 **Phase 8.6 Exit Criteria:** every existing test runs unchanged under `--mode pixel-diff` (default); same tests run as VLM under `--mode vlm` when `setup.vlmDescription` is set; `--mode both` produces two verdicts per checkpoint in the HTML report. Cross-repo docs taught the duality once (MultiVerse) and linked from each child repo. Rationale: pixel-diff and VLM are different jobs (regression vs. correctness); mode should be a runtime choice, not a property baked into the test JSON.
 

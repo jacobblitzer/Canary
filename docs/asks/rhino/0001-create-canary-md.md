@@ -30,7 +30,7 @@ A new file at `Rhino/spec/CANARY.md` mirroring CPig's structure. The 7 sections:
 **Reference template:** `CPig/spec/CANARY.md` (the gold-standard structure all peer `spec/CANARY.md` files mirror). The Penumbra + Qualia files landed in the 2026-05-24 rollout are also good adaptation examples.
 
 After creating the file, also:
-- Add a cross-link from `Rhino/CLAUDE.md` to the new `spec/CANARY.md` (e.g. in the spec files list or a "See also" line wherever the spec/ index lives).
+- Add a cross-link from `Rhino/AGENTS.md` to the new `spec/CANARY.md` (e.g. in the spec files list or a "See also" line wherever the spec/ index lives).
 - Update this ask file (`Canary/docs/asks/rhino/0001-create-canary-md.md`) to `status: landed` with `landed: <date>` and append a `### Resolution` section pointing at the commits.
 - Append a `MultiVerse/BUILD_LOG.md` cross-repo entry per STANDARD.md §7.
 

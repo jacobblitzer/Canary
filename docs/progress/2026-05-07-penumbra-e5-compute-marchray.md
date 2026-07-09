@@ -1,7 +1,7 @@
 ---
 date: 2026-05-07
 status: shipped
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra E5 Compute marchRay (Wave 3 Phase 7, merged 2026-05-07)

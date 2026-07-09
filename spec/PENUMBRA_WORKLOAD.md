@@ -97,7 +97,7 @@ the preset's `description` field. The Cartesian sweep produces:
 
 ## Logging
 
-Per the Slop-tap convention (`MultiVerse/CLAUDE.md` "Logging in Slop tests"
+Per the Slop-tap convention (`MultiVerse/AGENTS.md` "Logging in Slop tests"
 section), Penumbra workload tests should log:
 - The resolved displayPreset name + path + checksum.
 - The full DisplayState JSON at the moment of each checkpoint (via the
@@ -115,7 +115,7 @@ The logger is the substitute.
 | Slop     | Not used.                                                                 |
 | CPig     | Not used.                                                                 |
 
-Per the cross-repo change protocol (`MultiVerse/CLAUDE.md`), changes to
+Per the cross-repo change protocol (`MultiVerse/AGENTS.md`), changes to
 the Penumbra preset catalog (adding/removing/renaming a preset) **must**
 update this workload's `display-presets/` directory if the suite
 references the affected preset, or the test will fail to load.
@@ -226,7 +226,7 @@ canary run --workload penumbra --suite compute-marcher
 - Penumbra ADR 0015 — feature-loader + stubs (Phase 0).
 - Qualia ADR 0010 — display-state consumer (parallel adoption).
 - `Canary/spec/TESTS.md` — TestDefinition base schema.
-- `MultiVerse/CLAUDE.md` — cross-repo change protocol + Slop logging
+- `MultiVerse/AGENTS.md` — cross-repo change protocol + Slop logging
   convention (logger substitution noted above).
 - `Penumbra/docs/research/2026-05-06-compute-marcher-tdr-strategies.md`
   — Compute-marcher TDR strategy table + per-feature cost model

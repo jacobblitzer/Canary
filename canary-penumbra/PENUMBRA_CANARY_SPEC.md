@@ -2,7 +2,7 @@
 
 ## Overview
 
-Integrate Penumbra's browser-based SDF test harness with Canary's visual regression testing pipeline. The goal: Claude Code makes a change to Penumbra's shader or runtime code, runs `canary run --workload penumbra`, and gets an HTML report showing before/after diffs across every scene and camera angle — automatically, no human in the loop.
+Integrate Penumbra's browser-based SDF test harness with Canary's visual regression testing pipeline. The goal: any AI coding agent makes a change to Penumbra's shader or runtime code, runs `canary run --workload penumbra`, and gets an HTML report showing before/after diffs across every scene and camera angle — automatically, no human in the loop.
 
 **Press Ctrl+C at any time to abort.**
 
@@ -82,7 +82,7 @@ This is **perfectly deterministic** — same angles produce identical renders re
 
 | Mode | Use Case | Input Method |
 |---|---|---|
-| **Scripted camera** (primary) | Automated CI, Claude Code regression tests | `Runtime.evaluate` calls to camera API |
+| **Scripted camera** (primary) | Automated CI, any AI coding agent regression tests | `Runtime.evaluate` calls to camera API |
 | **Recorded mouse input** (secondary) | Interactive test recording, complex gestures | CDP `Input.dispatchMouseEvent` in CSS coordinates |
 
 ---
@@ -744,9 +744,9 @@ getSpherical(): { azimuth: number; elevation: number; distance: number } {
 
 **Exit Criteria:** Can replay recorded mouse input through the browser with deterministic results.
 
-### Phase P5: Test Runner Integration + Claude Code Workflow
+### Phase P5: Test Runner Integration + any AI coding agent Workflow
 
-**Goal:** `canary run --workload penumbra` works end-to-end. Claude Code can run it.
+**Goal:** `canary run --workload penumbra` works end-to-end. any AI coding agent can run it.
 
 **Checkpoints:**
 
@@ -763,7 +763,7 @@ getSpherical(): { azimuth: number; elevation: number; distance: number } {
   - Second run: all tests PASS (0% diff)
   - Modify a shader → third run → regression detected → report shows diffs
 
-- P5.3: Claude Code runner prompt
+- P5.3: any AI coding agent runner prompt
   - Create `workloads/penumbra/CLAUDE_CODE_RUNNER.md` with prompts for:
     - Running the full test suite
     - Interpreting the HTML report
@@ -775,7 +775,7 @@ getSpherical(): { azimuth: number; elevation: number; distance: number } {
   - Failed tests clearly highlighted
   - Report works with existing `HtmlReportGenerator`
 
-**Exit Criteria:** Full pipeline works: `canary run --workload penumbra` → report with diffs. Claude Code can execute it autonomously.
+**Exit Criteria:** Full pipeline works: `canary run --workload penumbra` → report with diffs. any AI coding agent can execute it autonomously.
 
 ---
 
@@ -802,7 +802,7 @@ Canary/
 │   └── penumbra/
 │       ├── workload.json                 # Updated with penumbraConfig
 │       ├── AGENT_NOTES.md                # Updated with CDP approach
-│       ├── CLAUDE_CODE_RUNNER.md          # NEW — prompts for Claude Code
+│       ├── CLAUDE_CODE_RUNNER.md          # NEW — prompts for any AI coding agent
 │       └── tests/
 │           ├── tape-csg-orbit.json
 │           ├── atlas-blob-orbit.json
@@ -878,13 +878,13 @@ PenumbraBridgeAgent_CanvasLock_PersistsDimensions
 
 ---
 
-## Claude Code Automation Workflow
+## any AI coding agent Automation Workflow
 
-The end-to-end workflow for Claude Code:
+The end-to-end workflow for any AI coding agent:
 
 ```
-1. Claude Code edits Penumbra shader/runtime code
-2. Claude Code runs: canary run --workload penumbra
+1. any AI coding agent edits Penumbra shader/runtime code
+2. any AI coding agent runs: canary run --workload penumbra
 3. Bridge agent starts Vite (with the modified code)
 4. Bridge agent launches Chrome, navigates to localhost:3000
 5. For each test definition:
@@ -896,7 +896,7 @@ The end-to-end workflow for Claude Code:
       - Compare against baseline (pixel diff + SSIM)
 6. Bridge agent shuts down Chrome + Vite
 7. Harness generates HTML report
-8. Claude Code reads report:
+8. any AI coding agent reads report:
    - All PASS → change is safe
    - Any FAIL → inspect diffs, decide if intentional
    - If intentional → canary approve --workload penumbra

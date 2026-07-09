@@ -386,14 +386,14 @@ Phase 6 — cutover (~1 day). Flip the default UI to the Avalonia build, delete 
 
 ### Cross-repo doc pass
 
-- `Canary/CLAUDE.md` — Avalonia flagged in Framework line + Quick Reference repro pattern path + spec/PHASES_UI reference.
+- `Canary/AGENTS.md` — Avalonia flagged in Framework line + Quick Reference repro pattern path + spec/PHASES_UI reference.
 - `Canary/README.md` — Features bullet + Project Structure tree updated.
 - `docs/features/canary-ui-avalonia.md` — status `in-progress` → `shipped`.
 - `docs/plans/2026-05-24-canary-debug-overhaul.md` — § C4 marked SUPERSEDED 2026-05-27.
 - `CHANGELOG.md` — new `### Changed` block above the `### Added` migration block.
 - `BUILD_LOG.md` — Phase 6 entry prepended.
 - `MultiVerse/BUILD_LOG.md` — cross-repo entry (Canary → operator workflow surfaces).
-- Peer repos (Qualia, Penumbra) CLAUDE.md UNCHANGED — `Canary.UI.exe` reference still resolves.
+- Peer repos (Qualia, Penumbra) AGENTS.md UNCHANGED — `Canary.UI.exe` reference still resolves.
 
 ### Phase 6 smoke matrix — ALL GREEN (2026-05-28)
 
@@ -422,7 +422,7 @@ Build ✅ + unit tests (283 passing) ✅ + smoke matrix 8/8 ✅.
 - ✅ All 8 Phase 6 smoke workflows pass.
 - ✅ 0 warnings / 0 errors. Unit-test count 283 (down from 330 peak; 47 WinForms-only tests removed). Net +25 vs the 258 pre-migration baseline.
 - ✅ Feature doc status `shipped`.
-- ✅ CHANGELOG + BUILD_LOG + Canary CLAUDE.md + README updated.
+- ✅ CHANGELOG + BUILD_LOG + Canary AGENTS.md + README updated.
 - ✅ Snapshot tag deleted; rollback anchor no longer needed.
 - ✅ Pushed to origin/master + origin/main.
 

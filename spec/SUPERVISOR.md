@@ -1,7 +1,7 @@
 # SUPERVISOR.md — Canary Build Orchestrator
 
 ## Purpose
-This document is the **single source of truth** for validating every phase, checkpoint, and deliverable in the Canary project. Claude Code must read this file **before starting any phase** and **after completing any checkpoint** to verify correctness, catch regressions, and decide the next action.
+This document is the **single source of truth** for validating every phase, checkpoint, and deliverable in the Canary project. any AI coding agent must read this file **before starting any phase** and **after completing any checkpoint** to verify correctness, catch regressions, and decide the next action.
 
 ---
 
@@ -67,7 +67,7 @@ This document is the **single source of truth** for validating every phase, chec
 ```
 Canary/
 ├── Canary.sln
-├── CLAUDE.md
+├── AGENTS.md
 ├── README.md
 ├── BUILD_LOG.md
 ├── spec/

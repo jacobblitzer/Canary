@@ -1,7 +1,7 @@
 ---
 date: 2026-05-08
 status: shipped
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra A3 multiscale foundation + 7 graduated features (PR #6 + #7 + #8 merged 2026-05-08)

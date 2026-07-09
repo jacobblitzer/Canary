@@ -30,7 +30,7 @@ This migration is **additive then subtractive**: a new `Canary.UI.Avalonia` cspr
 
 ## Read in this order (5 min)
 
-1. `CLAUDE.md` Quick Reference + the "Cross-Repo Change Protocol" + "Auto-Journaling Rules" sections.
+1. `AGENTS.md` Quick Reference + the "Cross-Repo Change Protocol" + "Auto-Journaling Rules" sections.
 2. `docs/plans/2026-05-24-canary-debug-overhaul.md` § Executive summary + § C4 (nav tabs) — context for what the WinForms shell currently provides.
 3. `src/Canary.UI/MainForm.cs` — the shell that's being replaced. Note `_navTabControl` (lines 149–168), `_testsOnlyToolbarItems` visibility juggling (lines 416–443), the lazy `AddNavTab` pattern (444–463), and the WndProc hotkey forward (1455–1460).
 4. `src/Canary.UI/Navigation/INavMode.cs` + `NavModes.cs` — the lazy-create + cached-content abstraction that any replacement needs to honor.
@@ -226,7 +226,7 @@ Verification gates: all of: drag-and-drop a `.json` recording onto the tree → 
 - Update `src/Canary.Harness/UiLocator.cs` to look for `Canary.UI.Avalonia.exe` (or rename the Avalonia project's output to `Canary.UI.exe` and replace the old one). The CLI's `TryLaunchUi` path becomes the Avalonia path.
 - Update STANDARD.md §16 rule 8 reference to point at the new exe path.
 - Delete `src/Canary.UI/` entirely. Single commit, large diff but mechanical.
-- Update `Canary.sln`, `tests/Canary.Tests/Canary.Tests.csproj`, `CLAUDE.md` Quick Reference, `README.md`, `docs/features/*.md`, `docs/plans/2026-05-24-canary-debug-overhaul.md` (mark §C4 as superseded).
+- Update `Canary.sln`, `tests/Canary.Tests/Canary.Tests.csproj`, `AGENTS.md` Quick Reference, `README.md`, `docs/features/*.md`, `docs/plans/2026-05-24-canary-debug-overhaul.md` (mark §C4 as superseded).
 - Update `BUILD_LOG.md` + `docs/progress/2026-05-27-canary-ui-avalonia-migration.md` (final phase entry).
 - Cross-repo: `MultiVerse/BUILD_LOG.md` cross-repo entry. No Penumbra / Qualia code changes needed.
 

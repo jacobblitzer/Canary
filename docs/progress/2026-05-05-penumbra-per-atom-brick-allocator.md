@@ -1,7 +1,7 @@
 ---
 date: 2026-05-05
 status: in-progress
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra per-atom brick allocator (Wave 1 / E1+E2, in-progress 2026-05-05)

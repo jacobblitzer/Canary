@@ -18,7 +18,7 @@ each with its own verification gate.
 - Snapshot tag `pre-impl-supervised-session-2026-05-27` created at that SHA as the rollback anchor for the implementation.
 - Baseline build: `dotnet build Canary.sln` = 0 warnings, 0 errors.
 - Baseline tests: `dotnet test --filter "Category=Unit"` = 220 Passed, 0 Failed, 0 Skipped.
-- Canon read: `CLAUDE.md`, the driving prompt, `src/Canary.Harness/Cli/RunCommand.cs` (mirror pattern), `src/Canary.Agent.Qualia/QualiaBridgeAgent.cs` (lifecycle), `src/Canary.Core/Cdp/CdpClient.cs` (screenshot RPC at line 276), `src/Canary.UI/Annotation/AnnotatedImageForm.cs` (entry point for Phase 2), `src/Canary.Core/Feedback/FeedbackInboxWriter.cs` + `FeedbackSlugGenerator.cs` (slug + atomic-write patterns), `src/Canary.Core/Telemetry/NdjsonFileSink.cs` + `TelemetryRecord.cs` (envelope shape).
+- Canon read: `AGENTS.md`, the driving prompt, `src/Canary.Harness/Cli/RunCommand.cs` (mirror pattern), `src/Canary.Agent.Qualia/QualiaBridgeAgent.cs` (lifecycle), `src/Canary.Core/Cdp/CdpClient.cs` (screenshot RPC at line 276), `src/Canary.UI/Annotation/AnnotatedImageForm.cs` (entry point for Phase 2), `src/Canary.Core/Feedback/FeedbackInboxWriter.cs` + `FeedbackSlugGenerator.cs` (slug + atomic-write patterns), `src/Canary.Core/Telemetry/NdjsonFileSink.cs` + `TelemetryRecord.cs` (envelope shape).
 
 ## Phase 1 — CLI + storage layer (2026-05-27)
 
@@ -96,13 +96,13 @@ Created in the following order (the prompt's 5-commit shape was collapsed to 4 b
 - **`src/Canary.McpServer/Program.cs`** — registers the two new tools, bringing the total from 8 to 10.
 - **`tests/Canary.Tests/Mcp/SessionsToolsTests.cs`** — 5 unit tests: list returns valid JSON; get with a nonexistent id returns the not-found message; get with missing sessionId arg throws ArgumentException; both tools have correct Name + InputSchemaJson shape.
 
-### Cross-repo doc pass (per CLAUDE.md § Cross-Repo Change Protocol)
+### Cross-repo doc pass (per AGENTS.md § Cross-Repo Change Protocol)
 
-- **Canary CLAUDE.md** — Quick Reference gains the supervised-session bullet (CLI + GUI invocation paths + storage layout); nav-tab list updated to include "Sessions"; MCP tool count bumped from 8 to 10 with the two new tool names listed.
+- **Canary AGENTS.md** — Quick Reference gains the supervised-session bullet (CLI + GUI invocation paths + storage layout); nav-tab list updated to include "Sessions"; MCP tool count bumped from 8 to 10 with the two new tool names listed.
 - **Canary README.md** — features list gains a supervised-sessions bullet pointing at the feature doc; test count line updated to 258+.
 - **Canary docs/mcp-server.md** — tool table gains rows for `list_sessions` and `get_session_report`.
 - **MultiVerse/BUILD_LOG.md** — one-line cross-repo entry noting that the supervised-session feature shipped in Canary; no Penumbra/Qualia/CPig code changes needed.
-- **Qualia/CLAUDE.md** — Canary integration section gains a supervised-session pointer.
+- **Qualia/AGENTS.md** — Canary integration section gains a supervised-session pointer.
 
 ### Verification gates (Phase 3)
 
@@ -114,7 +114,7 @@ Created in the following order (the prompt's 5-commit shape was collapsed to 4 b
 
 To be created at the Phase 3 gate, per the driving prompt's commit shape:
 - `feat(mcp): list_sessions + get_session_report tools`
-- `docs: CLAUDE.md / README / mcp-server.md / CHANGELOG — supervised-session shipping`
+- `docs: AGENTS.md / README / mcp-server.md / CHANGELOG — supervised-session shipping`
 - `docs(multiverse + qualia): cross-repo entries for supervised-session`
 
 ### Snapshot tag

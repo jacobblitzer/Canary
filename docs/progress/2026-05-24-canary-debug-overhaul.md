@@ -23,14 +23,14 @@ phases (Phase 0 pre-flight + precursor + 9 design phases).
   the rollback anchor for the entire implementation; deletes after Phase 9 ships
   + pushes.
 - Toolchain: .NET SDK 10.0.102 present; repo targets `net8.0-windows` (Core /
-  Harness / UI), `net8.0;net48` (Agent), `net48` (Rhino plugin) per `CLAUDE.md`.
+  Harness / UI), `net8.0;net48` (Agent), `net48` (Rhino plugin) per `AGENTS.md`.
 - Baseline build: `dotnet build Canary.sln` = 0 warnings, 0 errors.
 - Baseline tests: `dotnet test --filter "Category=Unit"` = 107 Passed, 0 Failed,
   0 Skipped. `Category=Integration` count is 0 (the
   `Canary.Tests.Integration` csproj is scaffolded but empty — Integration tests
   start landing in Phase 1 per the prompt's per-phase commit blocks).
 - Canon read: design doc (`docs/plans/2026-05-24-canary-debug-overhaul.md`),
-  Phase A surface audit, Phase B prior-art, `CLAUDE.md`, `spec/SUPERVISOR.md`,
+  Phase A surface audit, Phase B prior-art, `AGENTS.md`, `spec/SUPERVISOR.md`,
   `MultiVerse/STANDARD.md` §§ 7, 14, 16, 19, 22.
 
 ## Phase Precursor — CLI exit-code regression (bug 0007) (2026-05-24)
@@ -238,7 +238,7 @@ wrapper ships in Phase 6).
   (YYYY-MM-DD-NNN-slug with sequence counting per date) +
   FeedbackInboxWriter (atomic per-file writes).
 - **docs/feedback/ tree:** inbox/, triaged/, resolved/ with .gitkeep +
-  README.md. CLAUDE.md "Feedback inbox" section added with session-start
+  README.md. AGENTS.md "Feedback inbox" section added with session-start
   scan rule.
 - **ImageViewerForm Annotate button:** interim launch surface; opens
   current image in AnnotatedImageForm. Inbox root discovered by walking
@@ -358,13 +358,13 @@ persistence + PastRuns quick-date filters.
 
 S-effort final phase.
 
-- **Canary side:** CLAUDE.md Quick Reference updated to point at the
+- **Canary side:** AGENTS.md Quick Reference updated to point at the
   new debug-overhaul surfaces (mode picker, nav tabs, per-run dir,
   telemetry NDJSON, MCP server, feedback inbox). FEATURE_STATUS.md
   gains a Debug-overhaul section table + consolidated deferral list.
   Design doc `docs/plans/2026-05-24-canary-debug-overhaul.md`
   frontmatter flipped in-progress → shipped + retrospective appended.
-- **Cross-repo:** Penumbra/CLAUDE.md + Qualia/CLAUDE.md each gain a
+- **Cross-repo:** Penumbra/AGENTS.md + Qualia/AGENTS.md each gain a
   "Canary integration (debug-overhaul shipped 2026-05-24)" section
   documenting telemetry capture + per-run REPORT.md + MCP server +
   spawn registry + feedback inbox. No code changes needed in either
@@ -376,7 +376,7 @@ S-effort final phase.
   frontmatter flipped READY → EXECUTED + banner appended mirroring the
   design doc retrospective.
 - **No Rhino update:** Rhino-side console interception was deferred in
-  Phase 2 and there's no Rhino-specific CLAUDE.md to update.
+  Phase 2 and there's no Rhino-specific AGENTS.md to update.
 - **No verification step** — docs-only phase. Phase 8's 220 Unit / 2
   Integration green state carries forward.
 

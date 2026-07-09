@@ -27,8 +27,8 @@ VLM and pixel-diff stay throughout. Headless mode stays available behind `--head
 ## Locked defaults (recap from audit prompt §0.3)
 
 - Doc location for plans: this file. New `docs/plans/` directory created in Canary; precedent in Qualia.
-- Frontmatter schema: `date / tags / status / project / component` per `Canary/CLAUDE.md` auto-journaling rule 7.
-- IPC for new features: named pipes + JSON-RPC (no HTTP, no sockets) per `Canary/CLAUDE.md` Key Rules.
+- Frontmatter schema: `date / tags / status / project / component` per `Canary/AGENTS.md` auto-journaling rule 7.
+- IPC for new features: named pipes + JSON-RPC (no HTTP, no sockets) per `Canary/AGENTS.md` Key Rules.
 - MCP transport: stdio.
 - Annotation storage: PNG + JSON sidecar (diffable, viewable original-untouched).
 - Tier 1 ports: 3000, 3001, 4173, 4200, 5173, 5174, 8000, 8080, 8081, 1420, plus any port Canary itself binds.
@@ -234,7 +234,7 @@ static void Main(string[] args) {
 
 ### Open questions
 
-- **STATUS: unresolved — does spawning a WinExe from `dotnet`-invoked `canary.exe` work cleanly without zombie consoles?** The `Canary/CLAUDE.md` "How to reproduce bugs" already warns: "do NOT use `dotnet run` for the UI (background mode fails)." Direct `Process.Start("Canary.UI.exe")` should work; validate during implementation.
+- **STATUS: unresolved — does spawning a WinExe from `dotnet`-invoked `canary.exe` work cleanly without zombie consoles?** The `Canary/AGENTS.md` "How to reproduce bugs" already warns: "do NOT use `dotnet run` for the UI (background mode fails)." Direct `Process.Start("Canary.UI.exe")` should work; validate during implementation.
 - **What about `--quiet`?** Should `canary run --quiet` imply `--headless`? Recommendation: yes. CI use case.
 - **STATUS: unresolved — what if the UI is already open and the operator runs `canary run` from a terminal?** Two UI instances would collide on workload-folder loading. Recommendation: use a Mutex (`Global\Canary.UI.SingleInstance`); the second instance posts its `AutoRunArgs` to the running instance via a named-pipe message + exits. Standard WinForms single-instance pattern.
 
@@ -425,17 +425,17 @@ Items live as `<slug>.md` plus a sidecar dir `<slug>/` containing source.png + a
 **Lifecycle:**
 
 1. **Create:** AnnotatedImageForm Save → atomic write to `docs/feedback/inbox/`.
-2. **Discover:** Claude session-start hook (CLAUDE.md addition): "If `docs/feedback/inbox/` is non-empty, list new items before proceeding."
+2. **Discover:** Claude session-start hook (AGENTS.md addition): "If `docs/feedback/inbox/` is non-empty, list new items before proceeding."
 3. **Triage:** Claude reads, edits frontmatter (`project`, `tags`, possibly `urgency`), moves to `triaged/`.
 4. **Resolve:** Set `status: resolved` + add a `### Resolution` section to the body + move to `resolved/`. The `runRef` path stays valid (resolved items are historical record).
 
-**CLAUDE.md addition:** the Canary `CLAUDE.md` gains a "Feedback inbox" rule pointing here. The relevant child-repo CLAUDE.mds (Penumbra, Qualia, etc.) get a back-reference per `STANDARD.md` §7 cross-repo protocol when items affect them.
+**AGENTS.md addition:** the Canary `AGENTS.md` gains a "Feedback inbox" rule pointing here. The relevant child-repo AGENTS.mds (Penumbra, Qualia, etc.) get a back-reference per `STANDARD.md` §7 cross-repo protocol when items affect them.
 
 ### MCP server (convenience wrapper)
 
 **Package:** new csproj `src/Canary.McpServer/` (added to `Canary.sln`).
 - TargetFramework: `net8.0`.
-- Transport: stdio (per Claude Code MCP convention).
+- Transport: stdio (per any AI coding agent MCP convention).
 - ProjectReference: `Canary.Core` (reads `TestResult`, `ITelemetrySink` output) + `Canary.UI.Services` (only if needed for ResultsHistory).
 - Distribution: a single exe alongside `canary.exe` + `Canary.UI.exe`; user adds a `.mcp.json` entry pointing at it.
 
@@ -457,7 +457,7 @@ Items live as `<slug>.md` plus a sidecar dir `<slug>/` containing source.png + a
 ### Open questions
 
 - **STATUS: unresolved — should the MCP server be a separate process or hosted by `Canary.UI.exe`?** Separate process (own csproj) is cleaner: works without UI running; survives UI crashes; matches the "Claude has its own console" mental model. Hosted-in-UI is simpler initially but conflates concerns. Recommendation: separate process.
-- **What about authentication?** Claude Code MCP stdio is local-only (Claude spawns the server as a child process). No auth needed at the transport layer. If the MCP server ever exposes write actions to remote consumers, revisit.
+- **What about authentication?** any AI coding agent MCP stdio is local-only (Claude spawns the server as a child process). No auth needed at the transport layer. If the MCP server ever exposes write actions to remote consumers, revisit.
 - **STATUS: unresolved — Tier 2 spawn registry voluntary or hook?** See §C7 below — same question, decided there.
 
 ### Effort: M
@@ -686,7 +686,7 @@ Proposed phasing for the follow-up implementation prompt. Pressure-tested agains
 | **Phase 6** | C6 MCP server half + C7 Tier 2 spawn registry | `Canary.McpServer` csproj with 8 initial tools; SpawnRegistry plumbing | **M** | Phases 3, 4, 5 (data sources) |
 | **Phase 7** | C4 UI overhaul (the big one) | INavMode refactor, all six new tabs, mode picker on TestRunnerPanel, integration of all prior phases' panels | **L** | Phases 1–6 (this IS the integration) |
 | **Phase 8** | C7 Tier 3 + C8 polish + C9 settings toggle | Tier 3 toggle, PastRunsPanel filter polish, Settings tab + UI-mode toggle | **S–M** | Phase 7 |
-| **Phase 9** | Documentation pass + CLAUDE.md updates across affected child repos | Canary CLAUDE.md updates; cross-repo entries in `Penumbra/CLAUDE.md`, `Qualia/CLAUDE.md`, `Rhino/CLAUDE.md`, MultiVerse BUILD_LOG | **S** | Phase 8 |
+| **Phase 9** | Documentation pass + AGENTS.md updates across affected child repos | Canary AGENTS.md updates; cross-repo entries in `Penumbra/AGENTS.md`, `Qualia/AGENTS.md`, `Rhino/AGENTS.md`, MultiVerse BUILD_LOG | **S** | Phase 8 |
 
 **Deviations from prompt's suggested ordering:**
 
@@ -701,12 +701,12 @@ Per §0.2 hard rule 9, noted but NOT modified in this prompt:
 
 | Phase | Cross-repo work |
 |---|---|
-| Phase 2 (C1) | **Penumbra:** Penumbra exposes `window.__canaryLogBuffer` already — could be optionally drained on telemetry start. Net-new code in Canary, no Penumbra change required for v1. **Qualia:** same. **Rhino-side / CPig-side:** the Slop LogHub file currently lives on disk; Canary could read it post-test as a telemetry batch import. Coordinate with CPig CLAUDE.md if that lands. |
+| Phase 2 (C1) | **Penumbra:** Penumbra exposes `window.__canaryLogBuffer` already — could be optionally drained on telemetry start. Net-new code in Canary, no Penumbra change required for v1. **Qualia:** same. **Rhino-side / CPig-side:** the Slop LogHub file currently lives on disk; Canary could read it post-test as a telemetry batch import. Coordinate with CPig AGENTS.md if that lands. |
 | Phase 3 (C2) | None — REPORT.md is Canary-internal. |
-| Phase 4 (C7) | None — localhost manager is Canary-internal but observes processes owned by child repos. Document in Penumbra/Qualia CLAUDE.md that Canary now tracks their Vite/Chrome PIDs. |
+| Phase 4 (C7) | None — localhost manager is Canary-internal but observes processes owned by child repos. Document in Penumbra/Qualia AGENTS.md that Canary now tracks their Vite/Chrome PIDs. |
 | Phase 5–6 (C5/C6) | **MCP server packaging:** the user adds an `.mcp.json` entry pointing at `Canary.McpServer.exe`. This convention should be documented in `MultiVerse/SKILLS.md` if it's session-wide useful. |
 | Phase 7 (C4) | None directly. |
-| Phase 9 | **All child repos with CLAUDE.md.** Per `STANDARD.md` §7, any change that leaves a child's CLAUDE.md stale needs a cross-repo update. Telemetry hooks + report format + feedback inbox locations are the candidates. |
+| Phase 9 | **All child repos with AGENTS.md.** Per `STANDARD.md` §7, any change that leaves a child's AGENTS.md stale needs a cross-repo update. Telemetry hooks + report format + feedback inbox locations are the candidates. |
 
 ### Total effort estimate
 

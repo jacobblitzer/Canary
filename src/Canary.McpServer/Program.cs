@@ -2,7 +2,7 @@ using Canary.McpServer;
 using Canary.McpServer.Tools;
 
 // Phase 6 / design §C6 — entry point for `Canary.McpServer.exe`. Stdio
-// JSON-RPC transport per the MCP spec; Claude Code spawns this as a
+// JSON-RPC transport per the MCP spec; any AI coding agent spawns this as a
 // child process via a `.mcp.json` entry pointing at the built exe.
 // See docs/mcp-server.md for setup.
 
@@ -34,7 +34,7 @@ try
 }
 catch (Exception ex)
 {
-    // Last-ditch logging to stderr so the Claude Code session shows
+    // Last-ditch logging to stderr so the agent session shows
     // something. The stdio loop catches per-message exceptions already;
     // anything escaping here is a startup or stdio-closure surprise.
     Console.Error.WriteLine($"[canary-mcp] fatal: {ex.Message}");

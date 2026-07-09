@@ -1,7 +1,7 @@
 ---
 date: 2026-05-09
 status: shipped
-source: extracted from Canary/CLAUDE.md per STANDARD.md §3 + §19
+source: extracted from Canary/AGENTS.md per STANDARD.md §3 + §19
 ---
 
 # Penumbra bug 0036 stall observability + soak fixture (Phase A shipped 2026-05-09)

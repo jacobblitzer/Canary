@@ -10,7 +10,7 @@ date: 2026-05-24
 # Canary MCP server
 
 `Canary.McpServer.exe` is a Model Context Protocol server that exposes
-Canary state to Claude Code (or any MCP client) over stdio JSON-RPC.
+Canary state to any AI coding agent (or any MCP client) over stdio JSON-RPC.
 Phase 6 of the debug-overhaul implementation (design §C6).
 
 ## Tool surface
@@ -38,7 +38,7 @@ The MCP server is built as part of `dotnet build Canary.sln`:
 src/Canary.McpServer/bin/{Debug|Release}/net8.0-windows/Canary.McpServer.exe
 ```
 
-Register it in your Claude Code `.mcp.json` (project-scoped) or
+Register it in your any AI coding agent `.mcp.json` (project-scoped) or
 `~/.claude.json` (user-scoped):
 
 ```json
@@ -52,7 +52,7 @@ Register it in your Claude Code `.mcp.json` (project-scoped) or
 }
 ```
 
-Restart Claude Code. The tools appear as `mcp__canary__list_feedback`,
+Restart any AI coding agent. The tools appear as `mcp__canary__list_feedback`,
 `mcp__canary__list_recent_runs`, etc.
 
 ## Discovery roots

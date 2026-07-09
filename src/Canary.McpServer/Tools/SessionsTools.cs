@@ -113,7 +113,7 @@ internal sealed class GetSessionReportTool : McpTool
 }
 
 // R1.6 flight-recorder Phase D (2026-07-03) — the two tools that make a session folder
-// fully readable from Claude Code without shelling out: the manifest (identity: opened file
+// fully readable from any AI coding agent without shelling out: the manifest (identity: opened file
 // + SHA, machine, PID, env decisions, exit record, harvested Penumbra SHAs) and the raw
 // telemetry stream (filterable by domain-event prefix, because tailed Penumbra/CPig records
 // are Kind=Log with the domain kind nested at Data.event).

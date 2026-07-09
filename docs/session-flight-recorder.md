@@ -24,7 +24,7 @@ SHIPPED as of 2026-07-03; the §5 acceptance run with the operator is the open g
 | `captures/` | PNGs + notes; each capture also records before/after frame state, active view, and (R1.6) whether the scene/registry snapshots fired |
 | `SESSION_REPORT.md` / `session.json` | Human-readable close-out + machine summary |
 
-## Reading a session from Claude Code (MCP)
+## Reading a session from any AI coding agent (MCP)
 
 Registered in `Canary.McpServer` (12 tools; see `docs/mcp-server.md` for `.mcp.json` setup):
 
