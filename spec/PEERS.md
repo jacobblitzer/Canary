@@ -29,6 +29,7 @@ The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`work
 - Standard panel nicknames: `JsonPath`, `Build`, `Cleanup`, `SlopLog`, `SlopSuccess`, `SlopCount`.
 - Per STANDARD.md §16, baselines update only via explicit "approve baseline" commits answering What/Why/Evidence.
 - Mode selection (pixel-diff / VLM / both) per `canary run --mode` flag. CPig tests carry `setup.vlmDescription` so they run as either flavour.
+- Operator-context fields (860a292): `setup.whatItDoes` + `setup.whatYouShouldSee` — optional, editor-surfaced only. **Sync direction is one-way: Slop's `fodder/catalog/cpig_grounding.json` card is canonical; the wrapper carries a copy.** When a grounding card is re-authored, re-copy into the wrapper; never edit the wrapper copy as if it were the source. `vlmDescription` stays VLM-grade (verifiable claims only) and is NOT a copy of the card.
 - Excluded tests (cpig-10, cpig-13) require the CPig BUG-004 mitigation; do not re-enable without re-verifying.
 
 ## Penumbra (`C:\Repos\Penumbra\`)
