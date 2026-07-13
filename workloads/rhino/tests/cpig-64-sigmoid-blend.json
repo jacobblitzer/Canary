@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue smooth capsule bridging two positions with a gradual transition in the middle, stretched horizontally across the viewport."
     },
     "actions": [
         {

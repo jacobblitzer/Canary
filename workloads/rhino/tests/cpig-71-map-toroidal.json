@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue organic blob shape, roughly spherical but deformed, filling the viewport. Does NOT have a central hole. Identity verified by pixel-diff baseline, not VLM \u2014 confusable with Map Helical and a plain deformed sphere."
     },
     "actions": [
         {

@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue spherical lattice structure composed of a dense wireframe mesh, visible in all viewports as a circular or round form."
     },
     "actions": [
         {

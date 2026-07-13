@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue rounded rectangular pill shape, thicker-walled than a simple trim, filling the viewport. Identity verified by pixel-diff baseline, not VLM \u2014 visually similar to Brep-Trim."
     },
     "actions": [
         {

@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: concentric or parallel light-blue contour lines on a planar region."
     },
     "actions": [
         {

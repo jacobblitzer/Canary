@@ -1,0 +1,22 @@
+{
+  "name": "cpig-batch1",
+  "description": "R6.5 Phase E Batch 1 \u2014 16 zero-coverage subcategory tests (Blending, Conformality, Mapping, Stochastic, Streamlines, Export). Capture mode for first bring-up; vlmDescription authored from source + screenshots. Run via: canary run --workload rhino --suite cpig-batch1 --headless",
+  "tests": [
+    "cpig-63-shepard-blend",
+    "cpig-64-sigmoid-blend",
+    "cpig-65-convex-blend",
+    "cpig-66-percell-selector",
+    "cpig-67-brep-trim",
+    "cpig-68-skin-field",
+    "cpig-69-self-supporting",
+    "cpig-70-map-tile",
+    "cpig-71-map-toroidal",
+    "cpig-72-map-helical",
+    "cpig-73-voronoi-foam",
+    "cpig-74-strut-foam",
+    "cpig-75-field-hatching",
+    "cpig-76-stipple-lines",
+    "cpig-77-offset-contours",
+    "cpig-78-export-3mf"
+  ]
+}

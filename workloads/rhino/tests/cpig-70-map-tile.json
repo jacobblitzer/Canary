@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A repeating grid of small light-blue dots arranged in a regular pattern across the viewport."
     },
     "actions": [
         {

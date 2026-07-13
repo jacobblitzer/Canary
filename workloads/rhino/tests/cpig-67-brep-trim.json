@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue rounded rectangular box shape filling the viewport, constrained to a rectangular boundary \u2014 not a sphere."
     },
     "actions": [
         {

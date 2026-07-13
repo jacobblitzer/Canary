@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue sphere mesh visible in the viewport (the field being exported), with Grasshopper panels showing Success=True and a file path."
     },
     "actions": [
         {

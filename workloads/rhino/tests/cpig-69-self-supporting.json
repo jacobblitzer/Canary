@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue dome or hemisphere shape with a visible stepped or layered surface texture, centered in the viewport."
     },
     "actions": [
         {

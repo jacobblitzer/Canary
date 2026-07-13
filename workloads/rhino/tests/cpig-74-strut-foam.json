@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: a network of light-blue line segments connecting points in 3D space."
     },
     "actions": [
         {

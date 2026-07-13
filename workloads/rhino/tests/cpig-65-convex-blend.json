@@ -10,7 +10,8 @@
             "displayMode": "Shaded",
             "width": 800,
             "height": 600
-        }
+        },
+        "vlmDescription": "A light-blue rounded capsule shape, dominated by a spherical form on one side with a slight stretch toward the other side. Identity verified by pixel-diff baseline, not VLM \u2014 visually similar to Shepard Blend."
     },
     "actions": [
         {
