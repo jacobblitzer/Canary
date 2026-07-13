@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue dome or hemisphere shape with a visible stepped or layered surface texture, centered in the viewport."
+        "vlmDescription": "A light-blue dome or hemisphere shape with a visible stepped or layered surface texture, centered in the viewport.",
+        "whatItDoes": "Forces the source field surface to remain self-supporting for additive manufacturing. Mode 0 (Mask) clips where overhang exceeds; Mode 1 (Blend) smoothly mixes with a safe field.",
+        "whatYouShouldSee": "A light-blue dome/hemisphere with a stepped or layered surface texture. Distinguish from an unmodified sphere by the stepped/angled surface."
     },
     "actions": [
         {

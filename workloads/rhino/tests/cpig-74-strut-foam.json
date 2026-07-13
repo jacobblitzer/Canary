@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: a network of light-blue line segments connecting points in 3D space."
+        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: a network of light-blue line segments connecting points in 3D space.",
+        "whatItDoes": "Implicit strut foam from a point cloud + connection rule. 0=KNearest, 1=RadiusBall. Each connection becomes a capsule strut. The Edges output (port 1) shows the strut network.",
+        "whatYouShouldSee": "NOTE: first bring-up render was BLANK. The Edges output must be wired to Custom Preview. When working: a network of capsule struts connecting the input points."
     },
     "actions": [
         {

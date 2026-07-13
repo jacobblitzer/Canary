@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue sphere mesh visible in the viewport (the field being exported), with Grasshopper panels showing Success=True and a file path."
+        "vlmDescription": "A light-blue sphere mesh visible in the viewport (the field being exported), with Grasshopper panels showing Success=True and a file path.",
+        "whatItDoes": "Exports a CPig field as a 3MF Volumetric file. LIBFIVE fields export as lossless function graphs; VDB/PROCEDURAL fields voxel-bake (lossy at VoxelRes). No visual output \u2014 verify via Success/Path panels.",
+        "whatYouShouldSee": "No visual geometry from the export itself. The revised test meshes the input sphere for Custom Preview. Success=True, Path=file path."
     },
     "actions": [
         {

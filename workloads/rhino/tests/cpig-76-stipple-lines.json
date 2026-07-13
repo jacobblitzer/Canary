@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: short light-blue line segments distributed across a planar region."
+        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: short light-blue line segments distributed across a planar region.",
+        "whatItDoes": "Generates short line segments whose density encodes field value. Lines can align to the gradient direction.",
+        "whatYouShouldSee": "NOTE: first bring-up render was BLANK. The Stipple Lines output should show short segments distributed across the plane."
     },
     "actions": [
         {

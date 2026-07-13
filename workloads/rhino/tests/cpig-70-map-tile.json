@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A repeating grid of small light-blue dots arranged in a regular pattern across the viewport."
+        "vlmDescription": "A repeating grid of small light-blue dots arranged in a regular pattern across the viewport.",
+        "whatItDoes": "Tiles a source field onto a periodic grid. The source neighborhood around the origin tiles symmetrically across the grid. Pass cell size 0 on any axis to disable tiling on that axis.",
+        "whatYouShouldSee": "A repeating grid pattern of light-blue points/shapes. Distinguish from a single field by the repeating/tiled structure."
     },
     "actions": [
         {

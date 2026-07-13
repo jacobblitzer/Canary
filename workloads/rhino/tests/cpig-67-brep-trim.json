@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue rounded rectangular box shape filling the viewport, constrained to a rectangular boundary \u2014 not a sphere."
+        "vlmDescription": "A light-blue rounded rectangular box shape filling the viewport, constrained to a rectangular boundary \u2014 not a sphere.",
+        "whatItDoes": "Clips a source field to the inside of a closed Brep. Internally meshes the Brep, builds a signed-distance field, combines via max(F, brep_SDF). Errors if the Brep is open.",
+        "whatYouShouldSee": "A light-blue rounded-box \u2014 the source field clipped to the Brep volume. Distinguish from Skin Field by the absence of a shell band."
     },
     "actions": [
         {

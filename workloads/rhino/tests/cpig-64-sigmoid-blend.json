@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue smooth capsule bridging two positions with a gradual transition in the middle, stretched horizontally across the viewport."
+        "vlmDescription": "A light-blue smooth capsule bridging two positions with a gradual transition in the middle, stretched horizontally across the viewport.",
+        "whatItDoes": "Smooth two-way blend between two fields gated by a guide field. t(p) = 1/(1+exp(-(g(p)-center)/width)); result = (1-t)F1 + tF2. Use for soft TPMS-to-TPMS transitions. Center/width control the transition position and sharpness.",
+        "whatYouShouldSee": "A light-blue pill/capsule with a smooth S-curve transition between two primitives. Distinguish from Shepard Blend by the guide field and S-curve transition shape."
     },
     "actions": [
         {

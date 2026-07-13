@@ -146,6 +146,26 @@ public sealed class TestSetup
     public string? VlmDescription { get; set; }
 
     /// <summary>
+    /// Operator-facing explanation of what the component under test computes,
+    /// in geometric terms, and why you'd use it. 3-5 sentences a human can
+    /// learn from. Surfaces in the test editor and on the checkpoint card so
+    /// the operator understands what they're looking at without opening the
+    /// source spec. Optional — tests without it run identically.
+    /// </summary>
+    [JsonPropertyName("whatItDoes")]
+    public string? WhatItDoes { get; set; }
+
+    /// <summary>
+    /// The discriminating visual signature — the features that distinguish
+    /// this component's correct output from its lookalikes. Grounded in the
+    /// Slop grounding card (<c>cpig_grounding.json</c>). More specific than
+    /// <see cref="VlmDescription"/> (which is VLM-grade and only claims what
+    /// a vision model can verify); this is human/agent-grade context. Optional.
+    /// </summary>
+    [JsonPropertyName("whatYouShouldSee")]
+    public string? WhatYouShouldSee { get; set; }
+
+    /// <summary>
     /// Named Penumbra display preset to apply before the first checkpoint
     /// (Penumbra workload only). The harness resolves the preset by name
     /// against:

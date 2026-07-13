@@ -75,6 +75,13 @@ public partial class TestEditorViewModel : ObservableObject
     /// <summary>One command per line. Empty lines are ignored on save.</summary>
     [ObservableProperty] private string _commandsText = string.Empty;
 
+    // Operator context fields (R6.5 Phase E) — optional prose that surfaces in
+    // the editor and on checkpoint cards. whatItDoes = what the component computes
+    // (operator-facing). whatYouShouldSee = discriminating visual signature
+    // (human/agent-grade, from the Slop grounding card). Both null when absent.
+    [ObservableProperty] private string _whatItDoes = string.Empty;
+    [ObservableProperty] private string _whatYouShouldSee = string.Empty;
+
     public event Action<string>? SaveRequested;
 
     public void Load(TestDefinition definition)
@@ -101,6 +108,10 @@ public partial class TestEditorViewModel : ObservableObject
         CommandsText = (definition.Setup?.Commands == null || definition.Setup.Commands.Count == 0)
             ? string.Empty
             : string.Join("\n", definition.Setup.Commands);
+
+        // R6.5 Phase E — operator context fields.
+        WhatItDoes = definition.Setup?.WhatItDoes ?? string.Empty;
+        WhatYouShouldSee = definition.Setup?.WhatYouShouldSee ?? string.Empty;
 
         Checkpoints.Clear();
         foreach (var cp in definition.Checkpoints)
@@ -174,6 +185,10 @@ public partial class TestEditorViewModel : ObservableObject
 
         // Phase 14.2 — VLM + commands. Empty → null (omit on serialize).
         _definition.Setup.VlmDescription = string.IsNullOrWhiteSpace(VlmDescription) ? null : VlmDescription;
+
+        // R6.5 Phase E — operator context fields. Empty → null (omit on serialize).
+        _definition.Setup.WhatItDoes = string.IsNullOrWhiteSpace(WhatItDoes) ? null : WhatItDoes;
+        _definition.Setup.WhatYouShouldSee = string.IsNullOrWhiteSpace(WhatYouShouldSee) ? null : WhatYouShouldSee;
         if (!string.IsNullOrWhiteSpace(VlmProvider) || !string.IsNullOrWhiteSpace(VlmModel))
         {
             _definition.Setup.Vlm ??= new VlmConfig();

@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue organic capsule shape stretched horizontally between two positions, rounder on the left side and flatter on the right, filling most of the viewport."
+        "vlmDescription": "A light-blue organic capsule shape stretched horizontally between two positions, rounder on the left side and flatter on the right, filling most of the viewport.",
+        "whatItDoes": "Shepard-weighted blend of N fields. Each field has a corresponding weight field (use Field Constant to model a scalar weight). Formula: f_blend = \u03a3 w\u1d62\u00b7f\u1d62 / max(\u03a3 w\u1d62, \u03b5). Use it for region-based TPMS blending where each region contribution is weighted. The denominator normalizes so the weights do not need to sum to 1.",
+        "whatYouShouldSee": "A light-blue blob bridging two separated primitives. With a sphere at -6,0,0 (weight 1.0) and a box at +6,0,0 (weight 0.5), the blend is a smooth organic capsule stretched along X \u2014 the sphere side is rounder, the box side is flatter. Distinguish from Sigmoid Blend by the absence of a guide-field-gated transition band."
     },
     "actions": [
         {

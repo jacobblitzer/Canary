@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: a light-blue cellular foam structure with thin walls between cell regions."
+        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: a light-blue cellular foam structure with thin walls between cell regions.",
+        "whatItDoes": "Implicit Voronoi foam from seed points. (d2 - d1) - wallThickness/2. F<=0 marks the wall network between cells (open-cell foam).",
+        "whatYouShouldSee": "NOTE: first bring-up render was BLANK \u2014 GH component showed red. When working: a light-blue mesh of thin walls between cellular regions around each seed."
     },
     "actions": [
         {

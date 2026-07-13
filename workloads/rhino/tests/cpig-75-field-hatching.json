@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: parallel light-blue line patterns on a planar region."
+        "vlmDescription": "NOT YET VERIFIED \u2014 render was blank on first bring-up. When fixed: parallel light-blue line patterns on a planar region.",
+        "whatItDoes": "Converts field values to hatching density for pen-plotter tonal rendering. Produces parallel hatch lines on a planar slice.",
+        "whatYouShouldSee": "NOTE: first bring-up render was BLANK. Width/Height must span the field region. The Hatch Lines output should show parallel line patterns on the XY plane."
     },
     "actions": [
         {

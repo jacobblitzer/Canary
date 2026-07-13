@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue spherical lattice structure composed of a dense wireframe mesh, visible in all viewports as a circular or round form."
+        "vlmDescription": "A light-blue spherical lattice structure composed of a dense wireframe mesh, visible in all viewports as a circular or round form.",
+        "whatItDoes": "Picks a different source field per lattice cell. Wire either a Pattern (int list) or a Selector field. Use for multi-material lattices.",
+        "whatYouShouldSee": "A light-blue mesh showing a lattice of cells, each selecting a different source field type. Distinguish from Map Field Tile by the per-cell type variation."
     },
     "actions": [
         {

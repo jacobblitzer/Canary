@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue rounded capsule shape, dominated by a spherical form on one side with a slight stretch toward the other side. Identity verified by pixel-diff baseline, not VLM \u2014 visually similar to Shepard Blend."
+        "vlmDescription": "A light-blue rounded capsule shape, dominated by a spherical form on one side with a slight stretch toward the other side. Identity verified by pixel-diff baseline, not VLM \u2014 visually similar to Shepard Blend.",
+        "whatItDoes": "Convex combination of N fields with N constant scalar weights. f_blend = \u03a3 t\u1d62\u00b7f\u1d62 / \u03a3 t\u1d62. For spatially varying weights use Shepard Blend instead.",
+        "whatYouShouldSee": "A light-blue rounded capsule \u2014 normalized convex combination. Distinguish from Shepard Blend by the scalar weight inputs (not field-valued)."
     },
     "actions": [
         {

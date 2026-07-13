@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue bulbous organic volume, roughly shell-shaped, filling the viewport. Identity verified by pixel-diff baseline, not VLM \u2014 confusable with Map Toroidal."
+        "vlmDescription": "A light-blue bulbous organic volume, roughly shell-shaped, filling the viewport. Identity verified by pixel-diff baseline, not VLM \u2014 confusable with Map Toroidal.",
+        "whatItDoes": "Wraps a source field into a helical band around an axis. u runs around the axis (de-twisted by twist_rate), v runs along the axis, w is the radial offset.",
+        "whatYouShouldSee": "A light-blue bulbous shell-like volume. NOTE: the render shows a closed organic volume, not a clearly twisted/helical strip. Identity verified by pixel-diff baseline, not VLM."
     },
     "actions": [
         {

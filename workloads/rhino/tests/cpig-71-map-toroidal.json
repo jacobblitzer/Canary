@@ -11,7 +11,9 @@
             "width": 800,
             "height": 600
         },
-        "vlmDescription": "A light-blue organic blob shape, roughly spherical but deformed, filling the viewport. Does NOT have a central hole. Identity verified by pixel-diff baseline, not VLM \u2014 confusable with Map Helical and a plain deformed sphere."
+        "vlmDescription": "A light-blue organic blob shape, roughly spherical but deformed, filling the viewport. Does NOT have a central hole. Identity verified by pixel-diff baseline, not VLM \u2014 confusable with Map Helical and a plain deformed sphere.",
+        "whatItDoes": "Wraps a source field around a torus surface. u runs around the major ring, v wraps around the tube cross-section, w is the radial offset.",
+        "whatYouShouldSee": "A light-blue organic blob. NOTE: the render does NOT show a donut/torus hole \u2014 the meshed isosurface is a closed organic volume. Identity verified by pixel-diff baseline, not VLM."
     },
     "actions": [
         {

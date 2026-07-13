@@ -68,6 +68,29 @@
                 </StackPanel>
               </Border>
 
+              <!-- R6.5 Phase E — operator context fields. Optional prose
+                   that surfaces in the editor and on checkpoint cards.
+                   whatItDoes = what the component computes (operator-facing).
+                   whatYouShouldSee = discriminating visual signature (from
+                   the Slop grounding card). Both round-trip as null when
+                   blank so tests without them stay clean. -->
+              <Border Background="#2A2A2D" CornerRadius="3" Padding="12" Margin="0,12,0,0">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Operator context (optional — what this test exercises)"
+                             FontWeight="SemiBold" Foreground="#DCDCDC" />
+                  <TextBlock Text="What it does (operator-facing explanation)"
+                             Foreground="#B4B4B4" FontSize="11" />
+                  <TextBox Text="{Binding WhatItDoes, Mode=TwoWay}"
+                           AcceptsReturn="True" Height="80" TextWrapping="Wrap"
+                           ToolTip.Tip="3-5 sentences explaining what the component under test computes, in geometric terms, and why you'd use it. Surfaces on the checkpoint card so the operator understands what they're looking at." />
+                  <TextBlock Text="What you should see (discriminating visual signature)"
+                             Foreground="#B4B4B4" FontSize="11" />
+                  <TextBox Text="{Binding WhatYouShouldSee, Mode=TwoWay}"
+                           AcceptsReturn="True" Height="80" TextWrapping="Wrap"
+                           ToolTip.Tip="The features that distinguish this component's correct output from its lookalikes. Grounded in the Slop grounding card. More specific than the VLM description." />
+                </StackPanel>
+              </Border>
+
               <Border Background="#2A2A2D" CornerRadius="3" Padding="12">
                 <StackPanel Spacing="6">
                   <TextBlock Text="Setup commands (one per line — open/run/close hooks executed before checkpoints)"
