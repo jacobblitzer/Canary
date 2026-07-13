@@ -93,7 +93,7 @@ canary run --workload rhino --test cpig-20-domain-modifiers
 ```
 
 ### Running Pigture Tests
-Same shared-suite pattern as CPig: `canary run --workload rhino --suite pigture`.
+Same shared-suite pattern as CPig: `canary run --workload rhino --suite pigture`. Test wrappers carry optional operator-context fields (`setup.whatItDoes` + `setup.whatYouShouldSee`) surfaced in the test editor — the Slop grounding card is canonical and the wrapper is a one-way copy (see `spec/PEERS.md`).
 
 Pigture checkpoints use `"source": "file"` instead of `"source": "viewport"` (the default). Viewport screenshots capture Rhino's Shaded display mode, not the Cycles render. The rendered image is saved to disk by RenderViewer, and its path flows through a `RenderFilePath` GH panel. At checkpoint time, the runner reads that panel via `GrasshopperGetPanelText`, copies the file to `candidates/`, and runs normal pixel-diff comparison.
 
