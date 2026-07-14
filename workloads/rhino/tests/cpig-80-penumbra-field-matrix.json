@@ -1,74 +1,266 @@
 {
-    "name": "cpig-80-penumbra-field-matrix",
-    "workload": "rhino",
-    "description": "80 Penumbra Field Matrix (R6.5 Phase E2 — 12 field types through Penumbra Preview). One capture showing all 12: tape sphere, box∪sphere boolean, gyroid, neovius, twist warp, driven gyroid, repeat, mesh-distance, VDB round-trip, strut-foam, fromGrid3D, smooth-union composite. Each field type on a grid-positioned Penumbra Preview node with distinct default sourceId. Runs AFTER the fixture (79) to reuse the warmed shader cache. Capture mode — no pass/fail on the image. Asserts verify Connected=True + Status=Pushed for all 12 preview nodes.",
-    "runMode": "shared",
-    "setup": {
-        "file": "fixtures/cpig_slop_loader.gh",
-        "viewport": { "projection": "Perspective", "displayMode": "Shaded", "width": 800, "height": 600 },
-        "vlm": { "provider": "ollama", "model": "qwen2.5vl:7b" },
-        "vlmDescription": "A Rhino viewport showing multiple SDF surfaces rendered by an in-process GLSL conduit. Up to 12 distinct 3D shapes visible simultaneously, grid-positioned: smooth spheres, a boolean union, TPMS lattices (gyroid with smooth triply-periodic surface, neovius with plate-like chambers), a twisted sphere, a driven gyroid, repeating spheres, a mesh-distance sphere, a VDB-voxelized sphere, a strut-foam network, a grid-based sphere, and a smooth-union blend. Some may be tiny or unframed. NOT an empty viewport."
-    },
-    "actions": [
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-        { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
-        { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-        { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
-        { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/CPig/research/slop_tests/80_penumbra_field_matrix.json" },
-        { "type": "RunCommand", "command": "_PenumbraPreviewBackend _Glsl" },
-        { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
-        { "type": "WaitForGrasshopperSolution", "timeoutMs": 120000 },
-        { "type": "WaitForPenumbraFrame", "requireReal": true, "minRevision": 1, "timeoutMs": 110000 },
-        { "type": "RunCommand", "command": "-_4View _Enter" },
-        { "type": "RunCommand", "command": "-_MaxViewport" },
-        { "type": "RunCommand", "command": "-_SetView _World _Perspective _Enter" },
-        { "type": "RunCommand", "command": "-_Sphere 0,0,0 400" },
-        { "type": "RunCommand", "command": "_SelNone" },
-        { "type": "RunCommand", "command": "_SelLast" },
-        { "type": "RunCommand", "command": "-_Zoom _Selected" },
-        { "type": "RunCommand", "command": "-_ViewportProperties _Lens 35 _EnterEnd" },
-        { "type": "RunCommand", "command": "-_ViewportProperties _Lens 50 _EnterEnd" },
-        { "type": "RunCommand", "command": "_Delete" },
-        { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "timeoutMs": 90000 }
-    ],
-    "checkpoints": [
-        {
-            "name": "penumbra-field-matrix",
-            "atTimeMs": 0,
-            "source": "viewport",
-            "mode": "capture",
-            "stabilizeMs": 2000,
-            "tolerance": 0.05
-        }
-    ],
-    "asserts": [
-        { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True" },
-        { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
-        { "type": "PanelEquals", "nickname": "1:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "1:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "2:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "2:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "3:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "3:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "4:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "4:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "5:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "5:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "6:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "6:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "7:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "7:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "8:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "8:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "9:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "9:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "10:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "10:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "11:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "11:Status", "text": "Pushed" },
-        { "type": "PanelEquals", "nickname": "12:Connected", "text": "True" },
-        { "type": "PanelContains", "nickname": "12:Status", "text": "Pushed" }
-    ]
+ "name": "cpig-80-penumbra-field-matrix",
+ "workload": "rhino",
+ "description": "80 Penumbra Field Matrix (R6.5 Phase E2 — 12 field types through Penumbra Preview). One capture showing all 12: tape sphere, box∪sphere boolean, gyroid, neovius, twist warp, driven gyroid, repeat, mesh-distance, VDB round-trip, strut-foam, fromGrid3D, smooth-union composite. Each field type on a grid-positioned Penumbra Preview node with distinct default sourceId. Runs AFTER the fixture (79) to reuse the warmed shader cache. Capture mode — no pass/fail on the image. Asserts verify Connected=True + Status=Pushed for all 12 preview nodes.",
+ "runMode": "shared",
+ "setup": {
+  "file": "fixtures/cpig_slop_loader.gh",
+  "viewport": {
+   "projection": "Perspective",
+   "displayMode": "Shaded",
+   "width": 800,
+   "height": 600
+  },
+  "vlm": {
+   "provider": "ollama",
+   "model": "qwen2.5vl:7b"
+  },
+  "vlmDescription": "A Rhino viewport showing multiple SDF surfaces rendered by an in-process GLSL conduit. Up to 12 distinct 3D shapes visible simultaneously, grid-positioned: smooth spheres, a boolean union, TPMS lattices (gyroid with smooth triply-periodic surface, neovius with plate-like chambers), a twisted sphere, a driven gyroid, repeating spheres, a mesh-distance sphere, a VDB-voxelized sphere, a strut-foam network, a grid-based sphere, and a smooth-union blend. Some may be tiny or unframed. NOT an empty viewport."
+ },
+ "actions": [
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 5000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Build",
+   "value": false
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Cleanup",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 5000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Cleanup",
+   "value": false
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 2000
+  },
+  {
+   "type": "GrasshopperSetPanelText",
+   "nickname": "JsonPath",
+   "text": "C:/Repos/CPig/research/slop_tests/80_penumbra_field_matrix.json"
+  },
+  {
+   "type": "RunCommand",
+   "command": "_PenumbraPreviewBackend _Glsl"
+  },
+  {
+   "type": "RunCommand",
+   "command": "_PenumbraGlClear"
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Build",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 120000
+  },
+  {
+   "type": "WaitForPenumbraFrame",
+   "requireReal": true,
+   "minRevision": 1,
+   "timeoutMs": 110000
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_4View _Enter"
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_MaxViewport"
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_SetView _World _Perspective _Enter"
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_Sphere 0,0,0 400"
+  },
+  {
+   "type": "RunCommand",
+   "command": "_SelNone"
+  },
+  {
+   "type": "RunCommand",
+   "command": "_SelLast"
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_Zoom _Selected"
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_ViewportProperties _Lens 35 _EnterEnd"
+  },
+  {
+   "type": "RunCommand",
+   "command": "-_ViewportProperties _Lens 50 _EnterEnd"
+  },
+  {
+   "type": "RunCommand",
+   "command": "_Delete"
+  },
+  {
+   "type": "WaitForPenumbraFrame",
+   "requireReal": true,
+   "requireSteady": true,
+   "timeoutMs": 90000,
+   "quietMs": 4000
+  }
+ ],
+ "checkpoints": [
+  {
+   "name": "penumbra-field-matrix",
+   "atTimeMs": 0,
+   "source": "viewport",
+   "mode": "capture",
+   "stabilizeMs": 2000,
+   "tolerance": 0.05
+  }
+ ],
+ "asserts": [
+  {
+   "type": "PanelEquals",
+   "nickname": "SlopSuccess",
+   "text": "True"
+  },
+  {
+   "type": "PanelDoesNotContain",
+   "nickname": "SlopLog",
+   "text": "FATAL"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "1:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "1:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "2:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "2:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "3:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "3:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "4:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "4:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "5:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "5:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "6:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "6:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "7:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "7:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "8:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "8:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "9:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "9:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "10:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "10:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "11:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "11:Status",
+   "text": "Pushed"
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "12:Connected",
+   "text": "True"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "12:Status",
+   "text": "Pushed"
+  }
+ ]
 }
