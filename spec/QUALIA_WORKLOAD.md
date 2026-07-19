@@ -39,7 +39,12 @@ state surface than Penumbra:
 - 6 shipped suites, 78 test fixtures (May 2026 snapshot).
 - ~50+ `__canary*` hooks across readiness, persona registry, landing
   screen, playground, qualia-v4 pointers / qverse / RAG, RH-2 perf
-  snapshot, diagnostic dump.
+  snapshot, diagnostic dump; plus the display-sweep W0 probes
+  (2026-07-19): `__canaryClearTouchedPerfFields`,
+  `__canaryGetResolvedNodeDisplayMode`, `__canaryGetSocketState`,
+  `__canaryGetHaloState`, `__canaryLoadDDV`, and an additive
+  `opts.preserveProfile` param on `__canarySetPersonaEnabled`
+  (see `workloads/qualia/AGENT_NOTES.md` § Display-sweep W0 probes).
 - Co-existence with Penumbra workload by design — separate CDP port
   (9223 vs 9222) + Vite port (5173 vs 3000).
 - `setup.commands` runs raw JS via `Runtime.evaluate` — most new

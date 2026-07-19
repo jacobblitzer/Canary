@@ -25,9 +25,13 @@ App-level (always available after `__canaryHooksReady === true`):
   (Renamed from `__canaryGetModuleConfig` / `__canaryListModules` in
   Qualia Phase 7.2, 2026-05-12; the legacy names remain as
   `@deprecated` aliases for one transition release.)
-- `__canarySetPersonaEnabled(id, enabled)` / `__canaryApplyProfile(name)` — mutation.
+- `__canarySetPersonaEnabled(id, enabled, opts?)` / `__canaryApplyProfile(name)` — mutation.
   (Renamed from `__canarySetModuleEnabled` in Qualia Phase 7.2, 2026-05-12;
-  legacy alias preserved for one transition release.)
+  legacy alias preserved for one transition release. 2026-07-19: additive
+  `opts.preserveProfile` third param — without it a toggle flips the
+  profile to `'custom'` and drops the whole base-profile settings layer;
+  pass `{ preserveProfile: true }` for single-variable persona mutations.
+  2-arg calls behave exactly as before.)
 - `__canaryShowLandingScreen()` / `__canaryCloseLandingScreen()`.
 - `__canaryGetLandingState()` — DOM-driven inspection of the modal.
 - `__canaryClickProfilePill(name)` / `__canaryToggleLandingPersona(id)`.
@@ -368,3 +372,39 @@ and read these):
 Both are thin wrappers over `EventStore.currentSolution` / `isDirty`.
 No wire-format change to existing hooks. A dedicated suite is not
 authored yet; these are here for when C3+ adds save-loop tests.
+
+## Display-sweep W0 probes (2026-07-19)
+
+Added for the display-behavior sweep campaign
+(`Qualia/docs/plans/2026-07-19-display-behavior-sweep.md`,
+`MultiVerse/prompts/qualia-display-sweep-2026-07-19.md`). All additive;
+envelope-wrapped like the rest of the surface.
+
+- `__canaryClearTouchedPerfFields()` → `true` — bulk forget of every
+  user-touched perf field. The sweep reset recipe is
+  `clearTouchedPerfFields + ApplyProfile(base)`; re-applying the SAME
+  profile alone does NOT clear touches (Viewport only wipes them on a
+  profile-NAME change).
+- `__canaryGetResolvedNodeDisplayMode(nodeId)` → `NodeDisplayMode | null` —
+  the RESOLVED mode one node renders with (per-node > per-type > global
+  cascade). `__canaryGetNodeDisplayMode()` remains global-only.
+- `__canaryGetSocketState()` → `{ variant, count, visible }` — applied
+  socket-layer state (vs. the perf SETTING `socketVariant`; divergence
+  between the two is a finding, not noise).
+- `__canaryGetHaloState()` → `{ variant, count, visible, radiusMul,
+  dataChannel, perNode: [{ id, radius }] }` — applied halo-layer state
+  incl. the dataMapping channel (`'pagerank'` under Aurora/X-ray/
+  Bioluminescent) and per-node uploaded radii (post-dataMapping,
+  post-radiusMul).
+- `__canaryLoadDDV(opts?)` → `{ selected }` — loads the deterministic
+  4-node Debug Default View fixture with a duration-0 camera snap
+  (mirrors the toolbar DDV button; destructive). `{ select: false }`
+  skips the snapshot's default `ddv-alpha` selection so base states can
+  be selection-free.
+
+First live use of `__canaryGetHaloState` surfaced a real anomaly: under
+Aurora on the DDV graph the scene's halo layer reports variant
+`aurora-vent`, `dataChannel 'pagerank'`, but **0 uploaded instances**
+(verified at the raw layer: `geometry.instanceCount === 0`, mesh in
+scene). Tracked as Qualia bug 0054; the W2 sweep owns the systematic
+chase.
