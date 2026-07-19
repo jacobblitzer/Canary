@@ -1,0 +1,913 @@
+{
+  "sweepId": "w2-atlas-r1",
+  "generatedAt": "2026-07-19T22:19:02.561Z",
+  "spec": {
+    "name": "w2-atlas",
+    "chunkSize": 6,
+    "disablePersonas": [
+      "compute.layout"
+    ],
+    "alternates": {
+      "nodeHaloVariant": [
+        "aurora-vent",
+        "soft-glow",
+        "none"
+      ],
+      "socketVariant": [
+        "solder",
+        "bracket",
+        "none"
+      ],
+      "nubVariant": [
+        "shaded-sphere",
+        "ink-dot",
+        "none"
+      ],
+      "edgeShape": [
+        "catmull-rom",
+        "straight"
+      ],
+      "edgeGradientRampId": [
+        "bioluminescent"
+      ],
+      "renderMode": [
+        "particulate",
+        "surface"
+      ]
+    },
+    "families": [
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "ddv"
+        }
+      },
+      {
+        "base": "standard",
+        "fixture": {
+          "kind": "ddv"
+        }
+      },
+      {
+        "base": "workshop",
+        "fixture": {
+          "kind": "ddv"
+        }
+      },
+      {
+        "base": "cinematic",
+        "fixture": {
+          "kind": "ddv"
+        }
+      },
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "demo",
+          "slug": "workshop-palette"
+        }
+      },
+      {
+        "base": "standard",
+        "fixture": {
+          "kind": "demo",
+          "slug": "workshop-palette"
+        }
+      },
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "demo",
+          "slug": "qnode-junction-alignment-test"
+        }
+      }
+    ],
+    "mutations": [
+      {
+        "id": "persona-render-graph-scene",
+        "kind": "persona",
+        "persona": "render.graph-scene"
+      },
+      {
+        "id": "persona-render-curl-noise-field",
+        "kind": "persona",
+        "persona": "render.curl-noise-field"
+      },
+      {
+        "id": "persona-fx-color-grade",
+        "kind": "persona",
+        "persona": "fx.color-grade"
+      },
+      {
+        "id": "persona-fx-outline",
+        "kind": "persona",
+        "persona": "fx.outline"
+      },
+      {
+        "id": "persona-fx-chromatic-aberration",
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration"
+      },
+      {
+        "id": "persona-fx-film-grain",
+        "kind": "persona",
+        "persona": "fx.film-grain"
+      },
+      {
+        "id": "persona-fx-vignette",
+        "kind": "persona",
+        "persona": "fx.vignette"
+      },
+      {
+        "id": "persona-render-nodes",
+        "kind": "persona",
+        "persona": "render.nodes"
+      },
+      {
+        "id": "persona-render-edges",
+        "kind": "persona",
+        "persona": "render.edges"
+      },
+      {
+        "id": "persona-render-labels",
+        "kind": "persona",
+        "persona": "render.labels"
+      },
+      {
+        "id": "persona-render-grid",
+        "kind": "persona",
+        "persona": "render.grid"
+      },
+      {
+        "id": "persona-render-cross-context-portal",
+        "kind": "persona",
+        "persona": "render.cross-context.portal"
+      },
+      {
+        "id": "persona-render-cross-context-qnode",
+        "kind": "persona",
+        "persona": "render.cross-context.qnode"
+      },
+      {
+        "id": "persona-render-gumball",
+        "kind": "persona",
+        "persona": "render.gumball"
+      },
+      {
+        "id": "persona-render-penumbra-backdrop",
+        "kind": "persona",
+        "persona": "render.penumbra-backdrop"
+      },
+      {
+        "id": "persona-render-penumbra-fallback",
+        "kind": "persona",
+        "persona": "render.penumbra-fallback"
+      },
+      {
+        "id": "persona-render-context-jewel-hud",
+        "kind": "persona",
+        "persona": "render.context-jewel-hud"
+      },
+      {
+        "id": "persona-render-context-jewel-scene",
+        "kind": "persona",
+        "persona": "render.context-jewel-scene"
+      },
+      {
+        "id": "persona-render-context-navigator",
+        "kind": "persona",
+        "persona": "render.context-navigator"
+      },
+      {
+        "id": "persona-render-qverse-graph-nav",
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav"
+      },
+      {
+        "id": "persona-compute-layout",
+        "kind": "persona",
+        "persona": "compute.layout"
+      },
+      {
+        "id": "persona-compute-metrics",
+        "kind": "persona",
+        "persona": "compute.metrics"
+      },
+      {
+        "id": "persona-compute-simulation",
+        "kind": "persona",
+        "persona": "compute.simulation"
+      },
+      {
+        "id": "persona-compute-rag-eager-l3",
+        "kind": "persona",
+        "persona": "compute.rag.eager-l3"
+      },
+      {
+        "id": "persona-compute-lod",
+        "kind": "persona",
+        "persona": "compute.lod"
+      },
+      {
+        "id": "persona-compute-edge-routing",
+        "kind": "persona",
+        "persona": "compute.edge-routing"
+      },
+      {
+        "id": "persona-interaction-hover",
+        "kind": "persona",
+        "persona": "interaction.hover"
+      },
+      {
+        "id": "persona-interaction-drag",
+        "kind": "persona",
+        "persona": "interaction.drag"
+      },
+      {
+        "id": "persona-interaction-box-select",
+        "kind": "persona",
+        "persona": "interaction.box-select"
+      },
+      {
+        "id": "persona-interaction-fly-to",
+        "kind": "persona",
+        "persona": "interaction.fly-to"
+      },
+      {
+        "id": "persona-debug-snapshot",
+        "kind": "persona",
+        "persona": "debug.snapshot"
+      },
+      {
+        "id": "persona-debug-playground",
+        "kind": "persona",
+        "persona": "debug.playground"
+      },
+      {
+        "id": "persona-debug-overlay",
+        "kind": "persona",
+        "persona": "debug.overlay"
+      },
+      {
+        "id": "persona-debug-fps-hud",
+        "kind": "persona",
+        "persona": "debug.fps-hud"
+      },
+      {
+        "id": "persona-debug-api-tick-log",
+        "kind": "persona",
+        "persona": "debug.api-tick-log"
+      },
+      {
+        "id": "persona-render-junction-bubble",
+        "kind": "persona",
+        "persona": "render.junction.bubble"
+      },
+      {
+        "id": "persona-render-junction-center",
+        "kind": "persona",
+        "persona": "render.junction.center"
+      },
+      {
+        "id": "persona-render-junction-surface",
+        "kind": "persona",
+        "persona": "render.junction.surface"
+      },
+      {
+        "id": "persona-render-junction-pull-back",
+        "kind": "persona",
+        "persona": "render.junction.pull-back"
+      },
+      {
+        "id": "persona-render-junction-voronoi",
+        "kind": "persona",
+        "persona": "render.junction.voronoi"
+      },
+      {
+        "id": "persona-debug-junction-markers",
+        "kind": "persona",
+        "persona": "debug.junction-markers"
+      },
+      {
+        "id": "persona-render-paper",
+        "kind": "persona",
+        "persona": "render.paper"
+      },
+      {
+        "id": "persona-fx-edge-flow",
+        "kind": "persona",
+        "persona": "fx.edge-flow"
+      },
+      {
+        "id": "persona-fx-selection-halo",
+        "kind": "persona",
+        "persona": "fx.selection-halo"
+      },
+      {
+        "id": "persona-fx-hover-lift",
+        "kind": "persona",
+        "persona": "fx.hover-lift"
+      },
+      {
+        "id": "persona-fx-post-process",
+        "kind": "persona",
+        "persona": "fx.post-process"
+      },
+      {
+        "id": "persona-fx-node-pulse",
+        "kind": "persona",
+        "persona": "fx.node-pulse"
+      },
+      {
+        "id": "persona-fx-laser-rat",
+        "kind": "persona",
+        "persona": "fx.laser-rat"
+      },
+      {
+        "id": "persona-fx-pencil-toon",
+        "kind": "persona",
+        "persona": "fx.pencil-toon"
+      },
+      {
+        "id": "persona-fx-debug-layer-colors",
+        "kind": "persona",
+        "persona": "fx.debug-layer-colors"
+      },
+      {
+        "id": "persona-fx-connection-sweep",
+        "kind": "persona",
+        "persona": "fx.connection-sweep"
+      },
+      {
+        "id": "persona-fx-force-field",
+        "kind": "persona",
+        "persona": "fx.force-field"
+      },
+      {
+        "id": "persona-fx-group-atmosphere",
+        "kind": "persona",
+        "persona": "fx.group-atmosphere"
+      },
+      {
+        "id": "persona-fx-echo-trails",
+        "kind": "persona",
+        "persona": "fx.echo-trails"
+      },
+      {
+        "id": "persona-fx-constellations",
+        "kind": "persona",
+        "persona": "fx.constellations"
+      },
+      {
+        "id": "persona-fx-cursor-trail",
+        "kind": "persona",
+        "persona": "fx.cursor-trail"
+      },
+      {
+        "id": "persona-fx-time-lapse",
+        "kind": "persona",
+        "persona": "fx.time-lapse"
+      },
+      {
+        "id": "persona-fx-audio-reactive",
+        "kind": "persona",
+        "persona": "fx.audio-reactive"
+      },
+      {
+        "id": "persona-fx-label-bloom",
+        "kind": "persona",
+        "persona": "fx.label-bloom"
+      },
+      {
+        "id": "persona-fx-magnetic-snap",
+        "kind": "persona",
+        "persona": "fx.magnetic-snap"
+      },
+      {
+        "id": "persona-fx-heat-map",
+        "kind": "persona",
+        "persona": "fx.heat-map"
+      },
+      {
+        "id": "persona-fx-crystal-material",
+        "kind": "persona",
+        "persona": "fx.crystal-material"
+      },
+      {
+        "id": "persona-fx-sounds",
+        "kind": "persona",
+        "persona": "fx.sounds"
+      },
+      {
+        "id": "perf-penumbraEnabled",
+        "kind": "perfAuto",
+        "field": "penumbraEnabled"
+      },
+      {
+        "id": "perf-skeletonNodesEnabled",
+        "kind": "perfAuto",
+        "field": "skeletonNodesEnabled"
+      },
+      {
+        "id": "perf-skeletonEdgesEnabled",
+        "kind": "perfAuto",
+        "field": "skeletonEdgesEnabled"
+      },
+      {
+        "id": "perf-halosEnabled",
+        "kind": "perfAuto",
+        "field": "halosEnabled"
+      },
+      {
+        "id": "perf-nodesVisible",
+        "kind": "perfAuto",
+        "field": "nodesVisible"
+      },
+      {
+        "id": "perf-edgesVisible",
+        "kind": "perfAuto",
+        "field": "edgesVisible"
+      },
+      {
+        "id": "perf-labelsVisible",
+        "kind": "perfAuto",
+        "field": "labelsVisible"
+      },
+      {
+        "id": "perf-labelMaxDistance",
+        "kind": "perfAuto",
+        "field": "labelMaxDistance"
+      },
+      {
+        "id": "perf-labelMinFontPx",
+        "kind": "perfAuto",
+        "field": "labelMinFontPx"
+      },
+      {
+        "id": "perf-labelMaxFontPx",
+        "kind": "perfAuto",
+        "field": "labelMaxFontPx"
+      },
+      {
+        "id": "perf-labelOffsetPx",
+        "kind": "perfAuto",
+        "field": "labelOffsetPx"
+      },
+      {
+        "id": "perf-labelPlacement",
+        "kind": "perfAuto",
+        "field": "labelPlacement"
+      },
+      {
+        "id": "perf-cardThresholdScale",
+        "kind": "perfAuto",
+        "field": "cardThresholdScale"
+      },
+      {
+        "id": "perf-cardSizeScale",
+        "kind": "perfAuto",
+        "field": "cardSizeScale"
+      },
+      {
+        "id": "perf-cardOffsetScale",
+        "kind": "perfAuto",
+        "field": "cardOffsetScale"
+      },
+      {
+        "id": "perf-lodMasterScale",
+        "kind": "perfAuto",
+        "field": "lodMasterScale"
+      },
+      {
+        "id": "perf-gridVisible",
+        "kind": "perfAuto",
+        "field": "gridVisible"
+      },
+      {
+        "id": "perf-edgeShape",
+        "kind": "perfAuto",
+        "field": "edgeShape"
+      },
+      {
+        "id": "perf-edgeWidthPx",
+        "kind": "perfAuto",
+        "field": "edgeWidthPx"
+      },
+      {
+        "id": "perf-edgeGradientRampId",
+        "kind": "perfAuto",
+        "field": "edgeGradientRampId"
+      },
+      {
+        "id": "perf-edgeGradientMix",
+        "kind": "perfAuto",
+        "field": "edgeGradientMix"
+      },
+      {
+        "id": "perf-edgeDashPatternId",
+        "kind": "perfAuto",
+        "field": "edgeDashPatternId"
+      },
+      {
+        "id": "perf-edgeDashSpeed",
+        "kind": "perfAuto",
+        "field": "edgeDashSpeed"
+      },
+      {
+        "id": "perf-nodeHaloVariant",
+        "kind": "perfAuto",
+        "field": "nodeHaloVariant"
+      },
+      {
+        "id": "perf-nodeHaloColor",
+        "kind": "perfAuto",
+        "field": "nodeHaloColor"
+      },
+      {
+        "id": "perf-nodeHaloRadiusMul",
+        "kind": "perfAuto",
+        "field": "nodeHaloRadiusMul"
+      },
+      {
+        "id": "perf-nodeHaloOpacity",
+        "kind": "perfAuto",
+        "field": "nodeHaloOpacity"
+      },
+      {
+        "id": "perf-socketVariant",
+        "kind": "perfAuto",
+        "field": "socketVariant"
+      },
+      {
+        "id": "perf-socketColor",
+        "kind": "perfAuto",
+        "field": "socketColor"
+      },
+      {
+        "id": "perf-socketRadiusMul",
+        "kind": "perfAuto",
+        "field": "socketRadiusMul"
+      },
+      {
+        "id": "perf-socketOpacity",
+        "kind": "perfAuto",
+        "field": "socketOpacity"
+      },
+      {
+        "id": "perf-staticArrowheadsAsFallback",
+        "kind": "perfAuto",
+        "field": "staticArrowheadsAsFallback"
+      },
+      {
+        "id": "perf-nubVariant",
+        "kind": "perfAuto",
+        "field": "nubVariant"
+      },
+      {
+        "id": "perf-debugPalette",
+        "kind": "perfAuto",
+        "field": "debugPalette"
+      },
+      {
+        "id": "perf-paperVisible",
+        "kind": "perfAuto",
+        "field": "paperVisible"
+      },
+      {
+        "id": "perf-penumbraRenderInterval",
+        "kind": "perfAuto",
+        "field": "penumbraRenderInterval"
+      },
+      {
+        "id": "perf-penumbraResolutionScale",
+        "kind": "perfAuto",
+        "field": "penumbraResolutionScale"
+      },
+      {
+        "id": "perf-haloRadiusMultiplier",
+        "kind": "perfAuto",
+        "field": "haloRadiusMultiplier"
+      },
+      {
+        "id": "perf-skeletonBlend",
+        "kind": "perfAuto",
+        "field": "skeletonBlend"
+      },
+      {
+        "id": "perf-giEnabled",
+        "kind": "perfAuto",
+        "field": "giEnabled"
+      },
+      {
+        "id": "perf-giStrength",
+        "kind": "perfAuto",
+        "field": "giStrength"
+      },
+      {
+        "id": "perf-nodeOpacity",
+        "kind": "perfAuto",
+        "field": "nodeOpacity"
+      },
+      {
+        "id": "perf-haloOpacity",
+        "kind": "perfAuto",
+        "field": "haloOpacity"
+      },
+      {
+        "id": "perf-smoothHaloBlend",
+        "kind": "perfAuto",
+        "field": "smoothHaloBlend"
+      },
+      {
+        "id": "perf-haloBlendRadius",
+        "kind": "perfAuto",
+        "field": "haloBlendRadius"
+      },
+      {
+        "id": "perf-edgesInHalo",
+        "kind": "perfAuto",
+        "field": "edgesInHalo"
+      },
+      {
+        "id": "perf-edgeHaloRadius",
+        "kind": "perfAuto",
+        "field": "edgeHaloRadius"
+      },
+      {
+        "id": "perf-renderMode",
+        "kind": "perfAuto",
+        "field": "renderMode"
+      },
+      {
+        "id": "perf-particulateCoarseSteps",
+        "kind": "perfAuto",
+        "field": "particulateCoarseSteps"
+      },
+      {
+        "id": "perf-particulateCoarseScale",
+        "kind": "perfAuto",
+        "field": "particulateCoarseScale"
+      },
+      {
+        "id": "perf-particulatePointsPerSeed",
+        "kind": "perfAuto",
+        "field": "particulatePointsPerSeed"
+      },
+      {
+        "id": "perf-particulateScatterRadius",
+        "kind": "perfAuto",
+        "field": "particulateScatterRadius"
+      },
+      {
+        "id": "perf-particulateVolumeMix",
+        "kind": "perfAuto",
+        "field": "particulateVolumeMix"
+      },
+      {
+        "id": "perf-particulatePointSize",
+        "kind": "perfAuto",
+        "field": "particulatePointSize"
+      },
+      {
+        "id": "perf-particulateMix",
+        "kind": "perfAuto",
+        "field": "particulateMix"
+      },
+      {
+        "id": "perf-particulateBrightness",
+        "kind": "perfAuto",
+        "field": "particulateBrightness"
+      },
+      {
+        "id": "perf-particulateShimmer",
+        "kind": "perfAuto",
+        "field": "particulateShimmer"
+      },
+      {
+        "id": "perf-particulateCloudNoise",
+        "kind": "perfAuto",
+        "field": "particulateCloudNoise"
+      },
+      {
+        "id": "perf-particulateCloudNoiseScale",
+        "kind": "perfAuto",
+        "field": "particulateCloudNoiseScale"
+      },
+      {
+        "id": "perf-particulateCloudAmplitude",
+        "kind": "perfAuto",
+        "field": "particulateCloudAmplitude"
+      },
+      {
+        "id": "perf-particulateSeedSubdivision",
+        "kind": "perfAuto",
+        "field": "particulateSeedSubdivision"
+      },
+      {
+        "id": "perf-particulateSoftness",
+        "kind": "perfAuto",
+        "field": "particulateSoftness"
+      },
+      {
+        "id": "perf-edgeSoftenBilateralStrength",
+        "kind": "perfAuto",
+        "field": "edgeSoftenBilateralStrength"
+      },
+      {
+        "id": "perf-edgeSoftenBloomStrength",
+        "kind": "perfAuto",
+        "field": "edgeSoftenBloomStrength"
+      },
+      {
+        "id": "perf-edgeSoftenBilateralRadius",
+        "kind": "perfAuto",
+        "field": "edgeSoftenBilateralRadius"
+      },
+      {
+        "id": "perf-edgeSoftenBloomRadius",
+        "kind": "perfAuto",
+        "field": "edgeSoftenBloomRadius"
+      },
+      {
+        "id": "perf-bloomStrength",
+        "kind": "perfAuto",
+        "field": "bloomStrength"
+      },
+      {
+        "id": "perf-bloomRadius",
+        "kind": "perfAuto",
+        "field": "bloomRadius"
+      },
+      {
+        "id": "perf-bloomThreshold",
+        "kind": "perfAuto",
+        "field": "bloomThreshold"
+      },
+      {
+        "id": "perf-vignetteIntensity",
+        "kind": "perfAuto",
+        "field": "vignetteIntensity"
+      },
+      {
+        "id": "perf-vignetteInnerRadius",
+        "kind": "perfAuto",
+        "field": "vignetteInnerRadius"
+      },
+      {
+        "id": "perf-vignetteOuterRadius",
+        "kind": "perfAuto",
+        "field": "vignetteOuterRadius"
+      },
+      {
+        "id": "perf-colorGradeBrightness",
+        "kind": "perfAuto",
+        "field": "colorGradeBrightness"
+      },
+      {
+        "id": "perf-colorGradeContrast",
+        "kind": "perfAuto",
+        "field": "colorGradeContrast"
+      },
+      {
+        "id": "perf-colorGradeSaturation",
+        "kind": "perfAuto",
+        "field": "colorGradeSaturation"
+      },
+      {
+        "id": "perf-outlineStrength",
+        "kind": "perfAuto",
+        "field": "outlineStrength"
+      },
+      {
+        "id": "perf-outlineMix",
+        "kind": "perfAuto",
+        "field": "outlineMix"
+      },
+      {
+        "id": "perf-outlineThickness",
+        "kind": "perfAuto",
+        "field": "outlineThickness"
+      },
+      {
+        "id": "perf-chromaticAberrationOffset",
+        "kind": "perfAuto",
+        "field": "chromaticAberrationOffset"
+      },
+      {
+        "id": "perf-chromaticAberrationFalloff",
+        "kind": "perfAuto",
+        "field": "chromaticAberrationFalloff"
+      },
+      {
+        "id": "perf-filmGrainStrength",
+        "kind": "perfAuto",
+        "field": "filmGrainStrength"
+      },
+      {
+        "id": "perf-filmGrainSpeed",
+        "kind": "perfAuto",
+        "field": "filmGrainSpeed"
+      },
+      {
+        "id": "perf-filmGrainSize",
+        "kind": "perfAuto",
+        "field": "filmGrainSize"
+      },
+      {
+        "id": "perf-curlNoiseParticleCount",
+        "kind": "perfAuto",
+        "field": "curlNoiseParticleCount"
+      },
+      {
+        "id": "perf-curlNoiseCurlScale",
+        "kind": "perfAuto",
+        "field": "curlNoiseCurlScale"
+      },
+      {
+        "id": "perf-curlNoiseSpeed",
+        "kind": "perfAuto",
+        "field": "curlNoiseSpeed"
+      },
+      {
+        "id": "perf-curlNoisePointSize",
+        "kind": "perfAuto",
+        "field": "curlNoisePointSize"
+      },
+      {
+        "id": "perf-curlNoiseOpacity",
+        "kind": "perfAuto",
+        "field": "curlNoiseOpacity"
+      },
+      {
+        "id": "perf-curlNoisePalette",
+        "kind": "perfAuto",
+        "field": "curlNoisePalette"
+      },
+      {
+        "id": "junction-bubble",
+        "kind": "junction",
+        "preset": "bubble"
+      },
+      {
+        "id": "junction-center",
+        "kind": "junction",
+        "preset": "center"
+      },
+      {
+        "id": "junction-surface",
+        "kind": "junction",
+        "preset": "surface"
+      },
+      {
+        "id": "junction-pull-back",
+        "kind": "junction",
+        "preset": "pull-back"
+      },
+      {
+        "id": "junction-voronoi",
+        "kind": "junction",
+        "preset": "voronoi"
+      },
+      {
+        "id": "theme-light",
+        "kind": "theme",
+        "value": "light"
+      },
+      {
+        "id": "profile-minimal",
+        "kind": "profile",
+        "to": "minimal"
+      },
+      {
+        "id": "profile-standard",
+        "kind": "profile",
+        "to": "standard"
+      },
+      {
+        "id": "profile-workshop",
+        "kind": "profile",
+        "to": "workshop"
+      },
+      {
+        "id": "profile-cinematic",
+        "kind": "profile",
+        "to": "cinematic"
+      }
+    ]
+  },
+  "suiteName": "sweep-w2-atlas",
+  "testNames": [
+    "sweep-w2-atlas-minimal-ddv",
+    "sweep-w2-atlas-standard-ddv",
+    "sweep-w2-atlas-workshop-ddv",
+    "sweep-w2-atlas-cinematic-ddv",
+    "sweep-w2-atlas-minimal-workshop-palette",
+    "sweep-w2-atlas-standard-workshop-palette",
+    "sweep-w2-atlas-minimal-qnode-junction-alignment-test"
+  ],
+  "expectedObs": {
+    "perFamily": 163,
+    "families": 7
+  },
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w2-atlas-r1"
+}

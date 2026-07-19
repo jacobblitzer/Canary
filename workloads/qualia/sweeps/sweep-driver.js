@@ -98,9 +98,19 @@
     return { fp: b, stable: JSON.stringify(a) === JSON.stringify(b) };
   }
 
+  function applyDisables() {
+    // Family-level persona disables (e.g. compute.layout — layout bases
+    // never settle). Re-applied after EVERY applyProfile since a profile
+    // apply re-enables its declared personas. preserveProfile keeps the
+    // named profile intact.
+    const ids = (S.ctx && S.ctx.disablePersonas) || [];
+    for (const id of ids) w.__canarySetPersonaEnabled(id, false, { preserveProfile: true });
+  }
+
   async function resetToBase() {
     w.__canaryClearTouchedPerfFields();
     w.__canaryApplyProfile(S.ctx.base);
+    applyDisables();
     if (S.baseTheme) w.__canarySetTheme(S.baseTheme);
     w.__canaryClearSelection();
     if (S.camera) {
@@ -117,8 +127,34 @@
     };
   }
 
+  /**
+   * Derive an alternate value for a perfAuto mutation from the BASE
+   * fingerprint. Returns { value } or { skip: reason }. Enums use the
+   * ctx.alternates map (observed values only); unknown strings skip.
+   */
+  function deriveAlternate(field) {
+    const cur = S.fpBase && S.fpBase.perf ? S.fpBase.perf[field] : undefined;
+    const alts = (S.ctx.alternates && S.ctx.alternates[field]) || null;
+    if (alts) {
+      const alt = alts.find((v) => JSON.stringify(v) !== JSON.stringify(cur));
+      return alt !== undefined ? { value: alt } : { skip: 'no-differing-alternate' };
+    }
+    if (typeof cur === 'boolean') return { value: !cur };
+    if (typeof cur === 'number') return { value: cur === 0 ? 0.5 : Math.round(cur * 150) / 100 };
+    if ((cur === null || typeof cur === 'string') && /Color$/.test(field)) return { value: '#ff0066' };
+    if (cur === undefined) return { skip: 'field-not-in-base-perf' };
+    return { skip: 'no-alternate-for-' + typeof cur };
+  }
+
   function applyMutation(m) {
     switch (m.kind) {
+      case 'perfAuto': {
+        const d = deriveAlternate(m.field);
+        if (d.skip) return { __skip: d.skip };
+        const partial = {}; partial[m.field] = d.value;
+        const res = un(w.__canarySetPerfSettings(partial, { markTouched: false }));
+        return { applied: res, derivedValue: d.value, baseValue: S.fpBase.perf[m.field] };
+      }
       case 'persona': {
         const cfg = un(w.__canaryGetPersonaConfig());
         const cur = !!(cfg && cfg.enabled && cfg.enabled[m.id]);
@@ -162,6 +198,7 @@
       await loadFixture(ctx.fixture);
       w.__canaryClearTouchedPerfFields();
       w.__canaryApplyProfile(ctx.base);
+      applyDisables();
       w.__canaryClearSelection();
       const st1 = await settle(8000);
       // Pin the camera AFTER the first settle — the one-shot auto-fit
@@ -192,10 +229,23 @@
       let okCount = 0, errCount = 0;
       for (const st of states) {
         S.seq++;
-        const fileBase = 'obs-' + String(S.seq).padStart(3, '0') + '-' + st.id;
+        // Family goes in the filename — every family in a sweep shares one
+        // observations dir and its own seq counter (a bare obs-<seq> name
+        // collided across families and silently overwrote, w2-atlas-r1).
+        const fileBase = 'obs-' + S.ctx.family + '-' + String(S.seq).padStart(3, '0') + '-' + st.id;
         try {
           const resetPre = await resetToBase();
           const applied = applyMutation(st.mutation);
+          if (applied && applied.__skip) {
+            await writeObs(fileBase + '.json', {
+              kind: 'skipped', sweepId: S.ctx.sweepId, family: S.ctx.family,
+              base: S.ctx.base, seq: S.seq, stateId: st.id, mutation: st.mutation,
+              reason: applied.__skip, ts: Date.now(),
+            });
+            okCount++;
+            console.log('CANARY_SWEEP|state|' + st.id + '|skipped:' + applied.__skip);
+            continue;
+          }
           const stMut = await settle();
           const mut = await doubleRead();
           const resetPost = await resetToBase();

@@ -1,0 +1,13 @@
+{
+  "name": "sweep-w2-atlas",
+  "description": "Generated display-sweep suite (sweep w2-atlas-r2) — 7 family test(s) x 162 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w2-atlas-minimal-ddv",
+    "sweep-w2-atlas-standard-ddv",
+    "sweep-w2-atlas-workshop-ddv",
+    "sweep-w2-atlas-cinematic-ddv",
+    "sweep-w2-atlas-minimal-workshop-palette",
+    "sweep-w2-atlas-standard-workshop-palette",
+    "sweep-w2-atlas-minimal-qnode-junction-alignment-test"
+  ]
+}

@@ -1,6 +1,6 @@
 # Display-sweep findings — w1-smoke-r2
 
-States: 12 · errors: 0 · no-ops: 1 · leaks: 2 · settle failures: 0 · unstable reads: 0 · reset-verify failures: 0
+States: 12 · skipped: 0 · errors: 0 · no-ops: 1 · leaks: 2 · settle failures: 0 · unstable reads: 0 · reset-verify failures: 0 · cross-family inconsistencies: 0 (0 cross-base) · control violations: 0
 
 ## No-op mutations (dead knobs OR probe gaps) (1)
 
@@ -24,5 +24,21 @@ _none_
 _none_
 
 ## Driver errors (0)
+
+_none_
+
+## Control violations (profile-to-self must be 0 effect / 0 leak) (0)
+
+_none_
+
+## Skipped mutations (no derivable alternate — extend the alternates map to cover) (0)
+
+_none_
+
+## Cross-family inconsistencies (0; cross-base first)
+
+Same mutation, different effect signature across families. Cross-BASE rows (same fixture,
+different base profile) are the primary "display dynamics inconsistent across personas" signal;
+cross-fixture-only rows may just reflect content differences.
 
 _none_

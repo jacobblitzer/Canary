@@ -7,6 +7,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "persona-film-grain",
       "mutation": {
         "kind": "persona",
@@ -36,6 +39,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "persona-junction-bubble",
       "mutation": {
         "kind": "persona",
@@ -289,6 +295,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "perf-edge-width-6",
       "mutation": {
         "kind": "perf",
@@ -323,6 +332,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "perf-halo-aurora-vent",
       "mutation": {
         "kind": "perf",
@@ -400,6 +412,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "perf-node-opacity-03",
       "mutation": {
         "kind": "perf",
@@ -429,6 +444,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "perf-socket-solder",
       "mutation": {
         "kind": "perf",
@@ -463,6 +481,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "perf-grid-off",
       "mutation": {
         "kind": "perf",
@@ -502,6 +523,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "perf-labels-off",
       "mutation": {
         "kind": "perf",
@@ -531,6 +555,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "junction-bubble",
       "mutation": {
         "kind": "junction",
@@ -773,6 +800,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "junction-surface",
       "mutation": {
         "kind": "junction",
@@ -795,6 +825,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "theme-light",
       "mutation": {
         "kind": "theme",
@@ -849,6 +882,9 @@
     {
       "family": "minimal-ddv",
       "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
       "stateId": "profile-workshop-roundtrip",
       "mutation": {
         "kind": "profile",
@@ -1601,5 +1637,7 @@
       "resetPostVerified": true
     }
   ],
-  "errors": []
+  "errors": [],
+  "skipped": [],
+  "inconsistencies": []
 }
