@@ -1,0 +1,875 @@
+{
+  "sweepId": "w3-planar-r1",
+  "families": [
+    "minimal-ddv",
+    "minimal-implicit-geometry",
+    "minimal-qnode-junction-alignment-test",
+    "minimal-workshop-palette",
+    "standard-qnode-junction-alignment-test"
+  ],
+  "effects": [],
+  "errors": [],
+  "skipped": [],
+  "inconsistencies": [],
+  "interactions": [],
+  "planarFindings": [
+    {
+      "family": "minimal-ddv",
+      "contextId": "ctx-ddv",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-ddv",
+      "contextId": "ctx-ddv",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-ddv",
+      "contextId": "ctx-ddv.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-ddv",
+      "contextId": "ctx-ddv.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-ddv",
+      "contextId": "ctx-ddv.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-ddv",
+      "contextId": "ctx-ddv.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-atlas",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 5
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-atlas",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 5
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-atlas.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 5
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-atlas.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 5
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-atlas.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 5
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-atlas.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 5
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-fundamentals",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 1.73,
+        "mean": 0.865,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-fundamentals",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 1.73,
+        "mean": 0.865,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-fundamentals.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 4.6951006319106074,
+        "mean": 2.3475503159553037,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-fundamentals.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 4.6951006319106074,
+        "mean": 2.3475503159553037,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-fundamentals.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 1.73,
+        "mean": 0.865,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-fundamentals.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 1.73,
+        "mean": 0.865,
+        "nodes": 4
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-meshing",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-meshing",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-meshing.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-meshing.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-meshing.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-meshing.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-rendering",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-rendering",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-rendering.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-rendering.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-rendering.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-rendering.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-surfaces",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-surfaces",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-surfaces.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-surfaces.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-surfaces.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-surfaces.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-tpms",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-tpms",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-tpms.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-tpms.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-tpms.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-implicit-geometry",
+      "contextId": "ctx-tpms.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 3
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-active",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-active",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-active.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-active.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-active.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-active.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-other",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-other",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-other.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-other.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-other.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "contextId": "ctx-other.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-child",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-child",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-child.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-child.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-child.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-child.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-showcase",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 7
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-showcase",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 7
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-showcase.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 7
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-showcase.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 7
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-showcase.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 7
+      }
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "contextId": "ctx-showcase.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 7
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-active",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-active",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-active.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-active.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-active.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-active.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-other",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-other",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-other.connectivity",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-other.connectivity",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-other.random",
+      "phase": "captured",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    },
+    {
+      "family": "standard-qnode-junction-alignment-test",
+      "contextId": "ctx-other.random",
+      "phase": "entered",
+      "issues": [],
+      "deviation": {
+        "max": 0,
+        "mean": 0,
+        "nodes": 1
+      }
+    }
+  ]
+}

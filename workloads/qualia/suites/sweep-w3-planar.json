@@ -1,0 +1,11 @@
+{
+  "name": "sweep-w3-planar",
+  "description": "Generated display-sweep suite (sweep w3-planar-r1) — 5 family test(s) x 0 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w3-planar-minimal-ddv",
+    "sweep-w3-planar-minimal-qnode-junction-alignment-test",
+    "sweep-w3-planar-minimal-workshop-palette",
+    "sweep-w3-planar-minimal-implicit-geometry",
+    "sweep-w3-planar-standard-qnode-junction-alignment-test"
+  ]
+}

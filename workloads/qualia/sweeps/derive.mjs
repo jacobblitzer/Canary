@@ -71,12 +71,14 @@ const bases = new Map();   // family -> base record
 const states = [];
 const errors = [];
 const skipped = [];
+const planarRecs = [];
 for (const f of files) {
   if (!f.endsWith('.json')) continue;
   const rec = JSON.parse(fs.readFileSync(path.join(obsDir, f), 'utf8'));
   if (rec.kind === 'base') bases.set(rec.family, rec);
   else if (rec.kind === 'state') states.push(rec);
   else if (rec.kind === 'skipped') skipped.push(rec);
+  else if (rec.kind === 'planar') planarRecs.push(rec);
   else if (rec.kind === 'error') errors.push(rec);
 }
 if (bases.size === 0) { console.error('No base-*.json records found — did the sweep init run?'); process.exit(1); }
@@ -189,6 +191,83 @@ list('Skipped mutations (no derivable alternate — extend the alternates map to
   Object.entries(skipped.reduce((acc, s) => { (acc[s.stateId] ??= []).push(s.family); return acc; }, {})).map(([id, fams]) => ({ id, fams })),
   (s) => `\`${s.id}\` — ${s.fams.length} family(ies)`);
 
+// ---- W3 pair-interaction analysis ----
+// States named <pairId>--a / --b / --ab in the same family: interaction
+// paths = sig(ab) minus union(sig(a), sig(b)); suppressed = union minus
+// sig(ab). Persona registry self-bits excluded (trivially present).
+const interactions = [];
+{
+  const byKey = new Map();
+  for (const e of effects) {
+    const m = e.stateId.match(/^(.*)--(a|b|ab)$/);
+    if (!m) continue;
+    const key = `${e.family}|${m[1]}`;
+    (byKey.get(key) ?? byKey.set(key, {}).get(key))[m[2]] = e;
+  }
+  const strip = (sig) => sig.filter((p) => !p.startsWith('persona.enabled'));
+  for (const [key, trio] of byKey) {
+    if (!trio.a || !trio.b || !trio.ab) continue;
+    const [family, pairId] = key.split('|');
+    const sa = strip(signature(trio.a)), sb = strip(signature(trio.b)), sab = strip(signature(trio.ab));
+    const union = new Set([...sa, ...sb]);
+    const emergent = sab.filter((p) => !union.has(p));
+    const suppressed = [...union].filter((p) => !sab.includes(p));
+    if (emergent.length || suppressed.length) {
+      interactions.push({ family, pairId, aCount: sa.length, bCount: sb.length, abCount: sab.length, emergent: emergent.slice(0, 12), suppressed: suppressed.slice(0, 12) });
+    }
+  }
+}
+
+// ---- W3 planar invariant analysis ----
+// ADR 0038 drift: frame.nodes[id].position (what junctions consume) vs
+// the rendered-position cache. Fade-table conformance: every alpha must
+// sit on the discrete FadeState table. Junction attach ratio spread:
+// per (context), |attach - nodeCenter| / effectiveRadius should be
+// uniform within one junction strategy.
+const FADE_TABLE = [0, 0.15, 0.28, 0.4, 1];
+const planarFindings = [];
+for (const r of planarRecs) {
+  const f = { family: r.family, contextId: r.contextId, phase: r.phase, issues: [] };
+  const frameNodes = r.frame && r.frame.nodes ? r.frame.nodes : {};
+  let maxDrift = 0, driftNode = null;
+  for (const [id, fn] of Object.entries(frameNodes)) {
+    const rendered = r.perNode?.[id]?.rendered;
+    if (!Array.isArray(rendered) || !Array.isArray(fn.position)) continue;
+    const d = Math.hypot(fn.position[0] - rendered[0], fn.position[1] - rendered[1], fn.position[2] - rendered[2]);
+    if (d > maxDrift) { maxDrift = d; driftNode = id; }
+  }
+  if (maxDrift > 1e-3) f.issues.push(`ADR-0038 drift: |framePos - rendered| = ${maxDrift.toFixed(4)} on ${driftNode}`);
+  const offTable = [];
+  for (const [id, pn] of Object.entries(r.perNode ?? {})) {
+    const a = pn.fadeAlpha;
+    if (typeof a === 'number' && !FADE_TABLE.some((t) => Math.abs(a - t) < 1e-3)) offTable.push(`${id}=${a}`);
+  }
+  if (offTable.length) f.issues.push(`off-table fade alphas: ${offTable.slice(0, 6).join(', ')}`);
+  const dev = r.deviation;
+  if (dev && typeof dev.maxAbsDeviation === 'number') {
+    f.deviation = { max: dev.maxAbsDeviation, mean: dev.meanAbsDeviation, nodes: dev.nodeCount };
+  }
+  planarFindings.push(f);
+}
+const planarIssues = planarFindings.filter((p) => p.issues.length);
+
+fm += `\n## Pair interactions (${interactions.length} with emergent/suppressed paths)\n\n`;
+if (!interactions.length) fm += '_none — every pair matched the union of its singles_\n';
+for (const i of interactions) {
+  fm += `- \`${i.pairId}\` (${i.family}) — a:${i.aCount} b:${i.bCount} ab:${i.abCount}`;
+  if (i.emergent.length) fm += `; EMERGENT: ${i.emergent.map((p) => `\`${p}\``).join(', ')}`;
+  if (i.suppressed.length) fm += `; SUPPRESSED: ${i.suppressed.map((p) => `\`${p}\``).join(', ')}`;
+  fm += '\n';
+}
+
+if (planarRecs.length) {
+  fm += `\n## Planar walk (${planarRecs.length} context states; ${planarIssues.length} with invariant issues)\n\n`;
+  for (const p of planarFindings) {
+    const dev = p.deviation ? ` deviation max ${p.deviation.max.toFixed(3)} mean ${p.deviation.mean.toFixed(3)} (${p.deviation.nodes} nodes)` : '';
+    fm += `- \`${p.family}\` · \`${p.contextId}\` [${p.phase}]${dev}${p.issues.length ? ` — **${p.issues.join('; ')}**` : ' — clean'}\n`;
+  }
+}
+
 fm += `\n## Cross-family inconsistencies (${inconsistencies.length}; cross-base first)\n\n`;
 fm += 'Same mutation, different effect signature across families. Cross-BASE rows (same fixture,\ndifferent base profile) are the primary "display dynamics inconsistent across personas" signal;\ncross-fixture-only rows may just reflect content differences.\n\n';
 if (!inconsistencies.length) fm += '_none_\n';
@@ -199,6 +278,13 @@ for (const inc of inconsistencies) {
   }
 }
 fs.writeFileSync(path.join(outDir, 'findings.md'), fm);
+// Re-write effects.json now that the W3 sections are computed.
+fs.writeFileSync(path.join(outDir, 'effects.json'), JSON.stringify({
+  sweepId, families: [...bases.keys()], effects, errors, skipped, inconsistencies, interactions, planarFindings,
+}, null, 2) + '\n');
 
 console.log(`derived ${effects.length} states (${errors.length} errors) -> ${outDir}`);
+if (interactions.length || planarRecs.length) {
+  console.log(`  interactions: ${interactions.length} · planar states: ${planarRecs.length} (${planarIssues.length} with issues)`);
+}
 console.log(`  no-ops: ${noOps.length} · leaks: ${leaks.length} · settle-fails: ${settleFails.length} · unstable: ${unstable.length}`);

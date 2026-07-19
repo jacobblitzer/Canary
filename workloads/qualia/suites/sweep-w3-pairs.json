@@ -1,0 +1,8 @@
+{
+  "name": "sweep-w3-pairs",
+  "description": "Generated display-sweep suite (sweep w3-pairs-r1) — 2 family test(s) x 30 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w3-pairs-minimal-ddv",
+    "sweep-w3-pairs-minimal-workshop-palette"
+  ]
+}

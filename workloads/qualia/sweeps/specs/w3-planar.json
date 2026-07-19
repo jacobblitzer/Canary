@@ -1,0 +1,14 @@
+{
+  "name": "w3-planar",
+  "chunkSize": 4,
+  "disablePersonas": ["compute.layout"],
+  "planarWalk": true,
+  "families": [
+    { "base": "minimal", "fixture": { "kind": "ddv" } },
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "qnode-junction-alignment-test" } },
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "workshop-palette" } },
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "implicit-geometry" } },
+    { "base": "standard", "fixture": { "kind": "demo", "slug": "qnode-junction-alignment-test" } }
+  ],
+  "mutations": []
+}

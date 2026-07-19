@@ -73,7 +73,19 @@ const normalize = (m, i) => {
   if (mut.kind === 'persona') mut.id = mut.persona ?? mut.idPersona;
   return { id, mutation: mut };
 };
-const states = spec.mutations.map(normalize);
+const states = (spec.mutations ?? []).map(normalize);
+// W3 pairs: each {id, a, b} expands to three adjacent states — the two
+// singles (measured in-run so union math shares the exact base) + the
+// pair. The deriver's interaction section keys off the `--ab` suffix.
+for (const p of spec.pairs ?? []) {
+  const id = p.id.replace(/[^a-zA-Z0-9_-]/g, '-');
+  const a = normalize({ ...p.a, id: `${id}--a` });
+  const b = normalize({ ...p.b, id: `${id}--b` });
+  states.push(a, b, {
+    id: `${id}--ab`,
+    mutation: { kind: 'pair', a: a.mutation, b: b.mutation },
+  });
+}
 const dupes = states.map((s) => s.id).filter((id, i, a) => a.indexOf(id) !== i);
 if (dupes.length) { console.error('Duplicate state ids: ' + dupes.join(', ')); process.exit(2); }
 
@@ -99,6 +111,9 @@ for (const { base, fixture } of families) {
       type: 'RunCommand',
       command: `window.__sweep.runChunk(${JSON.stringify(chunk)}, ${Math.floor(i / chunkSize)})`,
     });
+  }
+  if (spec.planarWalk) {
+    actions.push({ type: 'RunCommand', command: 'window.__sweep.runPlanarWalk()' });
   }
 
   const test = {

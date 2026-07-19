@@ -148,6 +148,16 @@
 
   function applyMutation(m) {
     switch (m.kind) {
+      case 'pair': {
+        // W3 interaction mining: apply two levers in sequence. The
+        // deriver compares sig(ab) against sig(a) UNION sig(b) from the
+        // sibling single states the generator emits alongside.
+        const ra = applyMutation(m.a);
+        if (ra && ra.__skip) return ra;
+        const rb = applyMutation(m.b);
+        if (rb && rb.__skip) return rb;
+        return { a: ra, b: rb };
+      }
       case 'perfAuto': {
         const d = deriveAlternate(m.field);
         if (d.skip) return { __skip: d.skip };
@@ -274,6 +284,84 @@
         }
       }
       return 'chunk ' + chunkIdx + ': ' + okCount + ' ok, ' + errCount + ' errors';
+    },
+
+    /**
+     * W3 planar deep walk. Switches into every context of the loaded
+     * fixture (waiting out the ~600ms CS-A.5 transition tween), records
+     * a planar invariant snapshot, then probes captureLevel/uncapture.
+     * Raw frame geometry + rendered positions ride in each record so
+     * the deriver computes ADR-0038 drift, junction attach ratios, and
+     * fade-table conformance offline.
+     */
+    async runPlanarWalk() {
+      if (!S.ctx) throw new Error('__sweep.init not run');
+      const list = un(w.__canaryListContexts());
+      const ctxs = Array.isArray(list) ? list : [];
+      let n = 0, errs = 0;
+
+      const planarRecord = (c, phase) => {
+        const nodes = un(w.__canaryListNodes());
+        const perNode = {};
+        if (Array.isArray(nodes)) {
+          for (const nd of nodes) {
+            perNode[nd.id] = {
+              rendered: un(w.__canaryGetRenderedNodePosition(nd.id)),
+              fadeAlpha: un(w.__canaryGetNodeFadeAlpha(nd.id)),
+            };
+          }
+        }
+        return {
+          kind: 'planar', sweepId: S.ctx.sweepId, family: S.ctx.family,
+          base: S.ctx.base, fixture: S.ctx.fixture, contextId: c.id,
+          contextLabel: c.label, parentContextId: c.parentContextId,
+          phase,
+          deviation: un(w.__canaryGetPlaneDeviation()),
+          planar: un(w.__canaryGetPlanarSettings()),
+          lock: un(w.__canaryGetPerspectiveLock()),
+          camera: un(w.__canaryGetCameraState()),
+          frame: un(w.__canaryGetFrameGeometry({ includeJunctions: true })),
+          perNode,
+          activeScope: un(w.__canaryGetActiveScope()),
+          ts: Date.now(),
+        };
+      };
+
+      for (const c of ctxs) {
+        n++;
+        const safe = c.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+        try {
+          const sw = un(w.__canarySwitchContext(c.id));
+          if (sw && sw.__err) throw new Error('switch failed: ' + sw.__err);
+          await settle(8000);
+          await new Promise((r) => setTimeout(r, 900));
+          await settle();
+          await writeObs('planar-' + S.ctx.family + '-' + safe + '.json', planarRecord(c, 'entered'));
+          const cap = un(w.__canaryCaptureLevel());
+          if (cap && cap.levelId) {
+            await settle();
+            const rec2 = planarRecord(c, 'captured');
+            rec2.capturedLevelId = cap.levelId;
+            await writeObs('planar-' + S.ctx.family + '-' + safe + '-captured.json', rec2);
+            un(w.__canaryUncaptureLevel(cap.levelId));
+            await settle();
+          }
+          console.log('CANARY_SWEEP|planar|' + c.id + '|ok');
+        } catch (e) {
+          errs++;
+          try {
+            await writeObs('planar-' + S.ctx.family + '-' + safe + '-error.json', {
+              kind: 'error', sweepId: S.ctx.sweepId, family: S.ctx.family,
+              stateId: 'planar-' + c.id, mutation: { kind: 'planarWalk', contextId: c.id },
+              error: String(e && e.message ? e.message : e), ts: Date.now(),
+            });
+          } catch (_) { /* console line is the record */ }
+          console.log('CANARY_SWEEP|planar|' + c.id + '|ERROR|' + e);
+        }
+      }
+      un(w.__canarySwitchContext(null));
+      await settle();
+      return 'planar walk: ' + n + ' contexts, ' + errs + ' errors';
     },
   };
   return '__sweep driver installed';

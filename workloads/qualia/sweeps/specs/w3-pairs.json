@@ -1,0 +1,28 @@
+{
+  "name": "w3-pairs",
+  "chunkSize": 4,
+  "disablePersonas": ["compute.layout"],
+  "alternates": {
+    "nodeHaloVariant": ["aurora-vent", "soft-glow", "none"],
+    "socketVariant": ["solder", "bracket", "none"],
+    "nubVariant": ["shaded-sphere", "ink-dot", "none"],
+    "edgeShape": ["catmull-rom", "straight"]
+  },
+  "families": [
+    { "base": "minimal", "fixture": { "kind": "ddv" } },
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "workshop-palette" } }
+  ],
+  "mutations": [],
+  "pairs": [
+    { "id": "halovar-x-radiusmul", "a": { "kind": "perfAuto", "field": "nodeHaloVariant" }, "b": { "kind": "perfAuto", "field": "nodeHaloRadiusMul" } },
+    { "id": "halovar-x-debugpalette", "a": { "kind": "perfAuto", "field": "nodeHaloVariant" }, "b": { "kind": "perfAuto", "field": "debugPalette" } },
+    { "id": "junctioncenter-x-nubvar", "a": { "kind": "junction", "preset": "center" }, "b": { "kind": "perfAuto", "field": "nubVariant" } },
+    { "id": "junctioncenter-x-socketvar", "a": { "kind": "junction", "preset": "center" }, "b": { "kind": "perfAuto", "field": "socketVariant" } },
+    { "id": "junctioncenter-x-edgeshape", "a": { "kind": "junction", "preset": "center" }, "b": { "kind": "perfAuto", "field": "edgeShape" } },
+    { "id": "laserrat-x-theme", "a": { "kind": "persona", "persona": "fx.laser-rat" }, "b": { "kind": "theme", "value": "light" } },
+    { "id": "laserrat-x-junctioncenter", "a": { "kind": "persona", "persona": "fx.laser-rat" }, "b": { "kind": "junction", "preset": "center" } },
+    { "id": "postprocess-x-filmgrain", "a": { "kind": "persona", "persona": "fx.post-process" }, "b": { "kind": "persona", "persona": "fx.film-grain" } },
+    { "id": "paper-x-workshop", "a": { "kind": "persona", "persona": "render.paper" }, "b": { "kind": "profile", "to": "workshop" } },
+    { "id": "theme-x-workshop", "a": { "kind": "theme", "value": "light" }, "b": { "kind": "profile", "to": "workshop" } }
+  ]
+}
