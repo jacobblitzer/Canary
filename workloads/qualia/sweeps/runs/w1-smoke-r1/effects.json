@@ -1,0 +1,1553 @@
+{
+  "sweepId": "w1-smoke-r1",
+  "families": [
+    "minimal-ddv"
+  ],
+  "effects": [
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "persona-film-grain",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.film-grain",
+        "id": "fx.film-grain"
+      },
+      "seq": 1,
+      "effectPaths": [],
+      "leakPaths": [],
+      "effectCount": 0,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "persona-junction-bubble",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.junction.bubble",
+        "id": "render.junction.bubble"
+      },
+      "seq": 2,
+      "effectPaths": [
+        {
+          "path": "perf.activeJunction",
+          "a": "surface",
+          "b": "bubble"
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              -7.851033769159138,
+              -0.3903129931498861,
+              -9.46806421549903
+            ],
+            "radius": 0.40625,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              -7.851033769159138,
+              -0.3903129931498861,
+              -9.46806421549903
+            ],
+            "axis": [
+              0.6327015258838204,
+              0.37905090459986335,
+              0.6752845258602559
+            ],
+            "radius": 0.40625
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              -7.543806318795854,
+              -0.520417324199848,
+              -9.699846913915708
+            ],
+            "axis": [
+              0.7562521855096249,
+              -0.3202568148922142,
+              -0.5705420268718246
+            ],
+            "radius": 2.9802322387695312e-8
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              7.792921657116675,
+              0.15745681750779456,
+              -8.492204581920232
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              7.792921657116675,
+              0.15745681750779456,
+              -8.492204581920232
+            ],
+            "axis": [
+              0.3402646481770619,
+              0.4602721901448301,
+              0.8199813901426188
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              7.466323502739236,
+              0.20994242334372595,
+              -8.398700735810644
+            ],
+            "axis": [
+              -0.9501037218252788,
+              0.15268539879543708,
+              0.2720111886824355
+            ],
+            "radius": 2.5809568279517847e-8
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              8.296781459939178,
+              -0.7095614253415404,
+              -8.195234219854653
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              8.296781459939178,
+              -0.7095614253415404,
+              -8.195234219854653
+            ],
+            "axis": [
+              0.32562364119596365,
+              0.485465746120496,
+              0.8113521144595315
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              9.05668444404949,
+              0.4233626701122415,
+              7.8762772750769585
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              9.05668444404949,
+              0.4233626701122415,
+              7.8762772750769585
+            ],
+            "axis": [
+              0.4708984398582548,
+              0.7020530254287903,
+              0.5342061482474195
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              9.151340551982987,
+              0.5644835601496547,
+              7.577464326686282
+            ],
+            "axis": [
+              0.27536322307926814,
+              0.41053349829065805,
+              -0.8692740316819728
+            ],
+            "radius": 2.5809568279517847e-8
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              7.8704293598326664,
+              0.4120182434600281,
+              9.054843984051068
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              7.8704293598326664,
+              0.4120182434600281,
+              9.054843984051068
+            ],
+            "axis": [
+              0.5243729619735854,
+              0.7025644144225833,
+              0.4810782060518865
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              -8.189526918913751,
+              -0.7017567264220146,
+              8.292190975363297
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              -8.189526918913751,
+              -0.7017567264220146,
+              8.292190975363297
+            ],
+            "axis": [
+              0.8073612830976062,
+              0.48685713417405524,
+              0.33337349843503306
+            ],
+            "radius": 0.34375
+          }
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 16,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "perf-edge-width-6",
+      "mutation": {
+        "kind": "perf",
+        "field": "edgeWidthPx",
+        "value": 6
+      },
+      "seq": 3,
+      "effectPaths": [
+        {
+          "path": "perf.edgeWidthPx",
+          "a": 1.5,
+          "b": 6
+        },
+        {
+          "path": "viewer.edgeWidth",
+          "a": 1.5,
+          "b": 6
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "perf-halo-aurora-vent",
+      "mutation": {
+        "kind": "perf",
+        "field": "nodeHaloVariant",
+        "value": "aurora-vent"
+      },
+      "seq": 4,
+      "effectPaths": [
+        {
+          "path": "perf.nodeHaloVariant",
+          "a": "none",
+          "b": "aurora-vent"
+        },
+        {
+          "path": "halo.variant",
+          "a": "none",
+          "b": "aurora-vent"
+        },
+        {
+          "path": "halo.count",
+          "a": 0,
+          "b": 4
+        },
+        {
+          "path": "halo.visible",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "halo.radiusMul",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "path": "halo.perNode.0",
+          "b": {
+            "id": "ddv-alpha",
+            "radius": 3.25
+          }
+        },
+        {
+          "path": "halo.perNode.1",
+          "b": {
+            "id": "ddv-beta",
+            "radius": 2.75
+          }
+        },
+        {
+          "path": "halo.perNode.2",
+          "b": {
+            "id": "ddv-gamma",
+            "radius": 2.75
+          }
+        },
+        {
+          "path": "halo.perNode.3",
+          "b": {
+            "id": "ddv-delta",
+            "radius": 2.75
+          }
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 9,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "perf-node-opacity-03",
+      "mutation": {
+        "kind": "perf",
+        "field": "nodeOpacity",
+        "value": 0.3
+      },
+      "seq": 5,
+      "effectPaths": [
+        {
+          "path": "perf.nodeOpacity",
+          "a": 0,
+          "b": 0.3
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "perf-socket-solder",
+      "mutation": {
+        "kind": "perf",
+        "field": "socketVariant",
+        "value": "solder"
+      },
+      "seq": 6,
+      "effectPaths": [
+        {
+          "path": "perf.socketVariant",
+          "a": "bracket",
+          "b": "solder"
+        },
+        {
+          "path": "socket.variant",
+          "a": "bracket",
+          "b": "solder"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "perf-grid-off",
+      "mutation": {
+        "kind": "perf",
+        "field": "gridVisible",
+        "value": false
+      },
+      "seq": 7,
+      "effectPaths": [
+        {
+          "path": "perf.gridVisible",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "grid",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "viewer.gridVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "perf-labels-off",
+      "mutation": {
+        "kind": "perf",
+        "field": "labelsVisible",
+        "value": false
+      },
+      "seq": 8,
+      "effectPaths": [
+        {
+          "path": "perf.labelsVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 51
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "junction-bubble",
+      "mutation": {
+        "kind": "junction",
+        "preset": "bubble"
+      },
+      "seq": 9,
+      "effectPaths": [
+        {
+          "path": "perf.activeJunction",
+          "a": "surface",
+          "b": "bubble"
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              -7.851033769159138,
+              -0.3903129931498861,
+              -9.46806421549903
+            ],
+            "radius": 0.40625,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              -7.851033769159138,
+              -0.3903129931498861,
+              -9.46806421549903
+            ],
+            "axis": [
+              0.6327015258838204,
+              0.37905090459986335,
+              0.6752845258602559
+            ],
+            "radius": 0.40625
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              -7.543806318795854,
+              -0.520417324199848,
+              -9.699846913915708
+            ],
+            "axis": [
+              0.7562521855096249,
+              -0.3202568148922142,
+              -0.5705420268718246
+            ],
+            "radius": 2.9802322387695312e-8
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              7.792921657116675,
+              0.15745681750779456,
+              -8.492204581920232
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              7.792921657116675,
+              0.15745681750779456,
+              -8.492204581920232
+            ],
+            "axis": [
+              0.3402646481770619,
+              0.4602721901448301,
+              0.8199813901426188
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              7.466323502739236,
+              0.20994242334372595,
+              -8.398700735810644
+            ],
+            "axis": [
+              -0.9501037218252788,
+              0.15268539879543708,
+              0.2720111886824355
+            ],
+            "radius": 2.5809568279517847e-8
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              8.296781459939178,
+              -0.7095614253415404,
+              -8.195234219854653
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              8.296781459939178,
+              -0.7095614253415404,
+              -8.195234219854653
+            ],
+            "axis": [
+              0.32562364119596365,
+              0.485465746120496,
+              0.8113521144595315
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              9.05668444404949,
+              0.4233626701122415,
+              7.8762772750769585
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              9.05668444404949,
+              0.4233626701122415,
+              7.8762772750769585
+            ],
+            "axis": [
+              0.4708984398582548,
+              0.7020530254287903,
+              0.5342061482474195
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              9.151340551982987,
+              0.5644835601496547,
+              7.577464326686282
+            ],
+            "axis": [
+              0.27536322307926814,
+              0.41053349829065805,
+              -0.8692740316819728
+            ],
+            "radius": 2.5809568279517847e-8
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              7.8704293598326664,
+              0.4120182434600281,
+              9.054843984051068
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              7.8704293598326664,
+              0.4120182434600281,
+              9.054843984051068
+            ],
+            "axis": [
+              0.5243729619735854,
+              0.7025644144225833,
+              0.4810782060518865
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              -8.189526918913751,
+              -0.7017567264220146,
+              8.292190975363297
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              -8.189526918913751,
+              -0.7017567264220146,
+              8.292190975363297
+            ],
+            "axis": [
+              0.8073612830976062,
+              0.48685713417405524,
+              0.33337349843503306
+            ],
+            "radius": 0.34375
+          }
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 16,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "junction-surface",
+      "mutation": {
+        "kind": "junction",
+        "preset": "surface"
+      },
+      "seq": 10,
+      "effectPaths": [],
+      "leakPaths": [],
+      "effectCount": 0,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "theme-light",
+      "mutation": {
+        "kind": "theme",
+        "value": "light"
+      },
+      "seq": 11,
+      "effectPaths": [
+        {
+          "path": "theme.id",
+          "a": "dark",
+          "b": "light"
+        },
+        {
+          "path": "theme.isLight",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "viewer.emissiveIntensity",
+          "a": 0.4,
+          "b": 0.1
+        },
+        {
+          "path": "viewer.ambientIntensity",
+          "a": 0.8,
+          "b": 1.5
+        },
+        {
+          "path": "viewer.theme",
+          "a": "dark",
+          "b": "light"
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "viewer.emissiveIntensity",
+          "a": 0.4,
+          "b": 0.7
+        }
+      ],
+      "effectCount": 5,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 53
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "stateId": "profile-workshop-roundtrip",
+      "mutation": {
+        "kind": "profile",
+        "to": "workshop"
+      },
+      "seq": 12,
+      "effectPaths": [
+        {
+          "path": "perf.cardThresholdScale",
+          "a": 0.6,
+          "b": 1
+        },
+        {
+          "path": "perf.lodMasterScale",
+          "a": 0.85,
+          "b": 1
+        },
+        {
+          "path": "perf.edgeShape",
+          "a": "straight",
+          "b": "quadratic-bezier"
+        },
+        {
+          "path": "perf.edgeWidthPx",
+          "a": 1.5,
+          "b": 8
+        },
+        {
+          "path": "perf.nodeHaloVariant",
+          "a": "none",
+          "b": "soft-glow"
+        },
+        {
+          "path": "perf.nodeHaloRadiusMul",
+          "a": 2,
+          "b": 1.5
+        },
+        {
+          "path": "perf.nodeHaloOpacity",
+          "a": 0.6,
+          "b": 0.25
+        },
+        {
+          "path": "perf.socketVariant",
+          "a": "bracket",
+          "b": "solder"
+        },
+        {
+          "path": "perf.socketColor",
+          "a": "#222222",
+          "b": null
+        },
+        {
+          "path": "perf.socketRadiusMul",
+          "a": 0.35,
+          "b": 0.7
+        },
+        {
+          "path": "perf.staticArrowheadsAsFallback",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "perf.activeJunction",
+          "a": "surface",
+          "b": "bubble"
+        },
+        {
+          "path": "perf.nubVariant",
+          "a": "none",
+          "b": "shaded-sphere"
+        },
+        {
+          "path": "perf.debugPalette",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "perf.nodeOpacity",
+          "a": 0,
+          "b": 1
+        },
+        {
+          "path": "perf.bloomStrength",
+          "a": 0,
+          "b": 0.6
+        },
+        {
+          "path": "perf.bloomThreshold",
+          "a": 1,
+          "b": 0.85
+        },
+        {
+          "path": "perf.vignetteIntensity",
+          "a": 0,
+          "b": 0.5
+        },
+        {
+          "path": "perf.outlineMix",
+          "a": 0.8,
+          "b": 0.85
+        },
+        {
+          "path": "perf.outlineThickness",
+          "a": 1,
+          "b": 1.2
+        },
+        {
+          "path": "edgeShape",
+          "a": "straight",
+          "b": "quadratic-bezier"
+        },
+        {
+          "path": "viewer.emissiveIntensity",
+          "a": 0.4,
+          "b": 0.7
+        },
+        {
+          "path": "viewer.edgeWidth",
+          "a": 1.5,
+          "b": 8
+        },
+        {
+          "path": "socket.variant",
+          "a": "bracket",
+          "b": "solder"
+        },
+        {
+          "path": "halo.variant",
+          "a": "none",
+          "b": "soft-glow"
+        },
+        {
+          "path": "halo.count",
+          "a": 0,
+          "b": 4
+        },
+        {
+          "path": "halo.visible",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "halo.radiusMul",
+          "a": 1,
+          "b": 1.5
+        },
+        {
+          "path": "halo.perNode.0",
+          "b": {
+            "id": "ddv-alpha",
+            "radius": 2.4375
+          }
+        },
+        {
+          "path": "halo.perNode.1",
+          "b": {
+            "id": "ddv-beta",
+            "radius": 2.0625
+          }
+        },
+        {
+          "path": "halo.perNode.2",
+          "b": {
+            "id": "ddv-gamma",
+            "radius": 2.0625
+          }
+        },
+        {
+          "path": "halo.perNode.3",
+          "b": {
+            "id": "ddv-delta",
+            "radius": 2.0625
+          }
+        },
+        {
+          "path": "nubs.shaded-sphere",
+          "a": 0,
+          "b": 6
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.0",
+          "a": -7.543806318795853,
+          "b": -6.741466120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.1",
+          "a": -0.520417324199848,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.2",
+          "a": -9.699846913915708,
+          "b": -8.772716120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.normal.0",
+          "a": 0.7562521855096251,
+          "b": 1
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.normal.1",
+          "a": -0.32025681489221414,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.normal.2",
+          "a": -0.5705420268718243,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              -7.147716120248994,
+              0,
+              -8.772716120248994
+            ],
+            "radius": 0.40625,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              -7.147716120248994,
+              0,
+              -8.772716120248994
+            ],
+            "axis": [
+              0.6319643708920895,
+              0.3793454196893756,
+              0.675809208640765
+            ],
+            "radius": 0.40625
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              -7.198497370248994,
+              0,
+              -8.772716120248994
+            ],
+            "axis": [
+              1,
+              0,
+              0
+            ],
+            "radius": 0.40306367629499623
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.0",
+          "a": 7.466323502739235,
+          "b": 7.053966120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.1",
+          "a": 0.20994242334372606,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.2",
+          "a": -8.398700735810646,
+          "b": -8.772716120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.normal.0",
+          "a": -0.9501037218252791,
+          "b": -1
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.normal.1",
+          "a": 0.15268539879543713,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.normal.2",
+          "a": 0.27201118868243435,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              7.397716120248994,
+              0,
+              -8.772716120248994
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              7.397716120248994,
+              0,
+              -8.772716120248994
+            ],
+            "axis": [
+              0.34732839615306454,
+              0.45900632129132674,
+              0.8177262269490587
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              7.440684870248994,
+              0,
+              -8.772716120248994
+            ],
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "radius": 0.3410538799419199
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.0",
+          "a": 8.138136573169238,
+          "b": 8.772716120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.1",
+          "a": -0.9460819004553872,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.2",
+          "a": -8.002740253056539,
+          "b": -7.053966120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.normal.0",
+          "a": -0.4615123978761866,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.normal.1",
+          "a": -0.6880595639675543,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.normal.2",
+          "a": 0.5599824488672402,
+          "b": 1
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              8.772716120248994,
+              0,
+              -7.397716120248994
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              8.772716120248994,
+              0,
+              -7.397716120248994
+            ],
+            "axis": [
+              0.3225319618623382,
+              0.4808564235020545,
+              0.8153221654990401
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              8.772716120248994,
+              0,
+              -7.440684870248994
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "radius": 0.3410538799419199
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.0",
+          "a": 9.151340551982987,
+          "b": 8.772716120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.1",
+          "a": 0.5644835601496553,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.2",
+          "a": 7.577464326686281,
+          "b": 7.053966120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.normal.0",
+          "a": 0.27536322307926736,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.normal.1",
+          "a": 0.4105334982906584,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.normal.2",
+          "a": -0.8692740316819728,
+          "b": -1
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              8.772716120248994,
+              0,
+              7.397716120248994
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              8.772716120248994,
+              0,
+              7.397716120248994
+            ],
+            "axis": [
+              0.4691701230363321,
+              0.699476312594287,
+              0.5390846721708681
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              8.772716120248994,
+              0,
+              7.440684870248994
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "radius": 0.3410538799419199
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.0",
+          "a": 7.569667106360558,
+          "b": 7.053966120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.1",
+          "a": 0.5493576579467041,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.2",
+          "a": 9.148886605318427,
+          "b": 8.772716120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.normal.0",
+          "a": -0.8749447373734082,
+          "b": -1
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.normal.1",
+          "a": 0.3995328421430575,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.normal.2",
+          "a": 0.27357853459595216,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nub",
+          "a": null,
+          "b": {
+            "center": [
+              7.397716120248994,
+              0,
+              8.772716120248994
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              7.397716120248994,
+              0,
+              8.772716120248994
+            ],
+            "axis": [
+              0.5296030749037791,
+              0.6998885258118386,
+              0.4792459019015121
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              7.440684870248994,
+              0,
+              8.772716120248994
+            ],
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "radius": 0.3410538799419199
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.0",
+          "a": -7.995130518468672,
+          "b": -7.053966120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.1",
+          "a": -0.9356756352293528,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.2",
+          "a": 8.132015927068064,
+          "b": 8.772716120248994
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.normal.0",
+          "a": 0.5655168012947797,
+          "b": 1
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.normal.1",
+          "a": -0.680491371075893,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.normal.2",
+          "a": -0.4659637768588583,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nub",
+          "a": null,
+          "b": {
+            "center": [
+              -7.397716120248994,
+              0,
+              8.772716120248994
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nubSilhouette",
+          "a": null,
+          "b": {
+            "center": [
+              -7.397716120248994,
+              0,
+              8.772716120248994
+            ],
+            "axis": [
+              0.8112486953130197,
+              0.4824377535085514,
+              0.3303473449909132
+            ],
+            "radius": 0.34375
+          }
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.intersection",
+          "a": null,
+          "b": {
+            "center": [
+              -7.440684870248994,
+              0,
+              8.772716120248994
+            ],
+            "axis": [
+              1,
+              0,
+              0
+            ],
+            "radius": 0.3410538799419199
+          }
+        },
+        {
+          "path": "perNode.ddv-alpha.mode",
+          "a": "circle",
+          "b": "mesh"
+        },
+        {
+          "path": "perNode.ddv-beta.mode",
+          "a": "circle",
+          "b": "mesh"
+        },
+        {
+          "path": "perNode.ddv-gamma.mode",
+          "a": "circle",
+          "b": "mesh"
+        },
+        {
+          "path": "perNode.ddv-delta.mode",
+          "a": "circle",
+          "b": "mesh"
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "viewer.emissiveIntensity",
+          "a": 0.4,
+          "b": 0.7
+        }
+      ],
+      "effectCount": 91,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 220
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": false,
+      "resetPostVerified": false
+    }
+  ],
+  "errors": []
+}

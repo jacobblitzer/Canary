@@ -1,0 +1,230 @@
+/**
+ * Display-sweep in-page driver (W1, 2026-07-19).
+ *
+ * Installed into the Qualia page by generated sweep tests as a
+ * `setup.commands` step (the generator embeds this file's source via
+ * JSON.stringify — keep it dependency-free, plain script, no modules).
+ * Campaign: Qualia/docs/plans/2026-07-19-display-behavior-sweep.md ·
+ * driver prompt MultiVerse/prompts/qualia-display-sweep-2026-07-19.md.
+ *
+ * Protocol per state (the nine verified ground rules live in the
+ * campaign prompt — the load-bearing ones here):
+ *   reset  = __canaryClearTouchedPerfFields + __canaryApplyProfile(base)
+ *            + theme/selection/camera restore (re-applying the SAME
+ *            profile alone does NOT clear touches; persona toggles use
+ *            preserveProfile so the profile layer survives)
+ *   mutate = ONE lever (persona / perf / junction / theme / profile / planar)
+ *   settle = __canaryWaitForRenderSettled (err-envelope, never throws)
+ *   fp     = structural fingerprint, double-read one rAF apart
+ *   revert = full reset, fingerprint again (state-leak detector)
+ *
+ * Observations: one JSON file per state via the dev server's
+ * POST /api/debug/write (Qualia/debug-logs/<sweepId>/...). Console gets
+ * a compact CANARY_SWEEP| line per state as a telemetry backup channel.
+ */
+(() => {
+  const w = window;
+  // Envelope unwrap — TOLERANT of pre-envelope hooks: __canaryGetPersonaConfig
+  // (and a few other early hooks) return the raw value, not { ok, value }.
+  // Raw objects pass through; only explicit { ok:false } becomes __err.
+  const un = (env) => {
+    if (env && env.ok === true) return env.value;
+    if (env && env.ok === false) return { __err: env.reason || 'err' };
+    return env === undefined ? { __err: 'undefined-return' } : env;
+  };
+  const raf = () => new Promise((r) => requestAnimationFrame(() => r()));
+
+  const S = { ctx: null, camera: null, baseTheme: null, fpBase: null, seq: 0 };
+
+  async function settle(timeoutMs) {
+    const t0 = performance.now();
+    const res = await w.__canaryWaitForRenderSettled(timeoutMs || 5000);
+    return { ok: !!(res && res.ok), ms: Math.round(performance.now() - t0) };
+  }
+
+  async function writeObs(filename, payload) {
+    const res = await fetch('/api/debug/write', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session: S.ctx.sweepId,
+        filename,
+        content: JSON.stringify(payload),
+      }),
+    });
+    if (!res.ok) throw new Error('debug-write failed: HTTP ' + res.status + ' for ' + filename);
+  }
+
+  function fingerprint() {
+    const nodes = un(w.__canaryListNodes());
+    const perNode = {};
+    if (Array.isArray(nodes)) {
+      for (const n of nodes) {
+        perNode[n.id] = {
+          rendered: un(w.__canaryGetRenderedNodePosition(n.id)),
+          fadeAlpha: un(w.__canaryGetNodeFadeAlpha(n.id)),
+          mode: un(w.__canaryGetResolvedNodeDisplayMode(n.id)),
+        };
+      }
+    }
+    const stats = un(w.__canaryGetDebugStats());
+    return {
+      persona: un(w.__canaryGetPersonaConfig()),
+      touched: un(w.__canaryGetTouchedPerfFields()),
+      perf: un(w.__canaryGetPerfSettings()),
+      theme: un(w.__canaryGetThemeState()),
+      grid: un(w.__canaryGetGridVisible()),
+      edgeShape: un(w.__canaryGetEdgeShape()),
+      edgeRouting: un(w.__canaryGetEdgeRouting()),
+      viewer: un(w.__canaryGetViewerSettings()),
+      planar: un(w.__canaryGetPlanarSettings()),
+      socket: un(w.__canaryGetSocketState()),
+      halo: un(w.__canaryGetHaloState()),
+      nubs: un(w.__canaryGetNubVariantCounts()),
+      frame: un(w.__canaryGetFrameGeometry({ includeJunctions: true })),
+      perNode,
+      // DebugStats whitelist — memoryMB / programs / draw counters are
+      // monotonic or frame-nondeterministic (verified ground rule 8).
+      stats: stats && !stats.__err
+        ? { nodeCount: stats.nodeCount, edgeCount: stats.edgeCount, groupCount: stats.groupCount, activeContextId: stats.activeContextId }
+        : stats,
+    };
+  }
+
+  async function doubleRead() {
+    const a = fingerprint();
+    await raf(); await raf();
+    const b = fingerprint();
+    return { fp: b, stable: JSON.stringify(a) === JSON.stringify(b) };
+  }
+
+  async function resetToBase() {
+    w.__canaryClearTouchedPerfFields();
+    w.__canaryApplyProfile(S.ctx.base);
+    if (S.baseTheme) w.__canarySetTheme(S.baseTheme);
+    w.__canaryClearSelection();
+    if (S.camera) {
+      w.__canarySetCameraState({ position: S.camera.position, target: S.camera.target }, 0);
+    }
+    const st = await settle();
+    const cfg = un(w.__canaryGetPersonaConfig());
+    const touched = un(w.__canaryGetTouchedPerfFields());
+    return {
+      settle: st,
+      verified: cfg && cfg.profile === S.ctx.base && Array.isArray(touched) && touched.length === 0,
+      profile: cfg ? cfg.profile : null,
+      touchedCount: Array.isArray(touched) ? touched.length : -1,
+    };
+  }
+
+  function applyMutation(m) {
+    switch (m.kind) {
+      case 'persona': {
+        const cfg = un(w.__canaryGetPersonaConfig());
+        const cur = !!(cfg && cfg.enabled && cfg.enabled[m.id]);
+        const target = m.enabled !== undefined ? m.enabled : !cur;
+        return un(w.__canarySetPersonaEnabled(m.id, target, { preserveProfile: true }));
+      }
+      case 'perf': {
+        const partial = {}; partial[m.field] = m.value;
+        return un(w.__canarySetPerfSettings(partial, { markTouched: false }));
+      }
+      case 'junction':
+        return un(w.__canarySetPerfSettings({ activeJunction: m.preset }, { markTouched: false }));
+      case 'theme':
+        return un(w.__canarySetTheme(m.value));
+      case 'profile':
+        return un(w.__canaryApplyProfile(m.to));
+      case 'planar':
+        return un(w.__canarySetPlanarSettings(m.value));
+      default:
+        throw new Error('unknown mutation kind: ' + m.kind);
+    }
+  }
+
+  async function loadFixture(fixture) {
+    if (fixture.kind === 'ddv') {
+      const r = w.__canaryLoadDDV({ select: false });
+      if (!r || !r.ok) throw new Error('LoadDDV failed: ' + JSON.stringify(r));
+    } else if (fixture.kind === 'demo') {
+      const r = await w.__canaryLoadDemo(fixture.slug);
+      if (!r || r.ok !== true) throw new Error('LoadDemo(' + fixture.slug + ') failed: ' + JSON.stringify(r));
+    } else {
+      throw new Error('unknown fixture kind: ' + fixture.kind);
+    }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+
+  w.__sweep = {
+    /** Family init: fixture + base profile + camera pin + base fingerprint. */
+    async init(ctx) {
+      S.ctx = ctx;
+      await loadFixture(ctx.fixture);
+      w.__canaryClearTouchedPerfFields();
+      w.__canaryApplyProfile(ctx.base);
+      w.__canaryClearSelection();
+      const st1 = await settle(8000);
+      // Pin the camera AFTER the first settle — the one-shot auto-fit
+      // fires ~100ms after first layout and would knock off an early pin.
+      await new Promise((r) => setTimeout(r, 400));
+      const cam = un(w.__canaryGetCameraState());
+      if (cam && !cam.__err) {
+        S.camera = { position: cam.position, target: cam.target };
+        w.__canarySetCameraState(S.camera, 0);
+      }
+      const theme = un(w.__canaryGetThemeState());
+      S.baseTheme = theme && theme.theme ? theme.theme : (theme && theme.current ? theme.current : 'dark');
+      await settle();
+      const base = await doubleRead();
+      S.fpBase = base.fp;
+      await writeObs('base-' + ctx.family + '.json', {
+        kind: 'base', sweepId: ctx.sweepId, family: ctx.family, base: ctx.base,
+        fixture: ctx.fixture, camera: S.camera, theme: S.baseTheme,
+        settleInit: st1, stable: base.stable, fp: base.fp, ts: Date.now(),
+      });
+      console.log('CANARY_SWEEP|init|' + ctx.family + '|stable=' + base.stable);
+      return 'sweep init ok: family=' + ctx.family + ' stable=' + base.stable;
+    },
+
+    /** Run one chunk of states. Each state: reset -> mutate -> fp -> reset -> fp. */
+    async runChunk(states, chunkIdx) {
+      if (!S.ctx) throw new Error('__sweep.init not run');
+      let okCount = 0, errCount = 0;
+      for (const st of states) {
+        S.seq++;
+        const fileBase = 'obs-' + String(S.seq).padStart(3, '0') + '-' + st.id;
+        try {
+          const resetPre = await resetToBase();
+          const applied = applyMutation(st.mutation);
+          const stMut = await settle();
+          const mut = await doubleRead();
+          const resetPost = await resetToBase();
+          const rev = await doubleRead();
+          await writeObs(fileBase + '.json', {
+            kind: 'state', sweepId: S.ctx.sweepId, family: S.ctx.family,
+            base: S.ctx.base, fixture: S.ctx.fixture, chunk: chunkIdx,
+            seq: S.seq, stateId: st.id, mutation: st.mutation,
+            applied, resetPre, resetPost,
+            settleMutated: stMut,
+            stableMutated: mut.stable, stableReverted: rev.stable,
+            fpMutated: mut.fp, fpReverted: rev.fp, ts: Date.now(),
+          });
+          okCount++;
+          console.log('CANARY_SWEEP|state|' + st.id + '|ok');
+        } catch (e) {
+          errCount++;
+          try {
+            await writeObs(fileBase + '-error.json', {
+              kind: 'error', sweepId: S.ctx.sweepId, family: S.ctx.family,
+              seq: S.seq, stateId: st.id, mutation: st.mutation,
+              error: String(e && e.message ? e.message : e), ts: Date.now(),
+            });
+          } catch (_) { /* obs channel down — the console line is the record */ }
+          console.log('CANARY_SWEEP|state|' + st.id + '|ERROR|' + e);
+        }
+      }
+      return 'chunk ' + chunkIdx + ': ' + okCount + ' ok, ' + errCount + ' errors';
+    },
+  };
+  return '__sweep driver installed';
+})()

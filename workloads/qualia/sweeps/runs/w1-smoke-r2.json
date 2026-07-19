@@ -1,0 +1,91 @@
+{
+  "sweepId": "w1-smoke-r2",
+  "generatedAt": "2026-07-19T22:10:22.398Z",
+  "spec": {
+    "name": "w1-smoke",
+    "fixture": {
+      "kind": "ddv"
+    },
+    "bases": [
+      "minimal"
+    ],
+    "chunkSize": 4,
+    "mutations": [
+      {
+        "id": "persona-film-grain",
+        "kind": "persona",
+        "persona": "fx.film-grain"
+      },
+      {
+        "id": "persona-junction-bubble",
+        "kind": "persona",
+        "persona": "render.junction.bubble"
+      },
+      {
+        "id": "perf-edge-width-6",
+        "kind": "perf",
+        "field": "edgeWidthPx",
+        "value": 6
+      },
+      {
+        "id": "perf-halo-aurora-vent",
+        "kind": "perf",
+        "field": "nodeHaloVariant",
+        "value": "aurora-vent"
+      },
+      {
+        "id": "perf-node-opacity-03",
+        "kind": "perf",
+        "field": "nodeOpacity",
+        "value": 0.3
+      },
+      {
+        "id": "perf-socket-solder",
+        "kind": "perf",
+        "field": "socketVariant",
+        "value": "solder"
+      },
+      {
+        "id": "perf-grid-off",
+        "kind": "perf",
+        "field": "gridVisible",
+        "value": false
+      },
+      {
+        "id": "perf-labels-off",
+        "kind": "perf",
+        "field": "labelsVisible",
+        "value": false
+      },
+      {
+        "id": "junction-bubble",
+        "kind": "junction",
+        "preset": "bubble"
+      },
+      {
+        "id": "junction-surface",
+        "kind": "junction",
+        "preset": "surface"
+      },
+      {
+        "id": "theme-light",
+        "kind": "theme",
+        "value": "light"
+      },
+      {
+        "id": "profile-workshop-roundtrip",
+        "kind": "profile",
+        "to": "workshop"
+      }
+    ]
+  },
+  "suiteName": "sweep-w1-smoke",
+  "testNames": [
+    "sweep-w1-smoke-minimal-ddv"
+  ],
+  "expectedObs": {
+    "perFamily": 13,
+    "families": 1
+  },
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w1-smoke-r2"
+}

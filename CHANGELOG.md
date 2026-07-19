@@ -12,6 +12,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- **Qualia display-sweep harness (campaign W1)** (2026-07-19) — `workloads/qualia/sweeps/`: an in-page driver (`sweep-driver.js` — reset → one-lever mutate → settle → double-read structural fingerprint → revert → state-leak check, embedded into generated tests), a spec-driven generator (`generate-sweep.mjs` → chunked micro-test + suite JSONs under the agent's 60s CDP ceiling, one Vite+Chrome boot per run), and a deriver (`derive.mjs` → effect-table.md / findings.md with no-op, state-leak, settle-failure, unstable-read sections). Observations land one-JSON-per-state via Qualia's dev-server `/api/debug/write`. Smoke (12 states, minimal base, DDV fixture, r1+r2): 0 errors, all resets verified clean, junction-preset-persona ≡ `activeJunction` perf write confirmed empirically, and the first leak report filed Qualia bug 0055 (`viewer.emissiveIntensity` 0.4→0.7 across theme/profile round-trips). Campaign: `Qualia/docs/plans/2026-07-19-display-behavior-sweep.md`; ground rules baked into `sweeps/README.md`.
+
 ### Added — flight-recorder Phases C+D (R1.6, 2026-07-03)
 - **Snapshot-on-capture:** every session capture fires, best-effort, right before the pixels:
   Penumbra `gl.scene.snapshot` (new `DumpPenumbraSceneState` agent action, reflection via the

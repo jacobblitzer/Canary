@@ -1,0 +1,7 @@
+{
+  "name": "sweep-w1-smoke",
+  "description": "Generated display-sweep suite (sweep w1-smoke-r2) — 1 family test(s) x 12 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w1-smoke-minimal-ddv"
+  ]
+}
