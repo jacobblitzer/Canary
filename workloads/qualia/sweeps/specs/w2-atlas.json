@@ -116,21 +116,6 @@
       "persona": "fx.vignette"
     },
     {
-      "id": "persona-render-nodes",
-      "kind": "persona",
-      "persona": "render.nodes"
-    },
-    {
-      "id": "persona-render-edges",
-      "kind": "persona",
-      "persona": "render.edges"
-    },
-    {
-      "id": "persona-render-labels",
-      "kind": "persona",
-      "persona": "render.labels"
-    },
-    {
       "id": "persona-render-grid",
       "kind": "persona",
       "persona": "render.grid"
@@ -181,11 +166,6 @@
       "persona": "render.qverse-graph-nav"
     },
     {
-      "id": "persona-compute-layout",
-      "kind": "persona",
-      "persona": "compute.layout"
-    },
-    {
       "id": "persona-compute-metrics",
       "kind": "persona",
       "persona": "compute.metrics"
@@ -201,49 +181,9 @@
       "persona": "compute.rag.eager-l3"
     },
     {
-      "id": "persona-compute-lod",
-      "kind": "persona",
-      "persona": "compute.lod"
-    },
-    {
-      "id": "persona-compute-edge-routing",
-      "kind": "persona",
-      "persona": "compute.edge-routing"
-    },
-    {
-      "id": "persona-interaction-hover",
-      "kind": "persona",
-      "persona": "interaction.hover"
-    },
-    {
-      "id": "persona-interaction-drag",
-      "kind": "persona",
-      "persona": "interaction.drag"
-    },
-    {
-      "id": "persona-interaction-box-select",
-      "kind": "persona",
-      "persona": "interaction.box-select"
-    },
-    {
-      "id": "persona-interaction-fly-to",
-      "kind": "persona",
-      "persona": "interaction.fly-to"
-    },
-    {
-      "id": "persona-debug-snapshot",
-      "kind": "persona",
-      "persona": "debug.snapshot"
-    },
-    {
       "id": "persona-debug-playground",
       "kind": "persona",
       "persona": "debug.playground"
-    },
-    {
-      "id": "persona-debug-overlay",
-      "kind": "persona",
-      "persona": "debug.overlay"
     },
     {
       "id": "persona-debug-fps-hud",

@@ -1,7 +1,7 @@
 {
-  "sweepId": "w2-atlas-r5",
+  "sweepId": "w2-atlas-r6",
   "dossier": "C:/Repos/Qualia/spec/DISPLAY-BEHAVIOR.md",
   "stamped": "2026-07-19",
   "fingerprint": "v2 (sceneGraph + dom sections)",
-  "note": "Fingerprint-v2 atlas (post-0058 fixes): the clean reference INCLUDING the scene-graph + dom channels. Update this pointer ONLY when the dossier is deliberately regenerated; drift-diff.mjs measures every candidate against it."
+  "note": "Post-persona-cleanup atlas (12 decorative/dead personas deleted, 63 -> 51 descriptors; gumball show-path consult wired; 7 Stub tags refreshed). 1,050 states, 0 errors. Known benign: bucket-materialization ratchet rows (see README). Update ONLY on deliberate dossier regeneration."
 }

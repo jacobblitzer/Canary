@@ -1,0 +1,1311 @@
+# Display-sweep findings — w2-atlas-r6
+
+States: 1022 · skipped: 28 · errors: 0 · no-ops: 10 · leaks: 138 · settle failures: 0 · unstable reads: 3 · reset-verify failures: 0 · cross-family inconsistencies: 139 (139 cross-base) · control violations: 3
+
+## No-op mutations (dead knobs OR probe gaps) (10)
+
+- `junction-bubble` — {"kind":"junction","preset":"bubble"} changed nothing observable from base `cinematic` *(target already at base value — spec artifact, not a finding)*
+- `junction-bubble` — {"kind":"junction","preset":"bubble"} changed nothing observable from base `standard` *(target already at base value — spec artifact, not a finding)*
+- `junction-bubble` — {"kind":"junction","preset":"bubble"} changed nothing observable from base `standard` *(target already at base value — spec artifact, not a finding)*
+- `junction-surface` — {"kind":"junction","preset":"surface"} changed nothing observable from base `minimal` *(target already at base value — spec artifact, not a finding)*
+- `junction-surface` — {"kind":"junction","preset":"surface"} changed nothing observable from base `minimal` *(target already at base value — spec artifact, not a finding)*
+- `junction-surface` — {"kind":"junction","preset":"surface"} changed nothing observable from base `minimal` *(target already at base value — spec artifact, not a finding)*
+- `profile-minimal` — {"kind":"profile","to":"minimal"} changed nothing observable from base `minimal`
+- `profile-minimal` — {"kind":"profile","to":"minimal"} changed nothing observable from base `minimal`
+- `profile-standard` — {"kind":"profile","to":"standard"} changed nothing observable from base `standard`
+- `profile-cinematic` — {"kind":"profile","to":"cinematic"} changed nothing observable from base `cinematic`
+
+## State leaks (reverted fingerprint != family base) (138)
+
+- `persona-render-cross-context-portal` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-cross-context-qnode` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-gumball` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-penumbra-backdrop` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-penumbra-fallback` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-context-jewel-hud` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-context-jewel-scene` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-context-navigator` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-qverse-graph-nav` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-compute-metrics` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-compute-simulation` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-compute-rag-eager-l3` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-debug-playground` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-debug-fps-hud` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-debug-api-tick-log` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-junction-bubble` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-junction-center` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-junction-surface` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-junction-pull-back` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-junction-voronoi` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-debug-junction-markers` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-render-paper` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-edge-flow` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-selection-halo` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-hover-lift` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-post-process` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-node-pulse` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-laser-rat` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-pencil-toon` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-debug-layer-colors` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-connection-sweep` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-force-field` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-group-atmosphere` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-echo-trails` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-constellations` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-cursor-trail` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-time-lapse` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-audio-reactive` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-label-bloom` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-magnetic-snap` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-heat-map` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-crystal-material` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `persona-fx-sounds` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-penumbraEnabled` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-skeletonNodesEnabled` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-skeletonEdgesEnabled` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-halosEnabled` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nodesVisible` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgesVisible` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-labelsVisible` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-labelMaxDistance` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-labelMinFontPx` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-labelMaxFontPx` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-labelOffsetPx` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-cardThresholdScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-cardSizeScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-cardOffsetScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-lodMasterScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-gridVisible` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeShape` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeWidthPx` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeGradientRampId` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeGradientMix` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nodeHaloVariant` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nodeHaloColor` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nodeHaloRadiusMul` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nodeHaloOpacity` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-socketVariant` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-socketColor` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-socketRadiusMul` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-socketOpacity` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-staticArrowheadsAsFallback` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nubVariant` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-debugPalette` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-paperVisible` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-penumbraRenderInterval` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-penumbraResolutionScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-haloRadiusMultiplier` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-skeletonBlend` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-giEnabled` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-giStrength` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-nodeOpacity` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-haloOpacity` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-smoothHaloBlend` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-haloBlendRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgesInHalo` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeHaloRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-renderMode` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateCoarseSteps` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateCoarseScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulatePointsPerSeed` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateScatterRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateVolumeMix` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulatePointSize` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateMix` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateBrightness` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateShimmer` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateCloudNoise` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateCloudNoiseScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateCloudAmplitude` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateSeedSubdivision` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-particulateSoftness` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeSoftenBilateralStrength` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeSoftenBloomStrength` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeSoftenBilateralRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-edgeSoftenBloomRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-bloomStrength` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-bloomRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-bloomThreshold` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-vignetteIntensity` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-vignetteInnerRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-vignetteOuterRadius` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-colorGradeBrightness` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-colorGradeContrast` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-colorGradeSaturation` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-outlineStrength` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-outlineMix` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-outlineThickness` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-chromaticAberrationOffset` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-chromaticAberrationFalloff` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-filmGrainStrength` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-filmGrainSpeed` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-filmGrainSize` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-curlNoiseParticleCount` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-curlNoiseCurlScale` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-curlNoiseSpeed` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-curlNoisePointSize` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `perf-curlNoiseOpacity` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `junction-bubble` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `junction-center` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `junction-surface` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `junction-pull-back` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `junction-voronoi` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `theme-light` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `profile-minimal` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `profile-standard` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `profile-workshop` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+- `profile-cinematic` — 2 path(s) leaked, e.g. `sceneGraph.total`, `sceneGraph.byType.Mesh`
+
+## Settle failures (0)
+
+_none_
+
+## Unstable double-reads (3)
+
+- `persona-render-penumbra-backdrop` — mutated:ok reverted:UNSTABLE
+- `persona-render-penumbra-backdrop` — mutated:UNSTABLE reverted:ok
+- `persona-render-penumbra-backdrop` — mutated:UNSTABLE reverted:ok
+
+## Reset-verify failures (profile/touched not clean) (0)
+
+_none_
+
+## Driver errors (0)
+
+_none_
+
+## Control violations (profile-to-self must be 0 effect / 0 leak) (3)
+
+- `minimal-workshop-palette` — effect 1, leak 0
+- `standard-workshop-palette` — effect 1, leak 0
+- `workshop-ddv` — effect 2, leak 2
+
+## Skipped mutations (no derivable alternate — extend the alternates map to cover) (4)
+
+- `perf-labelPlacement` — 7 family(ies)
+- `perf-edgeDashPatternId` — 7 family(ies)
+- `perf-edgeDashSpeed` — 7 family(ies)
+- `perf-curlNoisePalette` — 7 family(ies)
+
+## Pair interactions (0 with emergent/suppressed paths)
+
+_none — every pair matched the union of its singles_
+
+## Cross-family inconsistencies (139; cross-base first)
+
+Same mutation, different effect signature across families. Cross-BASE rows (same fixture,
+different base profile) are the primary "display dynamics inconsistent across personas" signal;
+cross-fixture-only rows may just reflect content differences.
+
+- **[cross-base]** `persona-render-graph-scene` — {"kind":"persona","persona":"render.graph-scene","id":"render.graph-scene"}
+  - cinematic-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.0`, `sceneGraph.enabledPasses.2`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - workshop-ddv: 2 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.0`
+- **[cross-base]** `persona-render-curl-noise-field` — {"kind":"persona","persona":"render.curl-noise-field","id":"render.curl-noise-field"}
+  - cinematic-ddv: 7 path(s); missing vs union: `sceneGraph.enabledPasses.0`, `sceneGraph.enabledPasses.1`, `sceneGraph.enabledPasses.2`
+  - minimal-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - minimal-workshop-palette: 5 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - standard-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - standard-workshop-palette: 5 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.2`
+  - workshop-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.0`, `sceneGraph.enabledPasses.1`
+- **[cross-base]** `persona-fx-color-grade` — {"kind":"persona","persona":"fx.color-grade","id":"fx.color-grade"}
+  - cinematic-ddv: 9 path(s)
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - workshop-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+- **[cross-base]** `persona-fx-outline` — {"kind":"persona","persona":"fx.outline","id":"fx.outline"}
+  - cinematic-ddv: 8 path(s); missing vs union: `sceneGraph.enabledPasses.0`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - workshop-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+- **[cross-base]** `persona-fx-chromatic-aberration` — {"kind":"persona","persona":"fx.chromatic-aberration","id":"fx.chromatic-aberration"}
+  - cinematic-ddv: 9 path(s)
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+  - workshop-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.7`
+- **[cross-base]** `persona-fx-film-grain` — {"kind":"persona","persona":"fx.film-grain","id":"fx.film-grain"}
+  - cinematic-ddv: 8 path(s)
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - workshop-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+- **[cross-base]** `persona-fx-vignette` — {"kind":"persona","persona":"fx.vignette","id":"fx.vignette"}
+  - cinematic-ddv: 6 path(s); missing vs union: `sceneGraph.enabledPasses.0`, `sceneGraph.enabledPasses.1`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`
+  - workshop-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.0`, `sceneGraph.enabledPasses.1`
+- **[cross-base]** `persona-render-cross-context-portal` — {"kind":"persona","persona":"render.cross-context.portal","id":"render.cross-context.portal"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-render-cross-context-qnode` — {"kind":"persona","persona":"render.cross-context.qnode","id":"render.cross-context.qnode"}
+  - cinematic-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 4 path(s); missing vs union: `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 4 path(s); missing vs union: `socket.count`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`
+- **[cross-base]** `persona-render-gumball` — {"kind":"persona","persona":"render.gumball","id":"render.gumball"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-render-penumbra-backdrop` — {"kind":"persona","persona":"render.penumbra-backdrop","id":"render.penumbra-backdrop"}
+  - cinematic-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.1`, `sceneGraph.enabledPasses.3`
+  - minimal-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - minimal-workshop-palette: 4 path(s); missing vs union: `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - standard-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - standard-workshop-palette: 4 path(s); missing vs union: `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - workshop-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.1`
+- **[cross-base]** `persona-render-penumbra-fallback` — {"kind":"persona","persona":"render.penumbra-fallback","id":"render.penumbra-fallback"}
+  - cinematic-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.1`, `sceneGraph.enabledPasses.3`
+  - minimal-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - minimal-workshop-palette: 4 path(s); missing vs union: `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - standard-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - standard-workshop-palette: 4 path(s); missing vs union: `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.3`
+  - workshop-ddv: 4 path(s); missing vs union: `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.1`
+- **[cross-base]** `persona-render-context-jewel-hud` — {"kind":"persona","persona":"render.context-jewel-hud","id":"render.context-jewel-hud"}
+  - cinematic-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-render-context-jewel-scene` — {"kind":"persona","persona":"render.context-jewel-scene","id":"render.context-jewel-scene"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-render-context-navigator` — {"kind":"persona","persona":"render.context-navigator","id":"render.context-navigator"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-render-qverse-graph-nav` — {"kind":"persona","persona":"render.qverse-graph-nav","id":"render.qverse-graph-nav"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-compute-metrics` — {"kind":"persona","persona":"compute.metrics","id":"compute.metrics"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-compute-simulation` — {"kind":"persona","persona":"compute.simulation","id":"compute.simulation"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-compute-rag-eager-l3` — {"kind":"persona","persona":"compute.rag.eager-l3","id":"compute.rag.eager-l3"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-debug-playground` — {"kind":"persona","persona":"debug.playground","id":"debug.playground"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-debug-fps-hud` — {"kind":"persona","persona":"debug.fps-hud","id":"debug.fps-hud"}
+  - cinematic-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-debug-api-tick-log` — {"kind":"persona","persona":"debug.api-tick-log","id":"debug.api-tick-log"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-render-junction-bubble` — {"kind":"persona","persona":"render.junction.bubble","id":"render.junction.bubble"}
+  - cinematic-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+  - minimal-ddv: 18 path(s); missing vs union: `frame.junctions.*.source.point.0`, `frame.junctions.*.target.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 10 path(s); missing vs union: `frame.junctions.*.target.intersection`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 67 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+  - standard-workshop-palette: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+  - workshop-ddv: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+- **[cross-base]** `persona-render-junction-center` — {"kind":"persona","persona":"render.junction.center","id":"render.junction.center"}
+  - cinematic-ddv: 28 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`, `frame.junctions.*.target.point.1`
+  - minimal-ddv: 39 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 39 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - standard-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+  - standard-workshop-palette: 75 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `persona.enabled.render.junction.surface`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 30 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+- **[cross-base]** `persona-render-junction-surface` — {"kind":"persona","persona":"render.junction.surface","id":"render.junction.surface"}
+  - cinematic-ddv: 28 path(s); missing vs union: `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - standard-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 69 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 30 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `persona-render-junction-pull-back` — {"kind":"persona","persona":"render.junction.pull-back","id":"render.junction.pull-back"}
+  - cinematic-ddv: 28 path(s); missing vs union: `persona.enabled.render.junction.surface`, `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 27 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - standard-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `persona.enabled.render.junction.surface`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 69 path(s); missing vs union: `nubs.glow-bead`, `persona.enabled.render.junction.surface`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 30 path(s); missing vs union: `nubs.glow-bead`, `persona.enabled.render.junction.surface`
+- **[cross-base]** `persona-render-junction-voronoi` — {"kind":"persona","persona":"render.junction.voronoi","id":"render.junction.voronoi"}
+  - cinematic-ddv: 40 path(s); missing vs union: `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`, `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 27 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`
+  - minimal-workshop-palette: 35 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - standard-ddv: 40 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 85 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 42 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`
+- **[cross-base]** `persona-debug-junction-markers` — {"kind":"persona","persona":"debug.junction-markers","id":"debug.junction-markers"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-render-paper` — {"kind":"persona","persona":"render.paper","id":"render.paper"}
+  - cinematic-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-fx-edge-flow` — {"kind":"persona","persona":"fx.edge-flow","id":"fx.edge-flow"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-fx-post-process` — {"kind":"persona","persona":"fx.post-process","id":"fx.post-process"}
+  - cinematic-ddv: 7 path(s); missing vs union: `sceneGraph.enabledPasses.0`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`, `sceneGraph.enabledPasses.6`, `sceneGraph.enabledPasses.0`
+- **[cross-base]** `persona-fx-laser-rat` — {"kind":"persona","persona":"fx.laser-rat","id":"fx.laser-rat"}
+  - cinematic-ddv: 33 path(s); missing vs union: `persona.enabled.fx.edge-flow`, `persona.enabled.fx.post-process`, `sceneGraph.byType.Points`
+  - minimal-ddv: 19 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.nub.color`, `frame.junctions.*.target.nub.color`, `perf.edgeShape`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `sceneGraph.byType.Mesh`
+  - minimal-qnode-junction-alignment-test: 19 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.nub.color`, `frame.junctions.*.target.nub.color`, `perf.edgeShape`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `sceneGraph.byType.Mesh`
+  - minimal-workshop-palette: 19 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.nub.color`, `frame.junctions.*.target.nub.color`, `perf.edgeShape`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `sceneGraph.byType.Mesh`
+  - standard-ddv: 27 path(s); missing vs union: `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `sceneGraph.byType.Mesh`, `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`
+  - standard-workshop-palette: 35 path(s); missing vs union: `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `sceneGraph.byType.Mesh`, `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`, `sceneGraph.enabledPasses.4`, `sceneGraph.enabledPasses.5`
+  - workshop-ddv: 24 path(s); missing vs union: `perf.nodeOpacity`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `sceneGraph.enabledPasses.0`, `sceneGraph.enabledPasses.1`, `sceneGraph.enabledPasses.2`, `sceneGraph.enabledPasses.3`
+- **[cross-base]** `persona-fx-pencil-toon` — {"kind":"persona","persona":"fx.pencil-toon","id":"fx.pencil-toon"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s)
+- **[cross-base]** `persona-fx-debug-layer-colors` — {"kind":"persona","persona":"fx.debug-layer-colors","id":"fx.debug-layer-colors"}
+  - cinematic-ddv: 2 path(s); missing vs union: `halo.variant`, `halo.visible`, `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 4 path(s); missing vs union: `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 4 path(s); missing vs union: `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s); missing vs union: `socket.variant`, `halo.variant`, `halo.visible`, `socket.visible`
+- **[cross-base]** `persona-fx-connection-sweep` — {"kind":"persona","persona":"fx.connection-sweep","id":"fx.connection-sweep"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-fx-group-atmosphere` — {"kind":"persona","persona":"fx.group-atmosphere","id":"fx.group-atmosphere"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `persona-fx-constellations` — {"kind":"persona","persona":"fx.constellations","id":"fx.constellations"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-fx-cursor-trail` — {"kind":"persona","persona":"fx.cursor-trail","id":"fx.cursor-trail"}
+  - cinematic-ddv: 4 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `dom.hostClasses.2`
+- **[cross-base]** `persona-fx-time-lapse` — {"kind":"persona","persona":"fx.time-lapse","id":"fx.time-lapse"}
+  - cinematic-ddv: 3 path(s); missing vs union: `dom.hostClasses.0`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `dom.hostClasses.2`
+- **[cross-base]** `persona-fx-audio-reactive` — {"kind":"persona","persona":"fx.audio-reactive","id":"fx.audio-reactive"}
+  - cinematic-ddv: 4 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `dom.hostClasses.2`
+- **[cross-base]** `persona-fx-label-bloom` — {"kind":"persona","persona":"fx.label-bloom","id":"fx.label-bloom"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s)
+- **[cross-base]** `persona-fx-magnetic-snap` — {"kind":"persona","persona":"fx.magnetic-snap","id":"fx.magnetic-snap"}
+  - cinematic-ddv: 3 path(s); missing vs union: `dom.hostClasses.0`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `dom.hostClasses.2`
+- **[cross-base]** `persona-fx-crystal-material` — {"kind":"persona","persona":"fx.crystal-material","id":"fx.crystal-material"}
+  - cinematic-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `persona-fx-sounds` — {"kind":"persona","persona":"fx.sounds","id":"fx.sounds"}
+  - cinematic-ddv: 3 path(s); missing vs union: `dom.hostClasses.0`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `dom.hostClasses.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `dom.hostClasses.2`
+- **[cross-base]** `perf-penumbraEnabled` — {"kind":"perfAuto","field":"penumbraEnabled"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-skeletonNodesEnabled` — {"kind":"perfAuto","field":"skeletonNodesEnabled"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-skeletonEdgesEnabled` — {"kind":"perfAuto","field":"skeletonEdgesEnabled"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-halosEnabled` — {"kind":"perfAuto","field":"halosEnabled"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-nodesVisible` — {"kind":"perfAuto","field":"nodesVisible"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgesVisible` — {"kind":"perfAuto","field":"edgesVisible"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-labelsVisible` — {"kind":"perfAuto","field":"labelsVisible"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-labelMaxDistance` — {"kind":"perfAuto","field":"labelMaxDistance"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-labelMinFontPx` — {"kind":"perfAuto","field":"labelMinFontPx"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-labelMaxFontPx` — {"kind":"perfAuto","field":"labelMaxFontPx"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-labelOffsetPx` — {"kind":"perfAuto","field":"labelOffsetPx"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-cardThresholdScale` — {"kind":"perfAuto","field":"cardThresholdScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-cardSizeScale` — {"kind":"perfAuto","field":"cardSizeScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-cardOffsetScale` — {"kind":"perfAuto","field":"cardOffsetScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-lodMasterScale` — {"kind":"perfAuto","field":"lodMasterScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-gridVisible` — {"kind":"perfAuto","field":"gridVisible"}
+  - cinematic-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s)
+- **[cross-base]** `perf-edgeShape` — {"kind":"perfAuto","field":"edgeShape"}
+  - cinematic-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `perf-edgeWidthPx` — {"kind":"perfAuto","field":"edgeWidthPx"}
+  - cinematic-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 2 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s)
+- **[cross-base]** `perf-edgeGradientRampId` — {"kind":"perfAuto","field":"edgeGradientRampId"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgeGradientMix` — {"kind":"perfAuto","field":"edgeGradientMix"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-nodeHaloVariant` — {"kind":"perfAuto","field":"nodeHaloVariant"}
+  - cinematic-ddv: 2 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.visible`, `halo.perNode.4`
+  - minimal-ddv: 9 path(s); missing vs union: `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 6 path(s); missing vs union: `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 12 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 9 path(s); missing vs union: `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 12 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.visible`, `halo.perNode.4`
+- **[cross-base]** `perf-nodeHaloColor` — {"kind":"perfAuto","field":"nodeHaloColor"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-nodeHaloRadiusMul` — {"kind":"perfAuto","field":"nodeHaloRadiusMul"}
+  - cinematic-ddv: 6 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 8 path(s)
+- **[cross-base]** `perf-nodeHaloOpacity` — {"kind":"perfAuto","field":"nodeHaloOpacity"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-socketVariant` — {"kind":"perfAuto","field":"socketVariant"}
+  - cinematic-ddv: 2 path(s); missing vs union: `socket.count`, `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 2 path(s); missing vs union: `socket.count`, `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `socket.count`, `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `socket.count`, `socket.visible`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 4 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 4 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 4 path(s); missing vs union: `socket.count`, `socket.visible`
+- **[cross-base]** `perf-socketColor` — {"kind":"perfAuto","field":"socketColor"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-socketRadiusMul` — {"kind":"perfAuto","field":"socketRadiusMul"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-socketOpacity` — {"kind":"perfAuto","field":"socketOpacity"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-staticArrowheadsAsFallback` — {"kind":"perfAuto","field":"staticArrowheadsAsFallback"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-nubVariant` — {"kind":"perfAuto","field":"nubVariant"}
+  - cinematic-ddv: 3 path(s); missing vs union: `nubs.ink-dot`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `nubs.ink-dot`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `nubs.ink-dot`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `nubs.ink-dot`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 3 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 3 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 5 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `perf-debugPalette` — {"kind":"perfAuto","field":"debugPalette"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-paperVisible` — {"kind":"perfAuto","field":"paperVisible"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-penumbraRenderInterval` — {"kind":"perfAuto","field":"penumbraRenderInterval"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-penumbraResolutionScale` — {"kind":"perfAuto","field":"penumbraResolutionScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-haloRadiusMultiplier` — {"kind":"perfAuto","field":"haloRadiusMultiplier"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-skeletonBlend` — {"kind":"perfAuto","field":"skeletonBlend"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-giEnabled` — {"kind":"perfAuto","field":"giEnabled"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-giStrength` — {"kind":"perfAuto","field":"giStrength"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-nodeOpacity` — {"kind":"perfAuto","field":"nodeOpacity"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-haloOpacity` — {"kind":"perfAuto","field":"haloOpacity"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-smoothHaloBlend` — {"kind":"perfAuto","field":"smoothHaloBlend"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-haloBlendRadius` — {"kind":"perfAuto","field":"haloBlendRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgesInHalo` — {"kind":"perfAuto","field":"edgesInHalo"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgeHaloRadius` — {"kind":"perfAuto","field":"edgeHaloRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-renderMode` — {"kind":"perfAuto","field":"renderMode"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateCoarseSteps` — {"kind":"perfAuto","field":"particulateCoarseSteps"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateCoarseScale` — {"kind":"perfAuto","field":"particulateCoarseScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulatePointsPerSeed` — {"kind":"perfAuto","field":"particulatePointsPerSeed"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateScatterRadius` — {"kind":"perfAuto","field":"particulateScatterRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateVolumeMix` — {"kind":"perfAuto","field":"particulateVolumeMix"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulatePointSize` — {"kind":"perfAuto","field":"particulatePointSize"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateMix` — {"kind":"perfAuto","field":"particulateMix"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateBrightness` — {"kind":"perfAuto","field":"particulateBrightness"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateShimmer` — {"kind":"perfAuto","field":"particulateShimmer"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateCloudNoise` — {"kind":"perfAuto","field":"particulateCloudNoise"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateCloudNoiseScale` — {"kind":"perfAuto","field":"particulateCloudNoiseScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateCloudAmplitude` — {"kind":"perfAuto","field":"particulateCloudAmplitude"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateSeedSubdivision` — {"kind":"perfAuto","field":"particulateSeedSubdivision"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-particulateSoftness` — {"kind":"perfAuto","field":"particulateSoftness"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgeSoftenBilateralStrength` — {"kind":"perfAuto","field":"edgeSoftenBilateralStrength"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgeSoftenBloomStrength` — {"kind":"perfAuto","field":"edgeSoftenBloomStrength"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgeSoftenBilateralRadius` — {"kind":"perfAuto","field":"edgeSoftenBilateralRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-edgeSoftenBloomRadius` — {"kind":"perfAuto","field":"edgeSoftenBloomRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-bloomStrength` — {"kind":"perfAuto","field":"bloomStrength"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-bloomRadius` — {"kind":"perfAuto","field":"bloomRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-bloomThreshold` — {"kind":"perfAuto","field":"bloomThreshold"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-vignetteIntensity` — {"kind":"perfAuto","field":"vignetteIntensity"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-vignetteInnerRadius` — {"kind":"perfAuto","field":"vignetteInnerRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-vignetteOuterRadius` — {"kind":"perfAuto","field":"vignetteOuterRadius"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-colorGradeBrightness` — {"kind":"perfAuto","field":"colorGradeBrightness"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-colorGradeContrast` — {"kind":"perfAuto","field":"colorGradeContrast"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-colorGradeSaturation` — {"kind":"perfAuto","field":"colorGradeSaturation"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-outlineStrength` — {"kind":"perfAuto","field":"outlineStrength"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-outlineMix` — {"kind":"perfAuto","field":"outlineMix"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-outlineThickness` — {"kind":"perfAuto","field":"outlineThickness"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-chromaticAberrationOffset` — {"kind":"perfAuto","field":"chromaticAberrationOffset"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-chromaticAberrationFalloff` — {"kind":"perfAuto","field":"chromaticAberrationFalloff"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-filmGrainStrength` — {"kind":"perfAuto","field":"filmGrainStrength"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-filmGrainSpeed` — {"kind":"perfAuto","field":"filmGrainSpeed"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-filmGrainSize` — {"kind":"perfAuto","field":"filmGrainSize"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-curlNoiseParticleCount` — {"kind":"perfAuto","field":"curlNoiseParticleCount"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-curlNoiseCurlScale` — {"kind":"perfAuto","field":"curlNoiseCurlScale"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-curlNoiseSpeed` — {"kind":"perfAuto","field":"curlNoiseSpeed"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-curlNoisePointSize` — {"kind":"perfAuto","field":"curlNoisePointSize"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `perf-curlNoiseOpacity` — {"kind":"perfAuto","field":"curlNoiseOpacity"}
+  - cinematic-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 1 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 3 path(s)
+- **[cross-base]** `junction-bubble` — {"kind":"junction","preset":"bubble"}
+  - cinematic-ddv: 0 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+  - minimal-ddv: 16 path(s); missing vs union: `frame.junctions.*.source.point.0`, `frame.junctions.*.target.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 8 path(s); missing vs union: `frame.junctions.*.target.intersection`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 65 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 0 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+  - standard-workshop-palette: 0 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+  - workshop-ddv: 2 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+- **[cross-base]** `junction-center` — {"kind":"junction","preset":"center"}
+  - cinematic-ddv: 26 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`, `frame.junctions.*.target.point.1`
+  - minimal-ddv: 37 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `nubs.shaded-sphere`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 37 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `frame.junctions.*.source.normal.0`
+  - standard-ddv: 26 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+  - standard-workshop-palette: 73 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+- **[cross-base]** `junction-surface` — {"kind":"junction","preset":"surface"}
+  - cinematic-ddv: 26 path(s); missing vs union: `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 0 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 0 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-workshop-palette: 0 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - standard-ddv: 26 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 67 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 28 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `junction-pull-back` — {"kind":"junction","preset":"pull-back"}
+  - cinematic-ddv: 26 path(s); missing vs union: `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 25 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `nubs.shaded-sphere`
+  - standard-ddv: 26 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 67 path(s); missing vs union: `nubs.glow-bead`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 28 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `junction-voronoi` — {"kind":"junction","preset":"voronoi"}
+  - cinematic-ddv: 38 path(s); missing vs union: `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `nubs.shaded-sphere`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 25 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `nubs.shaded-sphere`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`
+  - minimal-workshop-palette: 33 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `frame.junctions.*.source.normal.1`
+  - standard-ddv: 38 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 83 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 40 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`
+- **[cross-base]** `theme-light` — {"kind":"theme","value":"light"}
+  - cinematic-ddv: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-ddv: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - minimal-workshop-palette: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-ddv: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - standard-workshop-palette: 5 path(s); missing vs union: `sceneGraph.byType.Mesh`, `sceneGraph.total`
+  - workshop-ddv: 7 path(s)
+- **[cross-base]** `profile-minimal` — {"kind":"profile","to":"minimal"}
+  - cinematic-ddv: 122 path(s); missing vs union: `persona.enabled.render.context-navigator`, `nubs.shaded-sphere`, `socket.count`, `socket.visible`, `perf.debugPalette`, `perf.outlineMix`, `perf.outlineThickness`, `perf.staticArrowheadsAsFallback`
+  - minimal-ddv: 0 path(s); missing vs union: `dom.fpsHud`, `dom.hostClasses.0`, `dom.hostClasses.1`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`
+  - minimal-qnode-junction-alignment-test: 0 path(s); missing vs union: `dom.fpsHud`, `dom.hostClasses.0`, `dom.hostClasses.1`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `dom.fpsHud`, `dom.hostClasses.0`, `dom.hostClasses.1`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`
+  - standard-ddv: 86 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`
+  - standard-workshop-palette: 96 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `halo.count`, `halo.perNode.0`
+  - workshop-ddv: 108 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`, `persona.enabled.fx.connection-sweep`
+- **[cross-base]** `profile-standard` — {"kind":"profile","to":"standard"}
+  - cinematic-ddv: 51 path(s); missing vs union: `dom.fpsHud`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`
+  - minimal-ddv: 86 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`
+  - minimal-qnode-junction-alignment-test: 32 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`
+  - minimal-workshop-palette: 96 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`
+  - standard-ddv: 0 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`
+  - standard-workshop-palette: 1 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`
+  - workshop-ddv: 35 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`
+- **[cross-base]** `profile-workshop` — {"kind":"profile","to":"workshop"}
+  - cinematic-ddv: 56 path(s); missing vs union: `dom.fpsHud`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`
+  - minimal-ddv: 108 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.perNode.*.radius`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`
+  - minimal-qnode-junction-alignment-test: 51 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.perNode.*.radius`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`
+  - minimal-workshop-palette: 121 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.perNode.*.radius`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`
+  - standard-ddv: 33 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.perNode.*.radius`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.edgeGradientMix`
+  - standard-workshop-palette: 37 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.perNode.*.radius`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.edgeGradientMix`
+  - workshop-ddv: 2 path(s); missing vs union: `dom.hostClasses.0`, `dom.hostClasses.1`, `halo.perNode.*.radius`, `halo.radiusMul`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`
+- **[cross-base]** `profile-cinematic` — {"kind":"profile","to":"cinematic"}
+  - cinematic-ddv: 0 path(s); missing vs union: `dom.fpsHud`, `dom.hostClasses.0`, `dom.hostClasses.1`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`
+  - minimal-ddv: 122 path(s); missing vs union: `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`, `persona.enabled.render.context-navigator`, `nubs.shaded-sphere`, `socket.count`, `socket.visible`, `halo.perNode.*.radius`
+  - minimal-qnode-junction-alignment-test: 67 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`
+  - minimal-workshop-palette: 137 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `sceneGraph.byType.LineLoop`, `nubs.shaded-sphere`, `socket.count`, `socket.visible`
+  - standard-ddv: 51 path(s); missing vs union: `dom.fpsHud`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`
+  - standard-workshop-palette: 55 path(s); missing vs union: `dom.fpsHud`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`
+  - workshop-ddv: 56 path(s); missing vs union: `dom.fpsHud`, `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`
