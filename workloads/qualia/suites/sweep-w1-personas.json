@@ -1,0 +1,9 @@
+{
+  "name": "sweep-w1-personas",
+  "description": "Generated display-sweep suite (sweep w1-personas-r2) — 3 family test(s) x 51 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w1-personas-minimal-ddv",
+    "sweep-w1-personas-minimal-qnode-junction-alignment-test",
+    "sweep-w1-personas-minimal-workshop-palette"
+  ]
+}

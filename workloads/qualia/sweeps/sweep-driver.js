@@ -55,6 +55,63 @@
     if (!res.ok) throw new Error('debug-write failed: HTTP ' + res.status + ' for ' + filename);
   }
 
+  /**
+   * Persona-verification W1 — scene-graph section. Counts objects by
+   * three.js type + enabled pipeline passes. Catches personas that
+   * add/remove scene objects (junction-marker Points, force-field
+   * InstancedMesh, heat-map plane, stage lights) and pass-gated post
+   * effects — the atlas's structural blind spot. Reaches renderer
+   * internals deliberately (driver = instrumentation layer).
+   */
+  function sceneGraphSnapshot() {
+    try {
+      const r = w.__qualiaRenderer;
+      const sm = r && r.getSceneManager ? r.getSceneManager() : null;
+      if (!sm || !sm.scene) return { __err: 'no-scene' };
+      const byType = {};
+      let total = 0;
+      sm.scene.traverse((o) => { total++; byType[o.type] = (byType[o.type] || 0) + 1; });
+      let passes = null;
+      const ph = sm._pipelineHost;
+      if (ph && typeof ph.listEnabled === 'function') {
+        passes = ph.listEnabled().map((p) => p.id || p.name || 'pass').sort();
+      }
+      return { total, byType, enabledPasses: passes };
+    } catch (e) {
+      return { __err: String(e && e.message ? e.message : e) };
+    }
+  }
+
+  /**
+   * Persona-verification W1 — DOM section. Targeted, stable probes:
+   * the canvas-host classList (stub marker classes `qualia-<id>-active`
+   * + label-bloom's container class land there) and known persona-owned
+   * panels. Verified selectors (FpsHud.tsx, QverseNavigator.tsx,
+   * ContextJewelHud.tsx, stubs.ts, labelBloom.ts).
+   */
+  function domSnapshot() {
+    try {
+      const canvas = document.querySelector('canvas');
+      const hostClasses = canvas && canvas.parentElement
+        ? Array.prototype.slice.call(canvas.parentElement.classList).sort() : [];
+      const n = (q) => document.querySelectorAll(q).length;
+      return {
+        hostClasses,
+        fpsHud: n('.qualia-fps-hud'),
+        qverseNavigator: n('.qualia-qverse-navigator'),
+        jewelHud: n('.qualia-context-jewel-hud'),
+        simBadge: n('[class*="sim-status"], [class*="eager-extraction-badge"]'),
+        toolbarButtons: n('[class*="persona-toolbar"] button, [data-persona-button]'),
+        // styleCount deliberately EXCLUDED — injected stylesheets never
+        // retract (label-bloom keeps its <style> after dispose), making
+        // the count monotonic noise (w1-personas-r1: false positives on
+        // no-reader personas + 26 phantom leaks).
+      };
+    } catch (e) {
+      return { __err: String(e && e.message ? e.message : e) };
+    }
+  }
+
   function fingerprint() {
     const nodes = un(w.__canaryListNodes());
     const perNode = {};
@@ -82,6 +139,11 @@
       halo: un(w.__canaryGetHaloState()),
       nubs: un(w.__canaryGetNubVariantCounts()),
       frame: un(w.__canaryGetFrameGeometry({ includeJunctions: true })),
+      // W1 fingerprint v2 — closes the scene-graph + DOM blind spots.
+      // Reference runs older than fingerprint v2 will show these as
+      // all-new paths; re-baseline deliberately after adopting.
+      sceneGraph: sceneGraphSnapshot(),
+      dom: domSnapshot(),
       perNode,
       // DebugStats whitelist — memoryMB / programs / draw counters are
       // monotonic or frame-nondeterministic (verified ground rule 8).

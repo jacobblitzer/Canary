@@ -1,0 +1,6888 @@
+{
+  "sweepId": "w1-personas-r1",
+  "families": [
+    "minimal-ddv",
+    "minimal-qnode-junction-alignment-test",
+    "minimal-workshop-palette"
+  ],
+  "effects": [
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-compute-edge-routing",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.edge-routing",
+        "id": "compute.edge-routing"
+      },
+      "seq": 1,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.edge-routing",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-compute-edge-routing",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.edge-routing",
+        "id": "compute.edge-routing"
+      },
+      "seq": 1,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.edge-routing",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-compute-edge-routing",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.edge-routing",
+        "id": "compute.edge-routing"
+      },
+      "seq": 1,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.edge-routing",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-compute-layout",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.layout",
+        "id": "compute.layout"
+      },
+      "seq": 2,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.layout",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-compute-layout",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.layout",
+        "id": "compute.layout"
+      },
+      "seq": 2,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.layout",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-compute-layout",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.layout",
+        "id": "compute.layout"
+      },
+      "seq": 2,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.layout",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-compute-lod",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.lod",
+        "id": "compute.lod"
+      },
+      "seq": 3,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.lod",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-compute-lod",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.lod",
+        "id": "compute.lod"
+      },
+      "seq": 3,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.lod",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-compute-lod",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.lod",
+        "id": "compute.lod"
+      },
+      "seq": 3,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.lod",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-compute-metrics",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.metrics",
+        "id": "compute.metrics"
+      },
+      "seq": 4,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.metrics",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-compute-metrics",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.metrics",
+        "id": "compute.metrics"
+      },
+      "seq": 4,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.metrics",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-compute-metrics",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.metrics",
+        "id": "compute.metrics"
+      },
+      "seq": 4,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.metrics",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-compute-rag-eager-l3",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.rag.eager-l3",
+        "id": "compute.rag.eager-l3"
+      },
+      "seq": 5,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.rag.eager-l3",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-compute-rag-eager-l3",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.rag.eager-l3",
+        "id": "compute.rag.eager-l3"
+      },
+      "seq": 5,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.rag.eager-l3",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-compute-rag-eager-l3",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.rag.eager-l3",
+        "id": "compute.rag.eager-l3"
+      },
+      "seq": 5,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.rag.eager-l3",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-compute-simulation",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.simulation",
+        "id": "compute.simulation"
+      },
+      "seq": 6,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.simulation",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-compute-simulation",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.simulation",
+        "id": "compute.simulation"
+      },
+      "seq": 6,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.simulation",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-compute-simulation",
+      "mutation": {
+        "kind": "persona",
+        "persona": "compute.simulation",
+        "id": "compute.simulation"
+      },
+      "seq": 6,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.compute.simulation",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-api-tick-log",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.api-tick-log",
+        "id": "debug.api-tick-log"
+      },
+      "seq": 7,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.api-tick-log",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-debug-api-tick-log",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.api-tick-log",
+        "id": "debug.api-tick-log"
+      },
+      "seq": 7,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.api-tick-log",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-debug-api-tick-log",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.api-tick-log",
+        "id": "debug.api-tick-log"
+      },
+      "seq": 7,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.api-tick-log",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-fps-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.fps-hud",
+        "id": "debug.fps-hud"
+      },
+      "seq": 8,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.fps-hud",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.fpsHud",
+          "a": 0,
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-debug-fps-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.fps-hud",
+        "id": "debug.fps-hud"
+      },
+      "seq": 8,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.fps-hud",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.fpsHud",
+          "a": 0,
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-debug-fps-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.fps-hud",
+        "id": "debug.fps-hud"
+      },
+      "seq": 8,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.fps-hud",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.fpsHud",
+          "a": 0,
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-junction-markers",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.junction-markers",
+        "id": "debug.junction-markers"
+      },
+      "seq": 9,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.junction-markers",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-debug-junction-markers",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.junction-markers",
+        "id": "debug.junction-markers"
+      },
+      "seq": 9,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.junction-markers",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-debug-junction-markers",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.junction-markers",
+        "id": "debug.junction-markers"
+      },
+      "seq": 9,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.junction-markers",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "a": 1,
+          "b": 2
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-overlay",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.overlay",
+        "id": "debug.overlay"
+      },
+      "seq": 10,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.overlay",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-debug-overlay",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.overlay",
+        "id": "debug.overlay"
+      },
+      "seq": 10,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.overlay",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-debug-overlay",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.overlay",
+        "id": "debug.overlay"
+      },
+      "seq": 10,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.overlay",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 65
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-playground",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.playground",
+        "id": "debug.playground"
+      },
+      "seq": 11,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.playground",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-debug-playground",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.playground",
+        "id": "debug.playground"
+      },
+      "seq": 11,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.playground",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-debug-playground",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.playground",
+        "id": "debug.playground"
+      },
+      "seq": 11,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.playground",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 57
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-snapshot",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.snapshot",
+        "id": "debug.snapshot"
+      },
+      "seq": 12,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.snapshot",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-debug-snapshot",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.snapshot",
+        "id": "debug.snapshot"
+      },
+      "seq": 12,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.snapshot",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-debug-snapshot",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.snapshot",
+        "id": "debug.snapshot"
+      },
+      "seq": 12,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.snapshot",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-audio-reactive",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.audio-reactive",
+        "id": "fx.audio-reactive"
+      },
+      "seq": 13,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.audio-reactive",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-audio-reactive-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-audio-reactive",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.audio-reactive",
+        "id": "fx.audio-reactive"
+      },
+      "seq": 13,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.audio-reactive",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-audio-reactive-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-audio-reactive",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.audio-reactive",
+        "id": "fx.audio-reactive"
+      },
+      "seq": 13,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.audio-reactive",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-audio-reactive-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-chromatic-aberration",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration",
+        "id": "fx.chromatic-aberration"
+      },
+      "seq": 14,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.chromatic-aberration",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.chromatic-aberration"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-chromatic-aberration",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration",
+        "id": "fx.chromatic-aberration"
+      },
+      "seq": 14,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.chromatic-aberration",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.chromatic-aberration"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-chromatic-aberration",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration",
+        "id": "fx.chromatic-aberration"
+      },
+      "seq": 14,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.chromatic-aberration",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.chromatic-aberration"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-color-grade",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.color-grade",
+        "id": "fx.color-grade"
+      },
+      "seq": 15,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.color-grade",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.color-grade"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-color-grade",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.color-grade",
+        "id": "fx.color-grade"
+      },
+      "seq": 15,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.color-grade",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.color-grade"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-color-grade",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.color-grade",
+        "id": "fx.color-grade"
+      },
+      "seq": 15,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.color-grade",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.color-grade"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-connection-sweep",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.connection-sweep",
+        "id": "fx.connection-sweep"
+      },
+      "seq": 16,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.connection-sweep",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Group",
+          "a": 10,
+          "b": 11
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-connection-sweep",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.connection-sweep",
+        "id": "fx.connection-sweep"
+      },
+      "seq": 16,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.connection-sweep",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Group",
+          "a": 10,
+          "b": 11
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-connection-sweep",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.connection-sweep",
+        "id": "fx.connection-sweep"
+      },
+      "seq": 16,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.connection-sweep",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Group",
+          "a": 11,
+          "b": 12
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-constellations",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.constellations",
+        "id": "fx.constellations"
+      },
+      "seq": 17,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.constellations",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.LineSegments",
+          "a": 1,
+          "b": 2
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-constellations",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.constellations",
+        "id": "fx.constellations"
+      },
+      "seq": 17,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.constellations",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.LineSegments",
+          "a": 1,
+          "b": 2
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-constellations",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.constellations",
+        "id": "fx.constellations"
+      },
+      "seq": 17,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.constellations",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.LineSegments",
+          "a": 3,
+          "b": 4
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 47
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-cursor-trail",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.cursor-trail",
+        "id": "fx.cursor-trail"
+      },
+      "seq": 18,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.cursor-trail",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-cursor-trail-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-cursor-trail",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.cursor-trail",
+        "id": "fx.cursor-trail"
+      },
+      "seq": 18,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.cursor-trail",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-cursor-trail-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-cursor-trail",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.cursor-trail",
+        "id": "fx.cursor-trail"
+      },
+      "seq": 18,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.cursor-trail",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-cursor-trail-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-echo-trails",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.echo-trails",
+        "id": "fx.echo-trails"
+      },
+      "seq": 19,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.echo-trails",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-echo-trails",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.echo-trails",
+        "id": "fx.echo-trails"
+      },
+      "seq": 19,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.echo-trails",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-echo-trails",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.echo-trails",
+        "id": "fx.echo-trails"
+      },
+      "seq": 19,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.echo-trails",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 78
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 37
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-edge-flow",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.edge-flow",
+        "id": "fx.edge-flow"
+      },
+      "seq": 20,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.edge-flow",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-edge-flow",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.edge-flow",
+        "id": "fx.edge-flow"
+      },
+      "seq": 20,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.edge-flow",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-edge-flow",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.edge-flow",
+        "id": "fx.edge-flow"
+      },
+      "seq": 20,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.edge-flow",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "a": 1,
+          "b": 2
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 44
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-film-grain",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.film-grain",
+        "id": "fx.film-grain"
+      },
+      "seq": 21,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.film-grain",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.film-grain"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-film-grain",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.film-grain",
+        "id": "fx.film-grain"
+      },
+      "seq": 21,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.film-grain",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.film-grain"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 46
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-film-grain",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.film-grain",
+        "id": "fx.film-grain"
+      },
+      "seq": 21,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.film-grain",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.film-grain"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 41
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-force-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.force-field",
+        "id": "fx.force-field"
+      },
+      "seq": 22,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.force-field",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-force-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.force-field",
+        "id": "fx.force-field"
+      },
+      "seq": 22,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.force-field",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-force-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.force-field",
+        "id": "fx.force-field"
+      },
+      "seq": 22,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.force-field",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 78
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 41
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-group-atmosphere",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.group-atmosphere",
+        "id": "fx.group-atmosphere"
+      },
+      "seq": 23,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.group-atmosphere",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-group-atmosphere",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.group-atmosphere",
+        "id": "fx.group-atmosphere"
+      },
+      "seq": 23,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.group-atmosphere",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-group-atmosphere",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.group-atmosphere",
+        "id": "fx.group-atmosphere"
+      },
+      "seq": 23,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.group-atmosphere",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-heat-map",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.heat-map",
+        "id": "fx.heat-map"
+      },
+      "seq": 24,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.heat-map",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-heat-map",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.heat-map",
+        "id": "fx.heat-map"
+      },
+      "seq": 24,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.heat-map",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-heat-map",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.heat-map",
+        "id": "fx.heat-map"
+      },
+      "seq": 24,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.heat-map",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 78
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-hover-lift",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.hover-lift",
+        "id": "fx.hover-lift"
+      },
+      "seq": 25,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.hover-lift",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-hover-lift",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.hover-lift",
+        "id": "fx.hover-lift"
+      },
+      "seq": 25,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.hover-lift",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-hover-lift",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.hover-lift",
+        "id": "fx.hover-lift"
+      },
+      "seq": 25,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.hover-lift",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 78
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 46
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-label-bloom",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.label-bloom",
+        "id": "fx.label-bloom"
+      },
+      "seq": 26,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.label-bloom",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-label-bloom-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 51
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-label-bloom",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.label-bloom",
+        "id": "fx.label-bloom"
+      },
+      "seq": 26,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.label-bloom",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-label-bloom-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-label-bloom",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.label-bloom",
+        "id": "fx.label-bloom"
+      },
+      "seq": 26,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.label-bloom",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-label-bloom-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-magnetic-snap",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.magnetic-snap",
+        "id": "fx.magnetic-snap"
+      },
+      "seq": 27,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.magnetic-snap",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-magnetic-snap-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-magnetic-snap",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.magnetic-snap",
+        "id": "fx.magnetic-snap"
+      },
+      "seq": 27,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.magnetic-snap",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-magnetic-snap-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-magnetic-snap",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.magnetic-snap",
+        "id": "fx.magnetic-snap"
+      },
+      "seq": 27,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.magnetic-snap",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-magnetic-snap-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 35
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-node-pulse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.node-pulse",
+        "id": "fx.node-pulse"
+      },
+      "seq": 28,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.node-pulse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 132
+        },
+        {
+          "path": "sceneGraph.byType.Group",
+          "a": 10,
+          "b": 11
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 5,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-node-pulse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.node-pulse",
+        "id": "fx.node-pulse"
+      },
+      "seq": 28,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.node-pulse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 124
+        },
+        {
+          "path": "sceneGraph.byType.Group",
+          "a": 10,
+          "b": 11
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-node-pulse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.node-pulse",
+        "id": "fx.node-pulse"
+      },
+      "seq": 28,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.node-pulse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 134
+        },
+        {
+          "path": "sceneGraph.byType.Group",
+          "a": 11,
+          "b": 12
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 80
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 37
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-outline",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.outline",
+        "id": "fx.outline"
+      },
+      "seq": 29,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.outline",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.outline"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-outline",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.outline",
+        "id": "fx.outline"
+      },
+      "seq": 29,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.outline",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.outline"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-outline",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.outline",
+        "id": "fx.outline"
+      },
+      "seq": 29,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.outline",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.outline"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 43
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-post-process",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.post-process",
+        "id": "fx.post-process"
+      },
+      "seq": 30,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.post-process",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.post-process"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 133
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-post-process",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.post-process",
+        "id": "fx.post-process"
+      },
+      "seq": 30,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.post-process",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.post-process"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-post-process",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.post-process",
+        "id": "fx.post-process"
+      },
+      "seq": 30,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.post-process",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.post-process"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 116
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-selection-halo",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.selection-halo",
+        "id": "fx.selection-halo"
+      },
+      "seq": 31,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.selection-halo",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-selection-halo",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.selection-halo",
+        "id": "fx.selection-halo"
+      },
+      "seq": 31,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.selection-halo",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-selection-halo",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.selection-halo",
+        "id": "fx.selection-halo"
+      },
+      "seq": 31,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.selection-halo",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 78
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 32
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-sounds",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.sounds",
+        "id": "fx.sounds"
+      },
+      "seq": 32,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.sounds",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-sounds-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-sounds",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.sounds",
+        "id": "fx.sounds"
+      },
+      "seq": 32,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.sounds",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-sounds-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-sounds",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.sounds",
+        "id": "fx.sounds"
+      },
+      "seq": 32,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.sounds",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-sounds-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "seq": 33,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.time-lapse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-time-lapse-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "seq": 33,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.time-lapse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-time-lapse-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "seq": 33,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.time-lapse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-time-lapse-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 40
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-vignette",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.vignette",
+        "id": "fx.vignette"
+      },
+      "seq": 34,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.vignette",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.vignette"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 4,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-fx-vignette",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.vignette",
+        "id": "fx.vignette"
+      },
+      "seq": 34,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.vignette",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.vignette"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-fx-vignette",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.vignette",
+        "id": "fx.vignette"
+      },
+      "seq": 34,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.vignette",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.vignette"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 36
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-interaction-box-select",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.box-select",
+        "id": "interaction.box-select"
+      },
+      "seq": 35,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.box-select",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-interaction-box-select",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.box-select",
+        "id": "interaction.box-select"
+      },
+      "seq": 35,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.box-select",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-interaction-box-select",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.box-select",
+        "id": "interaction.box-select"
+      },
+      "seq": 35,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.box-select",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-interaction-drag",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.drag",
+        "id": "interaction.drag"
+      },
+      "seq": 36,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.drag",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-interaction-drag",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.drag",
+        "id": "interaction.drag"
+      },
+      "seq": 36,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.drag",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-interaction-drag",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.drag",
+        "id": "interaction.drag"
+      },
+      "seq": 36,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.drag",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 40
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-interaction-fly-to",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.fly-to",
+        "id": "interaction.fly-to"
+      },
+      "seq": 37,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.fly-to",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-interaction-fly-to",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.fly-to",
+        "id": "interaction.fly-to"
+      },
+      "seq": 37,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.fly-to",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-interaction-fly-to",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.fly-to",
+        "id": "interaction.fly-to"
+      },
+      "seq": 37,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.fly-to",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 42
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-interaction-hover",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.hover",
+        "id": "interaction.hover"
+      },
+      "seq": 38,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.hover",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-interaction-hover",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.hover",
+        "id": "interaction.hover"
+      },
+      "seq": 38,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.hover",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-interaction-hover",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.hover",
+        "id": "interaction.hover"
+      },
+      "seq": 38,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.interaction.hover",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 35
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-context-jewel-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-hud",
+        "id": "render.context-jewel-hud"
+      },
+      "seq": 39,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-jewel-hud",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.jewelHud",
+          "a": 1,
+          "b": 0
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 3,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-context-jewel-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-hud",
+        "id": "render.context-jewel-hud"
+      },
+      "seq": 39,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-jewel-hud",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.jewelHud",
+          "a": 1,
+          "b": 0
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-context-jewel-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-hud",
+        "id": "render.context-jewel-hud"
+      },
+      "seq": 39,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-jewel-hud",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.jewelHud",
+          "a": 1,
+          "b": 0
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 38
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-context-jewel-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-scene",
+        "id": "render.context-jewel-scene"
+      },
+      "seq": 40,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-jewel-scene",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-context-jewel-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-scene",
+        "id": "render.context-jewel-scene"
+      },
+      "seq": 40,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-jewel-scene",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-context-jewel-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-scene",
+        "id": "render.context-jewel-scene"
+      },
+      "seq": 40,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-jewel-scene",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-context-navigator",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-navigator",
+        "id": "render.context-navigator"
+      },
+      "seq": 41,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-navigator",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-context-navigator",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-navigator",
+        "id": "render.context-navigator"
+      },
+      "seq": 41,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-navigator",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 45
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-context-navigator",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-navigator",
+        "id": "render.context-navigator"
+      },
+      "seq": 41,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.context-navigator",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-cross-context-portal",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.cross-context.portal",
+        "id": "render.cross-context.portal"
+      },
+      "seq": 42,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.cross-context.portal",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-cross-context-portal",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.cross-context.portal",
+        "id": "render.cross-context.portal"
+      },
+      "seq": 42,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.cross-context.portal",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-cross-context-portal",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.cross-context.portal",
+        "id": "render.cross-context.portal"
+      },
+      "seq": 42,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.cross-context.portal",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-curl-noise-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.curl-noise-field",
+        "id": "render.curl-noise-field"
+      },
+      "seq": 43,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.curl-noise-field",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "render.curl-noise-field"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 6,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-curl-noise-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.curl-noise-field",
+        "id": "render.curl-noise-field"
+      },
+      "seq": 43,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.curl-noise-field",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "render.curl-noise-field"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 5,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-curl-noise-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.curl-noise-field",
+        "id": "render.curl-noise-field"
+      },
+      "seq": 43,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.curl-noise-field",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "a": 1,
+          "b": 2
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "render.curl-noise-field"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 5,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 51
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-edges",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.edges",
+        "id": "render.edges"
+      },
+      "seq": 44,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.edges",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-edges",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.edges",
+        "id": "render.edges"
+      },
+      "seq": 44,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.edges",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-edges",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.edges",
+        "id": "render.edges"
+      },
+      "seq": 44,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.edges",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 56
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "seq": 45,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.graph-scene",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 3,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "seq": 45,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.graph-scene",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "seq": 45,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.graph-scene",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 28
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-gumball",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.gumball",
+        "id": "render.gumball"
+      },
+      "seq": 46,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.gumball",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-gumball",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.gumball",
+        "id": "render.gumball"
+      },
+      "seq": 46,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.gumball",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-gumball",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.gumball",
+        "id": "render.gumball"
+      },
+      "seq": 46,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.gumball",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 41
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-labels",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.labels",
+        "id": "render.labels"
+      },
+      "seq": 47,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.labels",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-labels",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.labels",
+        "id": "render.labels"
+      },
+      "seq": 47,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.labels",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-labels",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.labels",
+        "id": "render.labels"
+      },
+      "seq": 47,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.labels",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 61
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-nodes",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.nodes",
+        "id": "render.nodes"
+      },
+      "seq": 48,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.nodes",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-nodes",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.nodes",
+        "id": "render.nodes"
+      },
+      "seq": 48,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.nodes",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 47
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-nodes",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.nodes",
+        "id": "render.nodes"
+      },
+      "seq": 48,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.nodes",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-penumbra-backdrop",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-backdrop",
+        "id": "render.penumbra-backdrop"
+      },
+      "seq": 49,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-backdrop",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-backdrop"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 5,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 415
+      },
+      "stableMutated": false,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-penumbra-backdrop",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-backdrop",
+        "id": "render.penumbra-backdrop"
+      },
+      "seq": 49,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-backdrop",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-backdrop"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 132
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-penumbra-backdrop",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-backdrop",
+        "id": "render.penumbra-backdrop"
+      },
+      "seq": 49,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-backdrop",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-backdrop"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 43
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "seq": 50,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-fallback",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-fallback"
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 5,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "seq": 50,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-fallback",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 122,
+          "b": 123
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 74,
+          "b": 75
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-fallback"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "seq": 50,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-fallback",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 77,
+          "b": 78
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-fallback"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 39
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-qverse-graph-nav",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav",
+        "id": "render.qverse-graph-nav"
+      },
+      "seq": 51,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.qverse-graph-nav",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "leakPaths": [
+        {
+          "path": "dom.styleCount",
+          "a": 4,
+          "b": 5
+        }
+      ],
+      "effectCount": 2,
+      "leakCount": 1,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-qnode-junction-alignment-test",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      },
+      "stateId": "persona-render-qverse-graph-nav",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav",
+        "id": "render.qverse-graph-nav"
+      },
+      "seq": 51,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.qverse-graph-nav",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 47
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-workshop-palette",
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      },
+      "stateId": "persona-render-qverse-graph-nav",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav",
+        "id": "render.qverse-graph-nav"
+      },
+      "seq": 51,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.qverse-graph-nav",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    }
+  ],
+  "errors": [],
+  "skipped": [],
+  "inconsistencies": [
+    {
+      "stateId": "persona-fx-label-bloom",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.label-bloom",
+        "id": "fx.label-bloom"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-magnetic-snap",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.magnetic-snap",
+        "id": "fx.magnetic-snap"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-node-pulse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.node-pulse",
+        "id": "fx.node-pulse"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 5,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 4,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 4,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-outline",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.outline",
+        "id": "fx.outline"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-post-process",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.post-process",
+        "id": "fx.post-process"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-selection-halo",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.selection-halo",
+        "id": "fx.selection-halo"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-sounds",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.sounds",
+        "id": "fx.sounds"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-vignette",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.vignette",
+        "id": "fx.vignette"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 3,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-interaction-box-select",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.box-select",
+        "id": "interaction.box-select"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-interaction-drag",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.drag",
+        "id": "interaction.drag"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-interaction-fly-to",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.fly-to",
+        "id": "interaction.fly-to"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-interaction-hover",
+      "mutation": {
+        "kind": "persona",
+        "persona": "interaction.hover",
+        "id": "interaction.hover"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-context-jewel-hud",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-hud",
+        "id": "render.context-jewel-hud"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 3,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 2,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 2,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-context-jewel-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-jewel-scene",
+        "id": "render.context-jewel-scene"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-context-navigator",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.context-navigator",
+        "id": "render.context-navigator"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-cross-context-portal",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.cross-context.portal",
+        "id": "render.cross-context.portal"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-curl-noise-field",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.curl-noise-field",
+        "id": "render.curl-noise-field"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 6,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 5,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 5,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-edges",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.edges",
+        "id": "render.edges"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 3,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 2,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 2,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-gumball",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.gumball",
+        "id": "render.gumball"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-labels",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.labels",
+        "id": "render.labels"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-nodes",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.nodes",
+        "id": "render.nodes"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-penumbra-backdrop",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-backdrop",
+        "id": "render.penumbra-backdrop"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 5,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 4,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 2,
+          "missing": [
+            "dom.styleCount",
+            "sceneGraph.byType.Mesh",
+            "sceneGraph.total"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 5,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 4,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 4,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-qverse-graph-nav",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav",
+        "id": "render.qverse-graph-nav"
+      },
+      "crossBase": false,
+      "perFamily": [
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": []
+        },
+        {
+          "family": "minimal-qnode-junction-alignment-test",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        },
+        {
+          "family": "minimal-workshop-palette",
+          "count": 1,
+          "missing": [
+            "dom.styleCount"
+          ]
+        }
+      ]
+    }
+  ],
+  "interactions": [],
+  "planarFindings": []
+}

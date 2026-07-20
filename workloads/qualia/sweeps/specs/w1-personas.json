@@ -1,0 +1,286 @@
+{
+  "name": "w1-personas",
+  "chunkSize": 5,
+  "disablePersonas": [
+    "compute.layout"
+  ],
+  "families": [
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      }
+    },
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      }
+    },
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "persona-compute-edge-routing",
+      "kind": "persona",
+      "persona": "compute.edge-routing"
+    },
+    {
+      "id": "persona-compute-layout",
+      "kind": "persona",
+      "persona": "compute.layout"
+    },
+    {
+      "id": "persona-compute-lod",
+      "kind": "persona",
+      "persona": "compute.lod"
+    },
+    {
+      "id": "persona-compute-metrics",
+      "kind": "persona",
+      "persona": "compute.metrics"
+    },
+    {
+      "id": "persona-compute-rag-eager-l3",
+      "kind": "persona",
+      "persona": "compute.rag.eager-l3"
+    },
+    {
+      "id": "persona-compute-simulation",
+      "kind": "persona",
+      "persona": "compute.simulation"
+    },
+    {
+      "id": "persona-debug-api-tick-log",
+      "kind": "persona",
+      "persona": "debug.api-tick-log"
+    },
+    {
+      "id": "persona-debug-fps-hud",
+      "kind": "persona",
+      "persona": "debug.fps-hud"
+    },
+    {
+      "id": "persona-debug-junction-markers",
+      "kind": "persona",
+      "persona": "debug.junction-markers"
+    },
+    {
+      "id": "persona-debug-overlay",
+      "kind": "persona",
+      "persona": "debug.overlay"
+    },
+    {
+      "id": "persona-debug-playground",
+      "kind": "persona",
+      "persona": "debug.playground"
+    },
+    {
+      "id": "persona-debug-snapshot",
+      "kind": "persona",
+      "persona": "debug.snapshot"
+    },
+    {
+      "id": "persona-fx-audio-reactive",
+      "kind": "persona",
+      "persona": "fx.audio-reactive"
+    },
+    {
+      "id": "persona-fx-chromatic-aberration",
+      "kind": "persona",
+      "persona": "fx.chromatic-aberration"
+    },
+    {
+      "id": "persona-fx-color-grade",
+      "kind": "persona",
+      "persona": "fx.color-grade"
+    },
+    {
+      "id": "persona-fx-connection-sweep",
+      "kind": "persona",
+      "persona": "fx.connection-sweep"
+    },
+    {
+      "id": "persona-fx-constellations",
+      "kind": "persona",
+      "persona": "fx.constellations"
+    },
+    {
+      "id": "persona-fx-cursor-trail",
+      "kind": "persona",
+      "persona": "fx.cursor-trail"
+    },
+    {
+      "id": "persona-fx-echo-trails",
+      "kind": "persona",
+      "persona": "fx.echo-trails"
+    },
+    {
+      "id": "persona-fx-edge-flow",
+      "kind": "persona",
+      "persona": "fx.edge-flow"
+    },
+    {
+      "id": "persona-fx-film-grain",
+      "kind": "persona",
+      "persona": "fx.film-grain"
+    },
+    {
+      "id": "persona-fx-force-field",
+      "kind": "persona",
+      "persona": "fx.force-field"
+    },
+    {
+      "id": "persona-fx-group-atmosphere",
+      "kind": "persona",
+      "persona": "fx.group-atmosphere"
+    },
+    {
+      "id": "persona-fx-heat-map",
+      "kind": "persona",
+      "persona": "fx.heat-map"
+    },
+    {
+      "id": "persona-fx-hover-lift",
+      "kind": "persona",
+      "persona": "fx.hover-lift"
+    },
+    {
+      "id": "persona-fx-label-bloom",
+      "kind": "persona",
+      "persona": "fx.label-bloom"
+    },
+    {
+      "id": "persona-fx-magnetic-snap",
+      "kind": "persona",
+      "persona": "fx.magnetic-snap"
+    },
+    {
+      "id": "persona-fx-node-pulse",
+      "kind": "persona",
+      "persona": "fx.node-pulse"
+    },
+    {
+      "id": "persona-fx-outline",
+      "kind": "persona",
+      "persona": "fx.outline"
+    },
+    {
+      "id": "persona-fx-post-process",
+      "kind": "persona",
+      "persona": "fx.post-process"
+    },
+    {
+      "id": "persona-fx-selection-halo",
+      "kind": "persona",
+      "persona": "fx.selection-halo"
+    },
+    {
+      "id": "persona-fx-sounds",
+      "kind": "persona",
+      "persona": "fx.sounds"
+    },
+    {
+      "id": "persona-fx-time-lapse",
+      "kind": "persona",
+      "persona": "fx.time-lapse"
+    },
+    {
+      "id": "persona-fx-vignette",
+      "kind": "persona",
+      "persona": "fx.vignette"
+    },
+    {
+      "id": "persona-interaction-box-select",
+      "kind": "persona",
+      "persona": "interaction.box-select"
+    },
+    {
+      "id": "persona-interaction-drag",
+      "kind": "persona",
+      "persona": "interaction.drag"
+    },
+    {
+      "id": "persona-interaction-fly-to",
+      "kind": "persona",
+      "persona": "interaction.fly-to"
+    },
+    {
+      "id": "persona-interaction-hover",
+      "kind": "persona",
+      "persona": "interaction.hover"
+    },
+    {
+      "id": "persona-render-context-jewel-hud",
+      "kind": "persona",
+      "persona": "render.context-jewel-hud"
+    },
+    {
+      "id": "persona-render-context-jewel-scene",
+      "kind": "persona",
+      "persona": "render.context-jewel-scene"
+    },
+    {
+      "id": "persona-render-context-navigator",
+      "kind": "persona",
+      "persona": "render.context-navigator"
+    },
+    {
+      "id": "persona-render-cross-context-portal",
+      "kind": "persona",
+      "persona": "render.cross-context.portal"
+    },
+    {
+      "id": "persona-render-curl-noise-field",
+      "kind": "persona",
+      "persona": "render.curl-noise-field"
+    },
+    {
+      "id": "persona-render-edges",
+      "kind": "persona",
+      "persona": "render.edges"
+    },
+    {
+      "id": "persona-render-graph-scene",
+      "kind": "persona",
+      "persona": "render.graph-scene"
+    },
+    {
+      "id": "persona-render-gumball",
+      "kind": "persona",
+      "persona": "render.gumball"
+    },
+    {
+      "id": "persona-render-labels",
+      "kind": "persona",
+      "persona": "render.labels"
+    },
+    {
+      "id": "persona-render-nodes",
+      "kind": "persona",
+      "persona": "render.nodes"
+    },
+    {
+      "id": "persona-render-penumbra-backdrop",
+      "kind": "persona",
+      "persona": "render.penumbra-backdrop"
+    },
+    {
+      "id": "persona-render-penumbra-fallback",
+      "kind": "persona",
+      "persona": "render.penumbra-fallback"
+    },
+    {
+      "id": "persona-render-qverse-graph-nav",
+      "kind": "persona",
+      "persona": "render.qverse-graph-nav"
+    }
+  ]
+}
