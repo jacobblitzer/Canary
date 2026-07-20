@@ -1,0 +1,963 @@
+# Display-sweep findings — w2-atlas-r3
+
+States: 1106 · skipped: 28 · errors: 0 · no-ops: 5 · leaks: 742 · settle failures: 0 · unstable reads: 0 · reset-verify failures: 0 · cross-family inconsistencies: 21 (21 cross-base) · control violations: 2
+
+## No-op mutations (dead knobs OR probe gaps) (5)
+
+- `profile-minimal` — {"kind":"profile","to":"minimal"} changed nothing observable from base `minimal`
+- `profile-minimal` — {"kind":"profile","to":"minimal"} changed nothing observable from base `minimal`
+- `profile-standard` — {"kind":"profile","to":"standard"} changed nothing observable from base `standard`
+- `profile-workshop` — {"kind":"profile","to":"workshop"} changed nothing observable from base `workshop`
+- `profile-cinematic` — {"kind":"profile","to":"cinematic"} changed nothing observable from base `cinematic`
+
+## State leaks (reverted fingerprint != family base) (742)
+
+- `persona-fx-laser-rat` — 3 path(s) leaked, e.g. `persona.enabled.fx.film-grain`, `persona.enabled.render.penumbra-backdrop`, `viewer.emissiveIntensity`
+- `persona-fx-laser-rat` — 2 path(s) leaked, e.g. `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `persona-fx-laser-rat` — 2 path(s) leaked, e.g. `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `persona-fx-laser-rat` — 2 path(s) leaked, e.g. `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `persona-fx-laser-rat` — 2 path(s) leaked, e.g. `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `persona-fx-laser-rat` — 2 path(s) leaked, e.g. `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `persona-fx-laser-rat` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-pencil-toon` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-debug-layer-colors` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-connection-sweep` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-force-field` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-group-atmosphere` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-echo-trails` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-constellations` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-cursor-trail` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-time-lapse` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-audio-reactive` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-label-bloom` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-magnetic-snap` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-heat-map` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-crystal-material` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `persona-fx-sounds` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonNodesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonEdgesEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-halosEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelsVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxDistance` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMinFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelMaxFontPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-labelOffsetPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardThresholdScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardSizeScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-cardOffsetScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-lodMasterScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-gridVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeShape` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeWidthPx` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientRampId` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeGradientMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeHaloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketColor` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketRadiusMul` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-socketOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-staticArrowheadsAsFallback` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nubVariant` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-debugPalette` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-paperVisible` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraRenderInterval` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-penumbraResolutionScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloRadiusMultiplier` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-skeletonBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giEnabled` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-giStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-nodeOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-smoothHaloBlend` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-haloBlendRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgesInHalo` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeHaloRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-renderMode` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseSteps` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCoarseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointsPerSeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateScatterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateVolumeMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulatePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateShimmer` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoise` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudNoiseScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateCloudAmplitude` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSeedSubdivision` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-particulateSoftness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBilateralRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-edgeSoftenBloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-bloomThreshold` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteIntensity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteInnerRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-vignetteOuterRadius` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeBrightness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeContrast` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-colorGradeSaturation` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineMix` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-outlineThickness` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationOffset` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-chromaticAberrationFalloff` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainStrength` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-filmGrainSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseParticleCount` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseCurlScale` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseSpeed` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoisePointSize` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `perf-curlNoiseOpacity` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-bubble` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-center` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-surface` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-pull-back` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+- `junction-voronoi` — 1 path(s) leaked, e.g. `viewer.emissiveIntensity`
+
+## Settle failures (0)
+
+_none_
+
+## Unstable double-reads (0)
+
+_none_
+
+## Reset-verify failures (profile/touched not clean) (0)
+
+_none_
+
+## Driver errors (0)
+
+_none_
+
+## Control violations (profile-to-self must be 0 effect / 0 leak) (2)
+
+- `minimal-workshop-palette` — effect 1, leak 0
+- `standard-workshop-palette` — effect 1, leak 0
+
+## Skipped mutations (no derivable alternate — extend the alternates map to cover) (4)
+
+- `perf-labelPlacement` — 7 family(ies)
+- `perf-edgeDashPatternId` — 7 family(ies)
+- `perf-edgeDashSpeed` — 7 family(ies)
+- `perf-curlNoisePalette` — 7 family(ies)
+
+## Pair interactions (0 with emergent/suppressed paths)
+
+_none — every pair matched the union of its singles_
+
+## Cross-family inconsistencies (21; cross-base first)
+
+Same mutation, different effect signature across families. Cross-BASE rows (same fixture,
+different base profile) are the primary "display dynamics inconsistent across personas" signal;
+cross-fixture-only rows may just reflect content differences.
+
+- **[cross-base]** `persona-render-cross-context-qnode` — {"kind":"persona","persona":"render.cross-context.qnode","id":"render.cross-context.qnode"}
+  - cinematic-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`
+  - minimal-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `nubs.shaded-sphere`
+  - minimal-workshop-palette: 4 path(s); missing vs union: `nubs.shaded-sphere`
+  - standard-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`
+  - standard-workshop-palette: 4 path(s); missing vs union: `socket.count`
+  - workshop-ddv: 1 path(s); missing vs union: `perNode.*.rendered`, `socket.count`, `stats.nodeCount`, `nubs.shaded-sphere`
+- **[cross-base]** `persona-render-junction-bubble` — {"kind":"persona","persona":"render.junction.bubble","id":"render.junction.bubble"}
+  - cinematic-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+  - minimal-ddv: 17 path(s); missing vs union: `frame.junctions.*.source.point.0`, `frame.junctions.*.target.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`
+  - minimal-qnode-junction-alignment-test: 10 path(s); missing vs union: `frame.junctions.*.target.intersection`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 67 path(s)
+  - standard-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+  - standard-workshop-palette: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+  - workshop-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `persona.enabled.render.junction.surface`
+- **[cross-base]** `persona-render-junction-center` — {"kind":"persona","persona":"render.junction.center","id":"render.junction.center"}
+  - cinematic-ddv: 28 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`, `frame.junctions.*.target.point.1`
+  - minimal-ddv: 39 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 39 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - standard-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+  - standard-workshop-palette: 75 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `persona.enabled.render.junction.surface`
+  - workshop-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+- **[cross-base]** `persona-render-junction-surface` — {"kind":"persona","persona":"render.junction.surface","id":"render.junction.surface"}
+  - cinematic-ddv: 28 path(s); missing vs union: `nubs.shaded-sphere`
+  - minimal-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - standard-ddv: 28 path(s); missing vs union: `nubs.glow-bead`
+  - standard-workshop-palette: 69 path(s); missing vs union: `nubs.glow-bead`
+  - workshop-ddv: 28 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `persona-render-junction-pull-back` — {"kind":"persona","persona":"render.junction.pull-back","id":"render.junction.pull-back"}
+  - cinematic-ddv: 28 path(s); missing vs union: `persona.enabled.render.junction.surface`, `nubs.shaded-sphere`
+  - minimal-ddv: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 27 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - standard-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `persona.enabled.render.junction.surface`
+  - standard-workshop-palette: 69 path(s); missing vs union: `nubs.glow-bead`, `persona.enabled.render.junction.surface`
+  - workshop-ddv: 28 path(s); missing vs union: `nubs.glow-bead`, `persona.enabled.render.junction.surface`
+- **[cross-base]** `persona-render-junction-voronoi` — {"kind":"persona","persona":"render.junction.voronoi","id":"render.junction.voronoi"}
+  - cinematic-ddv: 40 path(s); missing vs union: `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`, `nubs.shaded-sphere`
+  - minimal-ddv: 27 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`
+  - minimal-workshop-palette: 35 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `persona.enabled.render.junction.bubble`
+  - standard-ddv: 40 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`
+  - standard-workshop-palette: 85 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`
+  - workshop-ddv: 40 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `persona.enabled.render.junction.surface`
+- **[cross-base]** `persona-fx-laser-rat` — {"kind":"persona","persona":"fx.laser-rat","id":"fx.laser-rat"}
+  - cinematic-ddv: 23 path(s); missing vs union: `persona.enabled.fx.edge-flow`, `persona.enabled.fx.post-process`
+  - minimal-ddv: 14 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.nub.color`, `frame.junctions.*.target.nub.color`, `perf.edgeShape`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`
+  - minimal-qnode-junction-alignment-test: 14 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.nub.color`, `frame.junctions.*.target.nub.color`, `perf.edgeShape`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`
+  - minimal-workshop-palette: 14 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.nub.color`, `frame.junctions.*.target.nub.color`, `perf.edgeShape`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`
+  - standard-ddv: 22 path(s); missing vs union: `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`
+  - standard-workshop-palette: 30 path(s); missing vs union: `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`
+  - workshop-ddv: 20 path(s); missing vs union: `perf.nodeOpacity`, `persona.enabled.fx.film-grain`, `persona.enabled.fx.vignette`, `persona.enabled.render.penumbra-backdrop`, `persona.enabled.fx.post-process`
+- **[cross-base]** `persona-fx-debug-layer-colors` — {"kind":"persona","persona":"fx.debug-layer-colors","id":"fx.debug-layer-colors"}
+  - cinematic-ddv: 3 path(s); missing vs union: `halo.variant`, `halo.visible`, `socket.visible`
+  - minimal-ddv: 5 path(s); missing vs union: `socket.visible`
+  - minimal-qnode-junction-alignment-test: 5 path(s); missing vs union: `socket.visible`
+  - minimal-workshop-palette: 5 path(s); missing vs union: `socket.visible`
+  - standard-ddv: 6 path(s)
+  - standard-workshop-palette: 6 path(s)
+  - workshop-ddv: 2 path(s); missing vs union: `socket.variant`, `halo.variant`, `halo.visible`, `socket.visible`
+- **[cross-base]** `perf-nodeHaloVariant` — {"kind":"perfAuto","field":"nodeHaloVariant"}
+  - cinematic-ddv: 3 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.visible`, `halo.perNode.4`
+  - minimal-ddv: 10 path(s); missing vs union: `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`
+  - minimal-qnode-junction-alignment-test: 7 path(s); missing vs union: `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`
+  - minimal-workshop-palette: 13 path(s)
+  - standard-ddv: 10 path(s); missing vs union: `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`
+  - standard-workshop-palette: 13 path(s)
+  - workshop-ddv: 3 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.visible`, `halo.perNode.4`
+- **[cross-base]** `perf-nodeHaloRadiusMul` — {"kind":"perfAuto","field":"nodeHaloRadiusMul"}
+  - cinematic-ddv: 7 path(s)
+  - minimal-ddv: 2 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`
+  - standard-ddv: 2 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`
+  - standard-workshop-palette: 2 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`
+  - workshop-ddv: 7 path(s)
+- **[cross-base]** `perf-socketVariant` — {"kind":"perfAuto","field":"socketVariant"}
+  - cinematic-ddv: 3 path(s); missing vs union: `socket.count`, `socket.visible`
+  - minimal-ddv: 3 path(s); missing vs union: `socket.count`, `socket.visible`
+  - minimal-qnode-junction-alignment-test: 3 path(s); missing vs union: `socket.count`, `socket.visible`
+  - minimal-workshop-palette: 3 path(s); missing vs union: `socket.count`, `socket.visible`
+  - standard-ddv: 5 path(s)
+  - standard-workshop-palette: 5 path(s)
+  - workshop-ddv: 3 path(s); missing vs union: `socket.count`, `socket.visible`
+- **[cross-base]** `perf-nubVariant` — {"kind":"perfAuto","field":"nubVariant"}
+  - cinematic-ddv: 4 path(s); missing vs union: `nubs.ink-dot`
+  - minimal-ddv: 2 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `nubs.ink-dot`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `nubs.ink-dot`
+  - minimal-workshop-palette: 2 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `nubs.ink-dot`
+  - standard-ddv: 4 path(s); missing vs union: `nubs.glow-bead`
+  - standard-workshop-palette: 4 path(s); missing vs union: `nubs.glow-bead`
+  - workshop-ddv: 4 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `junction-bubble` — {"kind":"junction","preset":"bubble"}
+  - cinematic-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+  - minimal-ddv: 16 path(s); missing vs union: `frame.junctions.*.source.point.0`, `frame.junctions.*.target.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`
+  - minimal-qnode-junction-alignment-test: 9 path(s); missing vs union: `frame.junctions.*.target.intersection`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 66 path(s)
+  - standard-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+  - standard-workshop-palette: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+  - workshop-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `perf.activeJunction`, `frame.junctions.*.source.point.0`
+- **[cross-base]** `junction-center` — {"kind":"junction","preset":"center"}
+  - cinematic-ddv: 27 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`, `frame.junctions.*.target.point.1`
+  - minimal-ddv: 38 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `nubs.shaded-sphere`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 38 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `frame.junctions.*.source.normal.0`
+  - standard-ddv: 27 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+  - standard-workshop-palette: 74 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`
+  - workshop-ddv: 27 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.normal.2`
+- **[cross-base]** `junction-surface` — {"kind":"junction","preset":"surface"}
+  - cinematic-ddv: 27 path(s); missing vs union: `nubs.shaded-sphere`
+  - minimal-ddv: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - standard-ddv: 27 path(s); missing vs union: `nubs.glow-bead`
+  - standard-workshop-palette: 68 path(s); missing vs union: `nubs.glow-bead`
+  - workshop-ddv: 27 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `junction-pull-back` — {"kind":"junction","preset":"pull-back"}
+  - cinematic-ddv: 27 path(s); missing vs union: `nubs.shaded-sphere`
+  - minimal-ddv: 2 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`
+  - minimal-qnode-junction-alignment-test: 4 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `frame.junctions.*.target.point.2`
+  - minimal-workshop-palette: 26 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `nubs.shaded-sphere`
+  - standard-ddv: 27 path(s); missing vs union: `nubs.glow-bead`
+  - standard-workshop-palette: 68 path(s); missing vs union: `nubs.glow-bead`
+  - workshop-ddv: 27 path(s); missing vs union: `nubs.glow-bead`
+- **[cross-base]** `junction-voronoi` — {"kind":"junction","preset":"voronoi"}
+  - cinematic-ddv: 39 path(s); missing vs union: `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`, `nubs.shaded-sphere`
+  - minimal-ddv: 26 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `nubs.shaded-sphere`
+  - minimal-qnode-junction-alignment-test: 2 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`
+  - minimal-workshop-palette: 34 path(s); missing vs union: `frame.junctions.*.source.intersection`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.nub`, `frame.junctions.*.target.nubSilhouette`, `nubs.glow-bead`, `frame.junctions.*.source.normal.1`
+  - standard-ddv: 39 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`
+  - standard-workshop-palette: 84 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`
+  - workshop-ddv: 39 path(s); missing vs union: `nubs.glow-bead`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.point.1`, `frame.junctions.*.target.normal.1`, `frame.junctions.*.target.point.1`
+- **[cross-base]** `profile-minimal` — {"kind":"profile","to":"minimal"}
+  - cinematic-ddv: 107 path(s); missing vs union: `persona.enabled.render.context-navigator`, `nubs.shaded-sphere`, `socket.count`, `socket.visible`, `perf.debugPalette`, `perf.outlineMix`, `perf.outlineThickness`, `perf.staticArrowheadsAsFallback`
+  - minimal-ddv: 0 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - minimal-qnode-junction-alignment-test: 0 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - minimal-workshop-palette: 1 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - standard-ddv: 82 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.variant`, `halo.visible`
+  - standard-workshop-palette: 95 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`
+  - workshop-ddv: 104 path(s); missing vs union: `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`, `persona.enabled.fx.connection-sweep`, `persona.enabled.fx.edge-flow`, `persona.enabled.fx.film-grain`
+- **[cross-base]** `profile-standard` — {"kind":"profile","to":"standard"}
+  - cinematic-ddv: 38 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - minimal-ddv: 82 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.variant`, `halo.visible`
+  - minimal-qnode-junction-alignment-test: 31 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.variant`, `halo.visible`
+  - minimal-workshop-palette: 95 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.variant`, `halo.visible`
+  - standard-ddv: 0 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.variant`, `halo.visible`
+  - standard-workshop-palette: 1 path(s); missing vs union: `halo.count`, `halo.perNode.0`, `halo.perNode.1`, `halo.perNode.2`, `halo.perNode.3`, `halo.radiusMul`, `halo.variant`, `halo.visible`
+  - workshop-ddv: 33 path(s); missing vs union: `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.nubVariant`
+- **[cross-base]** `profile-workshop` — {"kind":"profile","to":"workshop"}
+  - cinematic-ddv: 47 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - minimal-ddv: 104 path(s); missing vs union: `halo.perNode.*.radius`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`, `persona.enabled.fx.connection-sweep`, `persona.enabled.fx.edge-flow`
+  - minimal-qnode-junction-alignment-test: 50 path(s); missing vs union: `halo.perNode.*.radius`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`, `persona.enabled.fx.connection-sweep`, `persona.enabled.fx.edge-flow`
+  - minimal-workshop-palette: 120 path(s); missing vs union: `halo.perNode.*.radius`, `nubs.glow-bead`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`, `perf.socketOpacity`, `persona.enabled.fx.connection-sweep`, `persona.enabled.fx.edge-flow`
+  - standard-ddv: 33 path(s); missing vs union: `halo.perNode.*.radius`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`
+  - standard-workshop-palette: 37 path(s); missing vs union: `halo.perNode.*.radius`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.edgeGradientMix`, `perf.edgeGradientRampId`, `perf.filmGrainStrength`
+  - workshop-ddv: 0 path(s); missing vs union: `halo.perNode.*.radius`, `halo.radiusMul`, `nubs.glow-bead`, `nubs.shaded-sphere`, `perf.bloomStrength`, `perf.bloomThreshold`, `perf.debugPalette`, `perf.edgeGradientMix`
+- **[cross-base]** `profile-cinematic` — {"kind":"profile","to":"cinematic"}
+  - cinematic-ddv: 0 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - minimal-ddv: 107 path(s); missing vs union: `halo.perNode.4`, `halo.perNode.5`, `halo.perNode.6`, `persona.enabled.render.context-navigator`, `nubs.shaded-sphere`, `socket.count`, `socket.visible`, `halo.perNode.*.radius`
+  - minimal-qnode-junction-alignment-test: 53 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `frame.junctions.*.source.point.2`, `frame.junctions.*.target.intersection`, `frame.junctions.*.target.normal.0`, `frame.junctions.*.target.normal.1`
+  - minimal-workshop-palette: 123 path(s); missing vs union: `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.point.1`, `nubs.shaded-sphere`, `socket.count`, `socket.visible`, `halo.perNode.*.radius`
+  - standard-ddv: 38 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - standard-workshop-palette: 42 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`
+  - workshop-ddv: 47 path(s); missing vs union: `edgeShape`, `frame.junctions.*.source.intersection`, `frame.junctions.*.source.normal.0`, `frame.junctions.*.source.normal.1`, `frame.junctions.*.source.normal.2`, `frame.junctions.*.source.nub`, `frame.junctions.*.source.nubSilhouette`, `frame.junctions.*.source.point.0`

@@ -1,0 +1,6 @@
+{
+  "sweepId": "w2-atlas-r3",
+  "dossier": "C:/Repos/Qualia/spec/DISPLAY-BEHAVIOR.md",
+  "stamped": "2026-07-19",
+  "note": "Post-fix-wave atlas (Qualia 7e01865 in effect). This is measured CURRENT reality including known-open bug 0058 (laser-rat emissive residue - its leak rows are baseline; the 0058 fix will surface as welcome drift). Update this pointer ONLY when the dossier is deliberately regenerated; drift-diff.mjs measures every candidate against it."
+}
