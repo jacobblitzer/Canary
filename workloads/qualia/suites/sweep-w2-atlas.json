@@ -1,6 +1,6 @@
 {
   "name": "sweep-w2-atlas",
-  "description": "Generated display-sweep suite (sweep w2-atlas-r3) — 7 family test(s) x 162 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "description": "Generated display-sweep suite (sweep w2-atlas-r4) — 7 family test(s) x 162 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
   "tests": [
     "sweep-w2-atlas-minimal-ddv",
     "sweep-w2-atlas-standard-ddv",

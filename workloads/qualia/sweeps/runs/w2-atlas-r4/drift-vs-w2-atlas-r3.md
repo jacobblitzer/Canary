@@ -1,0 +1,1396 @@
+# Drift report — w2-atlas-r4 vs reference w2-atlas-r3
+
+**DRIFT DETECTED: 1372 change(s).** The dossier (Qualia/spec/DISPLAY-BEHAVIOR.md) no longer matches measured behavior — fix the regression or deliberately update the dossier + REFERENCE-RUN.json.
+
+## Activity flips (loudest drift — wiring appeared/died) (92)
+
+- `workshop-ddv|persona-fx-debug-layer-colors` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-connection-sweep` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-force-field` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-group-atmosphere` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-echo-trails` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-constellations` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-cursor-trail` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-time-lapse` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-audio-reactive` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-label-bloom` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-magnetic-snap` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-heat-map` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-ddv|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-qnode-junction-alignment-test|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `minimal-workshop-palette|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-ddv|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `standard-workshop-palette|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `workshop-ddv|persona-fx-sounds` — ACTIVE → **INERT** (2 → 1 paths)
+- `cinematic-ddv|junction-bubble` — ACTIVE → **INERT** (1 → 0 paths)
+- `standard-ddv|junction-bubble` — ACTIVE → **INERT** (1 → 0 paths)
+- `standard-workshop-palette|junction-bubble` — ACTIVE → **INERT** (1 → 0 paths)
+- `workshop-ddv|junction-bubble` — ACTIVE → **INERT** (1 → 0 paths)
+- `minimal-ddv|junction-surface` — ACTIVE → **INERT** (1 → 0 paths)
+- `minimal-qnode-junction-alignment-test|junction-surface` — ACTIVE → **INERT** (1 → 0 paths)
+- `minimal-workshop-palette|junction-surface` — ACTIVE → **INERT** (1 → 0 paths)
+
+## Error flips (0)
+
+_none_
+
+## Leak changes (0055-class regressions) (650)
+
+- `cinematic-ddv|persona-fx-laser-rat` — appeared: —; disappeared: `persona.enabled.fx.film-grain`, `persona.enabled.render.penumbra-backdrop`, `viewer.emissiveIntensity`
+- `minimal-ddv|persona-fx-laser-rat` — appeared: —; disappeared: `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|persona-fx-laser-rat` — appeared: —; disappeared: `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `minimal-workshop-palette|persona-fx-laser-rat` — appeared: —; disappeared: `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `standard-ddv|persona-fx-laser-rat` — appeared: —; disappeared: `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `standard-workshop-palette|persona-fx-laser-rat` — appeared: —; disappeared: `persona.enabled.fx.post-process`, `viewer.emissiveIntensity`
+- `workshop-ddv|persona-fx-laser-rat` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|persona-fx-pencil-toon` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|persona-fx-debug-layer-colors` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|persona-fx-debug-layer-colors` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|persona-fx-debug-layer-colors` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|persona-fx-debug-layer-colors` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|persona-fx-debug-layer-colors` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|persona-fx-debug-layer-colors` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|persona-fx-crystal-material` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-penumbraEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-skeletonNodesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-skeletonEdgesEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-halosEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nodesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgesVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-labelsVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-labelMaxDistance` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-labelMinFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-labelMaxFontPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-labelOffsetPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-cardThresholdScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-cardSizeScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-cardOffsetScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-lodMasterScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-gridVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeShape` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeWidthPx` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeGradientRampId` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeGradientMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nodeHaloVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nodeHaloColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nodeHaloRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nodeHaloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-socketVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-socketColor` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-socketRadiusMul` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-socketOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-staticArrowheadsAsFallback` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nubVariant` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-debugPalette` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-paperVisible` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-penumbraRenderInterval` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-penumbraResolutionScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-haloRadiusMultiplier` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-skeletonBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-giEnabled` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-giStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-nodeOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-haloOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-smoothHaloBlend` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-haloBlendRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgesInHalo` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeHaloRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-renderMode` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateCoarseSteps` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateCoarseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulatePointsPerSeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateScatterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateVolumeMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulatePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateShimmer` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateCloudNoise` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateCloudNoiseScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateCloudAmplitude` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateSeedSubdivision` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-particulateSoftness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeSoftenBilateralStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeSoftenBloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeSoftenBilateralRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-edgeSoftenBloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-bloomStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-bloomRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-bloomThreshold` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-vignetteIntensity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-vignetteInnerRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-vignetteOuterRadius` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-colorGradeBrightness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-colorGradeContrast` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-colorGradeSaturation` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-outlineStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-outlineMix` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-outlineThickness` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-chromaticAberrationOffset` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-chromaticAberrationFalloff` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-filmGrainStrength` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-filmGrainSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-filmGrainSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-curlNoiseParticleCount` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-curlNoiseCurlScale` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-curlNoiseSpeed` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-curlNoisePointSize` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|perf-curlNoiseOpacity` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|junction-bubble` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|junction-bubble` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|junction-bubble` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|junction-center` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|junction-surface` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|junction-surface` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|junction-surface` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|junction-surface` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|junction-pull-back` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `cinematic-ddv|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-ddv|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-qnode-junction-alignment-test|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `minimal-workshop-palette|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-ddv|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `standard-workshop-palette|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+- `workshop-ddv|junction-voronoi` — appeared: —; disappeared: `viewer.emissiveIntensity`
+
+## Effect-signature changes (same activity, different paths) (630)
+
+- `minimal-ddv|persona-render-junction-bubble` — +[] −[frame.junctions.*.source.intersection]
+- `cinematic-ddv|persona-fx-debug-layer-colors` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|persona-fx-debug-layer-colors` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|persona-fx-debug-layer-colors` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|persona-fx-debug-layer-colors` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|persona-fx-debug-layer-colors` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|persona-fx-debug-layer-colors` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-penumbraEnabled` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-skeletonNodesEnabled` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-skeletonEdgesEnabled` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-halosEnabled` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nodesVisible` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgesVisible` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-labelsVisible` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-labelMaxDistance` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-labelMinFontPx` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-labelMaxFontPx` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-labelOffsetPx` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-cardThresholdScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-cardSizeScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-cardOffsetScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-lodMasterScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-gridVisible` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeShape` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeWidthPx` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeGradientRampId` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeGradientMix` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nodeHaloVariant` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nodeHaloColor` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nodeHaloRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nodeHaloOpacity` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-socketVariant` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-socketColor` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-socketRadiusMul` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-socketOpacity` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-staticArrowheadsAsFallback` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nubVariant` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-debugPalette` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-paperVisible` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-penumbraRenderInterval` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-penumbraResolutionScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-haloRadiusMultiplier` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-skeletonBlend` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-giEnabled` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-giStrength` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-nodeOpacity` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-haloOpacity` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-smoothHaloBlend` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-haloBlendRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgesInHalo` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeHaloRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-renderMode` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateCoarseSteps` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateCoarseScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulatePointsPerSeed` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateScatterRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateVolumeMix` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulatePointSize` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateMix` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateBrightness` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateShimmer` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateCloudNoise` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateCloudNoiseScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateCloudAmplitude` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateSeedSubdivision` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-particulateSoftness` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeSoftenBilateralStrength` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeSoftenBloomStrength` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeSoftenBilateralRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-edgeSoftenBloomRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-bloomStrength` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-bloomRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-bloomThreshold` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-vignetteIntensity` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-vignetteInnerRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-vignetteOuterRadius` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-colorGradeBrightness` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-colorGradeContrast` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-colorGradeSaturation` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-outlineStrength` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-outlineMix` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-outlineThickness` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-chromaticAberrationOffset` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-chromaticAberrationFalloff` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-filmGrainStrength` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-filmGrainSpeed` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-filmGrainSize` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-curlNoiseParticleCount` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-curlNoiseCurlScale` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-curlNoiseSpeed` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-curlNoisePointSize` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|perf-curlNoiseOpacity` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|junction-bubble` — +[] −[frame.junctions.*.source.intersection, viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|junction-bubble` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|junction-bubble` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|junction-center` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|junction-center` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|junction-center` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|junction-center` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|junction-center` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|junction-center` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|junction-center` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|junction-surface` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|junction-surface` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|junction-surface` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|junction-surface` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|junction-pull-back` — +[] −[viewer.emissiveIntensity]
+- `cinematic-ddv|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+- `minimal-ddv|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+- `minimal-qnode-junction-alignment-test|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+- `minimal-workshop-palette|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+- `standard-ddv|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+- `standard-workshop-palette|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+- `workshop-ddv|junction-voronoi` — +[] −[viewer.emissiveIntensity]
+
+## INFO: states only in reference (removed levers?) (0)
+
+_none_
+
+## INFO: states only in candidate (new levers — extend the dossier) (0)
+
+_none_
