@@ -1,0 +1,75 @@
+{
+  "sweepId": "w2-armed-r1",
+  "generatedAt": "2026-07-20T03:03:07.853Z",
+  "spec": {
+    "name": "w2-armed",
+    "chunkSize": 5,
+    "disablePersonas": [
+      "compute.layout"
+    ],
+    "families": [
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "demo",
+          "slug": "qnode-junction-alignment-test"
+        },
+        "enterContext": "ctx-active"
+      },
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "demo",
+          "slug": "implicit-geometry"
+        },
+        "enterContext": "ctx-fundamentals"
+      },
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "demo",
+          "slug": "workshop-palette"
+        },
+        "enterContext": "ctx-showcase"
+      }
+    ],
+    "mutations": [
+      {
+        "id": "persona-fx-group-atmosphere",
+        "kind": "persona",
+        "persona": "fx.group-atmosphere"
+      },
+      {
+        "id": "persona-render-context-jewel-scene",
+        "kind": "persona",
+        "persona": "render.context-jewel-scene"
+      },
+      {
+        "id": "persona-render-context-navigator",
+        "kind": "persona",
+        "persona": "render.context-navigator"
+      },
+      {
+        "id": "persona-render-cross-context-portal",
+        "kind": "persona",
+        "persona": "render.cross-context.portal"
+      },
+      {
+        "id": "persona-render-qverse-graph-nav",
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav"
+      }
+    ]
+  },
+  "suiteName": "sweep-w2-armed",
+  "testNames": [
+    "sweep-w2-armed-minimal-qnode-junction-alignment-test-in-ctx-active",
+    "sweep-w2-armed-minimal-implicit-geometry-in-ctx-fundamentals",
+    "sweep-w2-armed-minimal-workshop-palette-in-ctx-showcase"
+  ],
+  "expectedObs": {
+    "perFamily": 6,
+    "families": 3
+  },
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w2-armed-r1"
+}

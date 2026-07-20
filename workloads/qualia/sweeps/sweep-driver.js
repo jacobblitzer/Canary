@@ -275,6 +275,16 @@
     async init(ctx) {
       S.ctx = ctx;
       await loadFixture(ctx.fixture);
+      if (ctx.enterContext) {
+        // W2 content-arming — enter the named context and wait out the
+        // CS-A.5 transition tween before pinning anything. Context is
+        // out-of-resolver state: resets do NOT leave it, so the whole
+        // family runs inside this context.
+        const sw = un(w.__canarySwitchContext(ctx.enterContext));
+        if (sw && sw.__err) throw new Error('enterContext failed: ' + sw.__err);
+        await settle(8000);
+        await new Promise((r) => setTimeout(r, 900));
+      }
       w.__canaryClearTouchedPerfFields();
       w.__canaryApplyProfile(ctx.base);
       applyDisables();

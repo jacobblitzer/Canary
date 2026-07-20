@@ -56,3 +56,17 @@ dev server's `POST /api/debug/write`). Reports:
   Minimal-class frozen states (uTime shader animations never settle).
 - Sweeps run on FRESH loads only (the Canary boot guarantees this) —
   after HMR module swaps, hook closures can reference a detached renderer.
+- **Perspective-locked contexts cannot be camera-pinned** (the lock
+  re-asserts the pose every frame) — `enterContext` families inside a
+  locked/facet context show identical camera/frame deltas on EVERY
+  state (w2-armed-r1 confound). For such families trust only the
+  camera-independent channels (sceneGraph, dom, perf, persona, fades).
+- `dom.styleCount` is deliberately not fingerprinted — injected
+  stylesheets never retract, making the count monotonic noise.
+- **Bucket-materialization ratchet**: a mutation that forces a new
+  atom-shape bucket (render.nodes-class mounts under some bases)
+  permanently adds one empty Mesh — NodeAtomLayer's bucket cache never
+  evicts. sceneGraph leak rows showing +1 Mesh/+1 total from such a
+  state onward are CACHE GROWTH, not state leaks (deterministic per
+  run, so drift-diff between same-fingerprint runs is unaffected —
+  w2-atlas-r5).

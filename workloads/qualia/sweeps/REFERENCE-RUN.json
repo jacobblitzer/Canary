@@ -1,6 +1,7 @@
 {
-  "sweepId": "w2-atlas-r4",
+  "sweepId": "w2-atlas-r5",
   "dossier": "C:/Repos/Qualia/spec/DISPLAY-BEHAVIOR.md",
   "stamped": "2026-07-19",
-  "note": "Post-0058-fix atlas: 1,106 states, 0 leaks, 0 errors - the first fully clean reference. Update this pointer ONLY when the dossier is deliberately regenerated; drift-diff.mjs measures every candidate against it."
+  "fingerprint": "v2 (sceneGraph + dom sections)",
+  "note": "Fingerprint-v2 atlas (post-0058 fixes): the clean reference INCLUDING the scene-graph + dom channels. Update this pointer ONLY when the dossier is deliberately regenerated; drift-diff.mjs measures every candidate against it."
 }

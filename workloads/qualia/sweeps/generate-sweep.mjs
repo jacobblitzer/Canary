@@ -95,11 +95,16 @@ const families = spec.families
   ?? spec.bases.map((base) => ({ base, fixture: spec.fixture }));
 
 const testNames = [];
-for (const { base, fixture } of families) {
-  const family = `${base}-${fixture.kind === 'demo' ? fixture.slug : fixture.kind}`;
+for (const { base, fixture, enterContext } of families) {
+  const family = `${base}-${fixture.kind === 'demo' ? fixture.slug : fixture.kind}`
+    + (enterContext ? `-in-${enterContext.replace(/[^a-zA-Z0-9_-]/g, '_')}` : '');
   const testName = `sweep-${spec.name}-${family}`;
   const ctx = {
     sweepId, family, base, fixture, sweepName: spec.name,
+    // W2 content-arming: family init switches into this context after
+    // fixture load (content-gated personas need an entered qverse /
+    // nested contexts / cross-context edges in view).
+    enterContext: enterContext ?? null,
     alternates: spec.alternates ?? {},
     disablePersonas: spec.disablePersonas ?? [],
   };

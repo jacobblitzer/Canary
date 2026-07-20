@@ -1,0 +1,17 @@
+{
+  "name": "w2-armed",
+  "chunkSize": 5,
+  "disablePersonas": ["compute.layout"],
+  "families": [
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "qnode-junction-alignment-test" }, "enterContext": "ctx-active" },
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "implicit-geometry" }, "enterContext": "ctx-fundamentals" },
+    { "base": "minimal", "fixture": { "kind": "demo", "slug": "workshop-palette" }, "enterContext": "ctx-showcase" }
+  ],
+  "mutations": [
+    { "id": "persona-fx-group-atmosphere", "kind": "persona", "persona": "fx.group-atmosphere" },
+    { "id": "persona-render-context-jewel-scene", "kind": "persona", "persona": "render.context-jewel-scene" },
+    { "id": "persona-render-context-navigator", "kind": "persona", "persona": "render.context-navigator" },
+    { "id": "persona-render-cross-context-portal", "kind": "persona", "persona": "render.cross-context.portal" },
+    { "id": "persona-render-qverse-graph-nav", "kind": "persona", "persona": "render.qverse-graph-nav" }
+  ]
+}

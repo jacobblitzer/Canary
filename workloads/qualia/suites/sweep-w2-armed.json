@@ -1,0 +1,9 @@
+{
+  "name": "sweep-w2-armed",
+  "description": "Generated display-sweep suite (sweep w2-armed-r1) — 3 family test(s) x 5 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w2-armed-minimal-qnode-junction-alignment-test-in-ctx-active",
+    "sweep-w2-armed-minimal-implicit-geometry-in-ctx-fundamentals",
+    "sweep-w2-armed-minimal-workshop-palette-in-ctx-showcase"
+  ]
+}
