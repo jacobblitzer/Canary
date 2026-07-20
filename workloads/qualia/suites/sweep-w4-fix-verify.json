@@ -1,0 +1,8 @@
+{
+  "name": "sweep-w4-fix-verify",
+  "description": "Generated display-sweep suite (sweep w4-fix-verify-r1) — 2 family test(s) x 9 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-w4-fix-verify-minimal-ddv",
+    "sweep-w4-fix-verify-workshop-ddv"
+  ]
+}

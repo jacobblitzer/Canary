@@ -1,0 +1,23 @@
+{
+  "name": "w4-fix-verify",
+  "chunkSize": 4,
+  "disablePersonas": ["compute.layout"],
+  "alternates": {
+    "nodeHaloVariant": ["aurora-vent", "soft-glow", "none"]
+  },
+  "families": [
+    { "base": "minimal", "fixture": { "kind": "ddv" } },
+    { "base": "workshop", "fixture": { "kind": "ddv" } }
+  ],
+  "mutations": [
+    { "id": "theme-light", "kind": "theme", "value": "light" },
+    { "id": "profile-workshop-roundtrip", "kind": "profile", "to": "workshop" },
+    { "id": "profile-cinematic-roundtrip", "kind": "profile", "to": "cinematic" },
+    { "id": "persona-pencil-toon", "kind": "persona", "persona": "fx.pencil-toon" },
+    { "id": "persona-paper", "kind": "persona", "persona": "render.paper" },
+    { "id": "perf-halo-aurora", "kind": "perf", "field": "nodeHaloVariant", "value": "aurora-vent" }
+  ],
+  "pairs": [
+    { "id": "paper-x-workshop", "a": { "kind": "persona", "persona": "render.paper" }, "b": { "kind": "profile", "to": "workshop" } }
+  ]
+}

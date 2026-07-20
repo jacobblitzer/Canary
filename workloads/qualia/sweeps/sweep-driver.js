@@ -179,8 +179,15 @@
         return un(w.__canarySetPerfSettings({ activeJunction: m.preset }, { markTouched: false }));
       case 'theme':
         return un(w.__canarySetTheme(m.value));
-      case 'profile':
-        return un(w.__canaryApplyProfile(m.to));
+      case 'profile': {
+        const res = un(w.__canaryApplyProfile(m.to));
+        // Keep family-level disables in force through profile mutations —
+        // otherwise a profile that re-enables a disabled persona (e.g.
+        // compute.layout under workshop) reads as a false control
+        // violation against the family base (w4-fix-verify-r1 lesson).
+        applyDisables();
+        return res;
+      }
       case 'planar':
         return un(w.__canarySetPlanarSettings(m.value));
       default:
