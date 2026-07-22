@@ -487,3 +487,62 @@ Desktop reference run: `sweeps/REFERENCE-RUN-DESKTOP.json`
 Cross-platform baseline fact: all 64 shared states measured IDENTICAL
 to the web reference (w2-atlas-r6) — future web↔desktop divergence is a
 finding, not noise.
+
+## 2026-07-22 — platform-foundation P2: TauriFsAdapter v2 test surface
+
+Two additive Qualia hooks (canary-hooks.ts) + two new parity tests for
+the packaged exe's fs-adapter v2 (ADR 0042). Backed by new Rust
+commands fs_read_file / fs_write_file / fs_stat_file / fs_watch_start /
+fs_watch_stop (the v1 read_text_file / save_text_file / stat_file
+commands are UNCHANGED; the adapter no longer routes through them).
+
+- `__canaryFsRoundtrip(relPath, base64, opts?)` → `{ writtenHash?,
+  readBackBase64?, conflict? }`. Writes bytes through the BOUND
+  FsAdapter and reads them straight back. `opts.expectedHash` routes
+  through optimistic concurrency: a mismatch returns
+  `{ conflict: { diskHash, expectedHash } }` (the adapter's
+  ConcurrencyError, surfaced as a typed result, NOT an error). Used by
+  pdesk-binary-roundtrip to prove byte-identical binary I/O + that the
+  Rust sha-256 matches an offline known-answer (and crypto.subtle when
+  the runtime exposes it — it does on tauri.localhost).
+- `__canaryGetNodePointers(nodeId)` → `[{ id, kind, path?, url?,
+  status, lastKnownHash? }]`. The ONLY programmatic exposure of a
+  pointer's status + hash (`__canaryGetNodeSnapshot` omits pointers;
+  `__canaryGetPointerSection` is a DOM read without the hash). Used by
+  pdesk-hash-staleness.
+
+New parity tests (suites/platform-parity.json, now 8 tests — they run
+LAST since each rebinds the adapter):
+- `pdesk-hash-staleness` — bind a vault, add a file pointer, refresh
+  (live + lastKnownHash populated — the v2 hashing the P0 existence-only
+  path lacked), mutate the file out-of-band, refresh again → stale.
+- `pdesk-binary-roundtrip` — non-UTF8 bytes [0xff,0x00,0x80,0x0a]
+  round-trip byte-identical; Rust sha-256 == offline known-answer
+  (2f2e272d…) == crypto.subtle; wrong expectedHash → typed conflict
+  (diskHash == real), matched expectedHash → write succeeds.
+
+The pdesk-bind-save-roundtrip tripwire flipped from `hash !== false`
+(v1) to `hash !== true` + `watch/nativeWatch true` (v2). fs changes do
+NOT move display fingerprints — desktop mini-atlas drift-diff stays
+exit 0 vs REFERENCE-RUN-DESKTOP.
+
+### 2026-07-22 addendum — Fable review wave over P2
+
+- `__canaryFsRoundtrip` conflict results now ALSO carry
+  `readBackBase64` (best-effort) so tests can assert a conflict left
+  disk content untouched (pins check-before-write ordering).
+- `pdesk-binary-roundtrip` strengthened: conflict + matched steps use
+  DIFFERENT byte payloads with their own offline known-answer hashes
+  (same-bytes steps were blind to write-then-check reordering and
+  compare-against-incoming bugs).
+- `pdesk-hash-staleness` pins EXACT sha-256 values for both refresh
+  states (8132d02a…, 9981f3d4…) — a digest/format drift in
+  fs_stat_file now fails loudly instead of silently invalidating every
+  prebaked lastKnownHash. Note: the second pin also freezes
+  GRAPH_REFRESH's write-through-on-stale semantics.
+- Behind the hooks (Qualia side): conflict recovery no longer loops
+  ("Keep mine" passes the fresh disk hash; deleted-out-of-band files
+  conflict-resolve with recreate), backslash path traversal closed in
+  TauriFsAdapter.resolve, fs_read/write/stat commands are async (off
+  the UI thread), Windows renames map to delete+create, the dev
+  middleware enforces expectedHash '' like every other adapter.

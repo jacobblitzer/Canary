@@ -1,0 +1,231 @@
+{
+  "sweepId": "desktop-mini-p2-1054",
+  "generatedAt": "2026-07-22T17:54:20.160Z",
+  "spec": {
+    "name": "desktop-mini",
+    "chunkSize": 6,
+    "disablePersonas": [
+      "compute.layout"
+    ],
+    "alternates": {
+      "nodeHaloVariant": [
+        "aurora-vent",
+        "soft-glow",
+        "none"
+      ],
+      "socketVariant": [
+        "solder",
+        "bracket",
+        "none"
+      ],
+      "nubVariant": [
+        "shaded-sphere",
+        "ink-dot",
+        "none"
+      ],
+      "edgeShape": [
+        "catmull-rom",
+        "straight"
+      ],
+      "edgeGradientRampId": [
+        "bioluminescent"
+      ],
+      "renderMode": [
+        "particulate",
+        "surface"
+      ]
+    },
+    "families": [
+      {
+        "base": "minimal",
+        "fixture": {
+          "kind": "ddv"
+        }
+      },
+      {
+        "base": "cinematic",
+        "fixture": {
+          "kind": "ddv"
+        }
+      }
+    ],
+    "mutations": [
+      {
+        "id": "perf-penumbraEnabled",
+        "kind": "perfAuto",
+        "field": "penumbraEnabled"
+      },
+      {
+        "id": "perf-skeletonNodesEnabled",
+        "kind": "perfAuto",
+        "field": "skeletonNodesEnabled"
+      },
+      {
+        "id": "perf-skeletonEdgesEnabled",
+        "kind": "perfAuto",
+        "field": "skeletonEdgesEnabled"
+      },
+      {
+        "id": "perf-halosEnabled",
+        "kind": "perfAuto",
+        "field": "halosEnabled"
+      },
+      {
+        "id": "perf-nodesVisible",
+        "kind": "perfAuto",
+        "field": "nodesVisible"
+      },
+      {
+        "id": "perf-edgesVisible",
+        "kind": "perfAuto",
+        "field": "edgesVisible"
+      },
+      {
+        "id": "perf-labelsVisible",
+        "kind": "perfAuto",
+        "field": "labelsVisible"
+      },
+      {
+        "id": "perf-labelMaxDistance",
+        "kind": "perfAuto",
+        "field": "labelMaxDistance"
+      },
+      {
+        "id": "perf-labelMinFontPx",
+        "kind": "perfAuto",
+        "field": "labelMinFontPx"
+      },
+      {
+        "id": "perf-labelMaxFontPx",
+        "kind": "perfAuto",
+        "field": "labelMaxFontPx"
+      },
+      {
+        "id": "perf-labelOffsetPx",
+        "kind": "perfAuto",
+        "field": "labelOffsetPx"
+      },
+      {
+        "id": "perf-labelPlacement",
+        "kind": "perfAuto",
+        "field": "labelPlacement"
+      },
+      {
+        "id": "perf-cardThresholdScale",
+        "kind": "perfAuto",
+        "field": "cardThresholdScale"
+      },
+      {
+        "id": "perf-cardSizeScale",
+        "kind": "perfAuto",
+        "field": "cardSizeScale"
+      },
+      {
+        "id": "perf-cardOffsetScale",
+        "kind": "perfAuto",
+        "field": "cardOffsetScale"
+      },
+      {
+        "id": "perf-lodMasterScale",
+        "kind": "perfAuto",
+        "field": "lodMasterScale"
+      },
+      {
+        "id": "perf-gridVisible",
+        "kind": "perfAuto",
+        "field": "gridVisible"
+      },
+      {
+        "id": "perf-edgeShape",
+        "kind": "perfAuto",
+        "field": "edgeShape"
+      },
+      {
+        "id": "perf-edgeWidthPx",
+        "kind": "perfAuto",
+        "field": "edgeWidthPx"
+      },
+      {
+        "id": "perf-edgeGradientRampId",
+        "kind": "perfAuto",
+        "field": "edgeGradientRampId"
+      },
+      {
+        "id": "persona-render-graph-scene",
+        "kind": "persona",
+        "persona": "render.graph-scene"
+      },
+      {
+        "id": "persona-fx-chromatic-aberration",
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration"
+      },
+      {
+        "id": "persona-render-cross-context-portal",
+        "kind": "persona",
+        "persona": "render.cross-context.portal"
+      },
+      {
+        "id": "persona-render-penumbra-fallback",
+        "kind": "persona",
+        "persona": "render.penumbra-fallback"
+      },
+      {
+        "id": "persona-render-qverse-graph-nav",
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav"
+      },
+      {
+        "id": "persona-debug-playground",
+        "kind": "persona",
+        "persona": "debug.playground"
+      },
+      {
+        "id": "persona-render-junction-center",
+        "kind": "persona",
+        "persona": "render.junction.center"
+      },
+      {
+        "id": "persona-debug-junction-markers",
+        "kind": "persona",
+        "persona": "debug.junction-markers"
+      },
+      {
+        "id": "persona-fx-hover-lift",
+        "kind": "persona",
+        "persona": "fx.hover-lift"
+      },
+      {
+        "id": "persona-fx-pencil-toon",
+        "kind": "persona",
+        "persona": "fx.pencil-toon"
+      },
+      {
+        "id": "persona-fx-group-atmosphere",
+        "kind": "persona",
+        "persona": "fx.group-atmosphere"
+      },
+      {
+        "id": "persona-fx-time-lapse",
+        "kind": "persona",
+        "persona": "fx.time-lapse"
+      },
+      {
+        "id": "persona-fx-heat-map",
+        "kind": "persona",
+        "persona": "fx.heat-map"
+      }
+    ]
+  },
+  "suiteName": "sweep-desktop-mini",
+  "testNames": [
+    "sweep-desktop-mini-minimal-ddv",
+    "sweep-desktop-mini-cinematic-ddv"
+  ],
+  "workload": "qualia-desktop",
+  "expectedObs": {
+    "perFamily": 34,
+    "families": 2
+  },
+  "observationsDir": "C:/Repos/Qualia/debug-logs/desktop-mini-p2-1054"
+}

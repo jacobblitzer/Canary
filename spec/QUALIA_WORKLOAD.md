@@ -76,13 +76,22 @@ Canary/workloads/qualia-desktop/   # platform-foundation P1 (2026-07-22)
 │                          true — boots the PACKAGED exe (TauriAppManager:
 │                          isolated WebView2 profile, CDP :9224,
 │                          tauri.localhost attach) instead of Vite+Chrome
-├── tests/               # pdesk-* parity smoke tests, copied
-│                          display-inv-* contracts, generated
+├── tests/               # pdesk-* parity smoke tests (8 as of P2 —
+│                          incl. hash-staleness + binary-roundtrip),
+│                          copied display-inv-* contracts, generated
 │                          sweep-desktop-mini-* families
-├── suites/              # platform-parity, display-invariants,
+├── suites/              # platform-parity (8 tests), display-invariants,
 │                          sweep-desktop-mini
 └── results/             # separate baseline tree (keys off workload name)
 ```
+
+P2 (2026-07-22) added TauriFsAdapter-v2 coverage to platform-parity:
+`pdesk-hash-staleness` (live→stale on out-of-band change) +
+`pdesk-binary-roundtrip` (byte-identical binary I/O, Rust sha-256 ==
+known-answer == crypto.subtle, optimistic concurrency), via two new
+Qualia hooks `__canaryFsRoundtrip` + `__canaryGetNodePointers` (see
+AGENT_NOTES.md). The `pdesk-bind-save-roundtrip` capability tripwire
+flipped to assert `hash === true`.
 
 ## Cross-repo file map
 
