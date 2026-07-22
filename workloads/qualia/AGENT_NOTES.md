@@ -408,3 +408,35 @@ Aurora on the DDV graph the scene's halo layer reports variant
 (verified at the raw layer: `geometry.instanceCount === 0`, mesh in
 scene). Tracked as Qualia bug 0054; the W2 sweep owns the systematic
 chase.
+
+## 2026-07-22 — platform-foundation P0 (packaged-runtime honesty)
+
+Hook-behavior updates (additive, no renames/removals):
+
+- `__canaryLoadMinimalSample()` gained a third fallback: when neither
+  the dev FS middleware nor the repo static serve answers (the packaged
+  exe at `tauri.localhost`), it loads the dist-shipped copy at
+  `/examples/demos/minimal.qualia`. Guards: the dev `/api/fs/read`
+  route requires an `application/json` answer; the static routes sniff
+  the BODY (`{` = graph, `<` = SPA fallback). Content-type cannot
+  discriminate static content on tauri.localhost — the packaged asset
+  protocol labels `.qualia` files `text/html`, identical to the SPA
+  fallback that answers dead routes with `200 + index.html`.
+- `__canaryLoadDemo(slug)` now returns an honest
+  `err('… SPA fallback — not in dist')` instead of feeding index.html
+  to `importGraph` when a demo isn't in the bundle (same body sniff).
+- App startup parity: with no dev middleware, Qualia now boots the
+  dist-shipped sample (`/examples/sample.qualia`, 63-node atlas
+  workspace) instead of the inline toy graph — packaged-exe tests can
+  rely on the same startup graph dev shows. `ViteHttpBackend.probe`
+  requires an `application/json` answer, so the packaged exe binds
+  `NullFileBackend` (not a phantom HTTP adapter) until Open Folder.
+- Dev-only affordances are now gated on middleware detection: the
+  Snapshot toolbar button hides (and the bare `S` key no-ops with a
+  console.info) when `/api/*` middleware is absent; DebugRecorder
+  stops POSTing after the first non-JSON answer and exposes
+  `diskSinkAvailable`.
+
+Desktop harness leg (P1) note: the packaged exe honors
+`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9224` —
+CDP attaches, `__canary*` ships in the bundle.

@@ -196,7 +196,12 @@ For the perf/viewer/theme sweep suite (`suites/multi-display.json`):
   consecutive frames have the same LOD digest. Use after
   `ApplyPerfSnapshot` before screenshotting.
 - `__canaryLoadMinimalSample()` — loads `examples/minimal/.qualia` via
-  the dev FS plugin or the static mount. Lighter than driving the
+  the dev FS plugin or the static mount, falling back to the
+  dist-shipped `/examples/demos/minimal.qualia` when neither answers
+  (the packaged exe — platform-foundation P0, 2026-07-22). Dev route
+  requires a JSON content-type; static routes body-sniff (`{` vs `<`)
+  because the packaged asset protocol labels `.qualia` text/html —
+  same as the SPA fallback on dead paths. Lighter than driving the
   Load-sample button.
 
 ### Diagnostic dump (Pencil profile debugging, 2026-05-19)
