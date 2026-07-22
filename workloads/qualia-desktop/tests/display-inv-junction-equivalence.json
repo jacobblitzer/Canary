@@ -1,6 +1,6 @@
 {
   "name": "display-inv-junction-equivalence",
-  "workload": "qualia",
+  "workload": "qualia-desktop",
   "description": "Display-sweep W4 frozen invariant (Qualia spec/DISPLAY-BEHAVIOR.md): the render.junction.* persona path and a direct activeJunction perf write are the SAME lever — applying either from the same base yields identical activeJunction + identical junction frame geometry. Derived from sweep w2-atlas-r2 (byte-identical 16-path effects). Guards the persona-intent wiring: if an intent refactor decouples the two, this fails.",
   "setup": {
     "canvas": { "width": 1280, "height": 720 },

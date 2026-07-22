@@ -1,0 +1,16 @@
+{
+  "name": "pdesk-skey-snapshot-gated",
+  "workload": "qualia-desktop",
+  "description": "Dev-only affordance gating (P0): with no dev middleware, the bare S key must NOT raise the 'Snapshot failed' alert (pre-P0 shipped behavior) and the Snapshot button must be absent from the viewport toolbar. The alert spy doubles as the native-dialog deadlock guard — window.alert is OS-native in WebView2 and CDP cannot dismiss it.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { let alerted = null; const origAlert = window.alert; window.alert = (m) => { alerted = String(m); }; try { window.dispatchEvent(new KeyboardEvent('keydown', { key: 's' })); await new Promise(r => setTimeout(r, 2500)); } finally { window.alert = origAlert; } const problems = []; if (alerted !== null) problems.push('S key raised alert: ' + alerted); const buttons = Array.from(document.querySelectorAll('.viewport-toolbar button')).map(b => (b.textContent || '').trim()); if (buttons.some(t => t === 'Snapshot' || t === 'Snapshotting…')) problems.push('Snapshot button visible in toolbar despite absent middleware: ' + buttons.join(',')); if (problems.length) throw new Error('S-KEY GATING: ' + problems.join(' | ')); return 'pass: S key silent, Snapshot affordance hidden'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "pdesk-skey-snapshot-gated-marker", "mode": "capture", "stabilizeMs": 500 }
+  ]
+}

@@ -43,6 +43,20 @@
   }
 
   async function writeObs(filename, payload) {
+    // Platform-foundation P1 (2026-07-22): prefer the runtime-portable
+    // hook — on the packaged exe it routes through the debug_write_file
+    // Tauri IPC (the dev middleware doesn't exist there, and its SPA
+    // fallback answers POSTs with 200 text/html, which the old bare
+    // res.ok check read as success = silent observation loss).
+    if (typeof w.__canaryDebugWrite === 'function') {
+      const r = await w.__canaryDebugWrite(S.ctx.sweepId, filename, JSON.stringify(payload));
+      if (!r || r.ok !== true) {
+        throw new Error('debug-write hook failed for ' + filename + ': ' + (r && r.reason));
+      }
+      return;
+    }
+    // Legacy direct-middleware path (pre-P1 Qualia builds) — now with the
+    // content-type guard so a missing channel fails loudly.
     const res = await fetch('/api/debug/write', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,7 +66,10 @@
         content: JSON.stringify(payload),
       }),
     });
-    if (!res.ok) throw new Error('debug-write failed: HTTP ' + res.status + ' for ' + filename);
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+    if (!res.ok || !ct.includes('application/json')) {
+      throw new Error('debug-write failed: HTTP ' + res.status + ' (' + (ct || 'no content-type') + ') for ' + filename);
+    }
   }
 
   /**

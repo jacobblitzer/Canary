@@ -1,0 +1,8 @@
+{
+  "sweepId": "desktop-mini-r2",
+  "dossier": "C:/Repos/Qualia/spec/PLATFORM-PARITY.md",
+  "stamped": "2026-07-22",
+  "fingerprint": "v2 (sceneGraph + dom sections)",
+  "workload": "qualia-desktop",
+  "note": "Desktop (packaged exe, WebView2, tauri.localhost) reference for the drift watch's desktop leg. 2 families (minimal/cinematic on DDV) x 33 states subsampled from the w2-atlas spec; 0 errors, 0 leaks; self-diff r2-vs-r1 = 0 drift. Diff desktop candidates against THIS run (drift-diff <cand> --reference-file REFERENCE-RUN-DESKTOP.json), never against the web REFERENCE-RUN.json - WebView2 + packaged asset serving may legitimately diverge. Cross-platform check 2026-07-22: the 64 shared states showed ZERO activity/signature/leak divergence vs web w2-atlas-r6. Update ONLY on deliberate re-baseline."
+}

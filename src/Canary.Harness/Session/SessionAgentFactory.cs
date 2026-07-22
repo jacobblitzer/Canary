@@ -53,11 +53,24 @@ public sealed class SessionAgentFactory : ISessionAgentFactory
         var cfg = await QualiaWorkloadConfig.LoadAsync(path).ConfigureAwait(false);
         var agent = new QualiaBridgeAgent(cfg.QualiaConfig);
         agent.RegisterTelemetrySink(sink);
-        await agent.InitializeAsync(ct).ConfigureAwait(false);
+        // Dispose on init failure — a half-initialized DESKTOP agent
+        // otherwise orphans the launched Qualia exe (which then holds
+        // the single-instance lock against the operator's own app).
+        try
+        {
+            await agent.InitializeAsync(ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            agent.Dispose();
+            throw;
+        }
         return new SessionAgentBundle
         {
             Agent = agent,
-            Url = $"http://localhost:{cfg.QualiaConfig.VitePort}/",
+            Url = cfg.QualiaConfig.Desktop
+                ? "http://tauri.localhost/"
+                : $"http://localhost:{cfg.QualiaConfig.VitePort}/",
         };
     }
 
@@ -66,7 +79,18 @@ public sealed class SessionAgentFactory : ISessionAgentFactory
         var cfg = await PenumbraWorkloadConfig.LoadAsync(path).ConfigureAwait(false);
         var agent = new PenumbraBridgeAgent(cfg.PenumbraConfig);
         agent.RegisterTelemetrySink(sink);
-        await agent.InitializeAsync(ct).ConfigureAwait(false);
+        // Same dispose-on-failure shape as CreateQualiaAsync (Chrome/Vite
+        // orphans are less operator-hostile than a Tauri exe, but still
+        // leak processes + a temp profile).
+        try
+        {
+            await agent.InitializeAsync(ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            agent.Dispose();
+            throw;
+        }
         return new SessionAgentBundle
         {
             Agent = agent,

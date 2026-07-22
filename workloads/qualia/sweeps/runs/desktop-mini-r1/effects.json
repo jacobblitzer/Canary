@@ -1,0 +1,2946 @@
+{
+  "sweepId": "desktop-mini-r1",
+  "families": [
+    "cinematic-ddv",
+    "minimal-ddv"
+  ],
+  "effects": [
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-penumbraEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "penumbraEnabled"
+      },
+      "seq": 1,
+      "effectPaths": [
+        {
+          "path": "perf.penumbraEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-penumbraEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "penumbraEnabled"
+      },
+      "seq": 1,
+      "effectPaths": [
+        {
+          "path": "perf.penumbraEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-skeletonNodesEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "skeletonNodesEnabled"
+      },
+      "seq": 2,
+      "effectPaths": [
+        {
+          "path": "perf.skeletonNodesEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 61
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-skeletonNodesEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "skeletonNodesEnabled"
+      },
+      "seq": 2,
+      "effectPaths": [
+        {
+          "path": "perf.skeletonNodesEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-skeletonEdgesEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "skeletonEdgesEnabled"
+      },
+      "seq": 3,
+      "effectPaths": [
+        {
+          "path": "perf.skeletonEdgesEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 85
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-skeletonEdgesEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "skeletonEdgesEnabled"
+      },
+      "seq": 3,
+      "effectPaths": [
+        {
+          "path": "perf.skeletonEdgesEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-halosEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "halosEnabled"
+      },
+      "seq": 4,
+      "effectPaths": [
+        {
+          "path": "perf.halosEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 75
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-halosEnabled",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "halosEnabled"
+      },
+      "seq": 4,
+      "effectPaths": [
+        {
+          "path": "perf.halosEnabled",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-nodesVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "nodesVisible"
+      },
+      "seq": 5,
+      "effectPaths": [
+        {
+          "path": "perf.nodesVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 83
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-nodesVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "nodesVisible"
+      },
+      "seq": 5,
+      "effectPaths": [
+        {
+          "path": "perf.nodesVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgesVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgesVisible"
+      },
+      "seq": 6,
+      "effectPaths": [
+        {
+          "path": "perf.edgesVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgesVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgesVisible"
+      },
+      "seq": 6,
+      "effectPaths": [
+        {
+          "path": "perf.edgesVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelsVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelsVisible"
+      },
+      "seq": 7,
+      "effectPaths": [
+        {
+          "path": "perf.labelsVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 95
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelsVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelsVisible"
+      },
+      "seq": 7,
+      "effectPaths": [
+        {
+          "path": "perf.labelsVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 51
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelMaxDistance",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelMaxDistance"
+      },
+      "seq": 8,
+      "effectPaths": [
+        {
+          "path": "perf.labelMaxDistance",
+          "a": 200,
+          "b": 300
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 36
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelMaxDistance",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelMaxDistance"
+      },
+      "seq": 8,
+      "effectPaths": [
+        {
+          "path": "perf.labelMaxDistance",
+          "a": 200,
+          "b": 300
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 51
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelMinFontPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelMinFontPx"
+      },
+      "seq": 9,
+      "effectPaths": [
+        {
+          "path": "perf.labelMinFontPx",
+          "a": 8,
+          "b": 12
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 48
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelMinFontPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelMinFontPx"
+      },
+      "seq": 9,
+      "effectPaths": [
+        {
+          "path": "perf.labelMinFontPx",
+          "a": 8,
+          "b": 12
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelMaxFontPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelMaxFontPx"
+      },
+      "seq": 10,
+      "effectPaths": [
+        {
+          "path": "perf.labelMaxFontPx",
+          "a": 14,
+          "b": 21
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 80
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelMaxFontPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelMaxFontPx"
+      },
+      "seq": 10,
+      "effectPaths": [
+        {
+          "path": "perf.labelMaxFontPx",
+          "a": 14,
+          "b": 21
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelOffsetPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelOffsetPx"
+      },
+      "seq": 11,
+      "effectPaths": [
+        {
+          "path": "perf.labelOffsetPx",
+          "a": 8,
+          "b": 12
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 36
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-labelOffsetPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelOffsetPx"
+      },
+      "seq": 11,
+      "effectPaths": [
+        {
+          "path": "perf.labelOffsetPx",
+          "a": 8,
+          "b": 12
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-cardThresholdScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "cardThresholdScale"
+      },
+      "seq": 13,
+      "effectPaths": [
+        {
+          "path": "perf.cardThresholdScale",
+          "a": 1,
+          "b": 1.5
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 78
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-cardThresholdScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "cardThresholdScale"
+      },
+      "seq": 13,
+      "effectPaths": [
+        {
+          "path": "perf.cardThresholdScale",
+          "a": 0.6,
+          "b": 0.9
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-cardSizeScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "cardSizeScale"
+      },
+      "seq": 14,
+      "effectPaths": [
+        {
+          "path": "perf.cardSizeScale",
+          "a": 1,
+          "b": 1.5
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-cardSizeScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "cardSizeScale"
+      },
+      "seq": 14,
+      "effectPaths": [
+        {
+          "path": "perf.cardSizeScale",
+          "a": 1,
+          "b": 1.5
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-cardOffsetScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "cardOffsetScale"
+      },
+      "seq": 15,
+      "effectPaths": [
+        {
+          "path": "perf.cardOffsetScale",
+          "a": 1,
+          "b": 1.5
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 42
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-cardOffsetScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "cardOffsetScale"
+      },
+      "seq": 15,
+      "effectPaths": [
+        {
+          "path": "perf.cardOffsetScale",
+          "a": 1,
+          "b": 1.5
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-lodMasterScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "lodMasterScale"
+      },
+      "seq": 16,
+      "effectPaths": [
+        {
+          "path": "perf.lodMasterScale",
+          "a": 1,
+          "b": 1.5
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-lodMasterScale",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "lodMasterScale"
+      },
+      "seq": 16,
+      "effectPaths": [
+        {
+          "path": "perf.lodMasterScale",
+          "a": 0.85,
+          "b": 1.28
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-gridVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "gridVisible"
+      },
+      "seq": 17,
+      "effectPaths": [
+        {
+          "path": "perf.gridVisible",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "grid",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "viewer.gridVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 34
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-gridVisible",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "gridVisible"
+      },
+      "seq": 17,
+      "effectPaths": [
+        {
+          "path": "perf.gridVisible",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "grid",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "viewer.gridVisible",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgeShape",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgeShape"
+      },
+      "seq": 18,
+      "effectPaths": [
+        {
+          "path": "perf.edgeShape",
+          "a": "quadratic-bezier",
+          "b": "catmull-rom"
+        },
+        {
+          "path": "edgeShape",
+          "a": "quadratic-bezier",
+          "b": "catmull-rom"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 90
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgeShape",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgeShape"
+      },
+      "seq": 18,
+      "effectPaths": [
+        {
+          "path": "perf.edgeShape",
+          "a": "straight",
+          "b": "catmull-rom"
+        },
+        {
+          "path": "edgeShape",
+          "a": "straight",
+          "b": "catmull-rom"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgeWidthPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgeWidthPx"
+      },
+      "seq": 19,
+      "effectPaths": [
+        {
+          "path": "perf.edgeWidthPx",
+          "a": 6,
+          "b": 9
+        },
+        {
+          "path": "viewer.edgeWidth",
+          "a": 6,
+          "b": 9
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 39
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgeWidthPx",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgeWidthPx"
+      },
+      "seq": 19,
+      "effectPaths": [
+        {
+          "path": "perf.edgeWidthPx",
+          "a": 1.5,
+          "b": 2.25
+        },
+        {
+          "path": "viewer.edgeWidth",
+          "a": 1.5,
+          "b": 2.25
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgeGradientRampId",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgeGradientRampId"
+      },
+      "seq": 20,
+      "effectPaths": [
+        {
+          "path": "perf.edgeGradientRampId",
+          "a": "fade-to-black",
+          "b": "bioluminescent"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "perf-edgeGradientRampId",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "edgeGradientRampId"
+      },
+      "seq": 20,
+      "effectPaths": [
+        {
+          "path": "perf.edgeGradientRampId",
+          "a": null,
+          "b": "bioluminescent"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "seq": 21,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.graph-scene",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.enabledPasses.4",
+          "a": "render.graph-scene",
+          "b": "render.penumbra-backdrop"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.5",
+          "a": "render.penumbra-backdrop",
+          "b": "render.penumbra-fallback"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.6",
+          "a": "render.penumbra-fallback"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 128
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "seq": 21,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.graph-scene",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 2,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-chromatic-aberration",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration",
+        "id": "fx.chromatic-aberration"
+      },
+      "seq": 22,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.chromatic-aberration",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "fx.film-grain",
+          "b": "fx.chromatic-aberration"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "a": "fx.post-process",
+          "b": "fx.film-grain"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.2",
+          "a": "fx.vignette",
+          "b": "fx.post-process"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.3",
+          "a": "render.curl-noise-field",
+          "b": "fx.vignette"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.4",
+          "a": "render.graph-scene",
+          "b": "render.curl-noise-field"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.5",
+          "a": "render.penumbra-backdrop",
+          "b": "render.graph-scene"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.6",
+          "a": "render.penumbra-fallback",
+          "b": "render.penumbra-backdrop"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.7",
+          "b": "render.penumbra-fallback"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 9,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 98
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-chromatic-aberration",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration",
+        "id": "fx.chromatic-aberration"
+      },
+      "seq": 22,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.chromatic-aberration",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.enabledPasses.0",
+          "a": "render.graph-scene",
+          "b": "fx.chromatic-aberration"
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.graph-scene"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-cross-context-portal",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.cross-context.portal",
+        "id": "render.cross-context.portal"
+      },
+      "seq": 23,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.cross-context.portal",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 106
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-cross-context-portal",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.cross-context.portal",
+        "id": "render.cross-context.portal"
+      },
+      "seq": 23,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.cross-context.portal",
+          "a": true,
+          "b": false
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "seq": 24,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-fallback",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 131,
+          "b": 130
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 79,
+          "b": 78
+        },
+        {
+          "path": "sceneGraph.enabledPasses.6",
+          "a": "render.penumbra-fallback"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 82
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "seq": 24,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.penumbra-fallback",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        },
+        {
+          "path": "sceneGraph.enabledPasses.1",
+          "b": "render.penumbra-fallback"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 4,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-qverse-graph-nav",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav",
+        "id": "render.qverse-graph-nav"
+      },
+      "seq": 25,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.qverse-graph-nav",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 71
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-qverse-graph-nav",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.qverse-graph-nav",
+        "id": "render.qverse-graph-nav"
+      },
+      "seq": 25,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.qverse-graph-nav",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-playground",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.playground",
+        "id": "debug.playground"
+      },
+      "seq": 26,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.playground",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 116
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-playground",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.playground",
+        "id": "debug.playground"
+      },
+      "seq": 26,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.playground",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-junction-center",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.junction.center",
+        "id": "render.junction.center"
+      },
+      "seq": 27,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.junction.bubble",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "persona.enabled.render.junction.center",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "perf.activeJunction",
+          "a": "bubble",
+          "b": "center"
+        },
+        {
+          "path": "nubs.glow-bead",
+          "a": 6,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.0",
+          "a": -3.96875,
+          "b": -6
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nub",
+          "a": {
+            "center": [
+              -4.375,
+              0,
+              -6
+            ],
+            "radius": 0.40625,
+            "color": "#ffc9a0"
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.nubSilhouette",
+          "a": {
+            "center": [
+              -4.375,
+              0,
+              -6
+            ],
+            "axis": [
+              0.5209210788765656,
+              0.38174369139046027,
+              0.7634873827809207
+            ],
+            "radius": 0.40625
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.intersection",
+          "a": {
+            "center": [
+              -4.42578125,
+              0,
+              -6
+            ],
+            "axis": [
+              1,
+              0,
+              0
+            ],
+            "radius": 0.40306367629499623
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.0",
+          "a": 4.28125,
+          "b": 6
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nub",
+          "a": {
+            "center": [
+              4.625,
+              0,
+              -6
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.nubSilhouette",
+          "a": {
+            "center": [
+              4.625,
+              0,
+              -6
+            ],
+            "axis": [
+              0.2650220331088169,
+              0.431222291160109,
+              0.8624445823202181
+            ],
+            "radius": 0.34375
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.intersection",
+          "a": {
+            "center": [
+              4.66796875,
+              0,
+              -6
+            ],
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "radius": 0.3410538799419199
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.2",
+          "a": -4.28125,
+          "b": -6
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nub",
+          "a": {
+            "center": [
+              6,
+              0,
+              -4.625
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.nubSilhouette",
+          "a": {
+            "center": [
+              6,
+              0,
+              -4.625
+            ],
+            "axis": [
+              0.2281038037215482,
+              0.45620760744309663,
+              0.8601414265333386
+            ],
+            "radius": 0.34375
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.intersection",
+          "a": {
+            "center": [
+              6,
+              0,
+              -4.66796875
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "radius": 0.3410538799419199
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.2",
+          "a": 4.28125,
+          "b": 6
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nub",
+          "a": {
+            "center": [
+              6,
+              0,
+              4.625
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.nubSilhouette",
+          "a": {
+            "center": [
+              6,
+              0,
+              4.625
+            ],
+            "axis": [
+              0.3167161383348992,
+              0.6334322766697986,
+              0.7060130583715465
+            ],
+            "radius": 0.34375
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.intersection",
+          "a": {
+            "center": [
+              6,
+              0,
+              4.66796875
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "radius": 0.3410538799419199
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.0",
+          "a": 4.28125,
+          "b": 6
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nub",
+          "a": {
+            "center": [
+              4.625,
+              0,
+              6
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.nubSilhouette",
+          "a": {
+            "center": [
+              4.625,
+              0,
+              6
+            ],
+            "axis": [
+              0.39856677473114965,
+              0.6485154300710234,
+              0.6485154300710235
+            ],
+            "radius": 0.34375
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.intersection",
+          "a": {
+            "center": [
+              4.66796875,
+              0,
+              6
+            ],
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "radius": 0.3410538799419199
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.0",
+          "a": -4.28125,
+          "b": -6
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nub",
+          "a": {
+            "center": [
+              -4.625,
+              0,
+              6
+            ],
+            "radius": 0.34375,
+            "color": "#ffc9a0"
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.nubSilhouette",
+          "a": {
+            "center": [
+              -4.625,
+              0,
+              6
+            ],
+            "axis": [
+              0.6997964876776658,
+              0.5051162617823753,
+              0.5051162617823755
+            ],
+            "radius": 0.34375
+          },
+          "b": null
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.intersection",
+          "a": {
+            "center": [
+              -4.66796875,
+              0,
+              6
+            ],
+            "axis": [
+              1,
+              0,
+              0
+            ],
+            "radius": 0.3410538799419199
+          },
+          "b": null
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 28,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 69
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-render-junction-center",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.junction.center",
+        "id": "render.junction.center"
+      },
+      "seq": 27,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.render.junction.center",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "persona.enabled.render.junction.surface",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "perf.activeJunction",
+          "a": "surface",
+          "b": "center"
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.0",
+          "a": -7.543761172900659,
+          "b": -7.619079820745926
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.1",
+          "a": -0.5203497669644145,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.point.2",
+          "a": -9.699824990559343,
+          "b": -9.917158468499384
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.normal.0",
+          "a": 0.7562799675989754,
+          "b": 0.7099300304634265
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.normal.1",
+          "a": -0.32021524120887046,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.source.normal.2",
+          "a": -0.570528535575599,
+          "b": -0.7042722143079324
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.0",
+          "a": 7.466284713558631,
+          "b": 10.059584708130092
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.1",
+          "a": 0.2098676393697248,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.point.2",
+          "a": -8.398794265366964,
+          "b": -9.257065413140918
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.normal.0",
+          "a": -0.9501319321384463,
+          "b": 0.9359044275498897
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.normal.1",
+          "a": 0.15263101045070895,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-1.target.normal.2",
+          "a": 0.27194316718692985,
+          "b": -0.3522540311941269
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.0",
+          "a": 8.138199846361717,
+          "b": 10.059584708130092
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.1",
+          "a": -0.9461999554972202,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.point.2",
+          "a": -8.002833179543549,
+          "b": -9.257065413140918
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.normal.0",
+          "a": -0.4614663810089284,
+          "b": 0.9359044275498897
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.normal.1",
+          "a": -0.6881454221797966,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.source.normal.2",
+          "a": 0.559914865967597,
+          "b": -0.3522540311941269
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.0",
+          "a": 9.151321731700197,
+          "b": 9.755119779595645
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.1",
+          "a": 0.5645822297219256,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.point.2",
+          "a": 7.577504968669542,
+          "b": 7.810682830751013
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.normal.0",
+          "a": 0.2753495356008753,
+          "b": 0.7144753886157471
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.normal.1",
+          "a": 0.4106052579795823,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-2.target.normal.2",
+          "a": -0.8692444738759649,
+          "b": -0.6996605741803502
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.0",
+          "a": 7.569597536076382,
+          "b": 9.755119779595645
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.1",
+          "a": 0.5492417404482711,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.point.2",
+          "a": 9.148833366553713,
+          "b": 7.810682830751013
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.normal.0",
+          "a": -0.8749953339437173,
+          "b": 0.7144753886157471
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.normal.1",
+          "a": 0.3994485385078335,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.source.normal.2",
+          "a": 0.2735398154943414,
+          "b": -0.6996605741803502
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.0",
+          "a": -7.995116098891734,
+          "b": -8.275971631287478
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.1",
+          "a": -0.9356467216576011,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.point.2",
+          "a": 8.131991203426983,
+          "b": 7.490581216002814
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.normal.0",
+          "a": 0.5655272882598252,
+          "b": 0.3612687192447396
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.normal.1",
+          "a": -0.6804703430237099,
+          "b": 0
+        },
+        {
+          "path": "frame.junctions.ddv-e-3.target.normal.2",
+          "a": -0.4659817576887355,
+          "b": -0.9324617485426765
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 39,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-junction-markers",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.junction-markers",
+        "id": "debug.junction-markers"
+      },
+      "seq": 28,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.junction-markers",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 131,
+          "b": 132
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "a": 2,
+          "b": 3
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 116
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-debug-junction-markers",
+      "mutation": {
+        "kind": "persona",
+        "persona": "debug.junction-markers",
+        "id": "debug.junction-markers"
+      },
+      "seq": 28,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.debug.junction-markers",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Points",
+          "b": 1
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-hover-lift",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.hover-lift",
+        "id": "fx.hover-lift"
+      },
+      "seq": 29,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.hover-lift",
+          "a": true,
+          "b": false
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 131,
+          "b": 130
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 79,
+          "b": 78
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 80
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-hover-lift",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.hover-lift",
+        "id": "fx.hover-lift"
+      },
+      "seq": 29,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.hover-lift",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 50
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-pencil-toon",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.pencil-toon",
+        "id": "fx.pencil-toon"
+      },
+      "seq": 30,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.pencil-toon",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "viewer.emissiveIntensity",
+          "a": 0.7,
+          "b": 0
+        },
+        {
+          "path": "viewer.fogDensity",
+          "a": 0.001,
+          "b": 0
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 115
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-pencil-toon",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.pencil-toon",
+        "id": "fx.pencil-toon"
+      },
+      "seq": 30,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.pencil-toon",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "viewer.emissiveIntensity",
+          "a": 0.7,
+          "b": 0
+        },
+        {
+          "path": "viewer.fogDensity",
+          "a": 0.001,
+          "b": 0
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 62
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-group-atmosphere",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.group-atmosphere",
+        "id": "fx.group-atmosphere"
+      },
+      "seq": 31,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.group-atmosphere",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 86
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-group-atmosphere",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.group-atmosphere",
+        "id": "fx.group-atmosphere"
+      },
+      "seq": 31,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.group-atmosphere",
+          "a": false,
+          "b": true
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 1,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "seq": 32,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.time-lapse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-time-lapse-active"
+        },
+        {
+          "path": "dom.hostClasses.2",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 115
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "seq": 32,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.time-lapse",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "dom.hostClasses.0",
+          "a": "qualia-viewport",
+          "b": "qualia-fx-time-lapse-active"
+        },
+        {
+          "path": "dom.hostClasses.1",
+          "b": "qualia-viewport"
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-heat-map",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.heat-map",
+        "id": "fx.heat-map"
+      },
+      "seq": 33,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.heat-map",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 131,
+          "b": 132
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 79,
+          "b": 80
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 72
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    },
+    {
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      },
+      "stateId": "persona-fx-heat-map",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.heat-map",
+        "id": "fx.heat-map"
+      },
+      "seq": 33,
+      "effectPaths": [
+        {
+          "path": "persona.enabled.fx.heat-map",
+          "a": false,
+          "b": true
+        },
+        {
+          "path": "sceneGraph.total",
+          "a": 130,
+          "b": 131
+        },
+        {
+          "path": "sceneGraph.byType.Mesh",
+          "a": 78,
+          "b": 79
+        }
+      ],
+      "leakPaths": [],
+      "effectCount": 3,
+      "leakCount": 0,
+      "settleMutated": {
+        "ok": true,
+        "ms": 49
+      },
+      "stableMutated": true,
+      "stableReverted": true,
+      "resetPreVerified": true,
+      "resetPostVerified": true
+    }
+  ],
+  "errors": [],
+  "skipped": [
+    {
+      "kind": "skipped",
+      "sweepId": "desktop-mini-r1",
+      "family": "cinematic-ddv",
+      "base": "cinematic",
+      "seq": 12,
+      "stateId": "perf-labelPlacement",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelPlacement"
+      },
+      "reason": "no-alternate-for-string",
+      "ts": 1784736494765
+    },
+    {
+      "kind": "skipped",
+      "sweepId": "desktop-mini-r1",
+      "family": "minimal-ddv",
+      "base": "minimal",
+      "seq": 12,
+      "stateId": "perf-labelPlacement",
+      "mutation": {
+        "kind": "perfAuto",
+        "field": "labelPlacement"
+      },
+      "reason": "no-alternate-for-string",
+      "ts": 1784736484047
+    }
+  ],
+  "inconsistencies": [
+    {
+      "stateId": "persona-render-graph-scene",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.graph-scene",
+        "id": "render.graph-scene"
+      },
+      "crossBase": true,
+      "perFamily": [
+        {
+          "family": "cinematic-ddv",
+          "count": 4,
+          "missing": [
+            "sceneGraph.enabledPasses.0"
+          ]
+        },
+        {
+          "family": "minimal-ddv",
+          "count": 2,
+          "missing": [
+            "sceneGraph.enabledPasses.4",
+            "sceneGraph.enabledPasses.5",
+            "sceneGraph.enabledPasses.6"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-chromatic-aberration",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.chromatic-aberration",
+        "id": "fx.chromatic-aberration"
+      },
+      "crossBase": true,
+      "perFamily": [
+        {
+          "family": "cinematic-ddv",
+          "count": 9,
+          "missing": []
+        },
+        {
+          "family": "minimal-ddv",
+          "count": 3,
+          "missing": [
+            "sceneGraph.enabledPasses.2",
+            "sceneGraph.enabledPasses.3",
+            "sceneGraph.enabledPasses.4",
+            "sceneGraph.enabledPasses.5",
+            "sceneGraph.enabledPasses.6",
+            "sceneGraph.enabledPasses.7"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-penumbra-fallback",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.penumbra-fallback",
+        "id": "render.penumbra-fallback"
+      },
+      "crossBase": true,
+      "perFamily": [
+        {
+          "family": "cinematic-ddv",
+          "count": 4,
+          "missing": [
+            "sceneGraph.enabledPasses.1"
+          ]
+        },
+        {
+          "family": "minimal-ddv",
+          "count": 4,
+          "missing": [
+            "sceneGraph.enabledPasses.6"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-render-junction-center",
+      "mutation": {
+        "kind": "persona",
+        "persona": "render.junction.center",
+        "id": "render.junction.center"
+      },
+      "crossBase": true,
+      "perFamily": [
+        {
+          "family": "cinematic-ddv",
+          "count": 28,
+          "missing": [
+            "frame.junctions.*.source.normal.0",
+            "frame.junctions.*.source.normal.1",
+            "frame.junctions.*.source.normal.2",
+            "frame.junctions.*.source.point.1",
+            "frame.junctions.*.target.normal.0",
+            "frame.junctions.*.target.normal.1",
+            "frame.junctions.*.target.normal.2",
+            "frame.junctions.*.target.point.1"
+          ]
+        },
+        {
+          "family": "minimal-ddv",
+          "count": 39,
+          "missing": [
+            "frame.junctions.*.source.intersection",
+            "frame.junctions.*.source.nub",
+            "frame.junctions.*.source.nubSilhouette",
+            "frame.junctions.*.target.intersection",
+            "frame.junctions.*.target.nub",
+            "frame.junctions.*.target.nubSilhouette",
+            "nubs.glow-bead",
+            "persona.enabled.render.junction.bubble"
+          ]
+        }
+      ]
+    },
+    {
+      "stateId": "persona-fx-time-lapse",
+      "mutation": {
+        "kind": "persona",
+        "persona": "fx.time-lapse",
+        "id": "fx.time-lapse"
+      },
+      "crossBase": true,
+      "perFamily": [
+        {
+          "family": "cinematic-ddv",
+          "count": 3,
+          "missing": [
+            "dom.hostClasses.0"
+          ]
+        },
+        {
+          "family": "minimal-ddv",
+          "count": 3,
+          "missing": [
+            "dom.hostClasses.2"
+          ]
+        }
+      ]
+    }
+  ],
+  "interactions": [],
+  "planarFindings": []
+}

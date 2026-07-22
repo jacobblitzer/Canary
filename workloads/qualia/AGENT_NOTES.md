@@ -440,3 +440,50 @@ Hook-behavior updates (additive, no renames/removals):
 Desktop harness leg (P1) note: the packaged exe honors
 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9224` —
 CDP attaches, `__canary*` ships in the bundle.
+
+## 2026-07-22 — platform-foundation P1: the desktop harness leg
+
+New workload: **qualia-desktop** (`workloads/qualia-desktop/`) — same
+`qualia-cdp` agent type; `qualiaConfig.desktop: true` makes
+QualiaBridgeAgent launch the packaged exe (TauriAppManager: isolated
+throwaway WebView2 profile via WEBVIEW2_USER_DATA_FOLDER, CDP via
+WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS on port 9224, URL-filtered
+tauri.localhost page-target attach, zero argv, fail-fast if any Qualia
+instance is running — never kill-by-port). Captures are normalized via
+Emulation.setDeviceMetricsOverride (the exe window is 800x600 at the
+operator's 1.25 DPI — without emulation every capture is 1600x1162).
+Suites: `platform-parity` (6 structural smoke tests of the packaged
+honesty contract), `display-invariants` (copied frozen contracts),
+`sweep-desktop-mini` (generated; regenerate with
+`generate-sweep.mjs ... --workload qualia-desktop`).
+
+New hooks (Qualia canary-hooks.ts, all additive):
+
+- `__canaryGetFsAdapterInfo()` → `{ workspaceLabel, adapter,
+  capabilities }` — bound-adapter identity. Assert on `workspaceLabel`
+  (constructor names are minified in the packaged bundle).
+- `__canaryBindVault(absolutePath)` → `{ solution, workspaceLabel }` —
+  the automation twin of Open Folder (list_directory →
+  pickSolutionFile → read_text_file → loadGraph → openedSolution →
+  setFsAdapter). Tauri-only; skips the native dialog + dirty-confirm.
+- `__canaryDebugWrite(session, filename, content)` → absolute path
+  (Tauri, via the new sanitized `debug_write_file` command rooted at
+  `<cwd>/debug-logs/`) or `true` (dev middleware, JSON-guarded). The
+  sweep driver's writeObs prefers this hook — desktop observations use
+  it exclusively.
+- `__canaryExportGraph()` → the exact `exportQualiaJSON` serialization
+  the Save path writes.
+- `__canaryEmitMenuEvent(payload)` — emits the Tauri `menu` event; the
+  ONLY way to drive Save on desktop (Ctrl+S is a native accelerator
+  there; synthetic DOM keydowns don't reach it; the emit exercises the
+  real GraphMenuHandlers → handleSave → writeSolutionTo wiring).
+  Avoid payloads that open native dialogs.
+- `__canaryGetRecorderState()` gained `diskSinkAvailable`
+  (null | boolean, additive).
+
+Desktop reference run: `sweeps/REFERENCE-RUN-DESKTOP.json`
+(desktop-mini-r2; self-diff 0). Diff desktop candidates with
+`drift-diff.mjs <cand> --reference-file .../REFERENCE-RUN-DESKTOP.json`.
+Cross-platform baseline fact: all 64 shared states measured IDENTICAL
+to the web reference (w2-atlas-r6) — future web↔desktop divergence is a
+finding, not noise.

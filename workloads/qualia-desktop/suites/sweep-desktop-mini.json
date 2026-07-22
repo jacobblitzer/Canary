@@ -1,0 +1,8 @@
+{
+  "name": "sweep-desktop-mini",
+  "description": "Generated display-sweep suite (sweep desktop-mini-r3) — 2 family test(s) x 33 states, structural assertions via in-page driver, no pixel checkpoints. Regenerate via workloads/qualia/sweeps/generate-sweep.mjs.",
+  "tests": [
+    "sweep-desktop-mini-minimal-ddv",
+    "sweep-desktop-mini-cinematic-ddv"
+  ]
+}

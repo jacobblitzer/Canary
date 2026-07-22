@@ -1,0 +1,9 @@
+{
+  "name": "display-invariants",
+  "description": "Display-sweep W4 frozen invariants (campaign: Qualia/docs/plans/2026-07-19-display-behavior-sweep.md; reference: Qualia/spec/DISPLAY-BEHAVIOR.md). Structural assertions distilled from sweeps w2-atlas-r2 + w3-planar-r1 + w3-pairs-r1: ADR-0038 rendered==junction-position + FadeState-table conformance across a context walk, junction persona == activeJunction perf-write equivalence, and the reset-protocol control. Run on any display change: canary run --workload qualia-desktop --suite display-invariants --headless.",
+  "tests": [
+    "display-inv-adr38-fade-walk",
+    "display-inv-junction-equivalence",
+    "display-inv-profile-self-control"
+  ]
+}

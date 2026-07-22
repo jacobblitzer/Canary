@@ -42,7 +42,11 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
     private readonly QualiaConfig _config;
     private ViteManager? _vite;
     private ChromeLaunchResult? _chrome;
+    private TauriAppManager? _tauri;
     private CdpClient? _cdp;
+    // Uniform navigation target for Reload/init across both legs:
+    // web = the Vite URL, desktop = http://tauri.localhost/.
+    private string? _appUrl;
     private bool _initialized;
     private bool _disposed;
 
@@ -70,9 +74,16 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
         if (_initialized)
             throw new InvalidOperationException("Bridge agent is already initialized.");
 
+        if (_config.Desktop)
+        {
+            await InitializeDesktopAsync(ct).ConfigureAwait(false);
+            return;
+        }
+
         // 1. Start Vite
         _vite = new ViteManager(_config.ProjectDir, _config.VitePort);
         await _vite.StartAsync(TimeSpan.FromSeconds(30), ct).ConfigureAwait(false);
+        _appUrl = _vite.Url;
 
         // 2. Launch Chrome with CDP
         var chromeOpts = new ChromeOptions
@@ -130,6 +141,79 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
         _initialized = true;
     }
 
+    /// <summary>
+    /// Desktop leg (platform-foundation P1): drive the packaged Tauri exe
+    /// instead of Vite+Chrome. Differences from the web path, each
+    /// deliberate:
+    ///   <list type="bullet">
+    ///     <item>No Vite, no Chrome — <see cref="TauriAppManager"/> launches
+    ///         the exe with an isolated throwaway WebView2 profile
+    ///         (WEBVIEW2_USER_DATA_FOLDER) + CDP enabled via
+    ///         WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS, and finds the
+    ///         tauri.localhost page target (URL-filtered).</item>
+    ///     <item>Deterministic captures via CDP emulation, not launch flags:
+    ///         WebView2 gets no --window-size/--force-device-scale-factor,
+    ///         and the operator's display scale (measured 1.25 on the dev
+    ///         machine) would otherwise size-mismatch-fail every baseline.
+    ///         Emulation.setDeviceMetricsOverride persists across
+    ///         navigations for the session.</item>
+    ///     <item>Reset = seed + reload, not clear: the fresh profile is
+    ///         already empty; seeding qualia.landingShown/-jewel-intro
+    ///         then reloading yields the deterministic post-first-run
+    ///         boot (no landing modal, no intro writes, 63-node shipped
+    ///         sample).</item>
+    ///   </list>
+    /// </summary>
+    private async Task InitializeDesktopAsync(CancellationToken ct)
+    {
+        _tauri = new TauriAppManager(_config.AppExePath, _config.ProjectDir, _config.CdpPort);
+        await _tauri.StartAsync(TimeSpan.FromMilliseconds(_config.AppStartupTimeoutMs), ct).ConfigureAwait(false);
+        _appUrl = _tauri.Url;
+
+        _cdp = new CdpClient(TimeSpan.FromSeconds(60));
+        await _cdp.ConnectAsync(_tauri.WebSocketUrl!, ct).ConfigureAwait(false);
+        await _cdp.EnableDomainAsync("Page", ct).ConfigureAwait(false);
+        await _cdp.EnableDomainAsync("Runtime", ct).ConfigureAwait(false);
+
+        _telemetrySubscriptions = await CdpTelemetryStream.EnableAndSubscribeAsync(
+            _cdp, _telemetrySink, source: "qualia-desktop", ct).ConfigureAwait(false);
+
+        // Deterministic capture size regardless of window size / DPI.
+        await SetDeviceMetricsAsync(_canvasWidth, _canvasHeight, ct).ConfigureAwait(false);
+
+        if (_config.ClearLocalStorageOnInit)
+        {
+            // Fresh isolated profile — nothing to clear. Seed the two
+            // first-run flags so the reload boots straight into the graph
+            // (no landing modal, no jewel-HUD intro write), then reload so
+            // React mounts against the seeded state.
+            await _cdp.EvaluateAsync(
+                "(() => { try { localStorage.setItem('qualia.landingShown','1'); localStorage.setItem('qualia.contextJewelHudIntroduced','1'); return true; } catch (e) { return false; } })()",
+                ct).ConfigureAwait(false);
+            await _cdp.NavigateAsync(_appUrl, TimeSpan.FromSeconds(30), ct).ConfigureAwait(false);
+        }
+
+        await WaitForReadyInternalAsync(_config.ReadyTimeoutSec * 1000, ct).ConfigureAwait(false);
+
+        _initialized = true;
+    }
+
+    /// <summary>
+    /// Emulation.setDeviceMetricsOverride — the desktop leg's determinism
+    /// anchor. Verified live on WebView2 (spike 2026-07-22): captures went
+    /// from 1600x1162 (1.25 DPI window) to exactly the requested metrics.
+    /// </summary>
+    private async Task SetDeviceMetricsAsync(int width, int height, CancellationToken ct = default)
+    {
+        await _cdp!.SendAsync("Emulation.setDeviceMetricsOverride", new
+        {
+            width,
+            height,
+            deviceScaleFactor = 1,
+            mobile = false,
+        }, ct).ConfigureAwait(false);
+    }
+
     public async Task<AgentResponse> ExecuteAsync(string action, Dictionary<string, string> parameters)
     {
         EnsureInitialized();
@@ -150,7 +234,13 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
             "ToggleLandingModule"  => await ToggleLandingModuleAsync(parameters).ConfigureAwait(false),
             "ClickLandingApply"    => await EvaluateOkAsync("window.__canaryClickLandingApply()").ConfigureAwait(false),
             "ClickLandingCancel"   => await EvaluateOkAsync("window.__canaryClickLandingCancel()").ConfigureAwait(false),
-            "ClearStorage"         => await EvaluateOkAsync("(()=>{localStorage.clear();sessionStorage.clear();return true;})()").ConfigureAwait(false),
+            // Desktop re-seeds the two first-run flags after clearing so
+            // ClearStorage→Reload converges with InitializeDesktopAsync's
+            // definition of a reset boot (no landing modal, no jewel-intro
+            // write) — otherwise the same test JSON diverges across legs.
+            "ClearStorage"         => await EvaluateOkAsync(_config.Desktop
+                ? "(()=>{localStorage.clear();sessionStorage.clear();localStorage.setItem('qualia.landingShown','1');localStorage.setItem('qualia.contextJewelHudIntroduced','1');return true;})()"
+                : "(()=>{localStorage.clear();sessionStorage.clear();return true;})()").ConfigureAwait(false),
             "PlaygroundOpen"       => await EvaluateOkAsync("window.__canaryPlaygroundOpen()").ConfigureAwait(false),
             "PlaygroundClose"      => await EvaluateOkAsync("window.__canaryPlaygroundClose()").ConfigureAwait(false),
             "PlaygroundLoadScenario" => await PlaygroundLoadScenarioAsync(parameters).ConfigureAwait(false),
@@ -292,12 +382,13 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
     /// </summary>
     private async Task<AgentResponse> ReloadAsync()
     {
-        if (_vite is null) return Fail("Reload requires Vite to be running.");
-        await _cdp!.NavigateAsync(_vite.Url, TimeSpan.FromSeconds(60))
+        // _appUrl covers both legs: Vite URL (web) or tauri.localhost (desktop).
+        if (_appUrl is null) return Fail("Reload requires an app URL (agent not initialized).");
+        await _cdp!.NavigateAsync(_appUrl, TimeSpan.FromSeconds(60))
             .ConfigureAwait(false);
         await WaitForReadyInternalAsync(_config.ReadyTimeoutSec * 1000, default)
             .ConfigureAwait(false);
-        return Ok($"Reloaded {_vite.Url}.");
+        return Ok($"Reloaded {_appUrl}.");
     }
 
     private async Task<AgentResponse> SetCanvasSizeAsync(Dictionary<string, string> parameters)
@@ -310,8 +401,19 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
 
         _canvasWidth = w;
         _canvasHeight = h;
-        // CDP doesn't have a "resize browser" but we can override the viewport
-        // metrics via Emulation.setDeviceMetricsOverride.
+
+        if (_config.Desktop)
+        {
+            // Desktop leg: real viewport emulation. The web leg gets its
+            // size from Chrome launch flags; changing it to emulation
+            // would invalidate every existing web baseline, so this
+            // branch is desktop-only.
+            await SetDeviceMetricsAsync(w, h).ConfigureAwait(false);
+            return Ok($"Canvas set to {w}x{h} (device metrics override).");
+        }
+
+        // Web leg: style the document element (window size came from
+        // Chrome launch flags; Emulation here would invalidate baselines).
         await _cdp!.EvaluateAsync($@"
             (() => {{
                 document.documentElement.style.width = '{w}px';
@@ -643,5 +745,9 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
         _cdp?.Dispose();
         _chrome?.Dispose();
         _vite?.Dispose();
+        // Desktop leg: tree-kill the exe we spawned + delete its throwaway
+        // WebView2 profile. Only ever the harness-launched process — attach
+        // to an operator instance is not a mode this agent has.
+        _tauri?.Dispose();
     }
 }

@@ -1,0 +1,23 @@
+{
+  "name": "qualia-desktop",
+  "displayName": "Qualia (Desktop exe)",
+  "appPath": "",
+  "appArgs": "",
+  "agentType": "qualia-cdp",
+  "pipeName": "canary-qualia-desktop",
+  "startupTimeoutMs": 45000,
+  "windowTitle": "Qualia",
+  "viewportClass": "",
+  "qualiaConfig": {
+    "desktop": true,
+    "appExePath": "C:\\Repos\\Qualia\\src-tauri\\target\\release\\app.exe",
+    "appStartupTimeoutMs": 45000,
+    "projectDir": "C:\\Repos\\Qualia",
+    "cdpPort": 9224,
+    "defaultCanvasWidth": 1280,
+    "defaultCanvasHeight": 720,
+    "defaultStabilizeMs": 500,
+    "readyTimeoutSec": 45,
+    "clearLocalStorageOnInit": true
+  }
+}

@@ -61,6 +61,29 @@ public sealed class QualiaConfig
     /// </summary>
     [JsonPropertyName("clearLocalStorageOnInit")]
     public bool ClearLocalStorageOnInit { get; set; } = true;
+
+    // ── Desktop leg (platform-foundation P1, 2026-07-22) ─────────────────
+
+    /// <summary>
+    /// True = drive the packaged Tauri exe instead of Vite+Chrome: launch
+    /// <see cref="AppExePath"/> with an isolated WebView2 profile + CDP on
+    /// <see cref="CdpPort"/>, attach to the tauri.localhost page target.
+    /// Vite/Chrome settings are ignored in this mode.
+    /// </summary>
+    [JsonPropertyName("desktop")]
+    public bool Desktop { get; set; } = false;
+
+    /// <summary>Absolute path to the packaged Qualia exe (src-tauri release build).</summary>
+    [JsonPropertyName("appExePath")]
+    public string AppExePath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Max milliseconds for the exe to expose a tauri.localhost CDP page
+    /// target. Cold WebView2 profile creation is slower than a warm Vite
+    /// boot — desktop default 45s vs the web leg's 30s.
+    /// </summary>
+    [JsonPropertyName("appStartupTimeoutMs")]
+    public int AppStartupTimeoutMs { get; set; } = 45000;
 }
 
 /// <summary>

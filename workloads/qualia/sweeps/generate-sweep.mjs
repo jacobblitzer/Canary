@@ -46,20 +46,33 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const QUALIA_DIR = path.resolve(HERE, '..');           // workloads/qualia
-const TESTS_DIR = path.join(QUALIA_DIR, 'tests');
-const SUITES_DIR = path.join(QUALIA_DIR, 'suites');
-const RUNS_DIR = path.join(HERE, 'runs');
 
 const args = process.argv.slice(2);
 const specPath = args.find((a) => !a.startsWith('--'));
 const runIdIdx = args.indexOf('--run-id');
 const runId = (runIdIdx >= 0 ? args[runIdIdx + 1] : new Date().toISOString().slice(0, 16).replace(/[-:T]/g, ''))
   .replace(/[^a-zA-Z0-9_-]/g, '_');
+// Platform-foundation P1 (2026-07-22): --workload <name> emits the
+// generated tests/suite into workloads/<name>/ instead of qualia/ —
+// the desktop leg generates its own sweep suites (fresh driver embed)
+// so web regeneration can never silently mutate desktop tests.
+const workloadIdx = args.indexOf('--workload');
+const targetWorkload = workloadIdx >= 0 ? args[workloadIdx + 1] : 'qualia';
+const TARGET_DIR = path.resolve(QUALIA_DIR, '..', targetWorkload);
+const TESTS_DIR = path.join(TARGET_DIR, 'tests');
+const SUITES_DIR = path.join(TARGET_DIR, 'suites');
+const RUNS_DIR = path.join(HERE, 'runs');   // manifests stay centralized with the toolchain
 
 if (!specPath) {
-  console.error('Usage: node generate-sweep.mjs <spec.json> [--run-id <id>]');
+  console.error('Usage: node generate-sweep.mjs <spec.json> [--run-id <id>] [--workload <name>]');
   process.exit(2);
 }
+if (!fs.existsSync(TARGET_DIR)) {
+  console.error(`workload dir does not exist: ${TARGET_DIR}`);
+  process.exit(2);
+}
+fs.mkdirSync(TESTS_DIR, { recursive: true });
+fs.mkdirSync(SUITES_DIR, { recursive: true });
 
 const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 const driverSrc = fs.readFileSync(path.join(HERE, 'sweep-driver.js'), 'utf8');
@@ -123,7 +136,7 @@ for (const { base, fixture, enterContext } of families) {
 
   const test = {
     name: testName,
-    workload: 'qualia',
+    workload: targetWorkload,
     description:
       `Display-sweep family ${family} (sweep ${sweepId}): ${states.length} one-lever states from base '${base}' on the ` +
       `${fixture.kind === 'demo' ? fixture.slug : 'DDV'} fixture. Structural fingerprints only; observations ` +
@@ -157,11 +170,15 @@ fs.writeFileSync(path.join(SUITES_DIR, `${suiteName}.json`), JSON.stringify({
 fs.mkdirSync(RUNS_DIR, { recursive: true });
 fs.writeFileSync(path.join(RUNS_DIR, `${sweepId}.json`), JSON.stringify({
   sweepId, generatedAt: new Date().toISOString(), spec, suiteName, testNames,
+  workload: targetWorkload,
   expectedObs: { perFamily: states.length + 1, families: families.length },
+  // Both legs land here: the dev middleware writes to <Qualia cwd>/debug-logs,
+  // and the desktop leg's debug_write_file IPC does the same because Canary
+  // launches the exe with cwd = the Qualia repo.
   observationsDir: `C:/Repos/Qualia/debug-logs/${sweepId}`,
 }, null, 2) + '\n');
 
 console.log(`sweep ${sweepId}: ${testNames.length} test(s) -> ${TESTS_DIR}`);
 console.log(`suite ${suiteName} -> ${SUITES_DIR}`);
-console.log(`run:  .\\canary.cmd run --workload qualia --suite ${suiteName} --headless`);
+console.log(`run:  .\\canary.cmd run --workload ${targetWorkload} --suite ${suiteName} --headless`);
 console.log(`then: node workloads/qualia/sweeps/derive.mjs ${sweepId}`);

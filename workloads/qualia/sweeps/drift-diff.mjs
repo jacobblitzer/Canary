@@ -4,10 +4,14 @@
  * reference run and report display-behavior drift.
  *
  * Usage:
- *   node workloads/qualia/sweeps/drift-diff.mjs <candidateSweepId> [--reference <sweepId>]
+ *   node workloads/qualia/sweeps/drift-diff.mjs <candidateSweepId> [--reference <sweepId>] [--reference-file <path>]
  *
  * Reference defaults to REFERENCE-RUN.json in this directory (the run
- * Qualia/spec/DISPLAY-BEHAVIOR.md is provenance-stamped with). Exit code:
+ * Qualia/spec/DISPLAY-BEHAVIOR.md is provenance-stamped with).
+ * --reference-file points at an alternate stamp file — the desktop leg
+ * (platform-foundation P1) diffs against REFERENCE-RUN-DESKTOP.json,
+ * NEVER the web reference: WebView2 + packaged asset serving can differ
+ * legitimately from Chrome + Vite. Exit code:
  * 0 = no drift, 1 = drift detected, 2 = usage/IO error — so the Hermes
  * drift-watch skill (MultiVerse/skills/qualia-display-sweep) can gate on it.
  *
@@ -32,8 +36,16 @@ if (!candidateId) { console.error('Usage: node drift-diff.mjs <candidateSweepId>
 const refIdx = args.indexOf('--reference');
 let referenceId = refIdx >= 0 ? args[refIdx + 1] : null;
 if (!referenceId) {
-  const refPath = path.join(HERE, 'REFERENCE-RUN.json');
-  if (!fs.existsSync(refPath)) { console.error('No --reference and no REFERENCE-RUN.json'); process.exit(2); }
+  const refFileIdx = args.indexOf('--reference-file');
+  if (refFileIdx >= 0 && !args[refFileIdx + 1]) {
+    // Exit 2, not an uncaught throw — exit 1 means DRIFT to the gate.
+    console.error('--reference-file requires a path');
+    process.exit(2);
+  }
+  const refPath = refFileIdx >= 0
+    ? path.resolve(args[refFileIdx + 1])
+    : path.join(HERE, 'REFERENCE-RUN.json');
+  if (!fs.existsSync(refPath)) { console.error(`No --reference and no reference file at ${refPath}`); process.exit(2); }
   referenceId = JSON.parse(fs.readFileSync(refPath, 'utf8')).sweepId;
 }
 

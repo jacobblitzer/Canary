@@ -1,6 +1,6 @@
 {
   "name": "display-inv-adr38-fade-walk",
-  "workload": "qualia",
+  "workload": "qualia-desktop",
   "description": "Display-sweep W4 frozen invariant (Qualia spec/DISPLAY-BEHAVIOR.md): walking every context of the qnode-junction-alignment fixture, (1) ADR 0038 holds — the frame-geometry position junctions consume equals the rendered-position cache for every node (drift < 1e-3), and (2) every fade alpha sits on the discrete FadeState table {0, 0.15, 0.28, 0.4, 1}. Derived from sweep w3-planar-r1 (78 context states, zero violations).",
   "setup": {
     "canvas": { "width": 1280, "height": 720 },

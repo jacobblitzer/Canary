@@ -57,14 +57,31 @@ state surface than Penumbra:
 Canary/workloads/qualia/
 ├── workload.json        # see "Configuration" below
 ├── AGENT_NOTES.md       # operator-facing hook + action reference
-├── tests/               # 78 test definitions (diag-*, landing-*,
-│                          main-*, playground-*, qualia-v4-*, rh2-*)
-├── suites/              # 6 suites:
-│                          landing-screen.json, display-modes.json,
-│                          multi-display.json, pencil-diff.json,
-│                          playground.json, qualia-v4-ui.json
-├── baselines/           # committed reference PNGs per §16
-└── results/             # ephemeral; gitignored
+├── tests/               # ~130 test definitions (diag-*, display-inv-*,
+│                          eager-l3-*, landing-*, main-*, playground-*,
+│                          qualia-v4-*, resolver-*, rh2-*, sweep-w*-*,
+│                          viewport-*)
+├── suites/              # 17 suites (incl. display-invariants,
+│                          settings-resolver, eager-l3, viewport-extras
+│                          + 7 generated sweep-w* suites)
+├── sweeps/              # display-sweep toolchain (generator, driver,
+│                          derive, drift-diff, REFERENCE-RUN*.json)
+└── results/             # per-test dirs; candidates/ + runs/ ephemeral,
+                           baselines/ live INSIDE each test dir
+                           (results/<suite>/<test>/baselines/*.png —
+                           there is NO top-level baselines/ dir)
+
+Canary/workloads/qualia-desktop/   # platform-foundation P1 (2026-07-22)
+├── workload.json        # agentType qualia-cdp + qualiaConfig.desktop:
+│                          true — boots the PACKAGED exe (TauriAppManager:
+│                          isolated WebView2 profile, CDP :9224,
+│                          tauri.localhost attach) instead of Vite+Chrome
+├── tests/               # pdesk-* parity smoke tests, copied
+│                          display-inv-* contracts, generated
+│                          sweep-desktop-mini-* families
+├── suites/              # platform-parity, display-invariants,
+│                          sweep-desktop-mini
+└── results/             # separate baseline tree (keys off workload name)
 ```
 
 ## Cross-repo file map
@@ -72,16 +89,20 @@ Canary/workloads/qualia/
 **Canary-side:**
 
 - `src/Canary.Agent.Qualia/` — bridge agent (`QualiaBridgeAgent.cs`,
-  `QualiaConfig.cs`, `ViteManager.cs`). Spawns `npm run dev`, launches
-  Chrome with `--remote-debugging-port=<cdpPort>`, navigates to the
-  Vite URL, drives via CDP `Runtime.evaluate` against the `__canary*`
-  hooks installed by the app.
-- `workloads/qualia/workload.json` — `agentType: "qualia-cdp"`; carries
-  the `qualiaConfig` block (see Configuration).
+  `QualiaConfig.cs`, `ViteManager.cs`, `TauriAppManager.cs`). Web leg:
+  spawns `npm run dev`, launches Chrome with
+  `--remote-debugging-port=<cdpPort>`, navigates to the Vite URL.
+  Desktop leg (`qualiaConfig.desktop: true`): launches the packaged exe
+  with an isolated WebView2 profile + CDP env var, attaches to the
+  tauri.localhost page target, normalizes captures via
+  Emulation.setDeviceMetricsOverride. Both drive CDP `Runtime.evaluate`
+  against the `__canary*` hooks installed by the app.
+- `workloads/qualia/workload.json` (+ `workloads/qualia-desktop/…`) —
+  `agentType: "qualia-cdp"`; carries the `qualiaConfig` block (see
+  Configuration).
 - `workloads/qualia/AGENT_NOTES.md` — per-action mapping table +
   hook surface inventory (operator-facing).
-- `workloads/qualia/tests/*.json` — 78 fixtures.
-- `workloads/qualia/suites/*.json` — 6 suites.
+- `workloads/qualia/tests/*.json` — ~130 fixtures (17 suites).
 
 **Qualia-side (the hook contract):**
 

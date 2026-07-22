@@ -1,0 +1,16 @@
+{
+  "name": "display-inv-profile-self-control",
+  "workload": "qualia-desktop",
+  "description": "Display-sweep W4 frozen invariant (Qualia spec/DISPLAY-BEHAVIOR.md): the sweep reset protocol is sound — clearTouchedPerfFields + applyProfile(base) fully reverts an untouched-mode perf mutation (profile-to-self control: 0 effect, 0 leak, no touched fields). Derived from w2-atlas-r2 control states. If this fails, every future sweep's data is suspect — fix this FIRST.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const un = (e) => (e && e.ok === true ? e.value : (e && e.ok === false ? null : e)); const r = window.__canaryLoadDDV({ select: false }); if (!r || !r.ok) throw new Error('LoadDDV failed'); window.__canaryClearTouchedPerfFields(); window.__canaryApplyProfile('minimal'); await window.__canaryWaitForRenderSettled(5000); const before = un(window.__canaryGetPerfSettings()).edgeWidthPx; window.__canarySetPerfSettings({ edgeWidthPx: 9.75 }, { markTouched: false }); await window.__canaryWaitForRenderSettled(5000); const mutated = un(window.__canaryGetPerfSettings()).edgeWidthPx; if (mutated !== 9.75) throw new Error('mutation did not apply: ' + mutated); window.__canaryClearTouchedPerfFields(); window.__canaryApplyProfile('minimal'); await window.__canaryWaitForRenderSettled(5000); const after = un(window.__canaryGetPerfSettings()).edgeWidthPx; const touched = un(window.__canaryGetTouchedPerfFields()); const profile = (un(window.__canaryGetPersonaConfig()) || window.__canaryGetPersonaConfig()).profile; if (after !== before) throw new Error('RESET BROKEN: edgeWidthPx ' + after + ' != base ' + before + ' after clearTouched + re-apply'); if (Array.isArray(touched) && touched.length) throw new Error('RESET BROKEN: touched fields survive: ' + touched.join(',')); if (profile !== 'minimal') throw new Error('RESET BROKEN: profile is ' + profile); return 'pass: reset protocol reverts untouched-mode mutations cleanly'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "display-inv-profile-self-control-marker", "mode": "capture", "stabilizeMs": 500 }
+  ]
+}

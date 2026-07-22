@@ -1,0 +1,16 @@
+{
+  "name": "pdesk-runtime-identity",
+  "workload": "qualia-desktop",
+  "description": "PLATFORM-PARITY row 'packaged desktop': the runtime IS the packaged exe (origin tauri.localhost), the dev middleware is genuinely absent (its /api/* answers are the SPA fallback, not JSON), and the boot adapter is NullFileBackend — NOT a phantom ViteHttpBackend (ADR 0041 bug b) and NOT a restored FSA backend. Read-only; must run before any state-mutating test.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const probe = await fetch('/api/fs/probe'); const ct = (probe.headers.get('content-type') || '').toLowerCase(); const problems = []; if (location.origin !== 'http://tauri.localhost') problems.push('origin is ' + location.origin + ' — not the packaged runtime (tauri:dev hybrid? web?)'); if (!('__TAURI_INTERNALS__' in window)) problems.push('no __TAURI_INTERNALS__ — not inside the Tauri shell'); if (probe.ok && ct.includes('application/json')) problems.push('/api/fs/probe answered real JSON — dev middleware present; this is NOT the packaged runtime (PLATFORM-PARITY hybrid-trap row)'); const info = window.__canaryGetFsAdapterInfo(); if (!info || info.ok !== true) problems.push('__canaryGetFsAdapterInfo unavailable: ' + JSON.stringify(info)); else { const v = info.value; if (v.workspaceLabel !== 'No workspace bound') problems.push('boot adapter is \"' + v.workspaceLabel + '\" — expected NullFileBackend (phantom ViteHttpBackend = ADR 0041 bug b; FSA label = stale qualia-fs-handles residue)'); } if (problems.length) throw new Error('RUNTIME IDENTITY: ' + problems.join(' | ')); return 'pass: packaged runtime, SPA-fallback middleware shape, NullFileBackend boot adapter'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "pdesk-runtime-identity-marker", "mode": "capture", "stabilizeMs": 500 }
+  ]
+}

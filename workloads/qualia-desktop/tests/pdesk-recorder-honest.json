@@ -1,0 +1,16 @@
+{
+  "name": "pdesk-recorder-honest",
+  "workload": "qualia-desktop",
+  "description": "DebugRecorder honesty (P0): toggling Debug on the packaged exe starts an in-memory session whose FIRST disk write flips diskSinkAvailable to false with exactly one console warning — not the pre-P0 silent fetch-per-capture into the SPA fallback. Uses the additive diskSinkAvailable field on __canaryGetRecorderState.",
+  "setup": {
+    "canvas": { "width": 1280, "height": 720 },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const warns = []; const origWarn = console.warn; console.warn = (...a) => { warns.push(a.join(' ')); origWarn(...a); }; const btn = document.querySelector('.debug-toggle'); if (!btn) { console.warn = origWarn; throw new Error('no .debug-toggle button in toolbar'); } try { btn.click(); const deadline = Date.now() + 8000; while (Date.now() < deadline) { const s = window.__canaryGetRecorderState(); if (s && s.ok === true && s.value.diskSinkAvailable !== null) break; await new Promise(r => setTimeout(r, 250)); } } finally { console.warn = origWarn; } const state = window.__canaryGetRecorderState(); const problems = []; if (!state || state.ok !== true) problems.push('recorder state unavailable: ' + JSON.stringify(state)); else { if (state.value.isRecording !== true) problems.push('debug toggle did not start a recorder session'); if (state.value.diskSinkAvailable !== false) problems.push('diskSinkAvailable = ' + state.value.diskSinkAvailable + ' — expected false on the packaged exe (null = no write attempted, true = middleware claimed present)'); } const recorderWarns = warns.filter(w => w.includes('[DebugRecorder]')); if (recorderWarns.length !== 1) problems.push('expected exactly 1 DebugRecorder warn, saw ' + recorderWarns.length + ': ' + recorderWarns.join(' // ')); const btn2 = document.querySelector('.debug-toggle'); if (btn2) { btn2.click(); await new Promise(r => setTimeout(r, 500)); } if (problems.length) throw new Error('RECORDER HONESTY: ' + problems.join(' | ')); return 'pass: in-memory session, single honest warn, diskSink=false'; })()"
+    ]
+  },
+  "checkpoints": [
+    { "name": "pdesk-recorder-honest-marker", "mode": "capture", "stabilizeMs": 500 }
+  ]
+}
