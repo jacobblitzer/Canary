@@ -1,6 +1,6 @@
 {
   "name": "platform-parity",
-  "description": "Platform-foundation P1+P2 smoke suite — the packaged exe's honesty contract (Qualia spec/PLATFORM-PARITY.md). Structural assertions against the desktop runtime: runtime + boot-adapter identity (no phantom HTTP adapter), startup-content parity (shipped 63-node sample, not the inline toy), S-key/Snapshot gating, DebugRecorder honest no-op, dist demo availability, the bind -> mutate -> menu-save -> rebind disk roundtrip, and (P2) TauriFsAdapter v2: live hash-based staleness detection + binary/hash/concurrency roundtrip. Run: canary run --workload qualia-desktop --suite platform-parity --headless. Tests share one exe boot and run in listed order — the read-only identity/startup tests run FIRST; the bind/adapter-rebinding tests (roundtrip, staleness, binary) run last.",
+  "description": "Platform-foundation P1+P2+P3 smoke suite — the packaged exe's honesty contract (Qualia spec/PLATFORM-PARITY.md). Structural assertions against the desktop runtime: runtime + boot-adapter identity (no phantom HTTP adapter), startup-content parity (shipped 63-node sample, not the inline toy), S-key/Snapshot gating, DebugRecorder honest no-op, dist demo availability, the bind -> mutate -> menu-save -> rebind disk roundtrip, (P2) TauriFsAdapter v2: live hash-based staleness detection + binary/hash/concurrency roundtrip, and (P3) in-webview Import Directory: walkDirectory over a TauriFsAdapter with no node on PATH (the deleted ingest_directory Rust command). Run: canary run --workload qualia-desktop --suite platform-parity --headless. Tests share one exe boot and run in listed order — the read-only identity/startup tests run FIRST; the bind/adapter-rebinding tests (roundtrip, staleness, binary, ingest-in-webview) run last.",
   "tests": [
     "pdesk-runtime-identity",
     "pdesk-startup-content",
@@ -9,6 +9,7 @@
     "pdesk-demo-load",
     "pdesk-bind-save-roundtrip",
     "pdesk-hash-staleness",
-    "pdesk-binary-roundtrip"
+    "pdesk-binary-roundtrip",
+    "pdesk-ingest-in-webview"
   ]
 }

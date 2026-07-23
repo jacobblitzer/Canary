@@ -76,11 +76,11 @@ Canary/workloads/qualia-desktop/   # platform-foundation P1 (2026-07-22)
 │                          true — boots the PACKAGED exe (TauriAppManager:
 │                          isolated WebView2 profile, CDP :9224,
 │                          tauri.localhost attach) instead of Vite+Chrome
-├── tests/               # pdesk-* parity smoke tests (8 as of P2 —
-│                          incl. hash-staleness + binary-roundtrip),
-│                          copied display-inv-* contracts, generated
-│                          sweep-desktop-mini-* families
-├── suites/              # platform-parity (8 tests), display-invariants,
+├── tests/               # pdesk-* parity smoke tests (9 as of P3 —
+│                          incl. hash-staleness, binary-roundtrip,
+│                          ingest-in-webview), copied display-inv-*
+│                          contracts, generated sweep-desktop-mini-* families
+├── suites/              # platform-parity (9 tests), display-invariants,
 │                          sweep-desktop-mini
 └── results/             # separate baseline tree (keys off workload name)
 ```
@@ -92,6 +92,18 @@ known-answer == crypto.subtle, optimistic concurrency), via two new
 Qualia hooks `__canaryFsRoundtrip` + `__canaryGetNodePointers` (see
 AGENT_NOTES.md). The `pdesk-bind-save-roundtrip` capability tripwire
 flipped to assert `hash === true`.
+
+P3 (2026-07-22) added `pdesk-ingest-in-webview` (platform-parity now **9**):
+the desktop Import Directory contract on the packaged exe with NO node on
+PATH — `walkDirectory` runs in the webview over a TauriFsAdapter (the Rust
+`ingest_directory` command is DELETED, Qualia ADR 0043), via one new hook
+`__canaryIngestDirectory(absolutePath, opts?)` (read-only by default;
+`opts.write` performs the per-directory `.qualia.json` vault writes). See
+AGENT_NOTES.md § P3 addendum. Fresh-session review (2026-07-22) hardened the
+test (`edgeCount === 1`; exact-byte write read-back) after finding it was a
+first-run false green — Qualia now skips the `.qualia.rag/` sidecar so the
+fixed vault is re-runnable; **re-run the parity suite twice** when validating
+ingest changes.
 
 ## Cross-repo file map
 

@@ -546,3 +546,40 @@ exit 0 vs REFERENCE-RUN-DESKTOP.
   TauriFsAdapter.resolve, fs_read/write/stat commands are async (off
   the UI thread), Windows renames map to delete+create, the dev
   middleware enforces expectedHash '' like every other adapter.
+
+### 2026-07-22 addendum — P3 in-webview ingest (platform-parity now 9)
+
+- `__canaryIngestDirectory(absolutePath, opts?)` → `{ mode, nodeCount,
+  edgeCount, contextCount, warnings, filesWritten?, writtenPaths? }`.
+  Runs the directory ingest IN THE WEBVIEW over a TauriFsAdapter bound to
+  `absolutePath` — the automation twin of ImportDirectoryDialog's core
+  (Qualia ADR 0043). `opts`: `{ nestMode?, edges?, maxDepth?,
+  includeAllFiles?, write? }`. READ-ONLY by default (never loads the graph
+  into the store); with `write: true` AND `nestMode: 'per-directory'` it
+  writes each `.qualia.json` INTO the vault + read-back-verifies each,
+  returning `filesWritten` + `writtenPaths`. Tauri-gated like
+  `__canaryBindVault`. Proves the packaged exe ingests with NO node on
+  PATH — the Rust `ingest_directory` command is DELETED (walkDirectory is
+  now a browser-safe async IngestFs walk).
+- New parity test `pdesk-ingest-in-webview` (suites/platform-parity.json
+  now **9** tests; runs LAST — it binds the adapter to write sub/c.md).
+  Builds a.md (frontmatter link → b.md) + b.md via the flat debug writer,
+  a `.qualia.json` solution for bindVault, and sub/c.md through the bound
+  adapter; asserts qverses ingest = 3 nodes / 2 ctx / 1 edge / 0 warnings
+  + read-only (store untouched), and per-directory write = filesWritten 2
+  (`.qualia.json` + `sub/.qualia.json`), re-ingest still 3 (written
+  `.qualia.json` stay walk-skipped). Known-answer pinned from the CLI on
+  an identical tree.
+- Ingest changes do NOT move display fingerprints — desktop mini-atlas
+  drift-diff stays exit 0 vs REFERENCE-RUN-DESKTOP; display-invariants 3/3
+  both legs.
+- **Fresh-session review addendum (2026-07-22):** `pdesk-ingest-in-webview`
+  was a first-run false green — it CRASHED (`nodeCount 6 != 3`) on the 2nd
+  consecutive run because `walkDirectory` ingested the `.qualia.rag/` sidecar
+  that `bindVault` hydration drops into the fixed vault. Fixed Qualia-side
+  (`.qualia.rag` → `DEFAULT_SKIP`); the test is now re-runnable (green twice
+  with the sidecar present). Test HARDENED: `edgeCount === 1` (was `< 1`, which
+  passed on dedup/hierarchical-leak regressions); the hook's per-file write
+  read-back now exact-byte-compares (was `JSON.parse` only — a byte-identical
+  stale leftover could satisfy it). Re-run the parity suite TWICE when
+  validating ingest changes — a single run hides vault-state contamination.
