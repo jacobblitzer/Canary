@@ -30,6 +30,18 @@ public sealed class QualiaConfig
     [JsonPropertyName("vitePort")]
     public int VitePort { get; set; } = 5173;
 
+    /// <summary>
+    /// The npm script <see cref="ViteManager"/> runs (<c>npm run {viteScript}</c>).
+    /// Default <c>"dev"</c> = the Vite dev server (dev-web leg). Set
+    /// <c>"preview"</c> for the deployed-web leg (platform-foundation P4):
+    /// <c>vite preview</c> serves the built <c>dist/</c> — so <c>npm run build</c>
+    /// MUST run first, or the harness silently tests a stale bundle. Both
+    /// scripts print <c>localhost:{port}</c>, which is what ViteManager's
+    /// readiness watch keys off, so no other plumbing changes.
+    /// </summary>
+    [JsonPropertyName("viteScript")]
+    public string ViteScript { get; set; } = "dev";
+
     /// <summary>Viewport pixel width for captures (default 1280).</summary>
     [JsonPropertyName("defaultCanvasWidth")]
     public int DefaultCanvasWidth { get; set; } = 1280;

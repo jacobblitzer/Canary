@@ -1,0 +1,23 @@
+{
+  "name": "display-inv-adr38-fade-walk",
+  "workload": "qualia-web",
+  "description": "Display-sweep W4 frozen invariant (Qualia spec/DISPLAY-BEHAVIOR.md): walking every context of the qnode-junction-alignment fixture, (1) ADR 0038 holds — the frame-geometry position junctions consume equals the rendered-position cache for every node (drift < 1e-3), and (2) every fade alpha sits on the discrete FadeState table {0, 0.15, 0.28, 0.4, 1}. Derived from sweep w3-planar-r1 (78 context states, zero violations).",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const un = (e) => (e && e.ok === true ? e.value : (e && e.ok === false ? null : e)); const load = await window.__canaryLoadDemo('qnode-junction-alignment-test'); if (!load || load.ok !== true) throw new Error('fixture load failed'); await new Promise(r => setTimeout(r, 400)); window.__canaryApplyProfile('minimal'); const FADE = [0, 0.15, 0.28, 0.4, 1]; const ctxs = un(window.__canaryListContexts()) || []; if (!ctxs.length) throw new Error('VACUOUS: __canaryListContexts returned no contexts — nothing was asserted'); const problems = []; let walked = 0; for (const c of ctxs) { window.__canarySwitchContext(c.id); await window.__canaryWaitForRenderSettled(8000); await new Promise(r => setTimeout(r, 900)); const frame = un(window.__canaryGetFrameGeometry({ includeJunctions: true })); const nodes = (frame && frame.nodes) ? frame.nodes : {}; walked += Object.keys(nodes).length; for (const id of Object.keys(nodes)) { const rendered = un(window.__canaryGetRenderedNodePosition(id)); const fp = nodes[id].position; if (Array.isArray(rendered) && Array.isArray(fp)) { const d = Math.hypot(fp[0] - rendered[0], fp[1] - rendered[1], fp[2] - rendered[2]); if (d > 1e-3) problems.push('ADR0038 drift ' + d.toFixed(4) + ' on ' + id + ' in ' + c.id); } const a = un(window.__canaryGetNodeFadeAlpha(id)); if (typeof a === 'number' && !FADE.some(t => Math.abs(a - t) < 1e-3)) problems.push('off-table fade ' + a + ' on ' + id + ' in ' + c.id); } } window.__canarySwitchContext(null); if (!walked) throw new Error('VACUOUS: zero frame nodes across ' + ctxs.length + ' contexts — nothing was asserted'); if (problems.length) throw new Error('INVARIANT VIOLATIONS: ' + problems.slice(0, 5).join('; ')); return 'pass: ' + ctxs.length + ' contexts, ' + walked + ' node-checks, ADR-0038 + fade table hold'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "display-inv-adr38-fade-walk-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

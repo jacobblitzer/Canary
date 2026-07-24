@@ -573,6 +573,36 @@ exit 0 vs REFERENCE-RUN-DESKTOP.
 - Ingest changes do NOT move display fingerprints — desktop mini-atlas
   drift-diff stays exit 0 vs REFERENCE-RUN-DESKTOP; display-invariants 3/3
   both legs.
+
+## P4 addendum (2026-07-24) — the qualia-web deployed-web leg
+
+- **NO new `__canary*` hooks.** The `qualia-web` workload
+  (`workloads/qualia-web/`) reuses the existing surface — `__canaryWaitForReady`,
+  `__canaryCloseLandingScreen`, `__canaryGetFsAdapterInfo`, `__canaryFsRoundtrip`
+  (returns `{ok:false, reason:'FsAdapter is read-only: no workspace bound.'}` on
+  the NullFileBackend boot adapter — the P4 read-only proof), `__canaryLoadDemo`,
+  `__canaryGetFullSnapshot`, `__canaryGetRecorderState`, and the display hooks.
+  No hook-stability event.
+- **One Canary-side field:** `QualiaConfig.viteScript` (default `"dev"`) →
+  `ViteManager` runs `npm run {viteScript}`. `qualia-web` sets `"preview"`
+  (serves `dist/` on 4173, cdpPort 9225). Penumbra has its OWN `ViteManager`
+  class → zero blast radius; `qualia-cdp` routes past `AppLauncher` so
+  `appPath`/`appArgs` are vestigial (documentation only).
+- **PRECONDITION: `npm run build` FIRST** before any `qualia-web` run — the leg
+  tests `dist/`; a stale dist silently tests old code.
+- `pweb-runtime-identity` REPORTS `'showDirectoryPicker' in window` — it does
+  NOT require it. FSA is a browser capability (Chrome/Edge expose the directory
+  picker; Canary's default browser Brave disables it for privacy — see
+  `ChromeLauncher` candidate order), not a deployed-web contract. A hard require
+  crashed on Brave; the NullFileBackend read-only truth is the parity row proven.
+- `pweb-csp-enforced` injects an external `https://example.com/...` `<script>`
+  and asserts a `securitypolicyviolation` fires — the deliberate violation logs
+  ONE console error, which the harness tolerates (pass/fail is the setup
+  command's return). Runs LAST in the suite.
+- The Qualia-side CSP meta is WEB-ONLY (gated on `TAURI_ENV_PLATFORM`) — it must
+  NOT ship in the packaged desktop dist (it breaks the native-menu event path;
+  desktop `pdesk-bind-save-roundtrip` CRASHES with it present). See Qualia ADR
+  0044.
 - **Fresh-session review addendum (2026-07-22):** `pdesk-ingest-in-webview`
   was a first-run false green — it CRASHED (`nodeCount 6 != 3`) on the 2nd
   consecutive run because `walkDirectory` ingested the `.qualia.rag/` sidecar

@@ -16,12 +16,14 @@ public sealed partial class ViteManager : IDisposable
     private Process? _process;
     private readonly string _projectDir;
     private readonly int _port;
+    private readonly string _viteScript;
     private bool _disposed;
 
-    public ViteManager(string projectDir, int port = 5173)
+    public ViteManager(string projectDir, int port = 5173, string viteScript = "dev")
     {
         _projectDir = projectDir;
         _port = port;
+        _viteScript = string.IsNullOrWhiteSpace(viteScript) ? "dev" : viteScript;
     }
 
     public async Task StartAsync(TimeSpan? timeout = null, CancellationToken ct = default)
@@ -39,7 +41,12 @@ public sealed partial class ViteManager : IDisposable
         var psi = new ProcessStartInfo
         {
             FileName = "cmd.exe",
-            Arguments = $"/c npm run dev -- --port {_port} --strictPort",
+            // `npm run {dev|preview} -- --port N --strictPort`. Both scripts
+            // print `localhost:{port}` on ready, which the OutputDataReceived
+            // watch below keys off. `preview` serves the pre-built dist/
+            // (the deployed-web P4 leg) — the workload's precondition is that
+            // `npm run build` already ran.
+            Arguments = $"/c npm run {_viteScript} -- --port {_port} --strictPort",
             WorkingDirectory = _projectDir,
             UseShellExecute = false,
             RedirectStandardOutput = true,
@@ -57,7 +64,7 @@ public sealed partial class ViteManager : IDisposable
             commandLine: $"{psi.FileName} {psi.Arguments}",
             workingDirectory: _projectDir,
             port: _port,
-            intent: $"Qualia Vite dev server (port {_port}, projectDir={_projectDir})");
+            intent: $"Qualia Vite '{_viteScript}' server (port {_port}, projectDir={_projectDir})");
 
         var ready = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 

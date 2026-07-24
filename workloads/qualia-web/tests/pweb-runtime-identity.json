@@ -1,0 +1,23 @@
+{
+  "name": "pweb-runtime-identity",
+  "workload": "qualia-web",
+  "description": "PLATFORM-PARITY row 'deployed web': the runtime is the built dist/ served statically (origin http://localhost:4173, local profile), NOT inside the Tauri shell (no __TAURI_INTERNALS__); the dev middleware is genuinely absent (its /api/* answers are the SPA fallback — 200+index.html, not JSON); and the boot adapter is NullFileBackend ('No workspace bound'). FSA workspace-bind availability (showDirectoryPicker) is a BROWSER capability, not a deployed-web contract — Chrome/Edge expose it (verified manually), but the harness's default browser (Brave, per Canary ChromeLauncher's candidate order) disables the File System Access directory picker for privacy — so it is REPORTED, never asserted (a hard require would crash on Brave for a non-deployed-web reason). Read-only; must run before any state-mutating test.",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const probe = await fetch('/api/fs/probe'); const ct = (probe.headers.get('content-type') || '').toLowerCase(); const problems = []; if (location.origin !== 'http://localhost:4173') problems.push('origin is ' + location.origin + ' — not the deployed-web preview (expected http://localhost:4173)'); if ('__TAURI_INTERNALS__' in window) problems.push('__TAURI_INTERNALS__ present — inside the Tauri shell, not deployed web'); if (probe.ok && ct.includes('application/json')) problems.push('/api/fs/probe answered real JSON — dev middleware present; this is the dev-web leg, not the served dist'); const info = window.__canaryGetFsAdapterInfo(); if (!info || info.ok !== true) problems.push('__canaryGetFsAdapterInfo unavailable: ' + JSON.stringify(info)); else { const v = info.value; if (v.workspaceLabel !== 'No workspace bound') problems.push('boot adapter is \"' + v.workspaceLabel + '\" — expected NullFileBackend (phantom ViteHttpBackend = ADR 0041 bug b; FSA label = stale qualia-fs-handles residue)'); } if (problems.length) throw new Error('RUNTIME IDENTITY: ' + problems.join(' | ')); const fsaPicker = 'showDirectoryPicker' in window; return 'pass: deployed-web runtime (localhost:4173, no Tauri), SPA-fallback middleware shape, NullFileBackend boot; FSA directory-picker in this browser: ' + fsaPicker; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pweb-runtime-identity-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

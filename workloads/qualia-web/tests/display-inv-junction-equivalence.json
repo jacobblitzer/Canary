@@ -1,0 +1,23 @@
+{
+  "name": "display-inv-junction-equivalence",
+  "workload": "qualia-web",
+  "description": "Display-sweep W4 frozen invariant (Qualia spec/DISPLAY-BEHAVIOR.md): the render.junction.* persona path and a direct activeJunction perf write are the SAME lever — applying either from the same base yields identical activeJunction + identical junction frame geometry. Derived from sweep w2-atlas-r2 (byte-identical 16-path effects). Guards the persona-intent wiring: if an intent refactor decouples the two, this fails.",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const un = (e) => (e && e.ok === true ? e.value : (e && e.ok === false ? null : e)); const r = window.__canaryLoadDDV({ select: false }); if (!r || !r.ok) throw new Error('LoadDDV failed'); const reset = async () => { window.__canaryClearTouchedPerfFields(); window.__canaryApplyProfile('minimal'); await window.__canaryWaitForRenderSettled(5000); }; const snap = () => { const frame = un(window.__canaryGetFrameGeometry({ includeJunctions: true })); if (!frame || !frame.nodes || Object.keys(frame.nodes).length === 0) throw new Error('VACUOUS: frame geometry unavailable/empty — equivalence would compare null to null'); return JSON.stringify({ aj: un(window.__canaryGetPerfSettings()).activeJunction, frame }); }; await reset(); window.__canarySetPersonaEnabled('render.junction.center', true, { preserveProfile: true }); await window.__canaryWaitForRenderSettled(5000); const viaPersona = snap(); await reset(); window.__canarySetPerfSettings({ activeJunction: 'center' }, { markTouched: false }); await window.__canaryWaitForRenderSettled(5000); const viaPerf = snap(); await reset(); if (viaPersona !== viaPerf) throw new Error('EQUIVALENCE BROKEN: junction persona and activeJunction perf write no longer produce identical state (lengths ' + viaPersona.length + ' vs ' + viaPerf.length + ')'); return 'pass: junction persona == activeJunction perf write (identical frame geometry)'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "display-inv-junction-equivalence-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

@@ -105,6 +105,37 @@ first-run false green — Qualia now skips the `.qualia.rag/` sidecar so the
 fixed vault is re-runnable; **re-run the parity suite twice** when validating
 ingest changes.
 
+### `workloads/qualia-web/` — the deployed-web leg (platform-foundation P4, 2026-07-24)
+
+The THIRD qualia workload: the DEPLOYED-web runtime = the production `dist/`
+served statically. Same `qualia-cdp` agent + Vite+Chrome path as `qualia`, but
+driven by one new `QualiaConfig` field **`viteScript`** (default `"dev"`; here
+`"preview"`) → `ViteManager` runs `npm run preview` (which is `vite preview`,
+serving `dist/` on 4173, origin localhost:4173, NullFileBackend boot). cdpPort
+9225 (9222 penumbra / 9223 qualia-dev / 9224 qualia-desktop). **PRECONDITION:
+`npm run build` FIRST** — the leg tests `dist/`, so a stale dist silently tests
+old code (the harness does NOT build implicitly; same discipline as the desktop
+leg's `tauri:build`).
+
+- `suites/platform-parity.json` (7 `pweb-*`): `pweb-runtime-identity`
+  (localhost:4173, NO `__TAURI_INTERNALS__`, SPA-fallback middleware shape,
+  NullFileBackend boot; FSA directory-picker REPORTED not required — Brave
+  disables it, Chrome/Edge expose it), `pweb-fs-readonly` (write rejected with
+  the exact `ReadOnlyBackendError` message — the read-only truth; no vault bind
+  on this leg, FSA needs a native picker CDP can't drive), `pweb-startup-content`
+  (63-node dist sample), `pweb-skey-snapshot-gated`, `pweb-recorder-honest`,
+  `pweb-demo-load`, `pweb-csp-enforced` (the built-in CSP meta present AND
+  enforced — an injected external https `<script>` fires a
+  `securitypolicyviolation`; presence-only would false-green).
+- `suites/display-invariants.json`: the same 3 frozen display contracts as the
+  other legs, run against the PRODUCTION bundle in a browser.
+- **No sweep/drift leg** (deliberate scope cut — no obs write path on a served
+  build; display fingerprints are already 64/64 identical dev-web↔desktop).
+- The CSP meta is WEB-ONLY (Qualia `vite-plugin-csp` gates on `TAURI_ENV_PLATFORM`);
+  shipping it into the packaged desktop dist breaks the native-menu event path
+  (see Qualia ADR 0044). Run: `canary run --workload qualia-web --suite
+  platform-parity --headless` (7/7) · `--suite display-invariants` (3/3).
+
 ## Cross-repo file map
 
 **Canary-side:**

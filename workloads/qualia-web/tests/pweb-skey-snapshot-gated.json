@@ -1,0 +1,23 @@
+{
+  "name": "pweb-skey-snapshot-gated",
+  "workload": "qualia-web",
+  "description": "Dev-only affordance gating on deployed web (P0): the served dist has NO dev middleware (hasDevMiddleware() false — the /api/* probe SPA-falls-back), so the bare S key must NOT raise the 'Snapshot failed' alert and the Snapshot button must be absent from the viewport toolbar — exactly as on the packaged exe, and UNLIKE the dev-web leg where the middleware is present.",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { let alerted = null; const origAlert = window.alert; window.alert = (m) => { alerted = String(m); }; try { window.dispatchEvent(new KeyboardEvent('keydown', { key: 's' })); await new Promise(r => setTimeout(r, 2500)); } finally { window.alert = origAlert; } const problems = []; if (alerted !== null) problems.push('S key raised alert: ' + alerted); const buttons = Array.from(document.querySelectorAll('.viewport-toolbar button')).map(b => (b.textContent || '').trim()); if (buttons.some(t => t === 'Snapshot' || t === 'Snapshotting…')) problems.push('Snapshot button visible in toolbar despite absent middleware: ' + buttons.join(',')); if (problems.length) throw new Error('S-KEY GATING: ' + problems.join(' | ')); return 'pass: S key silent, Snapshot affordance hidden'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pweb-skey-snapshot-gated-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

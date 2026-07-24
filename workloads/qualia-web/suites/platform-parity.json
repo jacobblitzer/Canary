@@ -1,0 +1,13 @@
+{
+  "name": "platform-parity",
+  "description": "Platform-foundation P4 smoke suite for the DEPLOYED-WEB leg — the served-dist honesty contract (Qualia spec/PLATFORM-PARITY.md, deployed-web row). Structural assertions against `vite preview` serving the production dist/ (origin localhost:4173, no Tauri, no dev middleware): runtime + boot-adapter identity (localhost:4173, no __TAURI_INTERNALS__, NullFileBackend, Chromium FSA available), NullFileBackend read-only truth (write rejected with ReadOnlyBackendError — no vault bind on this leg), startup-content parity (shipped 63-node sample), S-key/Snapshot gating, DebugRecorder honest no-op, dist demo availability, and the CSP meta shipped + ENFORCED (ADR 0044). PRECONDITION: `npm run build` must run first (a stale dist silently tests old code). Run: canary run --workload qualia-web --suite platform-parity --headless. Tests share one preview boot and run in listed order — read-only identity tests first, demo-load then the CSP violation last.",
+  "tests": [
+    "pweb-runtime-identity",
+    "pweb-fs-readonly",
+    "pweb-startup-content",
+    "pweb-skey-snapshot-gated",
+    "pweb-recorder-honest",
+    "pweb-demo-load",
+    "pweb-csp-enforced"
+  ]
+}

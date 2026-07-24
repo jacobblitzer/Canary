@@ -1,0 +1,28 @@
+{
+  "name": "qualia-web",
+  "displayName": "Qualia (Deployed Web — vite preview)",
+  "appPath": "npm.cmd",
+  "appArgs": "run preview",
+  "agentType": "qualia-cdp",
+  "pipeName": "canary-qualia-web",
+  "startupTimeoutMs": 30000,
+  "windowTitle": "Qualia",
+  "viewportClass": "",
+  "qualiaConfig": {
+    "projectDir": "C:\\Repos\\Qualia",
+    "chromePath": "",
+    "cdpPort": 9225,
+    "vitePort": 4173,
+    "viteScript": "preview",
+    "defaultCanvasWidth": 1280,
+    "defaultCanvasHeight": 720,
+    "defaultStabilizeMs": 500,
+    "readyTimeoutSec": 30,
+    "clearLocalStorageOnInit": true,
+    "chromeFlags": [
+      "--force-device-scale-factor=1",
+      "--hide-scrollbars",
+      "--disable-smooth-scrolling"
+    ]
+  }
+}

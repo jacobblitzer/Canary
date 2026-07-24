@@ -1,0 +1,23 @@
+{
+  "name": "pweb-demo-load",
+  "workload": "qualia-web",
+  "description": "Dist demo availability on deployed web: __canaryLoadDemo('workshop-palette') must succeed against the served dist — the demo ships in dist/examples/demos/ and the P0 body-sniff guard ({ vs <) distinguishes it from the SPA fallback (a static host serves .qualia with no/ambiguous content-type). Loads a graph; runs after the read-only startup assertions.",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const load = await window.__canaryLoadDemo('workshop-palette'); if (!load || load.ok !== true) throw new Error('DEMO LOAD: workshop-palette failed: ' + (load && load.reason)); await new Promise(r => setTimeout(r, 600)); const f = window.__canaryGetFullSnapshot(); const nodes = f && f.ok ? f.value.nodes.count : null; if (!nodes || nodes < 3) throw new Error('DEMO LOAD: suspicious node count after load: ' + nodes); return 'pass: workshop-palette loaded from dist (' + nodes + ' nodes)'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pweb-demo-load-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

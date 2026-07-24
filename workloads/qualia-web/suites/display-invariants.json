@@ -1,0 +1,9 @@
+{
+  "name": "display-invariants",
+  "description": "Display-sweep W4 frozen invariants run against the PRODUCTION BUNDLE served on the deployed-web leg (vite preview, dist/) — the first time these frozen display contracts (ADR-0038 rendered==junction-position + FadeState table across a context walk, junction persona == activeJunction perf-write equivalence, reset-protocol control) run against the minified production build in a browser. PRECONDITION: `npm run build` first. Run: canary run --workload qualia-web --suite display-invariants --headless.",
+  "tests": [
+    "display-inv-adr38-fade-walk",
+    "display-inv-junction-equivalence",
+    "display-inv-profile-self-control"
+  ]
+}

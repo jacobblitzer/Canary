@@ -1,0 +1,23 @@
+{
+  "name": "pweb-startup-content",
+  "workload": "qualia-web",
+  "description": "Startup-content parity on the served dist (deployed web): `vite preview` boots the dist-shipped sample workspace (63-node atlas, scope ctx-atlas) — identical to the packaged exe and dev-web, proving the production bundle ships and loads the same graph. Read-only; runs before any test that loads a different graph.",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(() => { const f = window.__canaryGetFullSnapshot(); if (!f || f.ok !== true) throw new Error('full snapshot unavailable: ' + JSON.stringify(f)); const nodes = f.value.nodes && f.value.nodes.count; const scope = f.value.scope && f.value.scope.activeContextId; const problems = []; if (nodes !== 63) problems.push('node count ' + nodes + ' !== 63 (inline toy = 12; wrong/missing dist sample otherwise)'); if (scope !== 'ctx-atlas') problems.push('boot scope ' + scope + ' !== ctx-atlas'); if (problems.length) throw new Error('STARTUP CONTENT: ' + problems.join(' | ')); return 'pass: shipped 63-node sample booted (ctx-atlas)'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pweb-startup-content-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

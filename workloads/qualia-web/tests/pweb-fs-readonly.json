@@ -1,0 +1,23 @@
+{
+  "name": "pweb-fs-readonly",
+  "workload": "qualia-web",
+  "description": "PLATFORM-PARITY row 'deployed web': the boot FsAdapter is the read-only NullFileBackend (capabilities.write=false) — a write is rejected with ReadOnlyBackendError ('FsAdapter is read-only: no workspace bound.', from @qualia/fs types.ts). This is the deployed-web analog of the desktop bind/save roundtrip: no vault can be bound on this leg (FSA needs a native directory picker CDP can't drive), so the parity row proven is the read-only truth. __canaryFsRoundtrip's write throws before any state change — effectively read-only. Runs before any test that could bind an adapter.",
+  "setup": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "commands": [
+      "window.__canaryWaitForReady(30000)",
+      "window.__canaryCloseLandingScreen()",
+      "(async () => { const info = window.__canaryGetFsAdapterInfo(); if (!info || info.ok !== true || info.value.workspaceLabel !== 'No workspace bound') throw new Error('precondition: expected NullFileBackend boot, got ' + JSON.stringify(info)); if (info.value.capabilities.write !== false) throw new Error('NullFileBackend should report capabilities.write=false, got ' + info.value.capabilities.write); const rt = await window.__canaryFsRoundtrip('canary-readonly-probe.bin', btoa('x')); if (!rt || rt.ok !== false) throw new Error('expected the write to be REJECTED on the read-only NullFileBackend, got: ' + JSON.stringify(rt)); if (rt.reason !== 'FsAdapter is read-only: no workspace bound.') throw new Error('unexpected read-only surface: \"' + rt.reason + '\" (expected the ReadOnlyBackendError message)'); const after = window.__canaryGetFsAdapterInfo(); if (!after || after.ok !== true || after.value.workspaceLabel !== 'No workspace bound') throw new Error('adapter changed after a rejected write: ' + JSON.stringify(after)); return 'pass: NullFileBackend read-only — write rejected with ReadOnlyBackendError, adapter unchanged'; })()"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "pweb-fs-readonly-marker",
+      "mode": "capture",
+      "stabilizeMs": 500
+    }
+  ]
+}

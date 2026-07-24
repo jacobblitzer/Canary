@@ -80,8 +80,9 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
             return;
         }
 
-        // 1. Start Vite
-        _vite = new ViteManager(_config.ProjectDir, _config.VitePort);
+        // 1. Start Vite (dev server, or `preview` serving dist/ for the
+        //    deployed-web leg — driven by qualiaConfig.viteScript).
+        _vite = new ViteManager(_config.ProjectDir, _config.VitePort, _config.ViteScript);
         await _vite.StartAsync(TimeSpan.FromSeconds(30), ct).ConfigureAwait(false);
         _appUrl = _vite.Url;
 
