@@ -52,6 +52,20 @@ public sealed class WorkloadConfig
     public List<string> SetupCommands { get; set; } = new();
 
     /// <summary>
+    /// Round-trip catch-all for workload.json sections this type does not model —
+    /// notably the per-agent blocks (<c>qualiaConfig</c>, <c>penumbraConfig</c>) that
+    /// the agent factories deserialize separately from the same file, plus any future
+    /// top-level knobs. Without this, the UI workload editor's load → mutate →
+    /// serialize → overwrite path (<c>WorkloadEditorViewModel.ToJson</c> →
+    /// <c>MainWindow.PersistAndRefreshAsync</c>) silently DELETED those blocks on
+    /// every Save — for qualia-web that lost viteScript/vitePort/cdpPort/projectDir,
+    /// for qualia-desktop <c>desktop:true</c> + <c>appExePath</c> (bug 0018).
+    /// Serialized entries are appended after the known properties.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
+    /// <summary>
     /// Parse a workload config from a JSON string.
     /// </summary>
     public static WorkloadConfig Parse(string json)

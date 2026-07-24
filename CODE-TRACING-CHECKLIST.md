@@ -14,6 +14,29 @@
 
 ---
 
+## Workload editor persistence (WorkloadConfig round-trip)
+
+- **Touching:** `src/Canary.Core/Config/WorkloadConfig.cs`, the editor VMs in
+  `src/Canary.UI.Avalonia/ViewModels/Editors/`, or `MainWindow.PersistAndRefreshAsync`
+- **Trace:** the UI workload editor persists by SERIALIZING the mutated
+  `WorkloadConfig` back over `workload.json` (`WorkloadEditorViewModel.ToJson`
+  → `PersistAndRefreshAsync`). `WorkloadConfig` models only the shared launch
+  fields — the per-agent blocks (`qualiaConfig`, `penumbraConfig`) are
+  deserialized SEPARATELY from the same file by the agent factories/CLI, so
+  they are invisible to this type. `[JsonExtensionData] ExtensionData` (bug
+  0018) is what round-trips them through the editor: REMOVE it and any UI
+  Save on a browser workload silently deletes the whole agent block
+  (qualia-web: viteScript/vitePort/cdpPort/projectDir; qualia-desktop:
+  `desktop:true` + appExePath). A new typed property on WorkloadConfig simply
+  moves that key out of ExtensionData — fine; a new SIBLING agent block needs
+  NO change here to survive. Regression tests:
+  `WorkloadEditorViewModelTests.RoundTrip_PreservesUnknownAgentConfigBlocks`
+  + `RealQualiaWebWorkload_SurvivesEditorSave`.
+- **Why:** the editor path is lossy by construction for anything the POCO
+  doesn't model; the catch-all is the only thing standing between a UI Save
+  and destroyed workload config.
+- **Last bit:** 2026-07-24 (bug 0018)
+
 ## Test checkpoint modes (capture / pixel-diff / vlm)
 
 - **Touching:** any new test JSON in `workloads/rhino/tests/*.json` or `workloads/penumbra/`, or changes to `src/Canary.Core/Orchestration/TestRunner.cs`
