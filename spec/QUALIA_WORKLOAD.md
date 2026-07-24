@@ -115,7 +115,10 @@ serving `dist/` on 4173, origin localhost:4173, NullFileBackend boot). cdpPort
 9225 (9222 penumbra / 9223 qualia-dev / 9224 qualia-desktop). **PRECONDITION:
 `npm run build` FIRST** — the leg tests `dist/`, so a stale dist silently tests
 old code (the harness does NOT build implicitly; same discipline as the desktop
-leg's `tauri:build`).
+leg's `tauri:build`). Since the P4 review, Qualia's `prepreview` guard
+fail-fasts a MISSING or DESKTOP-FLAVOR (meta-less, tauri-built) dist with a
+named error; a stale-but-web-flavor dist remains silent — the build-first
+discipline still applies.
 
 - `suites/platform-parity.json` (7 `pweb-*`): `pweb-runtime-identity`
   (localhost:4173, NO `__TAURI_INTERNALS__`, SPA-fallback middleware shape,

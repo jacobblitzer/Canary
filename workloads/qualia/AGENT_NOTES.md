@@ -603,6 +603,19 @@ exit 0 vs REFERENCE-RUN-DESKTOP.
   NOT ship in the packaged desktop dist (it breaks the native-menu event path;
   desktop `pdesk-bind-save-roundtrip` CRASHES with it present). See Qualia ADR
   0044.
+- **P4 review pass (2026-07-24, Fable):** `pweb-csp-enforced` now EXACT-MATCHES
+  the frozen policy string — the per-directive substring checks alone were
+  prefix-tolerant (an APPENDED `'unsafe-eval'` passed both them and the
+  violation probe); a deliberate policy change must update the test +
+  `vite-plugin-csp.ts` + ADR 0044 together. `pweb-`/`pdesk-skey-snapshot-gated`
+  gained a positive floor (toolbar exists + ≥1 button — the negative-only
+  checks passed vacuously on selector drift). Qualia's `prepreview` dist-flavor
+  guard fail-fasts the qualia-web leg on a missing or desktop-flavor (meta-less)
+  dist; ViteManager failure messages now name the actual script and carry the
+  child's recent output. Troika text on the served dist REQUIRES Qualia's
+  `troikaConfig.ts` meta-gated main-thread fallback (blob-URL workers INHERIT
+  the meta — ADR 0044 addendum 5); if signpost/jewel text vanishes on this leg
+  only, check that guard first.
 - **Fresh-session review addendum (2026-07-22):** `pdesk-ingest-in-webview`
   was a first-run false green — it CRASHED (`nodeCount 6 != 3`) on the 2nd
   consecutive run because `walkDirectory` ingested the `.qualia.rag/` sidecar

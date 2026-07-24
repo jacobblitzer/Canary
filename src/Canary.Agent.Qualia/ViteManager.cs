@@ -26,6 +26,30 @@ public sealed partial class ViteManager : IDisposable
         _viteScript = string.IsNullOrWhiteSpace(viteScript) ? "dev" : viteScript;
     }
 
+    // P4 review: keep the last few process output lines and surface them in
+    // failure messages — an npm pre-script failure (e.g. Qualia's
+    // `prepreview` dist-flavor guard) otherwise dies as a bare exit code.
+    private readonly System.Collections.Generic.Queue<string> _recentOutput = new();
+
+    private void RememberOutput(string line)
+    {
+        lock (_recentOutput)
+        {
+            _recentOutput.Enqueue(line);
+            while (_recentOutput.Count > 8) _recentOutput.Dequeue();
+        }
+    }
+
+    private string RecentOutputSuffix()
+    {
+        lock (_recentOutput)
+        {
+            return _recentOutput.Count == 0
+                ? string.Empty
+                : $" Recent output: {string.Join(" | ", _recentOutput)}";
+        }
+    }
+
     public async Task StartAsync(TimeSpan? timeout = null, CancellationToken ct = default)
     {
         if (_process != null)
@@ -55,7 +79,7 @@ public sealed partial class ViteManager : IDisposable
         };
 
         _process = Process.Start(psi)
-            ?? throw new InvalidOperationException("Failed to start Vite dev server.");
+            ?? throw new InvalidOperationException($"Failed to start Vite '{_viteScript}' server.");
 
         // Phase 6 / §C7 Tier 2 — voluntary spawn registration.
         Canary.Telemetry.SpawnRegistry.Default.Register(
@@ -72,6 +96,7 @@ public sealed partial class ViteManager : IDisposable
         {
             if (e.Data == null) return;
             var clean = StripAnsi(e.Data);
+            RememberOutput(clean);
             if (clean.Contains($"localhost:{_port}") || clean.Contains($"127.0.0.1:{_port}") ||
                 clean.Contains("ready in"))
             {
@@ -83,6 +108,7 @@ public sealed partial class ViteManager : IDisposable
         {
             if (e.Data == null) return;
             var clean = StripAnsi(e.Data);
+            RememberOutput(clean);
             if (clean.Contains($"localhost:{_port}") || clean.Contains($"127.0.0.1:{_port}") ||
                 clean.Contains("ready in"))
             {
@@ -102,7 +128,7 @@ public sealed partial class ViteManager : IDisposable
         {
             await _process.WaitForExitAsync(ct).ConfigureAwait(false);
             ready.TrySetException(new InvalidOperationException(
-                $"Vite process exited unexpectedly with code {_process.ExitCode}"));
+                $"Vite '{_viteScript}' process exited unexpectedly with code {_process.ExitCode}.{RecentOutputSuffix()}"));
         }, ct);
 
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -116,8 +142,8 @@ public sealed partial class ViteManager : IDisposable
         {
             StopInternal();
             throw new TimeoutException(
-                $"Vite dev server did not start within {effectiveTimeout.TotalSeconds}s. " +
-                $"Check that 'npm run dev' works in {_projectDir}");
+                $"Vite '{_viteScript}' server did not start within {effectiveTimeout.TotalSeconds}s. " +
+                $"Check that 'npm run {_viteScript}' works in {_projectDir}.{RecentOutputSuffix()}");
         }
         catch
         {
