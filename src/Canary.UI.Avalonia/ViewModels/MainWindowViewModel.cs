@@ -126,6 +126,10 @@ public partial class MainWindowViewModel : ObservableObject
 
         Tests.Tree.SelectedNode = target;
         Tests.ModeOverride = AutoRunRequestHandler.ParseMode(args.Mode);
+        // --keep-open from the CLI sets the SAME toggle the operator would
+        // click, so the UI shows the state honestly (previously the flag was
+        // dropped at this handoff and passing runs always closed the app).
+        if (args.KeepOpen) Tests.KeepAppOpen = true;
         await Tests.RunSelectionAsync().ConfigureAwait(true);
     }
 

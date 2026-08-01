@@ -1319,12 +1319,26 @@ public sealed class TestRunner
                 resolvedPath = Path.Combine(_workloadsDir, workload.Name, setup.File);
             }
             var ext = Path.GetExtension(resolvedPath).ToLowerInvariant();
-            _logger.Log($"Opening file: {resolvedPath}");
             if (ext == ".gh" || ext == ".ghx")
             {
+                // Open a TEMP COPY, never the repo fixture itself. Anyone
+                // exploring in a Canary-launched Rhino who presses Ctrl+S
+                // saves the OPEN doc — which used to be the fixture. A saved-in
+                // build survives cleanup pulses (Slop tags don't persist
+                // through save/reopen) and poisons every later run with
+                // duplicate panel nicknames (2026-07-26 and again -27, hours
+                // after the "don't save the fixture" doc note — docs don't
+                // fix workflows, isolation does). Saves now land in the copy.
+                var tempDir = Path.Combine(Path.GetTempPath(), "canary-fixtures");
+                Directory.CreateDirectory(tempDir);
+                var tempPath = Path.Combine(
+                    tempDir,
+                    $"{Path.GetFileNameWithoutExtension(resolvedPath)}-{Guid.NewGuid():N}{ext}");
+                File.Copy(resolvedPath, tempPath, overwrite: true);
+                _logger.Log($"Opening file: {resolvedPath} (as temp copy {Path.GetFileName(tempPath)})");
                 await client.ExecuteAsync("OpenGrasshopperDefinition", new Dictionary<string, string>
                 {
-                    ["path"] = resolvedPath
+                    ["path"] = tempPath
                 }, ct).ConfigureAwait(false);
             }
             else

@@ -1546,6 +1546,29 @@ public sealed class RhinoAgent : ICanaryAgent
             return new AgentResponse { Success = false, Message = "No active Grasshopper document." };
         }
 
+        // A nickname must identify exactly ONE panel. Duplicates mean a stale
+        // build is on the canvas (e.g. someone saved the fixture with a built
+        // definition inside — 2026-07-26: asserts silently read the STALE
+        // build's empty panels and the failure pointed at the wrong component).
+        // First-match reads under ambiguity are worse than loud failure.
+        int matches = 0;
+        foreach (var o in doc.Objects)
+        {
+            if (o is Grasshopper.Kernel.Special.GH_Panel p &&
+                string.Equals(p.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+                matches++;
+        }
+        if (matches > 1)
+        {
+            return new AgentResponse
+            {
+                Success = false,
+                Message = $"Ambiguous panel nickname '{nickname}': {matches} panels match. " +
+                          "A stale build is probably on the canvas — regenerate the fixture " +
+                          "(it must hold ONLY the loader) or clean up duplicate builds."
+            };
+        }
+
         foreach (var obj in doc.Objects)
         {
             if (obj is Grasshopper.Kernel.Special.GH_Panel panel &&

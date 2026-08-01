@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fixed
+- GH fixtures open as TEMP COPIES (`%TEMP%/canary-fixtures/`) so saving from an exploration session can never poison the repo fixture (bug 0021 recurrence).
+- `GrasshopperGetPanelText` fails loudly on ambiguous (duplicate) panel nicknames instead of silently reading the first match (bug 0021).
+
 ---
 title: "Changelog"
 tags:

@@ -21,6 +21,12 @@ public sealed class AutoRunArgs
     // "pixel-diff" | "vlm" | "both"; null = leave the UI default.
     public string? Mode { get; set; }
 
+    // Keep the target app open after the run for manual inspection —
+    // regardless of pass/fail. Previously this flag existed on the CLI but
+    // was DROPPED at the UI handoff (operator report 2026-07-31: "unless I
+    // manually hit the leave-open toggle, it doesn't leave itself open").
+    public bool KeepOpen { get; set; }
+
     public bool IsEmpty
         => string.IsNullOrEmpty(Workload)
            && string.IsNullOrEmpty(Test)
@@ -34,6 +40,7 @@ public sealed class AutoRunArgs
         if (!string.IsNullOrEmpty(Test))     { list.Add("--test");     list.Add(Test);     }
         if (!string.IsNullOrEmpty(Suite))    { list.Add("--suite");    list.Add(Suite);    }
         if (!string.IsNullOrEmpty(Mode))     { list.Add("--mode");     list.Add(Mode);     }
+        if (KeepOpen)                        { list.Add("--keep-open");                    }
         return list.ToArray();
     }
 
@@ -43,14 +50,17 @@ public sealed class AutoRunArgs
     public static bool TryParse(string[] args, out AutoRunArgs result)
     {
         result = new AutoRunArgs();
-        for (int i = 0; i < args.Length - 1; i++)
+        // NB: iterate the FULL array — a bare boolean flag in last position
+        // was invisible to the old `Length - 1` loop.
+        for (int i = 0; i < args.Length; i++)
         {
             switch (args[i])
             {
-                case "--workload": result.Workload = args[i + 1]; i++; break;
-                case "--test":     result.Test     = args[i + 1]; i++; break;
-                case "--suite":    result.Suite    = args[i + 1]; i++; break;
-                case "--mode":     result.Mode     = args[i + 1]; i++; break;
+                case "--workload": if (i + 1 < args.Length) { result.Workload = args[i + 1]; i++; } break;
+                case "--test":     if (i + 1 < args.Length) { result.Test     = args[i + 1]; i++; } break;
+                case "--suite":    if (i + 1 < args.Length) { result.Suite    = args[i + 1]; i++; } break;
+                case "--mode":     if (i + 1 < args.Length) { result.Mode     = args[i + 1]; i++; } break;
+                case "--keep-open": result.KeepOpen = true; break;
             }
         }
         return !result.IsEmpty;

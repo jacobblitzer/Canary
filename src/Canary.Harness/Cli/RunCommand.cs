@@ -80,11 +80,22 @@ public static class RunCommand
             var logger = new ConsoleTestLogger(verbose, quiet);
             var modeOverride = ParseModeOverride(modeStr, logger);
 
+            // A single-test run with the UI visible is an INSPECTION run —
+            // the operator wants to look at the result, not watch it close
+            // (operator directive 2026-07-31). Suites and headless/CI runs
+            // keep the close-after-run default.
+            if (!headless && !string.IsNullOrEmpty(test))
+            {
+                if (!keepOpen && !Program.Quiet)
+                    logger.Log("Single-test UI run: keeping the app open for inspection (Ctrl+C / Stop to close).");
+                keepOpen = true;
+            }
+
             // STANDARD.md §16 rule 8 — every operator-triggered `canary run`
             // launches with the Canary UI visible unless --headless. If the UI
             // exe is locatable we hand off to it (it auto-runs + we exit 0);
             // if not, fall through to the text-only path.
-            if (!headless && TryLaunchUi(workload, test, suite, modeStr, logger))
+            if (!headless && TryLaunchUi(workload, test, suite, modeStr, keepOpen, logger))
             {
                 ctx.ExitCode = 0;
                 return;
@@ -99,7 +110,7 @@ public static class RunCommand
     // Attempts to spawn Canary.UI.exe with the auto-run args, returning true
     // on a successful spawn. Returns false (the caller falls through to the
     // text-only path) if the UI exe can't be located or Process.Start throws.
-    private static bool TryLaunchUi(string? workload, string? test, string? suite, string? mode, ConsoleTestLogger logger)
+    private static bool TryLaunchUi(string? workload, string? test, string? suite, string? mode, bool keepOpen, ConsoleTestLogger logger)
     {
         if (!UiLocator.TryFindUiExe(out var uiPath))
         {
@@ -113,6 +124,7 @@ public static class RunCommand
             Test = test,
             Suite = suite,
             Mode = mode,
+            KeepOpen = keepOpen,
         };
 
         try
