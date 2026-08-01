@@ -1,0 +1,119 @@
+{
+  "name": "lightro-10-fields",
+  "workload": "rhino",
+  "description": "10 FIELDS & LINE-WORK - depth contours, gradient streamlines, occlusion silhouettes and point-sampled field values as plain Grasshopper curves/numbers, on both canonical bundles.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 1200,
+      "height": 700,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [
+      "-_Zoom _All _Extents _EnterEnd"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "fields-viewport",
+      "source": "viewport",
+      "tolerance": 0.05,
+      "description": "contours / streamlines / occlusion line-work, both bundles",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/10_fields.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 180000
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _All _Extents _EnterEnd"
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "Slop build succeeded"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ContourInfoA",
+      "text": "contour curves",
+      "description": "contours on IMG_0007"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ContourInfoB",
+      "text": "contour curves",
+      "description": "contours on IMG_0011"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "StreamInfoA",
+      "text": "streamlines from",
+      "description": "flow lines integrate"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "OccInfoB",
+      "text": "occlusion curves",
+      "description": "silhouettes on the shelf scene"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "FieldInfoA",
+      "text": "field 'depth' at 3 points",
+      "description": "point sampling returns values"
+    }
+  ],
+  "keepOpenOnFailure": true
+}

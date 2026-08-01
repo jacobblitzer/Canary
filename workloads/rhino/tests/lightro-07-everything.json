@@ -1,0 +1,239 @@
+{
+  "name": "lightro-07-everything",
+  "workload": "rhino",
+  "description": "07 EVERYTHING - the omnibus gate: all ten LF components live in ONE canvas across two bundles (IMG_0007 row at y=0, IMG_0011 row at y=14), no overlapping frames, self-contained values. Asserts include the relief 'colour: sampled' contract and the block-dominant depth display caption. Includes the experimental Sculpt section (x=60, row 2). Now the FULL fold: every component including autopilot-driven streamlines/occlusion/field and the focal-surface drape.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 1200,
+      "height": 700,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [
+      "-_Zoom _All _Extents _EnterEnd"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "ev-refocus",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a-0.400.png",
+      "tolerance": 0.05,
+      "description": "refocus at the plant (alpha -0.400)",
+      "mode": "capture"
+    },
+    {
+      "name": "ev-bokeh",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a-0.200.png",
+      "tolerance": 0.05,
+      "description": "authored circular bokeh at alpha -0.200",
+      "mode": "capture"
+    },
+    {
+      "name": "ev-view",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/view_x+1.00_y+0.00.png",
+      "tolerance": 0.05,
+      "description": "rightmost viewpoint",
+      "mode": "capture"
+    },
+    {
+      "name": "ev-rays-depth",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/rays_depth.png",
+      "tolerance": 0.05,
+      "description": "block-dominant depth display",
+      "mode": "capture"
+    },
+    {
+      "name": "ev-dof",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/dof_a-0.170_ap1.50.png",
+      "tolerance": 0.05,
+      "description": "synthetic depth of field",
+      "mode": "capture"
+    },
+    {
+      "name": "ev-anaglyph",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/anaglyph_s2.00.png",
+      "tolerance": 0.05,
+      "description": "red/cyan anaglyph",
+      "mode": "capture"
+    },
+    {
+      "name": "ev-viewport",
+      "source": "viewport",
+      "tolerance": 0.05,
+      "description": "all ten components side by side, two rows",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/07_everything.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 180000
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _All _Extents _EnterEnd"
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "Slop build succeeded"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "not found",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "LoadInfo",
+      "text": "verdict PASS",
+      "description": "bundle healthy"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RefocusInfo",
+      "text": "alpha",
+      "description": "refocus reported"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ViewFile",
+      "text": "view_x",
+      "description": "viewpoint PNG written"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "AperInfo",
+      "text": "views",
+      "description": "authored aperture resolved to a view set"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RaysInfo",
+      "text": "block-dominant",
+      "description": "depth display is the de-speckled one"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "DofInfo",
+      "text": "aperture",
+      "description": "DOF reported"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "StereoInfo",
+      "text": "anaglyph",
+      "description": "anaglyph reported"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "LayersInfo",
+      "text": "depth bands",
+      "description": "layers reported"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ReliefInfo",
+      "text": "colour: sampled",
+      "description": "relief mesh + cloud ARE coloured (regression: 2026-07-26 colour loss)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SculptInfo",
+      "text": "gradient-reconstructed",
+      "description": "experimental sculpt section solved"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "PilotReport",
+      "text": "AUTOPILOT",
+      "description": "autopilot report present in the omnibus"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ContourInfo",
+      "text": "contour curves",
+      "description": "fields line-work present in the omnibus"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "StreamInfo",
+      "text": "streamlines from",
+      "description": "autopilot-driven streamlines"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "OccInfo",
+      "text": "occlusion curves",
+      "description": "autopilot-driven occlusion"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "FieldInfo",
+      "text": "field '",
+      "description": "autopilot-channel field sampling"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "FocalInfo",
+      "text": "coverage",
+      "description": "focus draped over the scene's own relief"
+    }
+  ],
+  "keepOpenOnFailure": true
+}

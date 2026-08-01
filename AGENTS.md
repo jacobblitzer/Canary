@@ -25,7 +25,7 @@
 | Supervised sessions + flight recorder | § Sessions · `docs/session-flight-recorder.md` |
 | Debug-overhaul surfaces (UI tabs, run dirs, telemetry, MCP server) | § Debug overhaul · `docs/mcp-server.md` |
 | Penumbra (web) tests — shared Vite/Chrome, C2 event gate | § Penumbra web tests |
-| CPig / Pigture / Slop suites — shared runMode, file-source checkpoints | § Rhino-workload suites · `spec/{CPIG,PIGTURE}_WORKLOAD.md` |
+| CPig / Pigture / Slop / Lightro suites — shared runMode, file-source checkpoints | § Rhino-workload suites · `spec/{CPIG,PIGTURE,LIGHTRO}_WORKLOAD.md` |
 | KinematicBridge suite — env deps, cm units | § KinematicBridge tests |
 | Penumbra-in-Rhino suites — OOP fallback, glsl, fieldops, display-matrix | § Penumbra-in-Rhino suites |
 | Authoring Rhino `setup.commands` macros | `docs/features/rhino-setup-commands-macros.md` |
@@ -41,7 +41,8 @@
 - **Unit tests:** `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`.
 - **GUI:** kill→build→launch the built exe, NOT `dotnet run` (backgrounds wrong): `taskkill //IM Canary.UI.exe //F` → build Release → `start "" "src/Canary.UI.Avalonia/bin/Release/net8.0-windows/Canary.UI.exe"` (§ Repro).
 - **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8):** every operator-triggered `canary run` launches with `Canary.UI.exe` visible; `--headless` bypasses for CI; `--quiet` implies `--headless`. **When the operator says "run canary" in chat: do NOT use `--headless`** — they mean the UI-visible default (`canary run --workload <w> [--test <t> | --suite <s>]`). You (the agent) may still prefer `--headless` for your own end-to-end verification (the UI launch flakes from agent sessions) — an agent-internal choice, not what the operator means. Full text → § UI-first runs.
-- **Run suites:** `canary run --workload penumbra` (web) · rhino workload (from `C:\Repos\Canary`): `--suite cpig` · `pigture` · `slop` · `kbridge` · `penumbra` (deprecated OOP) · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **Run CPig tests via `--suite cpig`, never individual `--test`** — all are `runMode: shared` (ONE Rhino, sequential); `--test` respawns Rhino each time.
+- **Keep-open:** runs close the app when done; `--test` without `--headless` now keeps it open automatically (inspection run); `--keep-open` forces it anywhere. Full semantics -> [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § Keep-open.
+- **Run suites:** `canary run --workload penumbra` (web) · rhino workload (from `C:\Repos\Canary`): `--suite cpig` · `pigture` · `slop` · `kbridge` · `lightro` · `penumbra` (deprecated OOP) · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **Run CPig tests via `--suite cpig`, never individual `--test`** — all are `runMode: shared` (ONE Rhino, sequential); `--test` respawns Rhino each time.
 - **Modes:** `--mode pixel-diff` (default) | `vlm` | `both`; per-checkpoint `mode: "vlm"` wins over the flag; `mode: "capture"` = save-only, never FAILs, wins over `--mode` (§ Test modes).
 - **Supervised session:** `canary session start --workload {qualia|penumbra|rhino} [--file <abs>.3dm]` — capture REPL / Sessions UI tab; manifest + telemetry per § Sessions.
 - **Status:** `spec/PHASES.md` + tail of `BUILD_LOG.md`. Test counts move every commit — check `dotnet test --list-tests | wc -l`, don't trust stamped numbers.

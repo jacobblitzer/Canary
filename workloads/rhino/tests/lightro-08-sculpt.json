@@ -1,0 +1,107 @@
+{
+  "name": "lightro-08-sculpt",
+  "workload": "rhino",
+  "description": "08 SCULPT (EXPERIMENTAL) - gradient-domain bas relief vs the pointwise relief, side by side on IMG_0011 (the noisy-cloud scene). Sculpt reconstructs from regional slopes + photo-edge steps; asserts its Info reports the reconstruction and the colour contract.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 1000,
+      "height": 700,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [
+      "-_Zoom _All _Extents _EnterEnd"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "sculpt-viewport",
+      "source": "viewport",
+      "tolerance": 0.05,
+      "description": "classic relief (left) vs sculpt + normal map (right)",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/08_sculpt.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 120000
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _All _Extents _EnterEnd"
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "Slop build succeeded"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SculptInfo",
+      "text": "gradient-reconstructed",
+      "description": "sculpt ran the reconstruction"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SculptInfo",
+      "text": "colour: sampled",
+      "description": "sculpt relief + cloud are coloured"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ClassicInfo",
+      "text": "relief",
+      "description": "classic relief present for comparison"
+    }
+  ],
+  "keepOpenOnFailure": true
+}

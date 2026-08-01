@@ -1,0 +1,16 @@
+{
+  "name": "lightro",
+  "description": "Lightro light-field GH components: load/refocus, viewpoints, authored apertures, combined canvas, ray modes, effects, the 08-sculpt experimental (gradient-domain bas relief), and the 07-everything omnibus gate (all ten components in one canvas, run LAST).",
+  "tests": [
+    "lightro-01-refocus",
+    "lightro-02-viewpoints",
+    "lightro-03-aperture",
+    "lightro-04-combined",
+    "lightro-05-rays",
+    "lightro-06-effects",
+    "lightro-08-sculpt",
+    "lightro-09-autopilot",
+    "lightro-10-fields",
+    "lightro-07-everything"
+  ]
+}

@@ -259,3 +259,17 @@ This repo is **infrastructure** — no formal release; milestone tags only (e.g.
 ### Skills available
 
 See [`MultiVerse/SKILLS.md`](../MultiVerse/SKILLS.md) for the canonical catalog. The `multiverse-supervisor` skill enforces [`MultiVerse/SUPERVISOR.md`](../MultiVerse/SUPERVISOR.md) at session start for any non-Conversation work. **Discipline 7 (ground before you assert / anti-roll-past):** before any consequential, multifactorial, or state-asserting answer or plan, verify each claim at the running source (T0 — the code path that executes, the flag's default value), not a doc status field or a subagent summary (T2); "exists / compiles / shipped" (≤T1) is never "is the live default" (T0); a contradiction is stop-and-resolve. **Newest — Discipline 8 (trust through verification):** delegated research/plan output (subagents, Workflows) is not trusted on schema-validation alone — producers don't self-certify, junk submissions loud-fail + retry, load-bearing claims are source-verified by a non-producer, and the flake rate is reported. See `MultiVerse/RESEARCH-PLAN-CHECKLIST.md`.
+
+
+## Keep-open semantics (2026-07-31)
+
+A normal `canary run` closes the target app when the run finishes.
+`keepOpenOnFailure: true` in a test JSON holds the app on FAILURE only.
+`--keep-open` holds it regardless of outcome, and now survives the UI
+handoff (AutoRunArgs carries it; it sets the UI's own Keep-App-Open toggle
+so the state is visible). NEW DEFAULT: `canary run --test X` without
+`--headless` is an INSPECTION run and keeps the app open automatically —
+the operator asked to look at exactly one thing, so don't close it on them.
+Suites and headless/CI runs keep the close-after-run default. Historical
+gap: AutoRunArgs.TryParse iterated `Length - 1`, so a bare boolean flag in
+last position was invisible — bounds-checked per flag now.

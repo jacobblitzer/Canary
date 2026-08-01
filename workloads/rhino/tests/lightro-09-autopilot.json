@@ -1,0 +1,163 @@
+{
+  "name": "lightro-09-autopilot",
+  "workload": "rhino",
+  "description": "09 AUTOPILOT - LF Autopilot drives DOF + Stereo + Layers LIVE on two contrasting bundles; asserts prove the prescriptions are scene-adaptive (subjects differ, two-layer scene detected) and the reasoned Report is published.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 1200,
+      "height": 700,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [
+      "-_Zoom _All _Extents _EnterEnd"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "auto-dof-A",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/dof_a-0.278_ap1.05.png",
+      "tolerance": 0.05,
+      "description": "autopilot-prescribed DOF on IMG_0007",
+      "mode": "capture"
+    },
+    {
+      "name": "auto-ana-A",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/anaglyph_s4.00.png",
+      "tolerance": 0.05,
+      "description": "autopilot-prescribed anaglyph on IMG_0007",
+      "mode": "capture"
+    },
+    {
+      "name": "auto-dof-B",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/dof_a-0.168_ap1.04.png",
+      "tolerance": 0.05,
+      "description": "autopilot-prescribed DOF on IMG_0011",
+      "mode": "capture"
+    },
+    {
+      "name": "auto-ana-B",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/anaglyph_s4.00.png",
+      "tolerance": 0.05,
+      "description": "autopilot-prescribed anaglyph on IMG_0011",
+      "mode": "capture"
+    },
+    {
+      "name": "auto-viewport",
+      "source": "viewport",
+      "tolerance": 0.05,
+      "description": "both bundles' autopilot-driven effects side by side",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/09_autopilot.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 180000
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _All _Extents _EnterEnd"
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "Slop build succeeded"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ReportA",
+      "text": "AUTOPILOT",
+      "description": "reasoned report published (A)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ReportB",
+      "text": "single-band",
+      "description": "IMG_0011 correctly NOT flagged two-layer (0009 bimodality covered by test_autopilot.py)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SubjectA",
+      "text": "-0.278",
+      "description": "IMG_0007 subject as computed"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SubjectB",
+      "text": "-0.168",
+      "description": "IMG_0011 subject as computed (differs from A = adaptive)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "DofFileA",
+      "text": "dof_a-0.278_ap1.05.png",
+      "description": "DOF ran with the prescribed values (A)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "DofFileB",
+      "text": "dof_a-0.168_ap1.04.png",
+      "description": "DOF ran with the prescribed values (B)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "LayInfoB",
+      "text": "3 depth bands",
+      "description": "band count as prescribed for IMG_0011"
+    }
+  ],
+  "keepOpenOnFailure": true
+}

@@ -1,0 +1,59 @@
+{
+  "name": "lightro-01-refocus",
+  "workload": "rhino",
+  "description": "01 LF Load + Refocus \u2014 compiled Lightro components on a Slop-built canvas; refocus IMG_0007 at two alphas, compare the saved computed images (file-source).",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": []
+  },
+  "runMode": "shared",
+  "checkpoints": [
+    {
+      "name": "refocus-a020",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a+0.200.png",
+      "tolerance": 0.05,
+      "description": "IMG_0007 refocused at alpha +0.20 (near focus on the plant)",
+      "mode": "capture"
+    },
+    {
+      "name": "refocus-a050",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a+0.500.png",
+      "tolerance": 0.05,
+      "description": "IMG_0007 refocused at alpha +0.50 (focus pushed toward background)",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/01_load_refocus.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 60000 },
+    { "type": "GrasshopperSetSlider", "nickname": "Alpha", "value": 0.2 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "GrasshopperSetSlider", "nickname": "Alpha", "value": 0.5 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 }
+  ],
+  "asserts": [
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True", "description": "Slop build succeeded" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL", "description": "" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "not found", "description": "" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "!!!", "description": "" },
+    { "type": "PanelContains", "nickname": "LoadInfo", "text": "verdict PASS", "description": "bundle loaded + verified" },
+    { "type": "PanelContains", "nickname": "RefocusInfo", "text": "alpha", "description": "refocus computed" }
+  ],
+  "keepOpenOnFailure": true
+}

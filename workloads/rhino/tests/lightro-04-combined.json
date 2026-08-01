@@ -1,0 +1,166 @@
+{
+  "name": "lightro-04-combined",
+  "workload": "rhino",
+  "description": "04 Combined \u2014 all three LF scenarios in ONE Slop-built canvas: refocus + viewpoints + authored aperture, per-section placement rects (side-by-side viewport meshes), on-canvas Render Viewers (Pigture), and a Canvas Image render as layout proof.",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 1200,
+      "height": 700,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": []
+  },
+  "runMode": "shared",
+  "checkpoints": [
+    {
+      "name": "combined-refocus-a020",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a+0.200.png",
+      "tolerance": 0.05,
+      "description": "refocus section output at alpha +0.20",
+      "mode": "capture"
+    },
+    {
+      "name": "combined-view-neg",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/view_x-1.00_y-1.00.png",
+      "tolerance": 0.05,
+      "description": "viewpoint section output at (-1,-1)",
+      "mode": "capture"
+    },
+    {
+      "name": "combined-aperture-a035",
+      "source": "file",
+      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a+0.350.png",
+      "tolerance": 0.05,
+      "description": "aperture section: circle-authored weights refocus at alpha +0.35",
+      "mode": "capture"
+    },
+    {
+      "name": "combined-canvas",
+      "source": "file",
+      "panelNickname": "CanvasSavedPath",
+      "tolerance": 0.1,
+      "description": "the whole GH canvas rendered by Slop's Canvas Image \u2014 layout regression net (sections must not overlap; Render Viewers show images on canvas)",
+      "mode": "capture"
+    },
+    {
+      "name": "combined-viewport",
+      "source": "viewport",
+      "tolerance": 0.1,
+      "description": "Rhino Top viewport: the four preview meshes side by side (x offsets 0/12/24/32), flat-tile colors",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/04_combined.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 120000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "CanvasSnap",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "RunCommand",
+      "command": "_-SetView _World _Top _Enter"
+    },
+    {
+      "type": "RunCommand",
+      "command": "_-Zoom _All _Extents _Enter"
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "combined Slop build succeeded"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "not found",
+      "description": ""
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "!!!",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "LoadInfo",
+      "text": "verdict PASS",
+      "description": "bundle loaded"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ApertureInfo",
+      "text": "views active",
+      "description": "authored weights computed"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "CanvasSavedPath",
+      "text": "combined_canvas",
+      "description": "canvas render written"
+    }
+  ],
+  "keepOpenOnFailure": true
+}
