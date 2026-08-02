@@ -1,0 +1,69 @@
+{
+  "name": "bristle-01-paint-roundtrip",
+  "workload": "rhino",
+  "description": "Bristle 01 \u2014 full GH round-trip against a LIVE local engine: BR_Connect health, BR_Submit paint_v0 on the tiny fixture, BR_Status polls to done, BR_FetchStrokes writes strokes.v0.json + preview.png to tests/out. PREREQ: python -m bristle.service running on this machine (see spec/BRISTLE_WORKLOAD.md).",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "strokeset-artifact",
+      "source": "file",
+      "filePath": "C:/Repos/Bristle/tests/out/bristle-01/strokes.v0.json",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "StrokeSet v0 JSON produced by the engine and exported by BR_FetchStrokes",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null
+    },
+    {
+      "name": "engine-preview",
+      "source": "file",
+      "filePath": "C:/Repos/Bristle/tests/out/bristle-01/preview.png",
+      "atTimeMs": 0,
+      "tolerance": 0.08,
+      "description": "Engine-rendered 1-bit pen preview of the tiny fixture (blessable for pixel-diff later)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/Bristle/tests/slop/01_bristle_paint_roundtrip.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Run", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Fetch", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 20000 }
+  ],
+  "asserts": [
+    { "type": "PanelEquals", "nickname": "BristleState", "text": "done", "description": "job reached terminal done (needs the poller to have caught up; interval 1s)" },
+    { "type": "PanelDoesNotContain", "nickname": "SubmitLog", "text": "FAILED", "description": "" },
+    { "type": "PanelDoesNotContain", "nickname": "FetchLog", "text": "FAILED", "description": "" },
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE", "description": "engine reachable (prereq: service running)" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True", "description": "" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL", "description": "" }
+  ],
+  "keepOpenOnFailure": true
+}

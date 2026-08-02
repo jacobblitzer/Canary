@@ -1,0 +1,8 @@
+{
+    "name": "cpig-penumbra-e2",
+    "description": "R6.5 Phase E2 — Penumbra Preview via Grasshopper. Two tests: 79 (fixture canary — one tape sphere, warms the shader cache at the test viewport size) then 80 (field matrix — 12 field types through Penumbra Preview in one capture). Run via: canary run --workload rhino --suite cpig-penumbra-e2. Requires the Penumbra Rhino plug-in registered for auto-load + the CPig .gha (Penumbra Preview, GUID C9160020-...-BA200). Capture mode — no pass/fail on the image; asserts verify Connected=True + Status=Pushed per preview node.",
+    "tests": [
+        "cpig-79-penumbra-fixture",
+        "cpig-80-penumbra-field-matrix"
+    ]
+}
