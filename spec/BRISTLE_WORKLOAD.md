@@ -7,8 +7,9 @@ Pigture pattern — the meaningful artifacts are the StrokeSet JSON and the engi
 preview, never the viewport).
 
 Peer contract: [`../../Bristle/spec/PEERS.md`](../../Bristle/spec/PEERS.md).
-Authored 2026-08-01 (Bristle P1a); **first execution PENDING** — authored the same
-session the .gha first compiled; status flips here when the suite has run green.
+Authored 2026-08-01 (Bristle P1a); **first execution GREEN same day** — 1/1 PASS on the
+first attempt (headless, ~37 s; 6/6 asserts; both checkpoints captured to candidates/).
+Bless the captures + flip engine-preview to pixel-diff at the operator's convenience.
 
 ## Prerequisites (per machine)
 
