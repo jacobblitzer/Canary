@@ -1,10 +1,11 @@
 {
-  "name": "bristle",
-  "description": "Bristle GH client (BR_ components) against a LIVE local engine: connect/health, paint_v0 submit, background-poll to done, StrokeSet fetch + export. PREREQ per BRISTLE_WORKLOAD.md: the engine service must be running on this machine before the suite starts.",
-  "tests": [
-    "bristle-01-paint-roundtrip",
-    "bristle-02-analyze-layers",
-    "bristle-03-lightro-bundle",
-    "bristle-04-style-draft"
-  ]
+ "name": "bristle",
+ "description": "Bristle GH client (BR_ components) against a LIVE local engine: connect/health, paint_v0 submit, background-poll to done, StrokeSet fetch + export. PREREQ per BRISTLE_WORKLOAD.md: the engine service must be running on this machine before the suite starts.",
+ "tests": [
+  "bristle-01-paint-roundtrip",
+  "bristle-02-analyze-layers",
+  "bristle-03-lightro-bundle",
+  "bristle-04-style-draft",
+  "bristle-05-layers"
+ ]
 }
