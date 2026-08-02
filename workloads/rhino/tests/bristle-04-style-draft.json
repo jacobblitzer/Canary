@@ -1,0 +1,145 @@
+{
+  "name": "bristle-04-style-draft",
+  "workload": "rhino",
+  "description": "Bristle 04 \u2014 S1 fiddle loop: two BR_Preview components auto-submit DRAFT jobs (debounced, supersede-keyed) differing only in bands.coverage_scale (0.5 vs 1.4). Proves the style blob rides GH \u2192 HTTP \u2192 painter (StrokesA \u2260 StrokesB) and drafts finish fast. PREREQ: python -m bristle.service running (see spec/BRISTLE_WORKLOAD.md).",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "canvas-state",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "GH canvas screenshot, save-only (capture mode never fails; asserts carry the gate)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/04_bristle_style_draft.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "ReportA",
+      "text": "draft",
+      "mode": "contains",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "ReportB",
+      "text": "draft",
+      "mode": "contains",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelsDiffer",
+      "nickname": "StrokesA",
+      "text": "StrokesB",
+      "description": "coverage_scale 0.5 vs 1.4 must change the draft's stroke count - the style blob provably reaches the painter"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ReportA",
+      "text": "draft",
+      "description": "lane A finished as a DRAFT (preview economics, not a full job)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ReportB",
+      "text": "draft",
+      "description": "lane B finished as a DRAFT"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "StateA",
+      "text": "FAILED",
+      "description": ""
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "StateB",
+      "text": "FAILED",
+      "description": ""
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "ConnStatus",
+      "text": "OFFLINE",
+      "description": "engine reachable (prereq: service running)"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": ""
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    }
+  ],
+  "keepOpenOnFailure": true
+}

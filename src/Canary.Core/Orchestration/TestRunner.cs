@@ -1904,6 +1904,19 @@ public sealed class TestRunner
 
         string text = resp.Data != null && resp.Data.TryGetValue("text", out var t) ? t : string.Empty;
 
+        // PanelsDiffer is the one two-panel assert: 'text' names the SECOND panel (A/B
+        // proof that a setting bites - Bristle S1d). Handled before the switch because
+        // it needs a second agent round-trip.
+        if (assert.Type == "PanelsDiffer")
+        {
+            var resp2 = await agent.ExecuteAsync("GrasshopperGetPanelText",
+                new Dictionary<string, string> { ["nickname"] = assert.Text }).ConfigureAwait(false);
+            if (!resp2.Success)
+                return (false, $"GetPanelText('{assert.Text}') failed: {resp2.Message}");
+            string text2 = resp2.Data != null && resp2.Data.TryGetValue("text", out var t2) ? t2 : string.Empty;
+            return EvaluatePanelsDiffer(assert, text, text2);
+        }
+
         return assert.Type switch
         {
             "PanelEquals" => string.Equals(text.Trim(), assert.Text.Trim(), StringComparison.Ordinal)
@@ -1918,8 +1931,24 @@ public sealed class TestRunner
                 ? (true, string.Empty)
                 : (false, $"PanelDoesNotContain '{assert.Nickname}': \"{assert.Text}\" found in panel"),
 
-            _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain)")
+            _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain, PanelsDiffer)")
         };
+    }
+
+    /// <summary>
+    /// PanelsDiffer semantics: both panels must be NON-EMPTY and their trimmed texts
+    /// must differ. Empty-vs-anything fails (an unwired panel "differing" from a real
+    /// value would be a false pass).
+    /// </summary>
+    private static (bool ok, string message) EvaluatePanelsDiffer(TestAssert assert, string a, string b)
+    {
+        if (string.IsNullOrWhiteSpace(assert.Text))
+            return (false, "PanelsDiffer: 'text' must carry the second panel's nickname");
+        if (string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b))
+            return (false, $"PanelsDiffer '{assert.Nickname}' vs '{assert.Text}': a panel is empty (\"{Truncate(a)}\" vs \"{Truncate(b)}\")");
+        return !string.Equals(a.Trim(), b.Trim(), StringComparison.Ordinal)
+            ? (true, string.Empty)
+            : (false, $"PanelsDiffer '{assert.Nickname}' vs '{assert.Text}': both read \"{Truncate(a)}\"");
     }
 
     private static string Truncate(string s, int max = 120)
@@ -1944,6 +1973,16 @@ public sealed class TestRunner
 
         string text = resp.Data != null && resp.Data.TryGetValue("text", out var t) ? t : string.Empty;
 
+        if (assert.Type == "PanelsDiffer")
+        {
+            var resp2 = await client.ExecuteAsync("GrasshopperGetPanelText",
+                new Dictionary<string, string> { ["nickname"] = assert.Text }, ct).ConfigureAwait(false);
+            if (!resp2.Success)
+                return (false, $"GetPanelText('{assert.Text}') failed: {resp2.Message}");
+            string text2 = resp2.Data != null && resp2.Data.TryGetValue("text", out var t2) ? t2 : string.Empty;
+            return EvaluatePanelsDiffer(assert, text, text2);
+        }
+
         return assert.Type switch
         {
             "PanelEquals" => string.Equals(text.Trim(), assert.Text.Trim(), StringComparison.Ordinal)
@@ -1958,7 +1997,7 @@ public sealed class TestRunner
                 ? (true, string.Empty)
                 : (false, $"PanelDoesNotContain '{assert.Nickname}': \"{assert.Text}\" found in panel"),
 
-            _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain)")
+            _ => (false, $"Unknown assert type '{assert.Type}' (typo? supported: PanelEquals, PanelContains, PanelDoesNotContain, PanelsDiffer)")
         };
     }
 

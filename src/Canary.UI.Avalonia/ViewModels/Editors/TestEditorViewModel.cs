@@ -48,7 +48,7 @@ public partial class TestEditorViewModel : ObservableObject
     public IReadOnlyList<string> RunModes { get; } = new[] { "fresh", "shared" };
     public IReadOnlyList<string> CheckpointModes { get; } = new[] { "pixel-diff", "vlm" };
     public IReadOnlyList<string> CheckpointSources { get; } = new[] { "viewport", "file" };
-    public IReadOnlyList<string> AssertTypes { get; } = new[] { "PanelEquals", "PanelContains", "PanelDoesNotContain" };
+    public IReadOnlyList<string> AssertTypes { get; } = new[] { "PanelEquals", "PanelContains", "PanelDoesNotContain", "PanelsDiffer" };
 
     public ObservableCollection<CheckpointRow> Checkpoints { get; } = new();
     public ObservableCollection<AssertRow> Asserts { get; } = new();

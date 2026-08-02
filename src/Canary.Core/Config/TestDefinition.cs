@@ -448,10 +448,12 @@ public sealed class TestAction
 
 /// <summary>
 /// A post-checkpoint assertion against an agent-readable property. Today the
-/// supported types are <c>PanelEquals</c>, <c>PanelContains</c>, and
-/// <c>PanelDoesNotContain</c>; each calls <c>GrasshopperGetPanelText</c> and
-/// string-compares the result. Unknown types are reported as failed asserts
-/// rather than ignored, so typos surface.
+/// supported types are <c>PanelEquals</c>, <c>PanelContains</c>,
+/// <c>PanelDoesNotContain</c>, and <c>PanelsDiffer</c> (two-panel A/B:
+/// <c>Nickname</c> vs the panel named by <c>Text</c>; both must be non-empty
+/// and differ). Each calls <c>GrasshopperGetPanelText</c> and string-compares
+/// the result. Unknown types are reported as failed asserts rather than
+/// ignored, so typos surface.
 /// </summary>
 public sealed class TestAssert
 {

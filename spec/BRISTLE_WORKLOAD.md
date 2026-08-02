@@ -59,3 +59,13 @@ ConnStatus panels + file-source checkpoints capture both artifacts.
   configs (Rhino loads Debug).
 - Engine-side depth is enrichment: analyze jobs SKIP depth loudly on hub flakes rather than fail
   (Bristle-side fix, same date). Full suite wall time: ~45-60 s/run.
+
+## bristle-04-style-draft (S1d, added 2026-08-02)
+The fiddle-loop proof: Slop def `04_bristle_style_draft.json` builds TWO
+BR_Style -> BR_Preview lanes differing only in `bands.coverage_scale` (0.5 vs 1.4).
+BR_Preview auto-submits DRAFT jobs on first solve (no Run toggle - that is its design;
+debounce 500 ms, supersede = instance GUID). Gate: `PanelsDiffer StrokesA vs StrokesB`
+(new two-panel assert, runner-side: `nickname` = panel A, `text` = panel B's nickname,
+both must be non-empty and differ) + both Reports contain "draft".
+Prereq unchanged: live engine + fresh Bristle.GH.gha in %APPDATA%/Grasshopper/Libraries
+(ship.ps1 copies to Drive; the Libraries copy is what Rhino actually loads - update BOTH).
