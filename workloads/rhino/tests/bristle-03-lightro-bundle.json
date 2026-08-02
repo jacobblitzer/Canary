@@ -1,7 +1,7 @@
 {
-  "name": "bristle-01-paint-roundtrip",
+  "name": "bristle-03-lightro-bundle",
   "workload": "rhino",
-  "description": "Bristle 01 \u2014 full GH round-trip against a LIVE local engine: BR_Connect health, BR_Submit paint_v0 on the tiny fixture, BR_Status polls to done, BR_FetchStrokes writes strokes.v0.json + preview.png to tests/out. PREREQ: python -m bristle.service running on this machine (see spec/BRISTLE_WORKLOAD.md).",
+  "description": "Bristle 03 \u2014 analyze_v1 on a Lightro BUNDLE path (no upload; params.source): layer_confidence.png only exists when real light-field depth was passed through, so its presence IS the lightro-depth-wins proof. PREREQS: live engine + decoded bundle at C:/Repos/Lightro/decoded/bundles/IMG_0007.",
   "setup": {
     "file": "fixtures/bristle_slop_loader.gh",
     "viewport": {
@@ -20,23 +20,11 @@
   "recording": "",
   "checkpoints": [
     {
-      "name": "strokeset-artifact",
-      "source": "file",
-      "filePath": "C:/Repos/Bristle/tests/out/bristle-01/strokes.v0.json",
+      "name": "canvas-state",
+      "source": "viewport",
       "atTimeMs": 0,
       "tolerance": 0.0,
-      "description": "StrokeSet v0 JSON produced by the engine and exported by BR_FetchStrokes",
-      "mode": "capture",
-      "camera": null,
-      "stabilizeMs": null
-    },
-    {
-      "name": "engine-preview",
-      "source": "file",
-      "filePath": "C:/Repos/Bristle/tests/out/bristle-01/preview.png",
-      "atTimeMs": 0,
-      "tolerance": 0.08,
-      "description": "Engine-rendered 1-bit pen preview of the tiny fixture (blessable for pixel-diff later)",
+      "description": "GH canvas screenshot, save-only (capture mode never fails; asserts carry the gate)",
       "mode": "capture",
       "camera": null,
       "stabilizeMs": null
@@ -73,7 +61,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Bristle/tests/slop/01_bristle_paint_roundtrip.json"
+      "text": "C:/Repos/Bristle/tests/slop/03_bristle_lightro_bundle.json"
     },
     {
       "type": "GrasshopperSetToggle",
@@ -98,16 +86,7 @@
     },
     {
       "type": "WaitForGrasshopperSolution",
-      "timeoutMs": 5000
-    },
-    {
-      "type": "GrasshopperSetToggle",
-      "nickname": "Fetch",
-      "value": true
-    },
-    {
-      "type": "WaitForGrasshopperSolution",
-      "timeoutMs": 20000
+      "timeoutMs": 10000
     }
   ],
   "asserts": [
@@ -115,7 +94,25 @@
       "type": "PanelEquals",
       "nickname": "BristleState",
       "text": "done",
-      "description": "job reached terminal done (needs the poller to have caught up; interval 1s)"
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_depth.png",
+      "description": "depth layer present"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_confidence.png",
+      "description": "confidence only ships with REAL lightro depth - the passthrough proof"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SubmitLog",
+      "text": "[analyze_v1]",
+      "description": "job type routed"
     },
     {
       "type": "PanelDoesNotContain",
@@ -125,26 +122,14 @@
     },
     {
       "type": "PanelDoesNotContain",
-      "nickname": "FetchLog",
-      "text": "FAILED",
-      "description": ""
-    },
-    {
-      "type": "PanelDoesNotContain",
       "nickname": "ConnStatus",
       "text": "OFFLINE",
-      "description": "engine reachable (prereq: service running)"
+      "description": ""
     },
     {
       "type": "PanelEquals",
       "nickname": "SlopSuccess",
       "text": "True",
-      "description": ""
-    },
-    {
-      "type": "PanelDoesNotContain",
-      "nickname": "SlopLog",
-      "text": "FATAL",
       "description": ""
     }
   ],

@@ -46,3 +46,16 @@ ConnStatus panels + file-source checkpoints capture both artifacts.
   covers a ~1 s job with huge margin. Slow machines: raise waits before blaming the seam.
 - Checkpoints run in `capture` mode until first-run baselines exist; bless + flip
   `engine-preview` to pixel-diff once the suite has run green on this machine.
+
+## Suite operations (learned 2026-08-02, I0)
+
+- Tests use the **`WaitForGrasshopperPanel`** agent action (nickname/text/mode equals|contains/
+  timeoutMs) after async submits — a plain solution-wait returns on the first quiescence gap,
+  long before a watched job is terminal. Passing waits report their real latency (~5 s).
+- **Kill Rhino+canary before any run that follows an agent-DLL or .gha change** — keepOpen-held
+  Rhinos carry the OLD plugin and the stale-agent race produced two red herrings in one evening.
+- **`dotnet build Canary.sln` does NOT build Canary.Agent.Rhino** (solution config excludes it;
+  "0 errors" can lie) — build `src/Canary.Agent.Rhino/Canary.Agent.Rhino.csproj` directly, BOTH
+  configs (Rhino loads Debug).
+- Engine-side depth is enrichment: analyze jobs SKIP depth loudly on hub flakes rather than fail
+  (Bristle-side fix, same date). Full suite wall time: ~45-60 s/run.

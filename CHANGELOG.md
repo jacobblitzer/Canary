@@ -507,3 +507,8 @@ Build-phase unit test peak (Phases 0–5): 258 → 330 (+72 net new). Phase 6 cu
 - App launcher, process manager, watchdog with 3-miss heartbeat timeout (Phase 4)
 - `canary run` and `canary approve` CLI commands (Phase 4)
 - 52 unit tests covering all core functionality
+
+### Added (2026-08-02)
+- `WaitForGrasshopperPanel` Rhino-agent action: block until a GH panel equals/contains text
+  (timeout-bounded, message-pumping) — the missing primitive for async-component suites
+  (Bristle BR_Status et al.). Shared panel-read helper with the ambiguity guard.

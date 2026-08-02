@@ -1,7 +1,7 @@
 {
-  "name": "bristle-01-paint-roundtrip",
+  "name": "bristle-02-analyze-layers",
   "workload": "rhino",
-  "description": "Bristle 01 \u2014 full GH round-trip against a LIVE local engine: BR_Connect health, BR_Submit paint_v0 on the tiny fixture, BR_Status polls to done, BR_FetchStrokes writes strokes.v0.json + preview.png to tests/out. PREREQ: python -m bristle.service running on this machine (see spec/BRISTLE_WORKLOAD.md).",
+  "description": "Bristle 02 \u2014 analyze_v1 through GH on the dog fixture: JobType input routes the job, BR_Status polls to done, the Artifacts panel must list the analysis layers, and the Preview input serves layer_orientation.png on-canvas. PREREQ: live engine (spec/BRISTLE_WORKLOAD.md).",
   "setup": {
     "file": "fixtures/bristle_slop_loader.gh",
     "viewport": {
@@ -20,23 +20,11 @@
   "recording": "",
   "checkpoints": [
     {
-      "name": "strokeset-artifact",
-      "source": "file",
-      "filePath": "C:/Repos/Bristle/tests/out/bristle-01/strokes.v0.json",
+      "name": "canvas-state",
+      "source": "viewport",
       "atTimeMs": 0,
       "tolerance": 0.0,
-      "description": "StrokeSet v0 JSON produced by the engine and exported by BR_FetchStrokes",
-      "mode": "capture",
-      "camera": null,
-      "stabilizeMs": null
-    },
-    {
-      "name": "engine-preview",
-      "source": "file",
-      "filePath": "C:/Repos/Bristle/tests/out/bristle-01/preview.png",
-      "atTimeMs": 0,
-      "tolerance": 0.08,
-      "description": "Engine-rendered 1-bit pen preview of the tiny fixture (blessable for pixel-diff later)",
+      "description": "GH canvas screenshot, save-only (capture mode never fails; asserts carry the gate)",
       "mode": "capture",
       "camera": null,
       "stabilizeMs": null
@@ -73,7 +61,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Bristle/tests/slop/01_bristle_paint_roundtrip.json"
+      "text": "C:/Repos/Bristle/tests/slop/02_bristle_analyze_layers.json"
     },
     {
       "type": "GrasshopperSetToggle",
@@ -98,16 +86,7 @@
     },
     {
       "type": "WaitForGrasshopperSolution",
-      "timeoutMs": 5000
-    },
-    {
-      "type": "GrasshopperSetToggle",
-      "nickname": "Fetch",
-      "value": true
-    },
-    {
-      "type": "WaitForGrasshopperSolution",
-      "timeoutMs": 20000
+      "timeoutMs": 10000
     }
   ],
   "asserts": [
@@ -115,7 +94,43 @@
       "type": "PanelEquals",
       "nickname": "BristleState",
       "text": "done",
-      "description": "job reached terminal done (needs the poller to have caught up; interval 1s)"
+      "description": "analyze job terminal"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_orientation.png",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_values.png",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_index.png",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_importance.png",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "layer_dist.png",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ArtifactsPanel",
+      "text": "analysis.json",
+      "description": "layer manifest present"
     },
     {
       "type": "PanelDoesNotContain",
@@ -125,26 +140,14 @@
     },
     {
       "type": "PanelDoesNotContain",
-      "nickname": "FetchLog",
-      "text": "FAILED",
-      "description": ""
-    },
-    {
-      "type": "PanelDoesNotContain",
       "nickname": "ConnStatus",
       "text": "OFFLINE",
-      "description": "engine reachable (prereq: service running)"
+      "description": ""
     },
     {
       "type": "PanelEquals",
       "nickname": "SlopSuccess",
       "text": "True",
-      "description": ""
-    },
-    {
-      "type": "PanelDoesNotContain",
-      "nickname": "SlopLog",
-      "text": "FATAL",
       "description": ""
     }
   ],

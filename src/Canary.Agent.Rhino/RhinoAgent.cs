@@ -36,6 +36,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperSetToggle" => HandleGrasshopperSetToggle(parameters),
                     "GrasshopperSetPanelText" => HandleGrasshopperSetPanelText(parameters),
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
+                    "WaitForGrasshopperPanel" => HandleWaitForGrasshopperPanel(parameters),
                     "GrasshopperGetDiagnosticDump" => HandleGrasshopperGetDiagnosticDump(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
                     "GetPenumbraFrameState" => HandleGetPenumbraFrameState(parameters),
@@ -1533,6 +1534,103 @@ public sealed class RhinoAgent : ICanaryAgent
     /// caller sees the *live* value flowing through the panel — exactly what
     /// CPig regression tests need to assert on Slop's Success/Log outputs.
     /// </summary>
+    /// <summary>
+    /// WaitForGrasshopperPanel (added 2026-08-01 for the Bristle suite, generally useful):
+    /// blocks until a panel's text equals/contains the expectation, pumping the Rhino
+    /// message loop so async components (background pollers using ScheduleSolution, e.g.
+    /// BR_Status) keep updating the canvas while we wait. Without this, a
+    /// WaitForGrasshopperSolution after an async submit returns on the FIRST quiescence
+    /// gap — long before the watched job reaches its terminal state — and asserts read
+    /// stale panels ("expected done, got queued").
+    /// Params: nickname (req), text (req), mode = contains|equals (default contains),
+    /// timeoutMs (default 30000), pollMs (default 500).
+    /// </summary>
+    private static AgentResponse HandleWaitForGrasshopperPanel(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'nickname'." };
+        if (!parameters.TryGetValue("text", out var expect) || expect == null)
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'text'." };
+        var mode = parameters.TryGetValue("mode", out var m) && !string.IsNullOrWhiteSpace(m)
+            ? m.Trim().ToLowerInvariant() : "contains";
+        int timeoutMs = parameters.TryGetValue("timeoutMs", out var ts) && int.TryParse(ts, out var t) ? t : 30000;
+        int pollMs = parameters.TryGetValue("pollMs", out var ps) && int.TryParse(ps, out var pp) ? Math.Max(100, pp) : 500;
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        string lastText = "(panel never read)";
+        string? lastErr = null;
+        var pollSw = System.Diagnostics.Stopwatch.StartNew();
+        while (sw.ElapsedMilliseconds < timeoutMs)
+        {
+            RhinoApp.Wait();   // pump: lets ScheduleSolution-driven components re-solve
+            if (pollSw.ElapsedMilliseconds < pollMs) continue;
+            pollSw.Restart();
+            if (TryReadPanelText(nickname, out var text, out lastErr))
+            {
+                lastText = text;
+                bool hit = mode == "equals"
+                    ? string.Equals(text.Trim(), expect.Trim(), StringComparison.Ordinal)
+                    : text.Contains(expect, StringComparison.Ordinal);
+                if (hit)
+                    return new AgentResponse
+                    {
+                        Success = true,
+                        Message = $"Panel '{nickname}' {mode} \"{expect}\" after {sw.ElapsedMilliseconds} ms.",
+                    };
+            }
+        }
+        var tail = lastText.Length > 160 ? lastText.Substring(0, 160) + "…" : lastText;
+        return new AgentResponse
+        {
+            Success = false,
+            Message = $"WaitForGrasshopperPanel timed out ({timeoutMs} ms): '{nickname}' never " +
+                      $"{mode} \"{expect}\". Last text: \"{tail}\"" +
+                      (lastErr != null ? $" (last read error: {lastErr})" : ""),
+        };
+    }
+
+    /// <summary>Single-sourced panel read (ambiguity-guarded) used by GetPanelText + WaitForGrasshopperPanel.</summary>
+    private static bool TryReadPanelText(string nickname, out string text, out string? error)
+    {
+        text = string.Empty;
+        error = null;
+        var doc = Grasshopper.Instances.ActiveCanvas?.Document;
+        if (doc == null) { error = "No active Grasshopper document."; return false; }
+        int matches = 0;
+        foreach (var o in doc.Objects)
+            if (o is Grasshopper.Kernel.Special.GH_Panel p &&
+                string.Equals(p.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+                matches++;
+        if (matches > 1) { error = $"Ambiguous panel nickname '{nickname}' ({matches} matches)."; return false; }
+        foreach (var obj in doc.Objects)
+        {
+            if (obj is Grasshopper.Kernel.Special.GH_Panel panel &&
+                string.Equals(panel.NickName, nickname, StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    if (panel.VolatileDataCount > 0)
+                    {
+                        var sb = new System.Text.StringBuilder();
+                        bool first = true;
+                        foreach (var goo in panel.VolatileData.AllData(true))
+                        {
+                            if (!first) sb.Append('\n');
+                            first = false;
+                            sb.Append(goo?.ToString() ?? string.Empty);
+                        }
+                        text = sb.ToString();
+                    }
+                }
+                catch { /* fall through */ }
+                if (string.IsNullOrEmpty(text)) text = panel.UserText ?? string.Empty;
+                return true;
+            }
+        }
+        error = $"Panel '{nickname}' not found.";
+        return false;
+    }
+
     private static AgentResponse HandleGrasshopperGetPanelText(Dictionary<string, string> parameters)
     {
         if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
