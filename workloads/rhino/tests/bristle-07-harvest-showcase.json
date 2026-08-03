@@ -1,7 +1,5 @@
 {
- "name": "bristle-scene-portrait-backlit",
  "workload": "rhino",
- "description": "Scene gallery: portrait-backlit - tone rescue: shadow detail out of a hard backlight. Full pipeline: auto-draft preview -> full run -> fetch -> BR_Export .3dm (the Plotline handoff). PREREQ: live engine (see spec/BRISTLE_WORKLOAD.md).",
  "setup": {
   "file": "fixtures/bristle_slop_loader.gh",
   "viewport": {
@@ -20,39 +18,30 @@
  "recording": "",
  "checkpoints": [
   {
-   "name": "strokeset",
-   "source": "file",
-   "filePath": "C:/Repos/Bristle/out/scenes/portrait-backlit/strokes.v0.json",
+   "name": "canvas-state",
+   "source": "viewport",
    "atTimeMs": 0,
    "tolerance": 0.0,
-   "description": "scene-gallery artifact (save-only; blessable later)",
+   "description": "showcase canvas (save-only)",
    "mode": "capture",
    "camera": null,
    "stabilizeMs": null
   },
   {
-   "name": "plotline-3dm",
+   "name": "topo-3dm",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/portrait-backlit.3dm",
+   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sunflower-topo.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
-   "description": "scene-gallery artifact (save-only; blessable later)",
-   "mode": "capture",
-   "camera": null,
-   "stabilizeMs": null
-  },
-  {
-   "name": "engine-preview",
-   "source": "file",
-   "filePath": "C:/Repos/Bristle/out/scenes/portrait-backlit/preview.png",
-   "atTimeMs": 0,
-   "tolerance": 0.0,
-   "description": "scene-gallery artifact (save-only; blessable later)",
+   "description": "depth topo-bands as a plot file",
    "mode": "capture",
    "camera": null,
    "stabilizeMs": null
   }
  ],
+ "keepOpenOnFailure": false,
+ "name": "bristle-07-harvest-showcase",
+ "description": "R2 showcase: the sunflower harvested four ways (value iso-contours, depth topo-bands, flow streamlines, saliency peaks) and the depth topo EXPORTED to the PlotFiles pickup as a plot file. PREREQ: live R2 engine + G: mounted.",
  "actions": [
   {
    "type": "WaitForGrasshopperSolution",
@@ -84,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/scenes/portrait-backlit.json"
+   "text": "C:/Repos/Bristle/tests/slop/07_bristle_harvest_showcase.json"
   },
   {
    "type": "GrasshopperSetToggle",
@@ -93,13 +82,6 @@
   },
   {
    "type": "WaitForGrasshopperSolution",
-   "timeoutMs": 30000
-  },
-  {
-   "type": "WaitForGrasshopperPanel",
-   "nickname": "PrevReport",
-   "text": "draft",
-   "mode": "contains",
    "timeoutMs": 30000
   },
   {
@@ -112,7 +94,7 @@
    "nickname": "BristleState",
    "text": "done",
    "mode": "equals",
-   "timeoutMs": 60000
+   "timeoutMs": 120000
   },
   {
    "type": "WaitForGrasshopperSolution",
@@ -120,28 +102,42 @@
   },
   {
    "type": "GrasshopperSetToggle",
-   "nickname": "Fetch",
+   "nickname": "Harvest",
    "value": true
   },
   {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "IsoLog",
+   "text": "curves",
+   "mode": "contains",
+   "timeoutMs": 30000
+  },
+  {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "BandLog",
+   "text": "curves",
+   "mode": "contains",
+   "timeoutMs": 30000
+  },
+  {
    "type": "WaitForGrasshopperSolution",
-   "timeoutMs": 20000
+   "timeoutMs": 3000
   },
   {
    "type": "GrasshopperSetToggle",
-   "nickname": "Export",
+   "nickname": "Plot",
    "value": true
   },
   {
    "type": "WaitForGrasshopperPanel",
    "nickname": "ExportLog",
-   "text": "exported",
+   "text": "pen layer",
    "mode": "contains",
-   "timeoutMs": 15000
+   "timeoutMs": 20000
   },
   {
    "type": "WaitForGrasshopperSolution",
-   "timeoutMs": 2000
+   "timeoutMs": 3000
   }
  ],
  "asserts": [
@@ -153,27 +149,33 @@
   },
   {
    "type": "PanelContains",
-   "nickname": "PrevReport",
-   "text": "draft",
-   "description": "auto-draft preview landed before the full run"
-  },
-  {
-   "type": "PanelEquals",
-   "nickname": "BristleState",
-   "text": "done",
-   "description": ""
+   "nickname": "IsoLog",
+   "text": "curves from values",
+   "description": "value iso-contours as curves"
   },
   {
    "type": "PanelContains",
-   "nickname": "ViewLegend",
-   "text": "]",
-   "description": "BR_StrokeView staged the strokes with kind profiles (legend non-empty)"
+   "nickname": "BandLog",
+   "text": "curves from depth",
+   "description": "depth topo-bands as curves"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "StreamLog",
+   "text": "streamlines",
+   "description": "flow field as curves"
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "PeaksLog",
+   "text": "points",
+   "description": "saliency peaks as points"
   },
   {
    "type": "PanelContains",
    "nickname": "ExportLog",
    "text": "pen layer",
-   "description": ".3dm written with pen layers - the Plotline handoff exists"
+   "description": "the topo landed in PlotFiles as a plottable .3dm"
   },
   {
    "type": "PanelDoesNotContain",
@@ -186,13 +188,6 @@
    "nickname": "SlopSuccess",
    "text": "True",
    "description": ""
-  },
-  {
-   "type": "PanelDoesNotContain",
-   "nickname": "SlopLog",
-   "text": "FATAL",
-   "description": ""
   }
- ],
- "keepOpenOnFailure": false
+ ]
 }

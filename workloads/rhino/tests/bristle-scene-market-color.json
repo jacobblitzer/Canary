@@ -165,6 +165,12 @@
   },
   {
    "type": "PanelContains",
+   "nickname": "ViewLegend",
+   "text": "]",
+   "description": "BR_StrokeView staged the strokes with kind profiles (legend non-empty)"
+  },
+  {
+   "type": "PanelContains",
    "nickname": "ExportLog",
    "text": "pen layer",
    "description": ".3dm written with pen layers - the Plotline handoff exists"
@@ -188,5 +194,5 @@
    "description": ""
   }
  ],
- "keepOpenOnFailure": true
+ "keepOpenOnFailure": false
 }

@@ -1,7 +1,5 @@
 {
- "name": "bristle-02-analyze-layers",
  "workload": "rhino",
- "description": "Bristle 02 \u2014 analyze_v1 through GH on the dog fixture: JobType input routes the job, BR_Status polls to done, the Artifacts panel must list the analysis layers, and the Preview input serves layer_orientation.png on-canvas. PREREQ: live engine (spec/BRISTLE_WORKLOAD.md).",
  "setup": {
   "file": "fixtures/bristle_slop_loader.gh",
   "viewport": {
@@ -24,12 +22,15 @@
    "source": "viewport",
    "atTimeMs": 0,
    "tolerance": 0.0,
-   "description": "GH canvas screenshot, save-only (capture mode never fails; asserts carry the gate)",
+   "description": "showcase canvas (save-only)",
    "mode": "capture",
    "camera": null,
    "stabilizeMs": null
   }
  ],
+ "keepOpenOnFailure": false,
+ "name": "bristle-06-regions-showcase",
+ "description": "R1 showcase: market analyzed twice with regions.points_per_side 8 vs 32 - AnalysisParams provably bite (region counts differ); palette boundaries from the same job. PREREQ: live R2 engine.",
  "actions": [
   {
    "type": "WaitForGrasshopperSolution",
@@ -61,7 +62,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/02_bristle_analyze_layers.json"
+   "text": "C:/Repos/Bristle/tests/slop/06_bristle_regions_showcase.json"
   },
   {
    "type": "GrasshopperSetToggle",
@@ -79,69 +80,87 @@
   },
   {
    "type": "WaitForGrasshopperPanel",
-   "nickname": "BristleState",
+   "nickname": "StateA",
    "text": "done",
    "mode": "equals",
+   "timeoutMs": 120000
+  },
+  {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "StateB",
+   "text": "done",
+   "mode": "equals",
+   "timeoutMs": 120000
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 3000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Harvest",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "RegLogA",
+   "text": "fetched",
+   "mode": "contains",
+   "timeoutMs": 20000
+  },
+  {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "RegLogB",
+   "text": "fetched",
+   "mode": "contains",
    "timeoutMs": 20000
   },
   {
    "type": "WaitForGrasshopperSolution",
-   "timeoutMs": 10000
+   "timeoutMs": 5000
   }
  ],
  "asserts": [
   {
-   "type": "PanelEquals",
-   "nickname": "BristleState",
-   "text": "done",
-   "description": "analyze job terminal"
+   "type": "PanelDoesNotContain",
+   "nickname": "ConnStatus",
+   "text": "OFFLINE",
+   "description": "engine reachable"
+  },
+  {
+   "type": "PanelsDiffer",
+   "nickname": "RegLogA",
+   "text": "RegLogB",
+   "description": "points_per_side 8 vs 32 must change the region decomposition - AnalysisParams bite end-to-end"
   },
   {
    "type": "PanelContains",
-   "nickname": "ArtifactsPanel",
-   "text": "layer_orientation.png",
+   "nickname": "RegLogA",
+   "text": "regions fetched",
    "description": ""
   },
   {
    "type": "PanelContains",
-   "nickname": "ArtifactsPanel",
-   "text": "layer_values.png",
+   "nickname": "RegLogB",
+   "text": "regions fetched",
    "description": ""
   },
   {
    "type": "PanelContains",
-   "nickname": "ArtifactsPanel",
-   "text": "layer_index.png",
-   "description": ""
-  },
-  {
-   "type": "PanelContains",
-   "nickname": "ArtifactsPanel",
-   "text": "layer_importance.png",
-   "description": ""
-  },
-  {
-   "type": "PanelContains",
-   "nickname": "ArtifactsPanel",
-   "text": "layer_dist.png",
-   "description": ""
-  },
-  {
-   "type": "PanelContains",
-   "nickname": "ArtifactsPanel",
-   "text": "analysis.json",
-   "description": "layer manifest present"
+   "nickname": "PaletteLog",
+   "text": "palette fetched",
+   "description": "palette-cluster boundaries arrive as curves"
   },
   {
    "type": "PanelDoesNotContain",
-   "nickname": "SubmitLog",
+   "nickname": "RegLogA",
    "text": "FAILED",
    "description": ""
   },
   {
    "type": "PanelDoesNotContain",
-   "nickname": "ConnStatus",
-   "text": "OFFLINE",
+   "nickname": "RegLogB",
+   "text": "FAILED",
    "description": ""
   },
   {
@@ -150,6 +169,5 @@
    "text": "True",
    "description": ""
   }
- ],
- "keepOpenOnFailure": false
+ ]
 }
