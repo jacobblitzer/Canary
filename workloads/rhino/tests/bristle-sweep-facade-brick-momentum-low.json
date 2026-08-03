@@ -1,0 +1,156 @@
+{
+ "name": "bristle-sweep-facade-brick-momentum-low",
+ "workload": "rhino",
+ "description": "Sweep facade-brick/momentum-low: jagged, detail-chasing strokes. Full pipeline to preview + StrokeSet + .3dm.",
+ "setup": {
+  "file": "fixtures/bristle_slop_loader.gh",
+  "viewport": {
+   "width": 800,
+   "height": 600,
+   "projection": "Perspective",
+   "displayMode": "Shaded"
+  },
+  "commands": [],
+  "scene": null,
+  "backend": "",
+  "canvas": null,
+  "vlm": null
+ },
+ "runMode": "shared",
+ "recording": "",
+ "checkpoints": [
+  {
+   "name": "preview",
+   "source": "file",
+   "filePath": "C:/Repos/Bristle/out/sweeps/facade-brick/momentum-low/preview.png",
+   "atTimeMs": 0,
+   "tolerance": 0.0,
+   "description": "sweep artifact: jagged, detail-chasing strokes",
+   "mode": "capture",
+   "camera": null,
+   "stabilizeMs": null
+  },
+  {
+   "name": "toolpath",
+   "source": "file",
+   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sweeps/facade-brick/momentum-low.3dm",
+   "atTimeMs": 0,
+   "tolerance": 0.0,
+   "description": "sweep artifact: jagged, detail-chasing strokes",
+   "mode": "capture",
+   "camera": null,
+   "stabilizeMs": null
+  }
+ ],
+ "actions": [
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 5000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Build",
+   "value": false
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Cleanup",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 5000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Cleanup",
+   "value": false
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 2000
+  },
+  {
+   "type": "GrasshopperSetPanelText",
+   "nickname": "JsonPath",
+   "text": "C:/Repos/Bristle/tests/slop/sweeps/facade-brick-momentum-low.json"
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Build",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 30000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Run",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "BristleState",
+   "text": "done",
+   "mode": "equals",
+   "timeoutMs": 60000
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 3000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Fetch",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 20000
+  },
+  {
+   "type": "GrasshopperSetToggle",
+   "nickname": "Export",
+   "value": true
+  },
+  {
+   "type": "WaitForGrasshopperPanel",
+   "nickname": "ExportLog",
+   "text": "exported",
+   "mode": "contains",
+   "timeoutMs": 15000
+  },
+  {
+   "type": "WaitForGrasshopperSolution",
+   "timeoutMs": 2000
+  }
+ ],
+ "asserts": [
+  {
+   "type": "PanelEquals",
+   "nickname": "BristleState",
+   "text": "done",
+   "description": ""
+  },
+  {
+   "type": "PanelContains",
+   "nickname": "ExportLog",
+   "text": "pen layer",
+   "description": ""
+  },
+  {
+   "type": "PanelDoesNotContain",
+   "nickname": "ExportLog",
+   "text": "FAILED",
+   "description": ""
+  },
+  {
+   "type": "PanelEquals",
+   "nickname": "SlopSuccess",
+   "text": "True",
+   "description": ""
+  }
+ ],
+ "keepOpenOnFailure": false
+}
