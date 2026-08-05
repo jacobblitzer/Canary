@@ -73,6 +73,13 @@
       "timeoutMs": 30000
     },
     {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "AnalysisJSON",
+      "text": "\"level\":\"max\"",
+      "mode": "contains",
+      "timeoutMs": 20000
+    },
+    {
       "type": "GrasshopperSetToggle",
       "nickname": "Run",
       "value": true
@@ -107,6 +114,18 @@
       "nickname": "ConnStatus",
       "text": "OFFLINE",
       "description": "engine reachable (prereq: service running)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "AnalysisJSON",
+      "text": "bind_max_gap_px",
+      "description": "the sliders assemble a complete AnalysisParams JSON"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SubmitLog",
+      "text": "not valid JSON",
+      "description": "the assembled JSON survived the engine door"
     },
     {
       "type": "PanelContains",
