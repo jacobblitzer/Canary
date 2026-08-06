@@ -273,3 +273,29 @@ the operator asked to look at exactly one thing, so don't close it on them.
 Suites and headless/CI runs keep the close-after-run default. Historical
 gap: AutoRunArgs.TryParse iterated `Length - 1`, so a bare boolean flag in
 last position was invisible — bounds-checked per flag now.
+
+## Whole-canvas layout review (2026-08-05)
+
+`scripts/slop-canvas-shot.ps1 -Definition <slop.json> [-Out x.png] [-Zoom 1.0]`
+builds any Slop definition through the loader and renders the **entire** GH
+document to a PNG — every component, group and scribble — via the agent action
+`GrasshopperCanvasImage`.
+
+Why it exists: a fullscreen grab only ever captured the visible slice at whatever
+zoom Rhino was left at, so layout defects in generated definitions (overlaps,
+buried scribbles, off-screen clumps) were invisible to review. The action unions
+every object's attribute bounds and renders that rect with
+`GH_Canvas.GenerateHiResImage`.
+
+Implementation notes worth knowing before touching it:
+- `GH_ImageSettings.TileSize` is **static and read-only** (~1000 px) and GH writes
+  tiles as `<col>;<row>.png` into **its own temp folder**, ignoring `settings.Folder`.
+  The action stitches the tiles into one PNG and deletes them. Clamping zoom to fit
+  a single tile instead produces a useless thumbnail of a large canvas.
+- 80 MP ceiling guards the stitched bitmap; `zoom` scales down automatically if hit.
+- The scratch test it writes (`slop-canvas-shot.json`) is regenerated every run and
+  is deliberately absent from every suite manifest.
+
+The loop: shoot → LOOK at the PNG → fix the generator (Slop's AutoLayout or the
+def author) → re-shoot. This is how the 2026-08-05 Slop AutoLayout fix (scribble
+header bands + measured row/column advance) was found.
