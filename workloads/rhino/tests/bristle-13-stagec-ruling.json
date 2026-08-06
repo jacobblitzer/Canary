@@ -1,0 +1,152 @@
+{
+  "name": "bristle-13-stagec-ruling",
+  "workload": "rhino",
+  "description": "STAGE C RULING canvas (keep-open, absent from every suite). Is a region an OBJECT or a TILE of a partition? The FillGaps value list flips analysis.regions.fill_gaps and re-runs: OFF shows only what the model actually found (bare photo between regions); ON shows today's shipped behaviour, where accepted regions are grown outward by a watershed until every pixel is owned. Flipping is cheap because fill_gaps no longer invalidates the SAM unit cache (audit fix D2, 2026-08-06).",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 1400,
+      "height": 1000,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "stagec-objects-vs-partition",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "Top view: region fills over the photo at the CURRENT FillGaps setting - the artifact the object-vs-tile ruling is made from",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": 1200
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/13_bristle_stagec_ruling.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 40000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "AnalysisJSON",
+      "text": "fill_gaps",
+      "mode": "contains",
+      "timeoutMs": 20000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Run",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "JobState",
+      "text": "done",
+      "mode": "equals",
+      "timeoutMs": 900000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Fetch",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "RegionCount",
+      "text": "fetched",
+      "mode": "contains",
+      "timeoutMs": 120000
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 20000
+    },
+    {
+      "type": "SetView",
+      "name": "Top"
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "ConnStatus",
+      "text": "OFFLINE",
+      "description": "engine reachable"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RegionCount",
+      "text": "regions fetched",
+      "description": "the region tree came home"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "every native component resolved and wired"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "Error",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "AnalysisJSON",
+      "text": "\"regions\":{\"fill_gaps\":",
+      "description": "the FillGaps switch is genuinely reaching the engine, not just sitting on the canvas"
+    }
+  ],
+  "keepOpenOnFailure": true
+}

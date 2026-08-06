@@ -1,0 +1,95 @@
+{
+  "name": "bristle-11-seed2",
+  "workload": "rhino",
+  "description": "OPERATOR RATIFICATION canvas for STOP-POINT SEED-2 (keep-open, deliberately absent from every suite manifest): market at quality max with seeds ON, region tree + seed overlay over the photo, driven by two pickers (Quality, Seeds). Carries a RULINGS scribble stating the three decisions and what to read for each. Runs one full round trip then hands Rhino to the operator.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "seed2-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "Photo + region borders + seed overlay landed; the canvas is interactive from here",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath", "text": "C:/Repos/Bristle/tests/slop/11_bristle_seed2_ratification.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "AnalysisJSON", "text": "\"enabled\":true", "mode": "contains", "timeoutMs": 20000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Run", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "JobState", "text": "done", "mode": "equals", "timeoutMs": 900000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Fetch", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "RegionCount", "text": "fetched", "mode": "contains", "timeoutMs": 120000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+  ],
+  "asserts": [
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "ConnStatus",
+      "text": "OFFLINE",
+      "description": "engine reachable (prereq: the Bristle service is running)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "AnalysisJSON",
+      "text": "\"level\":\"max\"",
+      "description": "the pickers assembled a valid AnalysisParams JSON"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SubmitLog",
+      "text": "not valid JSON",
+      "description": "the assembled JSON survived the engine door"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RegionCount",
+      "text": "regions fetched",
+      "description": "the tree round trip landed before the operator touches anything"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SeedLog",
+      "text": "seeds in",
+      "description": "the seed overlay is staged (ruling 1 needs it visible)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "BackdropLog",
+      "text": "backdrop staged",
+      "description": "the photo is under the overlay"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": ""
+    }
+  ],
+  "keepOpenOnFailure": true
+}
