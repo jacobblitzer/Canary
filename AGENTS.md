@@ -30,6 +30,7 @@
 | Penumbra-in-Rhino suites — OOP fallback, glsl, fieldops, display-matrix | § Penumbra-in-Rhino suites |
 | Authoring Rhino `setup.commands` macros | `docs/features/rhino-setup-commands-macros.md` |
 | Slop Log-Tap debugging of failing runs | § Logging |
+| **Reviewing a generated definition's LAYOUT** (whole-canvas PNG) | `scripts/slop-canvas-shot.ps1 -Definition <slop.json>` — renders the entire GH document (agent action `GrasshopperCanvasImage`), not a screen grab |
 | Asks to peers | § Asks queue · `docs/asks/README.md` |
 | Feedback inbox layout + lifecycle | § Feedback inbox · `docs/feedback/README.md` |
 | Frontmatter schema, docs tree | § Journaling |
