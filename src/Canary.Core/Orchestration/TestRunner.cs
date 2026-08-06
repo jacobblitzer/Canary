@@ -193,6 +193,11 @@ public sealed class TestRunner
                     var parameters = action.AsParameters();
                     _logger.Log($"  action: {action.Type}");
                     var resp = await client!.ExecuteAsync(action.Type, parameters, cancellationToken).ConfigureAwait(false);
+                    // Surface what an action REPORTED, not just whether it failed: a
+                    // successful action that quietly did nothing (wrote no file, matched
+                    // no object) was previously indistinguishable from a real success.
+                    if (!string.IsNullOrWhiteSpace(resp.Message))
+                        _logger.Log($"      {resp.Message}");
                     if (!resp.Success)
                     {
                         result.Status = TestStatus.Crashed;

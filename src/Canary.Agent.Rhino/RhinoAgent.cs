@@ -38,6 +38,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
                     "WaitForGrasshopperPanel" => HandleWaitForGrasshopperPanel(parameters),
                     "GrasshopperGetDiagnosticDump" => HandleGrasshopperGetDiagnosticDump(parameters),
+                    "GrasshopperCanvasImage" => HandleGrasshopperCanvasImage(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
                     "GetPenumbraFrameState" => HandleGetPenumbraFrameState(parameters),
                     "DumpPenumbraSceneState" => HandleDumpPenumbraSceneState(parameters),
@@ -1453,6 +1454,172 @@ public sealed class RhinoAgent : ICanaryAgent
     /// Set a Boolean Toggle's value. Used by the CPig regression workload to
     /// pulse Slop's Build trigger via Canary.
     /// </summary>
+    /// <summary>
+    /// Renders the WHOLE Grasshopper canvas to a PNG — every component, group, and
+    /// scribble in the document, framed by the document's own bounding box rather than
+    /// by whatever the canvas happens to be scrolled/zoomed to. This is the layout
+    /// feedback loop for generated definitions (Slop): a fullscreen grab only ever
+    /// shows the visible slice at the operator's zoom, so overlaps and off-screen
+    /// clumps stayed invisible to review. GH_Canvas.GenerateHiResImage does the
+    /// rendering (the same path as GH's own Export Hi-Res Image) and returns the file
+    /// paths it wrote.
+    ///
+    /// Parameters: path (required, output .png) · zoom (default 1.0; raise for denser
+    /// text) · padding (canvas units around the content, default 25) ·
+    /// background (#RRGGBB, default light grey).
+    /// </summary>
+    private static AgentResponse HandleGrasshopperCanvasImage(Dictionary<string, string> parameters)
+    {
+        if (!parameters.TryGetValue("path", out var outPath) || string.IsNullOrWhiteSpace(outPath))
+        {
+            return new AgentResponse { Success = false, Message = "Missing required parameter 'path'." };
+        }
+
+        var canvas = Grasshopper.Instances.ActiveCanvas;
+        if (canvas == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active Grasshopper canvas." };
+        }
+        var doc = canvas.Document;
+        if (doc == null)
+        {
+            return new AgentResponse { Success = false, Message = "No active Grasshopper document." };
+        }
+
+        float zoom = 1.0f;
+        if (parameters.TryGetValue("zoom", out var zoomStr))
+        {
+            float.TryParse(zoomStr, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out zoom);
+        }
+        if (zoom <= 0f) zoom = 1.0f;
+
+        int padding = 25;
+        if (parameters.TryGetValue("padding", out var padStr))
+        {
+            int.TryParse(padStr, out padding);
+        }
+
+        var back = System.Drawing.Color.FromArgb(245, 245, 245);
+        if (parameters.TryGetValue("background", out var bg) && !string.IsNullOrWhiteSpace(bg))
+        {
+            try { back = System.Drawing.ColorTranslator.FromHtml(bg.Trim()); }
+            catch { /* keep the default rather than fail the capture over a colour */ }
+        }
+
+        // Union of EVERY document object's attribute bounds. Deliberately not
+        // GH_Document.BoundingBox: groups and scribbles are document objects with
+        // their own attributes, and this way nothing outside the visible canvas is
+        // silently cropped away.
+        var box = System.Drawing.RectangleF.Empty;
+        int counted = 0;
+        foreach (var obj in doc.Objects)
+        {
+            var attr = obj?.Attributes;
+            if (attr == null) continue;
+            var b = attr.Bounds;
+            if (b.Width <= 0 || b.Height <= 0) continue;
+            box = counted == 0 ? b : System.Drawing.RectangleF.Union(box, b);
+            counted++;
+        }
+        if (counted == 0)
+        {
+            return new AgentResponse { Success = false, Message = "Document has no objects to frame." };
+        }
+        box.Inflate(padding, padding);
+
+        try
+        {
+            var dir = System.IO.Path.GetDirectoryName(outPath);
+            if (string.IsNullOrEmpty(dir)) dir = System.IO.Directory.GetCurrentDirectory();
+            System.IO.Directory.CreateDirectory(dir);
+
+            // GH tiles the render at a fixed ~1000px TileSize (static AND read-only) and
+            // writes the tiles to ITS OWN temp folder as "<col>;<row>.png", ignoring
+            // settings.Folder. So: render at full zoom, then STITCH the tiles into one
+            // image ourselves. Clamping the zoom down to fit a single tile (the first
+            // attempt) produced a 1192x668 thumbnail of a 4538-unit canvas - useless for
+            // reading component names, which is the whole point.
+            var tile = Grasshopper.GUI.Canvas.GH_Canvas.GH_ImageSettings.TileSize;
+            const long MaxPixels = 80_000_000L;   // ~80 MP ceiling keeps the bitmap sane
+            var clamped = false;
+            if ((long)(box.Width * zoom) * (long)(box.Height * zoom) > MaxPixels)
+            {
+                zoom = (float)Math.Sqrt(MaxPixels / ((double)box.Width * box.Height));
+                clamped = true;
+            }
+
+            var settings = new Grasshopper.GUI.Canvas.GH_Canvas.GH_ImageSettings
+            {
+                Folder = dir,
+                FileName = System.IO.Path.GetFileNameWithoutExtension(outPath),
+                Extension = "png",
+                Zoom = zoom,
+                BackColour = back,
+            };
+
+            var files = canvas.GenerateHiResImage(
+                System.Drawing.Rectangle.Round(box), settings, out var totalSize);
+
+            if (files == null || files.Count == 0)
+            {
+                return new AgentResponse { Success = false, Message = "GenerateHiResImage wrote no files." };
+            }
+
+            using (var full = new System.Drawing.Bitmap(
+                       Math.Max(1, totalSize.Width), Math.Max(1, totalSize.Height),
+                       System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+            {
+                using (var g = System.Drawing.Graphics.FromImage(full))
+                {
+                    g.Clear(back);
+                    foreach (var f in files)
+                    {
+                        if (!System.IO.File.Exists(f)) continue;
+                        // tile files are named "<col>;<row>.png"
+                        var nm = System.IO.Path.GetFileNameWithoutExtension(f);
+                        var parts = nm.Split(';');
+                        int col = 0, row = 0;
+                        if (parts.Length == 2)
+                        {
+                            int.TryParse(parts[0], out col);
+                            int.TryParse(parts[1], out row);
+                        }
+                        using var t = new System.Drawing.Bitmap(f);
+                        g.DrawImageUnscaled(t, col * tile.Width, row * tile.Height);
+                    }
+                }
+                full.Save(outPath, System.Drawing.Imaging.ImageFormat.Png);
+            }
+
+            foreach (var f in files)
+            {
+                try { if (System.IO.File.Exists(f)) System.IO.File.Delete(f); } catch { }
+            }
+
+            return new AgentResponse
+            {
+                Success = true,
+                Message = $"Canvas image: {outPath} ({totalSize.Width}x{totalSize.Height} px, " +
+                          $"{counted} objects, canvas {box.Width:F0}x{box.Height:F0} units, " +
+                          $"zoom {zoom:F3}{(clamped ? " (clamped by the pixel ceiling)" : "")}, " +
+                          $"{files.Count} tile(s) stitched)",
+                Data = new Dictionary<string, string>
+                {
+                    ["path"] = outPath,
+                    ["width"] = totalSize.Width.ToString(),
+                    ["height"] = totalSize.Height.ToString(),
+                    ["objects"] = counted.ToString(),
+                    ["tiles"] = string.Join(";", files),
+                },
+            };
+        }
+        catch (Exception ex)
+        {
+            return new AgentResponse { Success = false, Message = $"Canvas capture failed: {ex.Message}" };
+        }
+    }
+
     private static AgentResponse HandleGrasshopperSetToggle(Dictionary<string, string> parameters)
     {
         if (!parameters.TryGetValue("nickname", out var nickname) || string.IsNullOrWhiteSpace(nickname))
