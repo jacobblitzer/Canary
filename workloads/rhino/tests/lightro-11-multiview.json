@@ -1,0 +1,185 @@
+{
+  "name": "lightro-11-multiview",
+  "workload": "rhino",
+  "description": "11 MULTIVIEW - a real Light L16 capture: the module anatomy (which of the 16 eyes fired at this zoom, and the camera face to scale), the shared depth stack driven by Autopilot in METRES, and the five aperture-integrating components refusing visibly instead of crashing.",
+  "runMode": "shared",
+  "setup": {
+    "file": "fixtures/lightro_slop_loader.gh",
+    "viewport": {
+      "width": 1200,
+      "height": 700,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [
+      "-_Zoom _All _Extents _EnterEnd"
+    ]
+  },
+  "checkpoints": [
+    {
+      "name": "multiview-viewport",
+      "source": "viewport",
+      "tolerance": 0.05,
+      "description": "L16 rig + metric depth stack + honest refusals",
+      "mode": "capture"
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Lightro/tests/slop/11_multiview.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 180000
+    },
+    {
+      "type": "RunCommand",
+      "command": "-_Zoom _All _Extents _EnterEnd"
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "Slop build succeeded"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "FATAL",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "LoadInfo",
+      "text": "multiview:",
+      "description": "LF Load reports the capture kind"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "LoadInfo",
+      "text": "metric_m",
+      "description": "depth is in metres, not alpha"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ModInfo",
+      "text": "16 modules",
+      "description": "the whole rig is described"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ModInfo",
+      "text": "fired",
+      "description": "which eyes opened at this zoom"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ModTable",
+      "text": "mirror-steered",
+      "description": "tele modules are named as steered, not posed"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ReliefInfo",
+      "text": "relief",
+      "description": "relief built from metric depth"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SculptInfo",
+      "text": "roughness",
+      "description": "sculpt reconstructed a surface"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ContourInfo",
+      "text": "contour",
+      "description": "line-work from a Light capture"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "OccInfo",
+      "text": "occlusion",
+      "description": "silhouettes from a Light capture"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "PilotReport",
+      "text": "trust",
+      "description": "Autopilot reasoned about this capture"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "PilotViability",
+      "text": "refocus: n/a",
+      "description": "Autopilot reports the aperture effects as unavailable, not merely poor"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RefocusRefusal",
+      "text": "dense angular field",
+      "description": "LF Refocus refuses in words, not a traceback"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ViewRefusal",
+      "text": "dense angular field",
+      "description": "LF View refuses"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ApertureRefusal",
+      "text": "dense angular field",
+      "description": "LF Aperture refuses"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "FocalSurfaceRefusal",
+      "text": "dense angular field",
+      "description": "LF Focal Surface refuses"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RaysRefusal",
+      "text": "multiview capture",
+      "description": "LF Rays names the capture kind it was given"
+    }
+  ],
+  "keepOpenOnFailure": true
+}
