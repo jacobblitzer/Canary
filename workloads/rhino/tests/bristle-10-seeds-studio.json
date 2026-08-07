@@ -1,7 +1,7 @@
 {
   "name": "bristle-10-seeds-studio",
   "workload": "rhino",
-  "description": "OPERATOR STUDIO for SEED-2 ratification, not a gate test (deliberately absent from suites): builds the seeds studio canvas (market backdrop + max+seeds analyze + region TREE fetch + BR_SeedView with mode picker), runs one full round trip, and hands Rhino to the operator. Run with --test and NO --headless so the app stays open for fiddling.",
+  "description": "OPERATOR STUDIO for SEED-2 ratification, not a gate test (deliberately absent from suites): builds the seeds studio canvas (market backdrop + max+seeds analyze with per-source toggles + seeds-only fast Mode + region TREE fetch + BR_SeedView with mode picker), runs one full round trip, and hands Rhino to the operator. Run with --test and NO --headless so the app stays open for fiddling.",
   "setup": {
     "file": "fixtures/bristle_slop_loader.gh",
     "viewport": {
@@ -120,6 +120,18 @@
       "nickname": "AnalysisJSON",
       "text": "bind_max_gap_px",
       "description": "the sliders assemble a complete AnalysisParams JSON"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "AnalysisJSON",
+      "text": "\"sources\":[",
+      "description": "the six source toggles assemble the seeds.sources array (Cull Pattern -> Text Join lane)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "AnalysisJSON",
+      "text": "\"regions\":{\"enabled\":true",
+      "description": "Mode valuelist default = full job; the fragment chain closes valid JSON"
     },
     {
       "type": "PanelDoesNotContain",
