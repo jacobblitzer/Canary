@@ -1010,6 +1010,7 @@ public sealed class TestRunner
         };
         if (viewport.Width > 0) vparams["width"] = viewport.Width.ToString();
         if (viewport.Height > 0) vparams["height"] = viewport.Height.ToString();
+        if (viewport.Floating) vparams["floating"] = "true";
         return vparams;
     }
 
@@ -1341,17 +1342,29 @@ public sealed class TestRunner
                     $"{Path.GetFileNameWithoutExtension(resolvedPath)}-{Guid.NewGuid():N}{ext}");
                 File.Copy(resolvedPath, tempPath, overwrite: true);
                 _logger.Log($"Opening file: {resolvedPath} (as temp copy {Path.GetFileName(tempPath)})");
-                await client.ExecuteAsync("OpenGrasshopperDefinition", new Dictionary<string, string>
+                var openResp = await client.ExecuteAsync("OpenGrasshopperDefinition", new Dictionary<string, string>
                 {
                     ["path"] = tempPath
                 }, ct).ConfigureAwait(false);
+                // A test without its fixture means nothing - and until 2026-08-07 a
+                // FAILED open was silently discarded here, so the log said "Setup
+                // commands complete" and every action then died with 'No active
+                // Grasshopper document', pointing everywhere except the actual cause
+                // (the agent's response carried it the whole time: a GH cold-init
+                // timeout). Fail the setup loudly with the agent's own words.
+                if (openResp is { Success: false })
+                    throw new InvalidOperationException(
+                        $"Fixture open FAILED - aborting setup: {openResp.Message}");
             }
             else
             {
-                await client.ExecuteAsync("OpenFile", new Dictionary<string, string>
+                var openResp = await client.ExecuteAsync("OpenFile", new Dictionary<string, string>
                 {
                     ["path"] = resolvedPath
                 }, ct).ConfigureAwait(false);
+                if (openResp is { Success: false })
+                    throw new InvalidOperationException(
+                        $"Fixture open FAILED - aborting setup: {openResp.Message}");
             }
         }
 
@@ -1368,6 +1381,12 @@ public sealed class TestRunner
                 vparams["width"] = setup.Viewport.Width.ToString();
             if (setup.Viewport.Height > 0)
                 vparams["height"] = setup.Viewport.Height.ToString();
+            // width/height above are silently IGNORED by a docked/maximized view (the
+            // capture came out at whatever pane size Rhino remembered - 422x324 today,
+            // 741x542 yesterday, for the same configs). floating detaches the view so
+            // Size is actually honored and pixel-diff captures become deterministic.
+            if (setup.Viewport.Floating)
+                vparams["floating"] = "true";
             await client.ExecuteAsync("SetViewport", vparams, ct).ConfigureAwait(false);
         }
 

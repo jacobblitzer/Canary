@@ -202,6 +202,18 @@ public sealed class ViewportSetup
 
     [JsonPropertyName("displayMode")]
     public string DisplayMode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Detach the view into a floating viewport before sizing it. OPT-IN because a
+    /// docked/maximized view ignores Size: width/height above were never actually
+    /// honored - the capture came out at whatever pane size Rhino remembered from the
+    /// last session (measured 422x324, 741x542 and 1116x632 across sessions for tests
+    /// all requesting 800x600 or 1400x1000, 2026-08-07). Pixel-diff baselines need
+    /// deterministic dimensions, and only a floating viewport gives them. Opt-in so
+    /// existing suites' baselines (cpig) keep their historical capture geometry.
+    /// </summary>
+    [JsonPropertyName("floating")]
+    public bool Floating { get; set; }
 }
 
 /// <summary>

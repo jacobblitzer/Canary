@@ -314,10 +314,38 @@ public sealed class RhinoAgent : ICanaryAgent
             }
         }
 
-        // Maximize the (now-active) viewport unconditionally — screenshots are
-        // a single view's bitmap, never a multi-pane layout.
-        try { RhinoApp.RunScript("_-MaxViewport _Enter", echo: false); }
-        catch (Exception mex) { RhinoApp.WriteLine($"[Canary] MaxViewport: {mex.Message}"); }
+        // FLOATING must be applied BEFORE the zoom refit below, and instead of
+        // MaxViewport (a maximized view and a floating one are rival answers to
+        // "which single view fills the capture"). First shipped version applied
+        // floating+Size at the END of this handler - AFTER the refit - so the
+        // already-framed camera was carried into a differently-sized window with
+        // its frustum SCALE preserved and the fit lost: the 12-point grid came
+        // back with its edge columns clipped (2026-08-07, first eyeball of the
+        // would-be baseline). Order is load-bearing: activate -> float+size ->
+        // zoom the FINAL geometry of the FINAL window.
+        bool floating = parameters.TryGetValue("floating", out var floatStr) &&
+                        string.Equals(floatStr, "true", StringComparison.OrdinalIgnoreCase);
+        if (floating)
+        {
+            var fv = doc.Views.ActiveView;
+            if (fv != null)
+            {
+                if (!fv.Floating) fv.Floating = true;
+                if (parameters.TryGetValue("width", out var fw) &&
+                    parameters.TryGetValue("height", out var fh) &&
+                    int.TryParse(fw, out var fwi) && int.TryParse(fh, out var fhi))
+                {
+                    fv.Size = new System.Drawing.Size(fwi, fhi);
+                }
+            }
+        }
+        else
+        {
+            // Maximize the (now-active) viewport — screenshots are a single
+            // view's bitmap, never a multi-pane layout.
+            try { RhinoApp.RunScript("_-MaxViewport _Enter", echo: false); }
+            catch (Exception mex) { RhinoApp.WriteLine($"[Canary] MaxViewport: {mex.Message}"); }
+        }
 
         // Recenter the camera. Tests typically build geometry via Grasshopper
         // (post-setup), so doc geometry is empty here — but a default
@@ -470,8 +498,12 @@ public sealed class RhinoAgent : ICanaryAgent
                 vp.DisplayMode = mode;
         }
 
-        // Set viewport size
-        if (parameters.TryGetValue("width", out var widthStr) &&
+        // Set viewport size (docked lane only - the floating lane sized itself above,
+        // BEFORE the zoom refit; re-floating or re-sizing here would wreck the framing
+        // the refit just computed). A docked/maximized view IGNORES Size, so this is a
+        // best-effort no-op kept for the non-floating path's historical behaviour.
+        if (!floating &&
+            parameters.TryGetValue("width", out var widthStr) &&
             parameters.TryGetValue("height", out var heightStr) &&
             int.TryParse(widthStr, out var width) &&
             int.TryParse(heightStr, out var height))
@@ -563,15 +595,25 @@ public sealed class RhinoAgent : ICanaryAgent
             if (Grasshopper.Instances.ActiveCanvas == null)
             {
                 RhinoApp.RunScript("_-Grasshopper _W _T ENTER", echo: false);
+                // 90s, not 30s (2026-08-07): a COLD Grasshopper init on this class of
+                // machine legitimately exceeds 30s - GH scans component folders and
+                // several plugins load from a cloud-synced drive (Penumbra et al. live
+                // on G:\My Drive). Measured live: back-to-back runs at 05:39 (GH warm)
+                // opened instantly, runs at 06:03+ (24 min cold) timed out at exactly
+                // the 30s cap and every test in the session then "crashed" with
+                // 'No active Grasshopper document' - which reads like a fixture or
+                // plugin bug and cost a full bisection of both before the timeout was
+                // even suspected. Same lesson as the 20s BristleState waits: a tight
+                // timeout on a cold path asserts warmth, not correctness.
                 var ghSw = System.Diagnostics.Stopwatch.StartNew();
-                while (Grasshopper.Instances.ActiveCanvas == null && ghSw.ElapsedMilliseconds < 30000)
+                while (Grasshopper.Instances.ActiveCanvas == null && ghSw.ElapsedMilliseconds < 90000)
                     System.Threading.Thread.Sleep(500);
             }
 
             var editor = Grasshopper.Instances.ActiveCanvas;
             if (editor == null)
             {
-                return new AgentResponse { Success = false, Message = "Grasshopper canvas not available after 30s timeout." };
+                return new AgentResponse { Success = false, Message = "Grasshopper canvas not available after 90s timeout." };
             }
 
             var io = new Grasshopper.Kernel.GH_DocumentIO();
