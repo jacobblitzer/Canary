@@ -103,3 +103,17 @@
 - **Trace:** generator is `CPig/scripts/gen_retopo_slop_tests.py` (auto-inserts Log Tap). `Slop/SLOP_STYLE.md` has the layout rules. CPig inputs are `item`/`list`, never `tree` — shape upstream of CPig nodes. Component lookup: `Slop/fodder/tools/lookup_component.py "<name>"`. Pin components by GUID, not by library label.
 - **Why:** wrong data shape feeds CPig wrong inputs silently — test "passes" but wasn't testing what you thought.
 - **Last bit:** 2026-06-24
+
+## Viewport capture geometry (SetViewport / floating / pixel-diff baselines)
+
+- **Touching:** `RhinoAgent.HandleSetViewport`, `TestRunner.SendSetupCommandsAsync` / `BuildViewportParams`, any test's `viewport` block, or approving a baseline
+- **Trace:** ORDER inside HandleSetViewport is load-bearing: activate named view → float+Size (or MaxViewport — they are rivals, never both) → camera refit/zoom. `view.Size` is silently IGNORED on a docked/maximized view, so only `floating: true` produces deterministic capture dimensions; the refit zooms `doc.Views.ActiveView`, so float FIRST or the framed frustum is carried into a resized window and content clips at the edges. In `shared` runMode only the FIRST test's setup runs — per-test capture context belongs on the CHECKPOINT (`checkpoint.viewport`), which applies in suite AND solo runs. Diag log: `C:\Repos\CPig\logs\agent_viewport_diag.log` (hardcoded path — debt).
+- **Why:** 2026-08-07 — a "viewport size mismatch" unpicked into five stacked defects; the first fix attempt clipped a 12-point grid to 6 points and was one `canary approve` away from enshrining a broken baseline. **Never approve a baseline you have not eyeballed against the test's vlmDescription.**
+- **Last bit:** 2026-08-07
+
+## Timeouts assert warmth, not correctness
+
+- **Touching:** any `timeoutMs` on a wait action, or the agent's GH-canvas startup budget
+- **Trace:** GH cold-init on this machine exceeds 30s (plugins load from a cloud-synced drive) — the agent budget is 90s for that reason. `bristle-02/03` waiting 20s where `bristle-05` waits 90s produced false CRASHes twice in one day from documented cache invalidations. A failed fixture open now ABORTS setup loudly (`TestRunner.SendSetupCommandsAsync` checks the agent response); before 2026-08-07 it logged "Setup commands complete" and every action died with 'No active Grasshopper document', which cost a full bisection of two innocent repos.
+- **Why:** a tight timeout on a cold path fails on cache/boot state, not on the thing the test claims to verify — and a swallowed setup failure points the blame everywhere except the cause.
+- **Last bit:** 2026-08-07

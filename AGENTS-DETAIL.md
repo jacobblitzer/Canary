@@ -106,6 +106,14 @@ See `spec/PIGTURE_WORKLOAD.md` for the full pattern.
 ### Running Slop tests
 `canary run --workload rhino --suite slop` runs the Slop-native tests (`slop-01-graft-grid`, `slop-02-within-radius`) — pure core-Grasshopper + Slop components that validate the Slop `fodder/kb` authoring conventions produce buildable, correct definitions (graft cross-product, within-radius count). They reuse the `cpig_slop_loader.gh` fixture. Note: Slop's JSON schema is now drift-guarded by a tripwire (CI + every Slop `dotnet build`), so the `SLOP_PROMPT.md` contract these tests rely on stays in sync with the runtime `.gha`. When authoring new Slop JSON, see `Slop/fodder/kb/` + `Slop/fodder/tools/lookup_component.py` (now prints port `[access]`).
 
+### Deterministic pixel-diff captures (2026-08-07 — read before authoring or approving)
+
+- **`viewport.floating: true` is what makes width/height REAL.** A docked/maximized view silently ignores `Size` — captures came out at whatever pane geometry Rhino remembered (422×324 / 741×542 / 1116×632 for configs asking 800×600). Existing suites (cpig) keep their inherited geometry because the flag is opt-in. Applying it: the agent floats **before** the camera refit and skips MaxViewport (order is load-bearing — checklist § Viewport capture geometry).
+- **Per-test capture context goes on the CHECKPOINT, not setup.** In `shared` runMode only the first test's setup runs, so a setup-level viewport makes suite and solo runs capture different frames — a baseline approved from one can never match the other. `checkpoint.viewport` applies in both.
+- **Never approve a baseline you have not eyeballed** against the test's `vlmDescription`. The first floating-viewport fix clipped a 12-point grid to 6 points and was one `canary approve` away from becoming the permanent definition of correct.
+- **A Slop-building test must WAIT for the build's completion text** (`WaitForGrasshopperPanel` SlopLog contains `objects placed`) before asserting — `SlopSuccess` sampled at an arbitrary moment can be the "Building..." placeholder (vacuous-assert era ended 2026-08-07 with Slop's expire fix; older engines never republish at all).
+- **Timeouts assert warmth, not correctness.** GH cold-init exceeds 30 s here (cloud-synced plugin drive) — the agent's canvas budget is 90 s; wait budgets on jobs should assume a cold cache. A failed fixture open now aborts setup loudly instead of letting every action die with "No active Grasshopper document".
+
 ## § KinematicBridge tests
 
 ### Running KinematicBridge tests
