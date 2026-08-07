@@ -1,0 +1,164 @@
+{
+  "name": "bristle-14-userseeds-roundtrip",
+  "workload": "rhino",
+  "description": "BUG 0003 REGRESSION: a UserSeeds click must come back where it was clicked. The click goes in as canvas mm via analysis.seeds.points_mm, the engine places it with placement.fit, and BR_Regions hands it back through the SAME placement - so this fails if either direction drifts. The point is asymmetric in both axes on purpose: x=15mm sits near the left edge where the letterbox error is maximal (at the centre the old and new maths agree to 0.01mm), and y=90mm is off the vertical centre so a y-flip cannot hide. Under the old whole-canvas maths the seed returned ~8.25mm away. This is the ONLY automated coverage of click-to-prompt - no other definition wires BR_Submit input 11.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 1400,
+      "height": 1000,
+      "projection": "Top",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "userseeds-roundtrip",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "Top view: the seed dot should sit on the click, near the left edge",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": 1200
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/14_bristle_userseeds_roundtrip.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 40000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "AnalysisJSON",
+      "text": "fill_gaps",
+      "mode": "contains",
+      "timeoutMs": 20000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Run",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "JobState",
+      "text": "done",
+      "mode": "equals",
+      "timeoutMs": 900000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Fetch",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "RegionCount",
+      "text": "fetched",
+      "mode": "contains",
+      "timeoutMs": 120000
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 20000
+    },
+    {
+      "type": "SetView",
+      "name": "Top"
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "ConnStatus",
+      "text": "OFFLINE",
+      "description": "engine reachable"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RegionCount",
+      "text": "regions fetched",
+      "description": "the region tree came home"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": "every native component resolved and wired"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SlopLog",
+      "text": "Error",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RoundTrip",
+      "text": "777",
+      "description": "777 = at least one returned seed is within 0.6 mm of the click. The token is 777 rather than 1 because a panel rendering a TREE prints branch headers like {0;1} - asserting on '1' would pass on the header and prove nothing."
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "SeedInfo",
+      "text": "user",
+      "description": "the seed came back tagged as a USER seed, not an auto one - so RoundTrip cannot be satisfied by an auto seed that happens to be near"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SubmitLog",
+      "text": "points_mm",
+      "description": "the engine accepted points_mm - a 422 here means the engine predates the bug 0003 fix"
+    }
+  ],
+  "keepOpenOnFailure": false
+}
