@@ -1,7 +1,7 @@
 {
   "name": "bristle-17-edit-studio",
   "workload": "rhino",
-  "description": "OPERATOR STUDIO for the E3 imaging loop (deliberately absent from suites): builds the edit studio (recipe sliders -> BR_Edit live loop -> BR_ImagePanel canvas widget + BR_ImageView backdrop), triggers ONE live edit by moving a slider (first solve deliberately absorbs the fingerprint - opening a def never submits), and hands Rhino over. Requires the Bristle engine running on :8377.",
+  "description": "OPERATOR STUDIO for the E3 imaging loop (deliberately absent from suites): builds the edit studio (recipe sliders -> BR_Edit live loop -> BR_ImagePanel canvas widget + BR_ImageView backdrop), triggers ONE live edit by moving a slider (first solve deliberately absorbs the fingerprint - opening a def never submits), and verifies BR_Watch picks up a pre-committed app-origin edit (the app->GH half of the loop), and hands Rhino over. Requires the Bristle engine running on :8377.",
   "setup": {
     "file": "fixtures/bristle_slop_loader.gh",
     "viewport": {
@@ -37,40 +37,140 @@
     }
   ],
   "actions": [
-    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
-    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
-    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
-    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
-    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
-    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
-      "text": "C:/Repos/Bristle/tests/slop/17_bristle_edit_studio.json" },
-    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
-    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
-    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
-      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
-    { "type": "WaitForGrasshopperPanel", "nickname": "RecipeJSON",
-      "text": "\"posterize\"", "mode": "contains", "timeoutMs": 20000 },
-    { "type": "GrasshopperSetSlider", "nickname": "BlurRadius", "value": 6 },
-    { "type": "WaitForGrasshopperPanel", "nickname": "EditLog",
-      "text": "done", "mode": "contains", "timeoutMs": 90000 },
-    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/17_bristle_edit_studio.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "SlopLog",
+      "text": "objects placed",
+      "mode": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "RecipeJSON",
+      "text": "\"posterize\"",
+      "mode": "contains",
+      "timeoutMs": 20000
+    },
+    {
+      "type": "GrasshopperSetSlider",
+      "nickname": "BlurRadius",
+      "value": 6
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "EditLog",
+      "text": "done",
+      "mode": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "WatchLog",
+      "text": "picked up",
+      "mode": "contains",
+      "timeoutMs": 30000
+    }
   ],
   "asserts": [
-    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
-      "description": "engine reachable (prereq: service running)" },
-    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"in_lo\":",
-      "description": "the sliders assemble valid recipe JSON live" },
-    { "type": "PanelDoesNotContain", "nickname": "EditLog", "text": "EDIT FAILED",
-      "description": "the recipe survived the engine door (a 422 would land here)" },
-    { "type": "PanelContains", "nickname": "EditLog", "text": "done",
-      "description": "the slider-triggered edit_v1 round trip landed" },
-    { "type": "PanelContains", "nickname": "PanelLog", "text": "px on 180x120 mm",
-      "description": "BR_ImagePanel letterboxes the edited bitmap into the canvas frame" },
-    { "type": "PanelContains", "nickname": "BackdropLog", "text": "backdrop staged",
-      "description": "BR_ImageView draws the SAME edited bitmap in the viewport" },
-    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
-      "description": "" }
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "ConnStatus",
+      "text": "OFFLINE",
+      "description": "engine reachable (prereq: service running)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "RecipeJSON",
+      "text": "\"in_lo\":",
+      "description": "the sliders assemble valid recipe JSON live"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "EditLog",
+      "text": "EDIT FAILED",
+      "description": "the recipe survived the engine door (a 422 would land here)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "EditLog",
+      "text": "done",
+      "description": "the slider-triggered edit_v1 round trip landed"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "PanelLog",
+      "text": "px on 180x120 mm",
+      "description": "BR_ImagePanel letterboxes the edited bitmap into the canvas frame"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "BackdropLog",
+      "text": "backdrop staged",
+      "description": "BR_ImageView draws the SAME edited bitmap in the viewport"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": ""
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "WatchLog",
+      "text": "app",
+      "description": "BR_Watch picked up the app-committed edit (origin filter works)"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "WatchLog",
+      "text": "gh ·",
+      "description": "loop guard: GH's own submissions are never self-picked-up"
+    }
   ],
   "keepOpenOnFailure": true
 }
