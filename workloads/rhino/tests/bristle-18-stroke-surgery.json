@@ -1,0 +1,85 @@
+{
+  "name": "bristle-18-stroke-surgery",
+  "workload": "rhino",
+  "description": "OPERATOR STUDIO for the E5 stroke round-trip (suite-absent): draft paint with stroke emission -> BR_FetchStrokes CurveTree (branch = stroke identity) -> circle occlusion (Trim with Region, keep outside) -> BR_ComposeStrokes back to a valid StrokeSet (unmatched pens DROP loudly per the 2026-08-13 ruling) -> engine re-renders the surgered program as the viewport backdrop. Asserts the honesty contract: dropped_pens {} on a clean round trip. Requires the Bristle engine on :8377.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "surgery-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "The re-rendered surgered strokes as backdrop - the circle's bite visibly empty (save-only; studio is interactive from here)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null,
+      "viewport": {
+        "name": "Top",
+        "width": 800,
+        "height": 600,
+        "floating": true
+      }
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/18_bristle_stroke_surgery.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
+      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "GrasshopperSetToggle", "nickname": "RunPaint", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "PaintState",
+      "text": "done", "mode": "equals", "timeoutMs": 120000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "FetchLog",
+      "text": "fetched", "mode": "contains", "timeoutMs": 60000 },
+    { "type": "GrasshopperSetToggle", "nickname": "RunCompose", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "ComposeLog",
+      "text": "composed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "ComposeState",
+      "text": "done", "mode": "equals", "timeoutMs": 60000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "BackdropLog",
+      "text": "backdrop staged", "mode": "contains", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+  ],
+  "asserts": [
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
+      "description": "engine reachable (prereq: service running)" },
+    { "type": "PanelContains", "nickname": "FetchLog", "text": "fetched",
+      "description": "the draft paint emitted strokes and the fetch landed" },
+    { "type": "PanelDoesNotContain", "nickname": "ComposeLog", "text": "FAILED",
+      "description": "the composed payload survived the engine door" },
+    { "type": "PanelDoesNotContain", "nickname": "ComposeLog", "text": "SKIPPED",
+      "description": "count conservation: no branch lost its metadata (path identity intact through the trim)" },
+    { "type": "PanelContains", "nickname": "ComposeReport", "text": "\"dropped_pens\": {}",
+      "description": "the honesty contract: a clean round trip drops NOTHING - all pens matched" },
+    { "type": "PanelContains", "nickname": "ComposeReport", "text": "\"edited\": true",
+      "description": "provenance rides the composed StrokeSet" },
+    { "type": "PanelContains", "nickname": "BackdropLog", "text": "backdrop staged",
+      "description": "the engine re-rendered the surgered strokes and the preview reached the viewport" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
+      "description": "" }
+  ],
+  "keepOpenOnFailure": true
+}
