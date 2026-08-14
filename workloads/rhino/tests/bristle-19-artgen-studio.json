@@ -1,0 +1,171 @@
+{
+  "name": "bristle-19-artgen-studio",
+  "workload": "rhino",
+  "description": "OPERATOR STUDIO for the E6 art generators (suite-absent): mode+knobs assembled into BR_Submit's Extra passthrough -> artgen_v0 plans a full StrokeSet (default: 2000-point Secord stipple of the market) -> engine render as backdrop + strokes back as curves. Requires the Bristle engine on :8377.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "artgen-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "The stippled market as the viewport backdrop (save-only; studio is interactive from here)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null,
+      "viewport": {
+        "name": "Top",
+        "width": 800,
+        "height": 600,
+        "floating": true
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": false
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Cleanup",
+      "value": false
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 2000
+    },
+    {
+      "type": "GrasshopperSetPanelText",
+      "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/19_bristle_artgen_studio.json"
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "Build",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "SlopLog",
+      "text": "objects placed",
+      "mode": "contains",
+      "timeoutMs": 90000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "ExtraJSON",
+      "text": "\"stipple\"",
+      "mode": "contains",
+      "timeoutMs": 20000
+    },
+    {
+      "type": "GrasshopperSetToggle",
+      "nickname": "RunArt",
+      "value": true
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "ArtState",
+      "text": "done",
+      "mode": "equals",
+      "timeoutMs": 180000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "FetchLog",
+      "text": "strokes (",
+      "mode": "contains",
+      "timeoutMs": 60000
+    },
+    {
+      "type": "WaitForGrasshopperPanel",
+      "nickname": "BackdropLog",
+      "text": "backdrop staged",
+      "mode": "contains",
+      "timeoutMs": 30000
+    },
+    {
+      "type": "WaitForGrasshopperSolution",
+      "timeoutMs": 5000
+    }
+  ],
+  "asserts": [
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "ConnStatus",
+      "text": "OFFLINE",
+      "description": "engine reachable (prereq: service running)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "ExtraJSON",
+      "text": "\"artgen\"",
+      "description": "mode + knobs assemble valid Extra JSON live"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SubmitLog",
+      "text": "not valid JSON",
+      "description": "the Extra passthrough parsed"
+    },
+    {
+      "type": "PanelDoesNotContain",
+      "nickname": "SubmitLog",
+      "text": "FAILED",
+      "description": "the artgen params survived the engine door (422s land here)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "FetchLog",
+      "text": "strokes (",
+      "description": "the planned StrokeSet came back as curves (success-format token; placeholder and FETCH FAILED both lack it)"
+    },
+    {
+      "type": "PanelContains",
+      "nickname": "BackdropLog",
+      "text": "backdrop staged",
+      "description": "the engine's render of the plan reached the viewport"
+    },
+    {
+      "type": "PanelEquals",
+      "nickname": "SlopSuccess",
+      "text": "True",
+      "description": ""
+    }
+  ],
+  "keepOpenOnFailure": true
+}
