@@ -117,3 +117,10 @@
 - **Trace:** GH cold-init on this machine exceeds 30s (plugins load from a cloud-synced drive) — the agent budget is 90s for that reason. `bristle-02/03` waiting 20s where `bristle-05` waits 90s produced false CRASHes twice in one day from documented cache invalidations. A failed fixture open now ABORTS setup loudly (`TestRunner.SendSetupCommandsAsync` checks the agent response); before 2026-08-07 it logged "Setup commands complete" and every action died with 'No active Grasshopper document', which cost a full bisection of two innocent repos.
 - **Why:** a tight timeout on a cold path fails on cache/boot state, not on the thing the test claims to verify — and a swallowed setup failure points the blame everywhere except the cause.
 - **Last bit:** 2026-08-07
+
+## Seeded prereqs rot; keep-open failures masquerade as hangs
+
+- **Touching:** any test asserting on engine STATE the test did not create (BR_Watch pickups, job-list contents), or running keep-open tests headless from an agent session
+- **Trace:** bristle-17/20 assert `WatchLog contains "picked up"`, which needs an app COMMIT surviving in the engine's pruned job list (`keep_last`). The commit was whatever the last app session left behind — after ~50 jobs of churn none remained, Watch idled at "watching for app commits...", the wait timed out, and `keepOpenOnFailure` held a HEADLESS Rhino open forever. Two 35-minute "hangs" on 2026-08-14 were exactly this, invisible because `| Select-Object -Last` buffers canary stdout until exit. Fix pattern: make the prereq explicit — `scripts/bristle-gate-seed.ps1` seeds one commit then runs both gates (the bristle-22-seed precedent). Agent-side rule: stream canary output to a file and watch for `Results:`; never trust silence from a keep-open test.
+- **Why:** a test that depends on leftover state passes for days and then fails on churn — the failure points at the day's diff, not at the missing fixture.
+- **Last bit:** 2026-08-14
