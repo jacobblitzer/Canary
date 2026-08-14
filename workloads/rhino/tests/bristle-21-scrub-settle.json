@@ -1,0 +1,74 @@
+{
+  "name": "bristle-21-scrub-settle",
+  "workload": "rhino",
+  "description": "E7a scrub test (suite-absent): reuses DEF 17 (the edit studio) and fires THREE slider moves back-to-back with no waits between - the Photoshop-scrub pattern. Client debounce + engine supersede must land exactly one truthful final state: EditLog done, no failures, the panel showing real dims. Requires the engine on :8377.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "scrub-settled",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "The final scrub state's edited backdrop (save-only)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null,
+      "viewport": {
+        "name": "Top",
+        "width": 800,
+        "height": 600,
+        "floating": true
+      }
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/17_bristle_edit_studio.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
+      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "GrasshopperSetSlider", "nickname": "BlurRadius", "value": 7 },
+    { "type": "GrasshopperSetSlider", "nickname": "BlurRadius", "value": 9 },
+    { "type": "GrasshopperSetSlider", "nickname": "BlurRadius", "value": 11 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "EditLog",
+      "text": "done", "mode": "contains", "timeoutMs": 120000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "PanelLog",
+      "text": "px on 180x120 mm", "mode": "contains", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+  ],
+  "asserts": [
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
+      "description": "engine reachable" },
+    { "type": "PanelDoesNotContain", "nickname": "EditLog", "text": "EDIT FAILED",
+      "description": "no scrub state errored - supersede + debounce absorbed the storm" },
+    { "type": "PanelContains", "nickname": "EditLog", "text": "done",
+      "description": "exactly one final truthful state landed" },
+    { "type": "PanelContains", "nickname": "PanelLog", "text": "px on 180x120 mm",
+      "description": "the settled bitmap is real and frame-true" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
+      "description": "" }
+  ],
+  "keepOpenOnFailure": true
+}

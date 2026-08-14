@@ -1,0 +1,65 @@
+{
+  "name": "bristle-22-commit-purity",
+  "workload": "rhino",
+  "description": "E7a TRIPWIRE (suite-absent; run via scripts/bristle-22-seed.ps1, which seeds: purity commit, 'final draft' commit, reserved-origin draft, then a NEWEST commit-looking proxy job): BR_Watch must pick the 'final draft' commit - proving the reserved origin 'app \u00b7 draft' is excluded by EXACT match (a label merely containing 'draft' still lands, review 2026-08-13), and that the edit.json proxy flag has a reader (the sneaky-proxy job is newest and never picked). Requires the engine on :8377 + the seeder having run.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "purity-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "Nothing visual to pin - the asserts are the test (save-only)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/22_bristle_commit_purity.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
+      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "WatchLog",
+      "text": "final draft", "mode": "contains", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 3000 }
+  ],
+  "asserts": [
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
+      "description": "engine reachable" },
+    { "type": "PanelContains", "nickname": "WatchLog", "text": "final draft",
+      "description": "the 'final draft' COMMIT was picked - exact-match exclusion, no substring over-exclusion" },
+    { "type": "PanelDoesNotContain", "nickname": "WatchLog", "text": "\u00b7 draft)",
+      "description": "THE TRIPWIRE: the reserved draft origin must never be picked up, even as a newer app-origin job" },
+    { "type": "PanelDoesNotContain", "nickname": "WatchLog", "text": "sneaky",
+      "description": "the manifest reader: a proxy-flagged job is never picked, even as the NEWEST commit-looking origin" },
+    { "type": "PanelDoesNotContain", "nickname": "WatchLog", "text": "gh \u00b7",
+      "description": "loop guard unchanged: GH's own jobs never picked up" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
+      "description": "" }
+  ],
+  "keepOpenOnFailure": true
+}
