@@ -1,0 +1,80 @@
+{
+  "name": "bristle-23-op-chain",
+  "workload": "rhino",
+  "description": "Op-per-component studio (suite-absent, engine on :8377 required): BRE_Blur -> BRE_Posterize (faded) -> BRE_Flip chain recipe JSON GH-natively into BR_Edit - no JSON authoring anywhere. Asserts the chain built the exact recipe (ops in order, fade riding as opacity), the edit landed, and the panel view is frame-true. Pins the 2026-08-14 op-per-component contract.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "op-chain-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "The chained edit landed (save-only)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null,
+      "viewport": {
+        "name": "Top",
+        "width": 800,
+        "height": 600,
+        "floating": true
+      }
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/23_bristle_op_chain.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
+      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "GrasshopperSetSlider", "nickname": "BlurRadius", "value": 6 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "EditLog",
+      "text": "done", "mode": "contains", "timeoutMs": 120000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "PanelLog",
+      "text": "px on 180x120 mm", "mode": "contains", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+  ],
+  "asserts": [
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
+      "description": "engine reachable" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"op\":\"blur\"",
+      "description": "the chain's first op rode the wire" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"op\":\"posterize\"",
+      "description": "the chain's second op rode the wire" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"op\":\"flip\"",
+      "description": "the chain's third op rode the wire" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"opacity\":0.85",
+      "description": "the Fade slider rode as E7c opacity on posterize" },
+    { "type": "PanelDoesNotContain", "nickname": "EditLog", "text": "EDIT FAILED",
+      "description": "the GH-built recipe passed the engine door" },
+    { "type": "PanelContains", "nickname": "EditLog", "text": "done",
+      "description": "the chained edit landed" },
+    { "type": "PanelContains", "nickname": "PanelLog", "text": "px on 180x120 mm",
+      "description": "the edited bitmap is frame-true on the canvas" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
+      "description": "" }
+  ],
+  "keepOpenOnFailure": true
+}
