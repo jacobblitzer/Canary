@@ -1,0 +1,85 @@
+{
+  "name": "bristle-25-segseed-studio",
+  "workload": "rhino",
+  "description": "Seg-seeds PR2 (suite member - recipes ride the def INLINE, no store seeding needed): analysis.seeds.recipe_seg turns an edit-vocabulary recipe's components into pre-bound seed groups. The operator's own acceptance, GH-computed: egg (otsu+close) emits token 777 only when 1-2 groups came back; market (quantize k=6) emits 888 only in [50,150]. Raw counts ride EggCount/MktCount for humans. Both jobs run the seconds-fast path (regions off, sources []). Needs engine 2026-08-14+ (seeds.recipe_seg 422s on older doors).",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "segseed-studio-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "Egg backdrop with its one group-colored seed (save-only)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null,
+      "viewport": {
+        "name": "Top",
+        "width": 800,
+        "height": 600,
+        "floating": true
+      }
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/25_bristle_segseed_studio.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
+      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "GrasshopperSetToggle", "nickname": "RunEgg", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "EggState",
+      "text": "done", "mode": "contains", "timeoutMs": 240000 },
+    { "type": "GrasshopperSetToggle", "nickname": "FetchEgg", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "EggToken",
+      "text": "777", "mode": "contains", "timeoutMs": 60000 },
+    { "type": "GrasshopperSetToggle", "nickname": "RunMkt", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "MktState",
+      "text": "done", "mode": "contains", "timeoutMs": 240000 },
+    { "type": "GrasshopperSetToggle", "nickname": "FetchMkt", "value": true },
+    { "type": "WaitForGrasshopperPanel", "nickname": "MktToken",
+      "text": "888", "mode": "contains", "timeoutMs": 60000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+  ],
+  "asserts": [
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
+      "description": "engine reachable" },
+    { "type": "PanelContains", "nickname": "EggToken", "text": "777",
+      "description": "the egg is 1-2 seed groups - computed IN GH (x*(3-x)>0), immune to branch-header text" },
+    { "type": "PanelContains", "nickname": "MktToken", "text": "888",
+      "description": "the market is 50-150 seed groups ((x-49)*(151-x)>0)" },
+    { "type": "PanelContains", "nickname": "EggState", "text": "done",
+      "description": "the seconds-fast path finished (no SAM)" },
+    { "type": "PanelContains", "nickname": "MktState", "text": "done",
+      "description": "" },
+    { "type": "PanelDoesNotContain", "nickname": "SubmitLogEgg", "text": "422",
+      "description": "recipe_seg passed the door - a 422 here means the engine predates 2026-08-14" },
+    { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "Error",
+      "description": "" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
+      "description": "every component resolved and wired" }
+  ],
+  "keepOpenOnFailure": false
+}
