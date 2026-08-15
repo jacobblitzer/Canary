@@ -1,0 +1,84 @@
+{
+  "name": "bristle-24-preset-chain",
+  "workload": "rhino",
+  "description": "Presets PR3 (suite-absent; engine on :8377 + preset 'gate-preset' seeded - one PUT /recipes/gate-preset before running): BRE_Preset fetches a named preset from the engine store and HEADS a BRE chain; BRE_Posterize appends; BR_Edit runs the combined recipe. Asserts the preset's ops AND the appended op ride the wire, the fetch is named in PresetLog, and the edit lands frame-true.",
+  "setup": {
+    "file": "fixtures/bristle_slop_loader.gh",
+    "viewport": {
+      "width": 800,
+      "height": 600,
+      "projection": "Perspective",
+      "displayMode": "Shaded"
+    },
+    "commands": [],
+    "scene": null,
+    "backend": "",
+    "canvas": null,
+    "vlm": null
+  },
+  "runMode": "shared",
+  "recording": "",
+  "checkpoints": [
+    {
+      "name": "preset-chain-ready",
+      "source": "viewport",
+      "atTimeMs": 0,
+      "tolerance": 0.0,
+      "description": "The preset-headed edit landed (save-only)",
+      "mode": "capture",
+      "camera": null,
+      "stabilizeMs": null,
+      "viewport": {
+        "name": "Top",
+        "width": 800,
+        "height": 600,
+        "floating": true
+      }
+    }
+  ],
+  "actions": [
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": false },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 },
+    { "type": "GrasshopperSetToggle", "nickname": "Cleanup", "value": false },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 2000 },
+    { "type": "GrasshopperSetPanelText", "nickname": "JsonPath",
+      "text": "C:/Repos/Bristle/tests/slop/24_bristle_preset_chain.json" },
+    { "type": "GrasshopperSetToggle", "nickname": "Build", "value": true },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "SlopLog",
+      "text": "objects placed", "mode": "contains", "timeoutMs": 90000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "PresetLog",
+      "text": "op(s)", "mode": "contains", "timeoutMs": 45000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "RecipeJSON",
+      "text": "\"op\":\"posterize\"", "mode": "contains", "timeoutMs": 30000 },
+    { "type": "GrasshopperSetSlider", "nickname": "PostLevels", "value": 7 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "EditLog",
+      "text": "done", "mode": "contains", "timeoutMs": 120000 },
+    { "type": "WaitForGrasshopperPanel", "nickname": "PanelLog",
+      "text": "px on 180x120 mm", "mode": "contains", "timeoutMs": 30000 },
+    { "type": "WaitForGrasshopperSolution", "timeoutMs": 5000 }
+  ],
+  "asserts": [
+    { "type": "PanelDoesNotContain", "nickname": "ConnStatus", "text": "OFFLINE",
+      "description": "engine reachable" },
+    { "type": "PanelContains", "nickname": "PresetLog", "text": "Gate Preset",
+      "description": "the preset fetch landed and named what loaded (case-sensitive Ordinal)" },
+    { "type": "PanelDoesNotContain", "nickname": "PresetLog", "text": "FAILED",
+      "description": "the fetch never fell to the persistent failure state" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"op\":\"grayscale\"",
+      "description": "the preset's first op rode the wire" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"op\":\"blur\"",
+      "description": "the preset's second op rode the wire" },
+    { "type": "PanelContains", "nickname": "RecipeJSON", "text": "\"op\":\"posterize\"",
+      "description": "the chain APPENDED to the preset (preset-headed chain works)" },
+    { "type": "PanelDoesNotContain", "nickname": "EditLog", "text": "EDIT FAILED",
+      "description": "the combined recipe passed the engine door" },
+    { "type": "PanelContains", "nickname": "EditLog", "text": "done",
+      "description": "the preset-headed edit landed" },
+    { "type": "PanelEquals", "nickname": "SlopSuccess", "text": "True",
+      "description": "" }
+  ],
+  "keepOpenOnFailure": true
+}
