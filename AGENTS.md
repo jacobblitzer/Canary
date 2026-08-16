@@ -39,12 +39,7 @@
 
 ## Build & run (quick reference)
 - **Build:** `dotnet build Canary.sln` — must be **0 errors, 0 warnings**.
-- **Drive payload:** `scripts/publish-payload.ps1` (ONLY way to publish; one
-  commit, refuses a dirty tree) → `scripts/verify-payload.ps1` checks hashes
-  AND each assembly's target framework. **net8.0 harness at the payload root,
-  net48 agent under `agent\`** — a Framework assembly at the root is the
-  2026-08-16 corruption signature. `ShipToDrive` is opt-in
-  (`-p:CanaryShipToDrive=true`); a routine build must never rewrite a payload.
+- **Drive payload:** only via `scripts/publish-payload.ps1` → `verify-payload.ps1` (§ Payload).
 - **Unit tests:** `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`.
 - **GUI:** kill→build→launch the built exe, NOT `dotnet run` (backgrounds wrong): `taskkill //IM Canary.UI.exe //F` → build Release → `start "" "src/Canary.UI.Avalonia/bin/Release/net8.0-windows/Canary.UI.exe"` (§ Repro).
 - **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8):** **when the operator says "run canary", do NOT pass `--headless`** — they mean the UI-visible default `canary run --workload <w> [--test <t> | --suite <s>]`. `--headless` is for CI and for your own agent-internal verification (the UI launch flakes from agent sessions); `--quiet` implies it. Full text → § UI-first runs.
@@ -52,7 +47,7 @@
 - **Run suites:** `canary run --workload penumbra` (web) · rhino workload (from `C:\Repos\Canary`): `--suite cpig` · `pigture` · `slop` · `kbridge` · `lightro` · `bristle` · `penumbra` (deprecated OOP) · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **Run CPig tests via `--suite cpig`, never individual `--test`** — all are `runMode: shared` (ONE Rhino, sequential); `--test` respawns Rhino each time.
 - **Modes:** `--mode pixel-diff` (default) | `vlm` | `both`; per-checkpoint `mode: "vlm"` wins over the flag; `mode: "capture"` = save-only, never FAILs, wins over `--mode` (§ Test modes).
 - **Supervised session:** `canary session start --workload {qualia|penumbra|rhino} [--file <abs>.3dm]` — capture REPL / Sessions UI tab; manifest + telemetry per § Sessions.
-- **Status:** `spec/PHASES.md` + tail of `BUILD_LOG.md`. Test counts move every commit — check `dotnet test --list-tests | wc -l`, don't trust stamped numbers.
+- **Status:** `spec/PHASES.md` + tail of `BUILD_LOG.md`. Test counts move every commit — count them, don't trust stamped numbers.
 
 ## Key rules (non-negotiable)
 - **Namespace:** `Canary` (core + harness), `Canary.Agent` (shared), `Canary.Agent.*` (per-app).

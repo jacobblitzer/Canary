@@ -307,3 +307,33 @@ Implementation notes worth knowing before touching it:
 The loop: shoot → LOOK at the PNG → fix the generator (Slop's AutoLayout or the
 def author) → re-shoot. This is how the 2026-08-05 Slop AutoLayout fix (scribble
 header bands + measured row/column advance) was found.
+
+
+## Payload (Drive) — publish, verify, and the corruption signature
+
+`scripts/publish-payload.ps1` is the only supported way to produce
+`G:\My Drive\Builds\Canary`. It publishes harness + UI (net8.0) to the payload
+root, builds the Rhino agent (net48) into `agent\`, stages the workloads tree
+including `workload.json` (which was never staged for ANY workload before
+2026-08-16, so the published harness could not run a single test), refuses a
+dirty tree, writes `MANIFEST.json`, and self-verifies before stamping
+`BUILD_INFO.txt`.
+
+`scripts/verify-payload.ps1` runs on the TARGET machine before install. It
+checks hashes AND **each managed assembly's target framework**, because that is
+the check the 2026-08-16 incident needed: machine 2's payload had every file
+the dependency graph named, so a file-list or graph comparison passed, yet
+`canary.exe` threw `FileNotFoundException(Microsoft.Bcl.AsyncInterfaces)` on the
+first JSON it touched while `--help` worked.
+
+**Root cause, for anyone tempted to re-add a convenience copy:** the agent's
+`ShipToDrive` target copied its entire net48 `TargetDir` into the payload ROOT
+`AfterTargets="Build"`, for both configurations. The net48 closure carries
+`System.Text.Json.dll`, `System.Text.Encodings.Web.dll`, `System.IO.Pipelines.dll`
+and `Canary.Agent.dll` under names identical to the harness's net8.0 assets, so
+every `dotnet build` silently swapped a .NET 8 app's assemblies for .NET
+Framework ones. A net462 `System.Text.Json` requires `Microsoft.Bcl.AsyncInterfaces`;
+the net8.0 one never does — which is why the deps.json looked "wrong" and was in
+fact correct. **A .NET Framework assembly at the payload root is the corruption
+signature.** ShipToDrive is now opt-in (`-p:CanaryShipToDrive=true`) and lands in
+`agent\`.
