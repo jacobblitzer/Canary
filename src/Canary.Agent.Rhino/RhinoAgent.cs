@@ -705,6 +705,18 @@ public sealed class RhinoAgent : ICanaryAgent
         uint ourPid = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
         var dismissed = new HashSet<IntPtr>();
 
+        // NEVER-DISMISS list (Phase 2 recon 2026-08-16). These dialogs have a
+        // DESTRUCTIVE default/first button; a keyword match here would not
+        // "unblock the run", it would damage the machine. Enforced below as a
+        // hard guard so adding one to `keywords` cannot arm it by accident.
+        // - "File Conflict": Grasshopper's GH_ExternalFileConflictDialog. Its
+        //   handler is FileA_FileDeleteClicked -> ProperDeleteFile(FilePathA):
+        //   clicking DELETES a plug-in .gha from disk. This dialog is exactly
+        //   the one blocking bristle runs (duplicate document names from the
+        //   harness's temp copies) - it must be REPORTED and fixed at the
+        //   copy strategy, never clicked.
+        var neverDismiss = new[] { "File Conflict", "Component ID", "ID conflict" };
+
         // Title keywords that strongly imply a dismissable warning/error.
         // Order: most specific first. Avoid generic words like "Rhino" or
         // "Grasshopper" that would also match the main app windows.
@@ -758,6 +770,24 @@ public sealed class RhinoAgent : ICanaryAgent
                     GetWindowText(hWnd, titleSb, titleSb.Capacity);
                     var title = titleSb.ToString();
                     if (string.IsNullOrEmpty(title)) return true;
+
+                    // HARD GUARD before any matching: a destructive dialog is
+                    // never dismissed, however it got into the keyword list.
+                    // Clicking these does not unblock a run, it deletes a
+                    // plug-in or overwrites installed components.
+                    foreach (var forbidden in neverDismiss)
+                    {
+                        if (title.IndexOf(forbidden, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            if (dismissed.Add(hWnd))
+                            {
+                                RhinoApp.WriteLine(
+                                    $"[canary] BLOCKING modal left untouched (destructive default button): '{title}'. " +
+                                    "The run will stall until it is closed by hand - this is reported, never clicked.");
+                            }
+                            return true;
+                        }
+                    }
 
                     bool match = false;
                     foreach (var kw in keywords)

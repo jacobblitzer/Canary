@@ -37,20 +37,31 @@
     <Message Importance="high" Text="Deployed Canary agent to $(RhinoPluginDir)" />
   </Target>
 
-  <!-- Ship to G:\My Drive\Builds\Canary (mirrors CPig.Rhino + Penumbra.Rhino
-       ShipToDrive). Runs for BOTH Debug and Release so the Debug/Release
-       registration mismatch can't bite us — whatever config we build, the
-       binary lands where Rhino is registered to load it from. The operator
-       re-registers Rhino to load from G:\My Drive\Builds\Canary. -->
-  <Target Name="ShipToDrive" AfterTargets="Build" Condition="Exists('G:\My Drive\Builds')">
+  <!-- Ship the net48 agent to the Drive payload.
+       PAYLOAD-CORRUPTION FIX (Phase 2 recon 2026-08-16, root cause of the
+       machine-2 "canary.exe cannot parse any JSON" incident): this target
+       used to copy $(TargetDir)**\*.* into the payload ROOT — the same
+       folder the net8.0 harness publishes into. The net48 closure carries
+       System.Text.Json.dll, System.Text.Encodings.Web.dll,
+       System.IO.Pipelines.dll and Canary.Agent.dll under IDENTICAL names,
+       so every build overwrote the harness's net8.0 assemblies with .NET
+       Framework ones. The payload then demanded Microsoft.Bcl.AsyncInterfaces
+       (a net462-only dependency) and threw on the first deserialization
+       while the help command still worked. The deps.json was never wrong; the DLLs
+       beside it were from the other framework.
+       Two changes keep that impossible: the agent lands in its OWN subfolder,
+       and shipping is OPT-IN (scripts/publish-payload.ps1 sets it) so a
+       routine `dotnet build` can no longer rewrite a published payload. -->
+  <Target Name="ShipToDrive" AfterTargets="Build"
+          Condition="'$(CanaryShipToDrive)' == 'true' And Exists('G:\My Drive\Builds')">
     <ItemGroup>
       <ShipFiles Include="$(TargetDir)**\*.*" Exclude="$(TargetDir)**\*.pdb" />
     </ItemGroup>
-    <MakeDir Directories="G:\My Drive\Builds\Canary" />
+    <MakeDir Directories="G:\My Drive\Builds\Canary\agent" />
     <Copy SourceFiles="@(ShipFiles)"
-          DestinationFiles="@(ShipFiles->'G:\My Drive\Builds\Canary\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(ShipFiles->'G:\My Drive\Builds\Canary\agent\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
-    <Message Importance="high" Text="[ship] Canary.Agent.Rhino.rhp + deps -> G:\My Drive\Builds\Canary" />
+    <Message Importance="high" Text="[ship] Canary.Agent.Rhino.rhp + net48 deps -> G:\My Drive\Builds\Canary\agent" />
   </Target>
 
 </Project>
