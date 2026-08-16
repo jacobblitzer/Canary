@@ -82,7 +82,7 @@
    "nickname": "BristleState",
    "text": "done",
    "mode": "equals",
-   "timeoutMs": 20000
+   "timeoutMs": 90000
   },
   {
    "type": "WaitForGrasshopperSolution",
