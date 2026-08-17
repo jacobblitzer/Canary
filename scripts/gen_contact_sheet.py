@@ -6,7 +6,9 @@ baseline-approval eyeball (STOP-POINT R1.3): 4 matrix rows (sphere/box/gyroid/me
 6 rep columns (auto/tape/atlasBaked/mesh/pointCloud/companionTape), plus an extras row
 (the D1 dense-rep guard + the 4 scriptable boolean cells).
 
-Reads the SHARED results layout (workloads/rhino/results/<test>/candidates/<test>.png).
+Reads the one results layout (workloads/rhino/results/<test>/candidates/<checkpoint>.png).
+As of Phase 2b there is no other: 'SHARED layout' named a distinction that no longer
+exists, because a test's evidence dir never contained a suite segment after the cutover.
 Missing cells render as a labeled grey placeholder — a missing cell means the test did
 not produce a capture and must be investigated before approval.
 

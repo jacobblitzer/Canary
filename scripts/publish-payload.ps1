@@ -59,6 +59,31 @@ foreach ($w in @("rhino")) {
     Copy-Item "$SRC\workloads\$w\tests\bristle-*.json" "$wd\tests" -Force
     Copy-Item "$SRC\workloads\$w\fixtures\*" "$wd\fixtures" -Recurse -Force
     Copy-Item "$SRC\workloads\$w\suites\bristle.json" "$wd\suites" -Force
+    # ---- baselines.lock.json, FILTERED to the tests this payload actually carries.
+    # Phase 2b. Shipping the dev machine whole ledger would make `canary doctor` on the
+    # target report missing baselines for tests that are not even in the payload - noise
+    # that gets a guard switched off. Shipping NOTHING is worse: an absent ledger is an
+    # error by design (that is what stops a deleted file silently disabling the guard),
+    # so a payload must carry one even when it is empty.
+    #
+    # Today this is 0 rows, because every bristle checkpoint is capture-only, and a
+    # committed "rows": [] is the honest declaration that nothing here is compared. It is
+    # NOT hard-coded to empty: the day a payload ships a test with an armed checkpoint,
+    # its row travels, and the target reports that baseline missing instead of New.
+    $srcLedger = "$SRC\workloads\$w\baselines.lock.json"
+    $shipped = @(Get-ChildItem "$wd\tests" -Filter *.json -File | ForEach-Object { $_.BaseName })
+    $rows = @()
+    if (Test-Path $srcLedger) {
+        $rows = @((Get-Content $srcLedger -Raw | ConvertFrom-Json).rows |
+                  Where-Object { $shipped -contains $_.test })
+    }
+    [pscustomobject]@{ version = 1; workload = $w; rows = $rows } |
+        ConvertTo-Json -Depth 6 | Set-Content "$wd\baselines.lock.json" -Encoding utf8
+    Write-Host ("  {0}: shipped ledger has {1} row(s) for {2} shipped test(s)" -f $w, $rows.Count, $shipped.Count)
+    if ($rows.Count -gt 0) {
+        Write-Host ("  WARNING: {0} ledgered baseline(s) travel with this payload but it ships NO images." -f $rows.Count) -ForegroundColor Yellow
+        Write-Host "  The target will report these Failed until the images are delivered - correct, and loud." -ForegroundColor Yellow
+    }
 }
 Copy-Item "$SRC\scripts\verify-payload.ps1" $DST -Force
 

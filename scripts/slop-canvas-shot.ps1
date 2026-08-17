@@ -21,7 +21,10 @@
     Path to the Slop definition JSON to render. Required.
 
 .PARAMETER Out
-    Output PNG path. Default: workloads/rhino/results/canvas-shots/<def>.png
+    Output PNG path. Default: workloads/rhino/canvas-shots/<def>.png
+    (Deliberately OUTSIDE results/. Phase 2b gives results/ exactly two kinds of child -
+    a test's evidence dir and a suite's rollup dir - and a third kind sitting alongside
+    them is what makes a census wrong and a scan ambiguous.)
 
 .PARAMETER Loader
     Slop loader fixture. Default: fixtures/bristle_slop_loader.gh (the loaders
@@ -51,7 +54,7 @@ $defFull = (Resolve-Path $Definition).Path
 $defName = [System.IO.Path]::GetFileNameWithoutExtension($defFull)
 
 if (-not $Out) {
-    $Out = Join-Path $canaryRoot "workloads\rhino\results\canvas-shots\$defName.png"
+    $Out = Join-Path $canaryRoot "workloads\rhino\canvas-shots\$defName.png"
 }
 $outDir = Split-Path $Out -Parent
 if ($outDir -and -not (Test-Path $outDir)) { New-Item -ItemType Directory -Force -Path $outDir | Out-Null }

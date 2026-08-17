@@ -49,4 +49,22 @@ if ($missing.Count -or $mismatch.Count -or $tfm.Count) {
     exit 1
 }
 Write-Host "`nOK: $($m.files.Count) files present, byte-identical, and framework-consistent." -ForegroundColor Green
+
+# ---- readiness, which byte integrity cannot answer -------------------------
+# Phase 2b. Everything above proves the bytes arrived intact. It passes happily on a
+# payload whose tests point at roots this machine does not have, or whose ledgered
+# baselines were never delivered - and a run in that state reports New, which the exit
+# code excludes, so it prints a pass while comparing nothing. Different question, so it
+# needs a different check.
+$canary = Join-Path $PSScriptRoot "canary.exe"
+if (Test-Path $canary) {
+    Write-Host "`nreadiness check: canary doctor --workload rhino --suite bristle"
+    & $canary doctor --workload rhino --suite bristle --workloads-dir (Join-Path $PSScriptRoot "workloads")
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "FAILED: the bytes are intact but this machine cannot be trusted to report on these tests." -ForegroundColor Red
+        exit 1
+    }
+} else {
+    Write-Host "`nNOTE: canary.exe not next to this script - skipping the readiness check." -ForegroundColor Yellow
+}
 exit 0

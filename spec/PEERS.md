@@ -6,7 +6,39 @@ Canary is the cross-application visual regression harness. Its peers are the rep
 
 Canary owns the **harness** (test orchestration, agent-to-app bridges, pixel-diff + VLM comparison, baseline storage). Each peer repo owns its **subject** (the code being tested) and its **test definitions** (Slop JSON in `<peer>/tests/slop/` or `<peer>/research/slop_tests/`).
 
-The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`workloads/<workload>/baselines/<test-id>.png`) per STANDARD.md §16 Locked Decision 7 (harness owns the baseline file; subject repo owns the bug).
+The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary per STANDARD.md
+§16 Locked Decision 7 (harness owns the baseline file; subject repo owns the bug).
+
+> ### Where a baseline ACTUALLY lives — corrected 2026-08-17 (deployment campaign Phase 2b)
+>
+> **`workloads/<workload>/baselines/<test-id>.png` does not exist and never has.** No such
+> directory is present in any workload, and `git ls-files 'workloads/*/baselines/*.png'`
+> returns **0**. This document told four peer repos to look somewhere there is nothing.
+>
+> The real contract, and there is now exactly one:
+>
+> ```
+> workloads/<workload>/results/<test>/baselines/<checkpoint>.png
+> ```
+>
+> - **Per CHECKPOINT, not per test.** A test typically has 2-4.
+> - **No suite segment, ever.** Before Phase 2b the shared run path read
+>   `results/<test>/` while approval wrote `results/<suite>/<test>/`, so 59 approved images
+>   were never compared by anything and six suites ran green while comparing nothing.
+>   `ResultPaths` is now the only derivation.
+> - **NOT committed.** `.gitignore` excludes `results/`, so baselines have **no git
+>   recovery**. This is a real, recorded deviation from §16, which requires them tracked.
+>
+> **What IS committed is `workloads/<workload>/baselines.lock.json`** — one row per armed
+> checkpoint with its SHA256, so the *contract* is in git at ~30 KB even though the pixels
+> are not. `canary baselines verify` fails if a ledgered baseline stops resolving, and
+> `canary doctor --workload <w>` reports it. Peers: if you are told a test "passes", check
+> that its checkpoint has a ledger row — an un-ledgered checkpoint with no baseline reports
+> `New`, and `New` is excluded from the exit code.
+>
+> Full §16 compliance (pixels tracked in git/LFS, ~198 MB) is deferred and needs a MultiVerse
+> ruling first: §16's naming rule is `<test-id>.png`, one image per test, which does not fit
+> a per-checkpoint model.
 
 ## CPig (`C:\Repos\CPig\`)
 
@@ -17,7 +49,7 @@ The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`work
 - `workloads/rhino/fixtures/cpig_slop_loader_generator.json` — Slop JSON that generates the fixture
 - `workloads/rhino/tests/cpig-*.json` — 34 test definitions (32 active, 2 excluded for crash risk)
 - `workloads/rhino/suites/cpig.json` — test suite
-- `workloads/rhino/baselines/cpig-*.png` — committed reference images
+- `workloads/rhino/results/<test>/baselines/<checkpoint>.png` — reference images (NOT committed; see the correction above)
 - `spec/CPIG_WORKLOAD.md` — workload documentation
 
 **CPig-side files:**
@@ -40,7 +72,7 @@ The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`work
 - `workloads/penumbra/agent/` — Canary.Agent.Penumbra CDP bridge (TypeScript)
 - `workloads/penumbra/tests/penumbra-*.json` — 61 test definitions across 12 suites
 - `workloads/penumbra/suites/*.json` — suite configurations
-- `workloads/penumbra/baselines/<scene-id>.png` — committed reference images
+- `workloads/penumbra/results/<test>/baselines/<checkpoint>.png` — reference images (NOT committed; see the correction above)
 - `spec/PENUMBRA_WORKLOAD.md` — workload documentation
 
 **Penumbra-side files:**
@@ -63,9 +95,10 @@ The baseline for any cpig-* / pigture-* / penumbra-* test lives in Canary (`work
   is `tests/Canary.Tests/Contracts/FrameStateContractTests.cs`. `WaitForPenumbraFrame
   requireSteady` = Status " steady" AND bakes drained.
 - **Rhino-workload Penumbra suites:** `penumbra-glsl` + `cpig-display-matrix` (31 tests; 19
-  pixel-diff gates at tolerance 0.005). NOTE: shared-runMode suites keep per-test baselines at
-  `workloads/rhino/results/<test>/baselines/` (NOT committed — results/ is gitignored;
-  archived to Drive per the audit-c rule at approval time).
+  pixel-diff gates at tolerance 0.005). Baselines are at
+  `workloads/rhino/results/<test>/baselines/` for EVERY run mode as of Phase 2b - the
+  shared/per-test-launch distinction no longer changes the path (NOT committed - results/ is
+  gitignored; archived to Drive per the audit-c rule at approval time).
 - **Session flight recorder:** `docs/session-flight-recorder.md` — manifest schema, MCP 12
   tools (`get_session_manifest`/`get_session_telemetry`), snapshot-on-capture (both sides),
   the 186-kind generated event catalog. §5 black-box acceptance PASSED 2026-07-03.
@@ -92,7 +125,7 @@ RH-2 multi-display perf sweep, and pipeline diagnostic dumps.
 - `workloads/qualia/suites/*.json` — 6 suites: `landing-screen`,
   `display-modes`, `multi-display`, `pencil-diff`, `playground`,
   `qualia-v4-ui`.
-- `workloads/qualia/baselines/` — committed reference PNGs per §16.
+- `workloads/qualia/results/<test>/baselines/<checkpoint>.png` — reference PNGs (NOT committed; see the correction above).
 - `workloads/qualia/AGENT_NOTES.md` — operator-facing hook + action
   inventory.
 - `spec/QUALIA_WORKLOAD.md` — workload specification (this file's
@@ -127,10 +160,10 @@ RH-2 multi-display perf sweep, and pipeline diagnostic dumps.
 - **VLM model.** Tests targeting VLM mode use `gemma4:e4b` (matches
   Canary's existing convention). Per-checkpoint `mode: "vlm"` wins
   over the `--mode` flag.
-- **Baselines per §16.** Committed PNGs under
-  `workloads/qualia/baselines/`; candidates + diffs gitignored under
-  `workloads/qualia/results/`. Baseline approval follows the three-
-  question commit-message format.
+- **Baselines.** `workloads/qualia/results/<test>/baselines/<checkpoint>.png`,
+  gitignored along with candidates + diffs; the committed record is
+  `workloads/qualia/baselines.lock.json`. Baseline approval follows the
+  three-question commit-message format.
 - **`runMode: shared`** is NOT yet supported by the Qualia agent.
   Each test spawns a fresh Vite + Chrome (~5-10s overhead).
   Queued — see `spec/QUALIA_WORKLOAD.md` § Open questions.
@@ -154,7 +187,7 @@ RH-2 multi-display perf sweep, and pipeline diagnostic dumps.
 - `workloads/rhino/fixtures/pigture_slop_loader_generator.json` — generator
 - `workloads/rhino/tests/pigture-*.json` — test definitions
 - `workloads/rhino/suites/pigture.json` — test suite
-- `workloads/rhino/baselines/pigture-*.png` — committed render reference images
+- `workloads/rhino/results/<test>/baselines/<checkpoint>.png` — render reference images (NOT committed; see the correction above)
 - `spec/PIGTURE_WORKLOAD.md` — workload documentation
 
 **Pigture-side files:**

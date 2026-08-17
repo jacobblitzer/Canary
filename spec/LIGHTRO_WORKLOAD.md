@@ -79,6 +79,11 @@ All `runMode: shared` — run with
 - Checkpoints start `mode: "capture"` (never fail). After inspecting
   candidates under `results/lightro-*/candidates/`, bless with
   `canary approve` and flip modes to `pixel-diff` to arm the regression net.
+- **Arming is one-way once ledgered.** After approving, run
+  `canary baselines lock --workload rhino --expect-rows <n>` so the new rows are
+  recorded. From then on, flipping that checkpoint back to `capture` is a
+  FAILURE, not a quiet opt-out - a ledgered comparison cannot be disarmed by a
+  one-word JSON edit. Remove the ledger row deliberately if that is the intent.
 
 ## Run record
 

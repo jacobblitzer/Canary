@@ -67,9 +67,11 @@ Canary/workloads/qualia/
 ├── sweeps/              # display-sweep toolchain (generator, driver,
 │                          derive, drift-diff, REFERENCE-RUN*.json)
 └── results/             # per-test dirs; candidates/ + runs/ ephemeral,
-                           baselines/ live INSIDE each test dir
-                           (results/<suite>/<test>/baselines/*.png —
-                           there is NO top-level baselines/ dir)
+                           baselines/ live INSIDE each test dir:
+                           results/<test>/baselines/<checkpoint>.png.
+                           NO top-level baselines/ dir, and as of Phase 2b
+                           NO suite segment either - a suite owns only its
+                           rollups (report.html / junit.xml / telemetry).
 
 Canary/workloads/qualia-desktop/   # platform-foundation P1 (2026-07-22)
 ├── workload.json        # agentType qualia-cdp + qualiaConfig.desktop:
