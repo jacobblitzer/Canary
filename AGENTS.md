@@ -39,7 +39,8 @@
 - **Drive payload:** only via `scripts/publish-payload.ps1` → `verify-payload.ps1` (§ Payload).
 - **Unit tests:** `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`.
 - **`canary doctor`** — run before trusting a run on a machine you did not set up: root, tokens, and **every** test a suite declares; exit 1 if not. Short suite = hard failure (§ Doctor).
-- **GUI:** kill→build→launch the built exe, NOT `dotnet run` (backgrounds wrong): `taskkill //IM Canary.UI.exe //F` → build Release → `start "" "src/Canary.UI.Avalonia/bin/Release/net8.0-windows/Canary.UI.exe"` (§ Repro).
+- **GUI:** kill→build→launch the built exe, NOT `dotnet run` (backgrounds wrong) — exact commands in § Repro.
+- **`canary baselines lock|verify`** — git-tracked ledger of which checkpoints have an approved baseline. Absent ledger = error; `rows: []` = legal (§ Doctor).
 - **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8):** **when the operator says "run canary", do NOT pass `--headless`** — they mean the UI-visible default `canary run --workload <w> [--test <t> | --suite <s>]`. `--headless` is for CI and for your own agent-internal verification (the UI launch flakes from agent sessions); `--quiet` implies it. Full text → § UI-first runs.
 - **Keep-open:** runs close the app when done; `--test` without `--headless` now keeps it open automatically (inspection run); `--keep-open` forces it anywhere. Full semantics -> [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § Keep-open.
 - **Run suites:** `canary run --workload penumbra` (web) · rhino workload (from `C:\Repos\Canary`): `--suite cpig` · `pigture` · `slop` · `kbridge` · `lightro` · `bristle` · `penumbra` (deprecated OOP) · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **Run CPig tests via `--suite cpig`, never individual `--test`** — all are `runMode: shared` (ONE Rhino, sequential); `--test` respawns Rhino each time.

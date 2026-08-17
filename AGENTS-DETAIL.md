@@ -388,3 +388,36 @@ see it and `doctor` names it.
   its literal.** The corpus guard (`TokenCorpusTests`) exempts it by name.
 - Installed-application paths under `Program Files` are exempt too: identical on every
   Windows machine that has the app, so tokenizing buys ceremony and no portability.
+
+### The baseline ledger (Phase 2b)
+
+`workloads/<w>/baselines.lock.json` is the **git-tracked** record of which checkpoints
+have an approved baseline: one row per armed checkpoint, with its SHA256 and approval
+time, sorted so any change is a readable diff.
+
+**Why it exists outside `results/`.** `.gitignore` excludes `results/`, so the 322
+baseline PNGs have **no git recovery at all** — and every other candidate guard
+(prior run records, the baselines themselves) lives *inside* the directory whose
+location changes, making it blind to exactly the class it would be written for. The
+ledger is keyed on **identity** (test + checkpoint), never on path.
+
+- **`canary baselines lock --workload <w> --expect-rows <n>`** — `--expect-rows` is
+  **required and load-bearing**: locking with the flat resolver instead of the dual one
+  silently yields 40 penumbra rows instead of 93, and `verify` is *green* on that
+  truncated ledger because every row it contains resolves. The count is the only tell.
+- **`canary baselines verify --workload <w>`** — exit 1 if any row does not resolve.
+- **Presence is hard; content is soft.** A missing baseline fails. Changed bytes warn,
+  so approve-then-run stays frictionless and every re-blessing is a reviewable diff.
+- **An absent ledger is not an empty ledger.** `LoadRequired` throws on absent, empty or
+  corrupt; a workload that arms nothing carries a committed `"rows": []`. If absence
+  meant "nothing armed", deleting the file would disable the guard silently.
+- **The arming rule has one home**, `CheckpointArming` — `capture`/`none`/`off` opt out,
+  `vlm` is judged not compared, everything else is armed and needs a baseline.
+
+Day-1 counts (2026-08-17): rhino 74, penumbra 93, qualia 7, qualia-web 0,
+qualia-desktop 0 = **174 rows**, of which 115 resolve flat and **59 only suite-nested**.
+Those 59 are unreachable by the shared run path today — 6 suites, 32 tests, which run
+green while comparing nothing. That is what Phase 2b's cutover fixes.
+
+Snapshot before any baseline migration: `scripts/snapshot-baselines.ps1` (SHA256
+manifest, verifies the copy against source, optional second cold copy).

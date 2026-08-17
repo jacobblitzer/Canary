@@ -169,6 +169,57 @@ public static class DoctorCommand
             }
         }
 
+        // --- 6. the baseline ledger ----------------------------------------
+        // Phase 2b. Checks 1-5 cannot see a baseline: EnumerateContent below skips any
+        // path containing /results/, deliberately, because generated output is not
+        // authored content. That means everything above passes happily on a machine
+        // whose baselines are absent or unreachable - and a run in that state reports
+        // New, which the exit code excludes, so it prints a pass while comparing
+        // nothing. This check is the only one that looks.
+        if (!string.IsNullOrWhiteSpace(workloadName))
+        {
+            try
+            {
+                var ledger = BaselineLedger.LoadRequired(root, workloadName!);
+                var v = ledger.Verify(root, LedgerLayout.Dual);
+                logger.Log($"baselines      : {v.Ok} of {ledger.Rows.Count} ledgered baseline(s) resolve and match");
+                foreach (var m in v.Missing)
+                    f.Errors.Add($"baseline {m}");
+                // Bytes changing is a re-blessing, which is legitimate and shows up as a
+                // git diff on the ledger. Absence is the defect.
+                foreach (var c in v.Changed)
+                    f.Warnings.Add($"baseline {c}");
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or InvalidDataException)
+            {
+                f.Errors.Add(ex.Message);
+            }
+        }
+
+        // --- 7. suite names must not collide with test names ---------------
+        // results/ holds suite rollups and test directories as SIBLINGS, so a suite
+        // named like a test would have them writing into each other. Zero collisions
+        // today; this keeps it that way rather than discovering it later.
+        if (!string.IsNullOrWhiteSpace(workloadName))
+        {
+            var testsDir = Path.Combine(root, workloadName!, "tests");
+            var suitesDir = Path.Combine(root, workloadName!, "suites");
+            if (Directory.Exists(testsDir) && Directory.Exists(suitesDir))
+            {
+                var testNames = Directory.GetFiles(testsDir, "*.json")
+                    .Select(Path.GetFileNameWithoutExtension)
+                    .Where(n => n != null)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                foreach (var s in Directory.GetFiles(suitesDir, "*.json"))
+                {
+                    var name = Path.GetFileNameWithoutExtension(s);
+                    if (name != null && testNames.Contains(name))
+                        f.Errors.Add($"suite '{name}' collides with a test of the same name — " +
+                                     "their results/ directories would overlap");
+                }
+            }
+        }
+
         return Report(f, logger);
     }
 

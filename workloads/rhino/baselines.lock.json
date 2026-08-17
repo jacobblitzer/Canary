@@ -1,0 +1,524 @@
+{
+  "version": 1,
+  "workload": "rhino",
+  "rows": [
+    {
+      "test": "cpig-booleans-00-union-sphere-sphere",
+      "checkpoint": "cpig-booleans-union-sphere-sphere",
+      "mode": "pixel-diff",
+      "sha256": "42c3288eda31aedec280df63878632eef6e682d019652c453cf249c71a362b03",
+      "approvedUtc": "2026-07-03T15:57:21Z"
+    },
+    {
+      "test": "cpig-booleans-01-intersection-sphere-sphere",
+      "checkpoint": "cpig-booleans-intersection-sphere-sphere",
+      "mode": "pixel-diff",
+      "sha256": "d759cf98cb4b8730b723740aea309df5f0945f1d03d23fef979283655b200459",
+      "approvedUtc": "2026-07-03T15:57:30Z"
+    },
+    {
+      "test": "cpig-booleans-03-smoothunion-sphere-sphere",
+      "checkpoint": "cpig-booleans-smoothunion-sphere-sphere",
+      "mode": "pixel-diff",
+      "sha256": "2969e77ad6a2b100e3bf3903b4c107ed27007571344a31be4a5914a1482e1926",
+      "approvedUtc": "2026-07-03T15:57:39Z"
+    },
+    {
+      "test": "cpig-booleans-04-union-sphere-gyroid",
+      "checkpoint": "cpig-booleans-union-sphere-gyroid",
+      "mode": "pixel-diff",
+      "sha256": "409dfe9578c1408097e2f2edb409be2672095f4050ff771a3b3e5049aee29856",
+      "approvedUtc": "2026-07-03T15:57:48Z"
+    },
+    {
+      "test": "cpig-fieldops-rep-dense-pointcloud-mesh",
+      "checkpoint": "cpig-fieldops-rep-dense-after-cycle",
+      "mode": "pixel-diff",
+      "sha256": "55cd0f9ed103f7be9f351fb0ececb934b8ada6ca07b5ef18690ebdb3a0969270",
+      "approvedUtc": "2026-07-03T15:57:12Z"
+    },
+    {
+      "test": "cpig-kin-01-fork-diagram",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "4bc636a067523ce3caa6e285d750ca6b11b76885d6d0549fca1d1244b57f580e",
+      "approvedUtc": "2026-06-03T00:51:22Z"
+    },
+    {
+      "test": "cpig-kin-01-fork-diagram",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "2501318d7a6950fff5dacdc4aa3c61998af361ae8c2ad807c9a9e5f25319e08f",
+      "approvedUtc": "2026-06-03T00:51:26Z"
+    },
+    {
+      "test": "cpig-kin-01-fork-diagram",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "feb3fbd669349e3969c96d3ccf8f24b3903916b979ef2406a34f28411d304d76",
+      "approvedUtc": "2026-06-03T00:51:25Z"
+    },
+    {
+      "test": "cpig-kin-01-fork-diagram",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "f5778956a6c55fe92f09ed3ee3a1efde3d1e2e4fec78789a7ba79defb233c808",
+      "approvedUtc": "2026-06-03T00:51:23Z"
+    },
+    {
+      "test": "cpig-kin-02-fork-sweep",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "1a7dce8b0ad98fa3f7f4406ee0f8397b6fb2f8009d956593bf582842234a8e8e",
+      "approvedUtc": "2026-06-03T00:28:10Z"
+    },
+    {
+      "test": "cpig-kin-02-fork-sweep",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "2163ae99191aa478f729f1d21d15225f0862a62acd1d6934a6e0ac9dc3b2ad32",
+      "approvedUtc": "2026-06-03T00:28:13Z"
+    },
+    {
+      "test": "cpig-kin-02-fork-sweep",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "713387e03e01dd8f8ed4f644fc7f7c3151fa53489341b8547a44ac285ff02003",
+      "approvedUtc": "2026-06-03T00:28:12Z"
+    },
+    {
+      "test": "cpig-kin-02-fork-sweep",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "a55a5728a0046e122e521f62896fc23ba3359ac30447450d0d82acdf616dc584",
+      "approvedUtc": "2026-06-03T00:28:11Z"
+    },
+    {
+      "test": "cpig-kin-03-fork-equilibrium",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "4522d7be13c009e1dc204dbe0d9d7a049d4a3788d37d9500f678f6c27e419394",
+      "approvedUtc": "2026-06-03T00:28:19Z"
+    },
+    {
+      "test": "cpig-kin-03-fork-equilibrium",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "0174b70898ca8aac0761158dd43a87b9321b954ba9371113e8051ae1709dce85",
+      "approvedUtc": "2026-06-03T00:28:23Z"
+    },
+    {
+      "test": "cpig-kin-03-fork-equilibrium",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "7afb52a0267490e729662cab5ebc2c9b72c511e6fdce592fbf8caf179062ebc5",
+      "approvedUtc": "2026-06-03T00:28:22Z"
+    },
+    {
+      "test": "cpig-kin-03-fork-equilibrium",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "cd2893be740f0cef911006b58b9ada8c0cc0d1df73ea49066ee0e1ff6e83b3dc",
+      "approvedUtc": "2026-06-03T00:28:21Z"
+    },
+    {
+      "test": "cpig-kin-04-pendulum-period",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "bfb60cb1cf578e4140fb4b678b3e1ed6d9260ea61522cf34164440b1f0ac64a6",
+      "approvedUtc": "2026-06-03T00:28:29Z"
+    },
+    {
+      "test": "cpig-kin-04-pendulum-period",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "c6d99667b1fbeb230d1125b9fd073c0e56fb711add029102c5f4a12a32b67fa6",
+      "approvedUtc": "2026-06-03T00:28:33Z"
+    },
+    {
+      "test": "cpig-kin-04-pendulum-period",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "e14244242c15849f8f8fec7093e5aae5eaed77afd17abb5d091c8bd8da137310",
+      "approvedUtc": "2026-06-03T00:28:32Z"
+    },
+    {
+      "test": "cpig-kin-04-pendulum-period",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "01f1d09f46034c861dbcaa8a6ab88b07a0714a738f12f452048e19e251acbd96",
+      "approvedUtc": "2026-06-03T00:28:30Z"
+    },
+    {
+      "test": "cpig-kin-06-fork-bound-static",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "f355cfdc96ca28e4d696b3e3159edafa3a3ba073d01a259003af84879d2f9002",
+      "approvedUtc": "2026-06-03T00:28:39Z"
+    },
+    {
+      "test": "cpig-kin-06-fork-bound-static",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "04aa1fc778682f694bb96893b52c91aee5bbd236adacf7e0b99696513e554c2e",
+      "approvedUtc": "2026-06-03T00:28:43Z"
+    },
+    {
+      "test": "cpig-kin-06-fork-bound-static",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "719fca02724bf2062f557a7ca61f8f196b4fa4952590ccdf2096b749adc48b39",
+      "approvedUtc": "2026-06-03T00:28:42Z"
+    },
+    {
+      "test": "cpig-kin-06-fork-bound-static",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "84bd76df9828650c8d6518ead913aa6b9706bb72a0197a9c58f9c115ef18caae",
+      "approvedUtc": "2026-06-03T00:28:40Z"
+    },
+    {
+      "test": "cpig-kin-07-pendulum-bound-animated",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "f49a19033522326ec438e4ecc1f31a16fe4c76802efb7f1b3c190a3e43294d97",
+      "approvedUtc": "2026-06-03T00:28:49Z"
+    },
+    {
+      "test": "cpig-kin-07-pendulum-bound-animated",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "86c3603da9e083988d1b7f9ee67a341c0f135177f01e0dcbb9a3e700c6dacd26",
+      "approvedUtc": "2026-06-03T00:28:53Z"
+    },
+    {
+      "test": "cpig-kin-07-pendulum-bound-animated",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "8f786714b0ec0c5c1aacfed6f3ede102fb99c2aa5c88c1626d6f919f5e98fc7f",
+      "approvedUtc": "2026-06-03T00:28:52Z"
+    },
+    {
+      "test": "cpig-kin-07-pendulum-bound-animated",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "3f81a1477a0b919d9b8d0f84ac48a145fe28c6722941ee5404a1a295e89afe2b",
+      "approvedUtc": "2026-06-03T00:28:50Z"
+    },
+    {
+      "test": "cpig-kin-08-hardtail-bicycle",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "adda965aec2847162deda2c6afadb420ef449bad00b71f94287223738c401455",
+      "approvedUtc": "2026-06-03T00:29:00Z"
+    },
+    {
+      "test": "cpig-kin-08-hardtail-bicycle",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "979bcb8a675e466b7f54dc4d2132289fa4597e9d4747dc89b958c08fd4a82da7",
+      "approvedUtc": "2026-06-03T00:29:03Z"
+    },
+    {
+      "test": "cpig-kin-08-hardtail-bicycle",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "1631e82a59192d62af0fef3e774c424ff8ed85df353133613d32db5a26888299",
+      "approvedUtc": "2026-06-03T00:29:02Z"
+    },
+    {
+      "test": "cpig-kin-08-hardtail-bicycle",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "f0d612d5e2469f742d367e933aa03522caa53cb39324ab266b7a50120807d890",
+      "approvedUtc": "2026-06-03T00:29:01Z"
+    },
+    {
+      "test": "cpig-kin-09-full-bicycle-animated",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "0eb59041c0e3b25c2ee7f6509a8404564aac1080d4fd137045b82405fa3ff3fd",
+      "approvedUtc": "2026-06-03T00:29:10Z"
+    },
+    {
+      "test": "cpig-kin-09-full-bicycle-animated",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "fc6abdeb3ff7c4ab3331e4f2c5535bf684be32d16fd597e7da43b5f44835c232",
+      "approvedUtc": "2026-06-03T00:29:14Z"
+    },
+    {
+      "test": "cpig-kin-09-full-bicycle-animated",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "eac57c77e5d90dc86481f8d42dc52323e56756eacb8e7844c4ed7391429e9e6a",
+      "approvedUtc": "2026-06-03T00:29:13Z"
+    },
+    {
+      "test": "cpig-kin-09-full-bicycle-animated",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "1c1f5cd4dab1988809e0ead1e5a417def2d285968be36a03c50e5b53d609ffda",
+      "approvedUtc": "2026-06-03T00:29:11Z"
+    },
+    {
+      "test": "cpig-kin-10-corexy-printer",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "5051695310c1fe157c10ed0909f97a50ac3299a423c5d689325b61f58b42b4fc",
+      "approvedUtc": "2026-06-03T00:29:20Z"
+    },
+    {
+      "test": "cpig-kin-10-corexy-printer",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "accefa1709080341c9345aae8d8ccaa6034264708971fb47662dd2f177f0bdf8",
+      "approvedUtc": "2026-06-03T00:29:24Z"
+    },
+    {
+      "test": "cpig-kin-10-corexy-printer",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "0b2a26d0bd2490bd30831de0d8c61eae8c2cacc0e7f4da0d409d104a6e5a4548",
+      "approvedUtc": "2026-06-03T00:29:23Z"
+    },
+    {
+      "test": "cpig-kin-10-corexy-printer",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "7567a178c3160df06149d8c6bf943c849d7d181ab0053ce416bb7ece856728f8",
+      "approvedUtc": "2026-06-03T00:29:22Z"
+    },
+    {
+      "test": "cpig-kin-11-strandbeest-leg",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "fd63a895c1e6bc927121758d61b07954821b3e20f5ea5f09a79b7e8084be0d12",
+      "approvedUtc": "2026-06-03T00:29:31Z"
+    },
+    {
+      "test": "cpig-kin-11-strandbeest-leg",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "8704c4691968129932ba9a6fa6d884b352e20425132f6988e98187c6e0d64bde",
+      "approvedUtc": "2026-06-03T00:29:34Z"
+    },
+    {
+      "test": "cpig-kin-11-strandbeest-leg",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "d3b5ba4d7252fd83427851623f5a944e5471a18eaef5d75832e3f55d500e6a16",
+      "approvedUtc": "2026-06-03T00:29:33Z"
+    },
+    {
+      "test": "cpig-kin-11-strandbeest-leg",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "b8b8ac851e95f80aca8630d11f8c10655225aedbb787f676e9bb9e44f0f4e6d0",
+      "approvedUtc": "2026-06-03T00:29:32Z"
+    },
+    {
+      "test": "cpig-kin-12-klann-walker",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "b7650d70b5be84f855726a95a0c5e63deaafb815114319f103a3bb26b518a4c3",
+      "approvedUtc": "2026-06-03T00:29:41Z"
+    },
+    {
+      "test": "cpig-kin-12-klann-walker",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "22a25590db5425d3c21995556593efe220685b15640ce47fbaf40116c65a2a1c",
+      "approvedUtc": "2026-06-03T00:29:45Z"
+    },
+    {
+      "test": "cpig-kin-12-klann-walker",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "93b90cf70f5ca19000cbacb339b48183084b9a8345ee9965deb410c8010f74ab",
+      "approvedUtc": "2026-06-03T00:29:44Z"
+    },
+    {
+      "test": "cpig-kin-12-klann-walker",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "abed19185d4b7d54c3b205be658bce550dc9f9632e64d5c46a437e7fe7e00925",
+      "approvedUtc": "2026-06-03T00:29:43Z"
+    },
+    {
+      "test": "cpig-kin-15-watt-straight-line",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "bf2df8d3f59e79d7ce8fab1a1124895fb60cd5a8c07e1ad4daeb90b8e5bc12ac",
+      "approvedUtc": "2026-06-03T00:29:52Z"
+    },
+    {
+      "test": "cpig-kin-15-watt-straight-line",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "cdefa7255d8169bb07299494bbc046652841888989e29a39f0a201f305128d5d",
+      "approvedUtc": "2026-06-03T00:29:55Z"
+    },
+    {
+      "test": "cpig-kin-15-watt-straight-line",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "dfce83d3536af4efc7a866bf8f46d15f46e39c35b77cfe528ae2d7b4f15ac68c",
+      "approvedUtc": "2026-06-03T00:29:54Z"
+    },
+    {
+      "test": "cpig-kin-15-watt-straight-line",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "07c00f4317baf46ce20aaf9e7568319c6b3c0294131cabe9a974e4385ad98010",
+      "approvedUtc": "2026-06-03T00:29:53Z"
+    },
+    {
+      "test": "cpig-kin-18-2link-arm",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "8ca339de4b00f160638d2faf9aa986107bf170a811ca689ed06a0ab5e8178ad5",
+      "approvedUtc": "2026-06-03T00:30:48Z"
+    },
+    {
+      "test": "cpig-kin-18-2link-arm",
+      "checkpoint": "persp",
+      "mode": "pixel-diff",
+      "sha256": "1f75d862d87bf4deada399a194f26d8e0f2a8136db9b64c95b57295157540388",
+      "approvedUtc": "2026-06-03T00:30:52Z"
+    },
+    {
+      "test": "cpig-kin-18-2link-arm",
+      "checkpoint": "right",
+      "mode": "pixel-diff",
+      "sha256": "181273fec4b6c8e5338e7d3cfc484a0f88ad156c62f6b2ca26ae12ad8e3b4b23",
+      "approvedUtc": "2026-06-03T00:30:50Z"
+    },
+    {
+      "test": "cpig-kin-18-2link-arm",
+      "checkpoint": "top",
+      "mode": "pixel-diff",
+      "sha256": "6238da38870a94f4a1874d948a0632f37af2b286ef738dd737f44268a0dce685",
+      "approvedUtc": "2026-06-03T00:30:49Z"
+    },
+    {
+      "test": "cpig-repmatrix-box-atlasbaked",
+      "checkpoint": "cpig-repmatrix-box-atlasbaked",
+      "mode": "pixel-diff",
+      "sha256": "af0d0c7bb043d705d6e9e9349fce669e7b61430d475d56a163626f650c59a069",
+      "approvedUtc": "2026-07-06T04:40:31Z"
+    },
+    {
+      "test": "cpig-repmatrix-box-auto",
+      "checkpoint": "cpig-repmatrix-box-auto",
+      "mode": "pixel-diff",
+      "sha256": "b67bf927130042fc1ad7354ce81edb34b020f4023427e325be1e43397e426d15",
+      "approvedUtc": "2026-07-03T15:54:47Z"
+    },
+    {
+      "test": "cpig-repmatrix-box-mesh",
+      "checkpoint": "cpig-repmatrix-box-mesh",
+      "mode": "pixel-diff",
+      "sha256": "df97d78a95b2517674d560c6d285a3dc1a9980adf863610200159c2c2182c0e3",
+      "approvedUtc": "2026-07-03T15:55:09Z"
+    },
+    {
+      "test": "cpig-repmatrix-box-pointcloud",
+      "checkpoint": "cpig-repmatrix-box-pointcloud",
+      "mode": "pixel-diff",
+      "sha256": "3184f36c6a50e2175998c6b1b36d4fc3cd636cbe60109173be772203ae7c5caf",
+      "approvedUtc": "2026-07-03T15:55:17Z"
+    },
+    {
+      "test": "cpig-repmatrix-box-tape",
+      "checkpoint": "cpig-repmatrix-box-tape",
+      "mode": "pixel-diff",
+      "sha256": "1e1159f96fb04e2b3d2385e7fef5fb9ba41cea15d3f364b0c11f34af32961ca5",
+      "approvedUtc": "2026-07-03T15:54:55Z"
+    },
+    {
+      "test": "cpig-repmatrix-gyroid-auto",
+      "checkpoint": "cpig-repmatrix-gyroid-auto",
+      "mode": "pixel-diff",
+      "sha256": "5a2297b0ba1e1811fcc13381b3da381f6f0c5c2ddbc45c6cb71e287db10bc541",
+      "approvedUtc": "2026-07-03T15:55:34Z"
+    },
+    {
+      "test": "cpig-repmatrix-gyroid-mesh",
+      "checkpoint": "cpig-repmatrix-gyroid-mesh",
+      "mode": "pixel-diff",
+      "sha256": "08da21316d82317e9b343057d34ee8472ab307b02d8974ab796c0707aa938857",
+      "approvedUtc": "2026-07-03T15:55:56Z"
+    },
+    {
+      "test": "cpig-repmatrix-gyroid-pointcloud",
+      "checkpoint": "cpig-repmatrix-gyroid-pointcloud",
+      "mode": "pixel-diff",
+      "sha256": "0f2f83bd01a509efd4bb3e91c94dedac44f44bd509cf68fbde54b05dc94b9b4f",
+      "approvedUtc": "2026-07-03T15:56:04Z"
+    },
+    {
+      "test": "cpig-repmatrix-gyroid-tape",
+      "checkpoint": "cpig-repmatrix-gyroid-tape",
+      "mode": "pixel-diff",
+      "sha256": "ed4092b451e8bbe65917cf52c7529e76702780f9b216f323e95944f8fa79427c",
+      "approvedUtc": "2026-07-03T15:55:41Z"
+    },
+    {
+      "test": "cpig-repmatrix-sphere-atlasbaked",
+      "checkpoint": "cpig-repmatrix-sphere-atlasbaked",
+      "mode": "pixel-diff",
+      "sha256": "4cdd6b2afcc9bd03aef5f22bd4368b8b7a4f2b00afd56264d59767d88c2cbf2e",
+      "approvedUtc": "2026-07-06T04:40:31Z"
+    },
+    {
+      "test": "cpig-repmatrix-sphere-auto",
+      "checkpoint": "cpig-repmatrix-sphere-auto",
+      "mode": "pixel-diff",
+      "sha256": "937a9720b37db1f5d490ccd3b6e482860a2751d5f32a338e36b8c1a6ab821b7c",
+      "approvedUtc": "2026-07-03T15:54:00Z"
+    },
+    {
+      "test": "cpig-repmatrix-sphere-mesh",
+      "checkpoint": "cpig-repmatrix-sphere-mesh",
+      "mode": "pixel-diff",
+      "sha256": "a41b0b0059f03d155a58029b8a0eb7636736481648ec537dcd5d1c4695434923",
+      "approvedUtc": "2026-07-03T15:54:23Z"
+    },
+    {
+      "test": "cpig-repmatrix-sphere-pointcloud",
+      "checkpoint": "cpig-repmatrix-sphere-pointcloud",
+      "mode": "pixel-diff",
+      "sha256": "10f1227ae2cc855a1c4e8895a8896b5507b6e5dd83dc528cca0b3aa7ad8bdbe2",
+      "approvedUtc": "2026-07-03T15:54:30Z"
+    },
+    {
+      "test": "cpig-repmatrix-sphere-tape",
+      "checkpoint": "cpig-repmatrix-sphere-tape",
+      "mode": "pixel-diff",
+      "sha256": "09e54e88bbb557783af9dca808384a37c17b887e6ab35401cd11043f2f6c70fd",
+      "approvedUtc": "2026-07-03T15:54:08Z"
+    },
+    {
+      "test": "salimon",
+      "checkpoint": "final",
+      "mode": "pixel-diff",
+      "sha256": "efcac12b7bdf591f5e9ae1bbb602bc24dcc2f14f8cbba47a3e605d22468dd437",
+      "approvedUtc": "2026-04-05T11:34:58Z"
+    },
+    {
+      "test": "slop-01-graft-grid",
+      "checkpoint": "post-build",
+      "mode": "pixel-diff",
+      "sha256": "b1f5683b71fff8ea8978e47495a8415948c7a58f874ff5ca935fceb7b6665f46",
+      "approvedUtc": "2026-08-07T13:44:31Z"
+    },
+    {
+      "test": "slop-02-within-radius",
+      "checkpoint": "post-build",
+      "mode": "pixel-diff",
+      "sha256": "074b2a2d7a0dde08017623da9de14d1e84758e22f7b3e181de0c7c4ca1fd75e8",
+      "approvedUtc": "2026-08-07T13:44:39Z"
+    }
+  ]
+}

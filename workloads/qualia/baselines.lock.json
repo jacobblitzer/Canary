@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "workload": "qualia",
+  "rows": [
+    {
+      "test": "diag-canary-hooks-1a-smoke",
+      "checkpoint": "after-zoom-pan",
+      "mode": "pixel-diff",
+      "sha256": "60162562445c03f78a544e10e6acff4dd8f8adadd7ca8b00dbedd8d7c8cf5a1b",
+      "approvedUtc": "2026-05-28T16:28:48Z"
+    },
+    {
+      "test": "playground-grid",
+      "checkpoint": "grid-default",
+      "mode": "pixel-diff",
+      "sha256": "d649ed03805704455e02740533d7c456dd0a5c6eeac51ef88edfd08f72f76fa6",
+      "approvedUtc": "2026-05-10T22:59:21Z"
+    },
+    {
+      "test": "playground-random",
+      "checkpoint": "random-default",
+      "mode": "pixel-diff",
+      "sha256": "d26d9c6c9bc22c3003763022c148d33e40661126eefda4f5ea5b606c225e6d86",
+      "approvedUtc": "2026-05-10T22:59:20Z"
+    },
+    {
+      "test": "playground-scale-free",
+      "checkpoint": "scale-free-default",
+      "mode": "pixel-diff",
+      "sha256": "c83538e7a23c68fb6b3dc9d79b5cd96b7a7cc81f9a26975b9adbab20ece9460d",
+      "approvedUtc": "2026-05-10T22:59:23Z"
+    },
+    {
+      "test": "playground-snapshot-roundtrip",
+      "checkpoint": "snapshot-restored-tree",
+      "mode": "pixel-diff",
+      "sha256": "2a03fbe6c3d2eab795081b01e22b6058333084be5571be1ef77104e46dee02f2",
+      "approvedUtc": "2026-05-10T22:59:29Z"
+    },
+    {
+      "test": "playground-stress-1k",
+      "checkpoint": "stress-1k-default",
+      "mode": "pixel-diff",
+      "sha256": "923586f676c595a3f578dc8d95ec172609a6b7d022e7848c2902ea61e4827058",
+      "approvedUtc": "2026-05-10T22:59:27Z"
+    },
+    {
+      "test": "playground-tree",
+      "checkpoint": "tree-default",
+      "mode": "pixel-diff",
+      "sha256": "0c50a2e49b24e9867eb1e8ddc8ffb56bacc127bde8793a3ef7d0fad01891ce4c",
+      "approvedUtc": "2026-05-10T22:59:22Z"
+    }
+  ]
+}

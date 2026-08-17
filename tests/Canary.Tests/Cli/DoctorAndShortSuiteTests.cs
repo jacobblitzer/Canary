@@ -41,6 +41,11 @@ public class DoctorAndShortSuiteTests
         // not a warning) and a complete rig can legitimately reach exit 0.
         File.WriteAllText(Path.Combine(root, "w", "workload.json"),
             "{ \"name\": \"w\", \"appPath\": \"cmd.exe\", \"agentType\": \"none\" }");
+        // A complete rig now includes a baseline ledger, because doctor's check 6 fails
+        // closed: an ABSENT ledger is an error, while an explicitly empty row set is
+        // legal. Nothing here arms a checkpoint, so zero rows is the honest declaration.
+        File.WriteAllText(Path.Combine(root, "w", Canary.Orchestration.BaselineLedger.FileName),
+            "{ \"version\": 1, \"workload\": \"w\", \"rows\": [] }");
         return root;
     }
 
@@ -157,6 +162,41 @@ public class DoctorAndShortSuiteTests
 
         Canary.Config.CanaryTokens.Invalidate();
         Assert.Equal(1, exit);
+    }
+
+    // Phase 2b. The ledger is the only check that can see a baseline at all - doctor's
+    // other checks skip anything under /results/ by design - so an absent ledger must be
+    // an error rather than a quiet "nothing is armed". Otherwise deleting the file, or
+    // shipping a payload without it, disables the guard while every run still prints a
+    // pass. Mutation-proven: making LoadRequired return an empty ledger for a missing
+    // file turns this red.
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_ExitsNonZero_WhenTheBaselineLedgerIsAbsent()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        File.Delete(Path.Combine(root, "w", Canary.Orchestration.BaselineLedger.FileName));
+
+        var exit = await DoctorCommand.RunAsync("w", null, root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(1, exit);
+    }
+
+    // The counter-mutation at the doctor level: a workload that legitimately arms nothing
+    // must pass. A guard that cannot be satisfied gets switched off.
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_ExitsZero_WhenTheLedgerIsExplicitlyEmpty()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+
+        var exit = await DoctorCommand.RunAsync("w", null, root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(0, exit);
     }
 
     [Trait("Category", "Unit")]

@@ -1,0 +1,657 @@
+{
+  "version": 1,
+  "workload": "penumbra",
+  "rows": [
+    {
+      "test": "assembly-d1-lipschitz",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "9fa56f0ec6943f291f6f1469a547354032b936dc0fa1b9abf7a6ec34c06359e8",
+      "approvedUtc": "2026-05-06T01:52:52Z"
+    },
+    {
+      "test": "assembly-d1-lipschitz",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "1872982a34ce1b2f118ace5bec2d84e758a4a2688bcc5d8fd9139137887b6d17",
+      "approvedUtc": "2026-05-06T01:52:54Z"
+    },
+    {
+      "test": "assembly-d1-lipschitz",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "89de0ab8103d251b55c35866befe7ce52081a525049d9fedb76acc2b4fe81deb",
+      "approvedUtc": "2026-05-06T01:52:56Z"
+    },
+    {
+      "test": "assembly-d3-tricubic-on",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "9fa56f0ec6943f291f6f1469a547354032b936dc0fa1b9abf7a6ec34c06359e8",
+      "approvedUtc": "2026-05-06T01:46:36Z"
+    },
+    {
+      "test": "assembly-d3-tricubic-on",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "1872982a34ce1b2f118ace5bec2d84e758a4a2688bcc5d8fd9139137887b6d17",
+      "approvedUtc": "2026-05-06T01:46:38Z"
+    },
+    {
+      "test": "assembly-default",
+      "checkpoint": "back",
+      "mode": "pixel-diff",
+      "sha256": "19337f60cbc35a59dc45be16e71fb10419616cdef9ab884a35fecb7ae1f2b4f4",
+      "approvedUtc": "2026-06-12T14:55:48Z"
+    },
+    {
+      "test": "assembly-default",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "05e3a9c51518d3e575cfac2394b6b7e506bfd8a67817f81d047dceafb4d90d6a",
+      "approvedUtc": "2026-06-12T14:55:41Z"
+    },
+    {
+      "test": "assembly-default",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "89b2203d7b0f4eacdaebf736893cd7d8d07e45d3c4a1a253cbbc895f12861d26",
+      "approvedUtc": "2026-06-12T14:55:43Z"
+    },
+    {
+      "test": "assembly-default",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "d3336f05494f5f5b8e1cb2bb6571560ab38590a2c9d53c2e6c2c858b71d052dd",
+      "approvedUtc": "2026-06-12T14:55:45Z"
+    },
+    {
+      "test": "atlas-blob-compute-smoke",
+      "checkpoint": "front-after-smoke",
+      "mode": "pixel-diff",
+      "sha256": "ec0495e135920d6ef68e00b0ab740eba1434b49b9088a28c4c112eee7c280e9a",
+      "approvedUtc": "2026-06-12T14:54:01Z"
+    },
+    {
+      "test": "atlas-blob-compute-smoke-persistent",
+      "checkpoint": "front-after-persistent-smoke",
+      "mode": "pixel-diff",
+      "sha256": "ec0495e135920d6ef68e00b0ab740eba1434b49b9088a28c4c112eee7c280e9a",
+      "approvedUtc": "2026-06-12T15:24:16Z"
+    },
+    {
+      "test": "atlas-blob-d1-lipschitz",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "ec0495e135920d6ef68e00b0ab740eba1434b49b9088a28c4c112eee7c280e9a",
+      "approvedUtc": "2026-05-06T01:53:00Z"
+    },
+    {
+      "test": "atlas-blob-d1-lipschitz",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "5d58708865daf79cf3c8f7d23904a29bef0577adacfb1a89339509d7a72c0cc8",
+      "approvedUtc": "2026-05-06T01:53:01Z"
+    },
+    {
+      "test": "atlas-blob-d3-tricubic-on",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "ec0495e135920d6ef68e00b0ab740eba1434b49b9088a28c4c112eee7c280e9a",
+      "approvedUtc": "2026-05-06T01:46:41Z"
+    },
+    {
+      "test": "atlas-blob-env-neutral",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "4e486335e27820598ca09c9dcfedb1da18c5e9571cde402aaa321d6fd3c749db",
+      "approvedUtc": "2026-04-25T23:01:07Z"
+    },
+    {
+      "test": "atlas-blob-env-neutral",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "c3a696b6b077edbdb260be293cc7855db8c4baa529f71f43329327dc90a99352",
+      "approvedUtc": "2026-04-25T23:01:08Z"
+    },
+    {
+      "test": "atlas-blob-env-night",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "970d4561a9a52d2e900b7334a2e82f8f4d990294d1552773aefd74ffee17bcd7",
+      "approvedUtc": "2026-04-25T23:01:03Z"
+    },
+    {
+      "test": "atlas-blob-env-night",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "17e8d6069e5ac77c51e0901167978eea1a37092eff87d3cc1f9f3692c6b9444e",
+      "approvedUtc": "2026-04-25T23:01:04Z"
+    },
+    {
+      "test": "atlas-blob-env-outdoor",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "dc1bd72aca5994fc553c2aa2116205039526f2cfa8cd69b6230e2b33f76d0442",
+      "approvedUtc": "2026-04-25T23:00:47Z"
+    },
+    {
+      "test": "atlas-blob-env-outdoor",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "4d2dc2d4ddf0739f9d08c8909c1487e54ffb5792d3e95d1ef7b1b656c8a2a994",
+      "approvedUtc": "2026-04-25T23:00:48Z"
+    },
+    {
+      "test": "atlas-blob-env-sunset",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "3afb9f346211ac148dbcafbed83042dc0a96095de5dbdb40261879257fe58b3f",
+      "approvedUtc": "2026-04-25T23:00:59Z"
+    },
+    {
+      "test": "atlas-blob-env-sunset",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "81393980e4f677ab252fcaf72b203d07a782112155529371f5e1f6f0b827c28c",
+      "approvedUtc": "2026-04-25T23:01:00Z"
+    },
+    {
+      "test": "atlas-blob-orbit",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "ec0495e135920d6ef68e00b0ab740eba1434b49b9088a28c4c112eee7c280e9a",
+      "approvedUtc": "2026-05-06T01:42:39Z"
+    },
+    {
+      "test": "atlas-blob-orbit",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "590281c4bb5710ecce55a2eb3d889ea45135c552c5df75a3b71c89ebbd32376f",
+      "approvedUtc": "2026-05-06T01:42:41Z"
+    },
+    {
+      "test": "atlas-blob-orbit",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "5d58708865daf79cf3c8f7d23904a29bef0577adacfb1a89339509d7a72c0cc8",
+      "approvedUtc": "2026-05-06T01:42:42Z"
+    },
+    {
+      "test": "atlas-blob-orbit",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "e2233e6279bb13ffd398306a92ee291642725ce9f2c507dd62cddb6921e9ad4f",
+      "approvedUtc": "2026-05-06T01:42:43Z"
+    },
+    {
+      "test": "mesh-benchy",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "ca4b4af4ccbd678e84c5059aecfe3bfc7de4a6e464a01da3f62cacea71c13f47",
+      "approvedUtc": "2026-06-12T20:01:02Z"
+    },
+    {
+      "test": "mesh-benchy",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "4e102d0adaacf3a48857a04ae11572c777ecd93aaec5ce411cc9f4d765b42ee3",
+      "approvedUtc": "2026-06-12T20:01:04Z"
+    },
+    {
+      "test": "mesh-benchy",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "3d82a5abb01f66d05828bffabdd90ede0e0c61ab369123ee373e27e8437ee1a0",
+      "approvedUtc": "2026-06-12T20:01:05Z"
+    },
+    {
+      "test": "mesh-benchy",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "49ea0746acafb57beb7b4789ea52e48df6457f4a2770ea7f9110468cc3ace675",
+      "approvedUtc": "2026-06-12T20:01:07Z"
+    },
+    {
+      "test": "mesh-bunny",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "8f47e41e655b06fd768491c4d60564c83f6811335570ffc1669eefba18202e69",
+      "approvedUtc": "2026-06-12T19:50:09Z"
+    },
+    {
+      "test": "mesh-bunny",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "f5a5dbf7a1e16565b2a19d583e2ea9b5626e335fec2a8900ea21f977499cbcb6",
+      "approvedUtc": "2026-06-12T19:50:10Z"
+    },
+    {
+      "test": "mesh-bunny",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "c46731a9b46eba6a99e76841de1d87a3a7f24850074d67e4c89f8d0fc265b6b1",
+      "approvedUtc": "2026-06-12T19:50:12Z"
+    },
+    {
+      "test": "mesh-bunny",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "9efb2abb0090c385058c5e419accbdff87561df1b706bf1e377093bb8402b04a",
+      "approvedUtc": "2026-06-12T19:50:13Z"
+    },
+    {
+      "test": "mesh-teapot",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "06328e5541f0e9584c86090edbc120213f783e7d3a595545f333a07d440b49c9",
+      "approvedUtc": "2026-06-12T19:52:53Z"
+    },
+    {
+      "test": "mesh-teapot",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "b92ee5e9c5d0abdbde717423610f64cf6a6e7aa13b55212f68d9c2fa6c99e49b",
+      "approvedUtc": "2026-06-12T19:52:55Z"
+    },
+    {
+      "test": "mesh-teapot",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "648c7337770176c13e7eb2d26b2146b944bc66c6ea6a5e9d454557cd06b51686",
+      "approvedUtc": "2026-06-12T19:52:56Z"
+    },
+    {
+      "test": "mesh-teapot",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "07dea7cd0aa9475288298ef51fe0a8b4545c1692bdd964f7aaa658493b2df1ce",
+      "approvedUtc": "2026-06-12T19:52:58Z"
+    },
+    {
+      "test": "multi-field-d1-lipschitz",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "2672be71f13946a76eade0cfbfa8a4723428679cf26e85b4b3869c66896e8f45",
+      "approvedUtc": "2026-05-06T01:52:13Z"
+    },
+    {
+      "test": "multi-field-d1-lipschitz",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "bb10b0601245fac83b7e5dc0e4ecfd9a01f4cbb6b58941792463d18a4c8d289d",
+      "approvedUtc": "2026-05-06T01:52:15Z"
+    },
+    {
+      "test": "multi-field-d1-lipschitz",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "a6d96b3b3b2f45adbc497f1d60f3cf49de7a6c06e0a84340508851d510d8b4e7",
+      "approvedUtc": "2026-05-06T01:52:17Z"
+    },
+    {
+      "test": "multi-field-d1-lipschitz-refined",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "2672be71f13946a76eade0cfbfa8a4723428679cf26e85b4b3869c66896e8f45",
+      "approvedUtc": "2026-05-06T01:52:34Z"
+    },
+    {
+      "test": "multi-field-d1-lipschitz-refined",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "a6d96b3b3b2f45adbc497f1d60f3cf49de7a6c06e0a84340508851d510d8b4e7",
+      "approvedUtc": "2026-05-06T01:52:37Z"
+    },
+    {
+      "test": "multi-field-d3-tricubic-on",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "2672be71f13946a76eade0cfbfa8a4723428679cf26e85b4b3869c66896e8f45",
+      "approvedUtc": "2026-05-06T01:46:16Z"
+    },
+    {
+      "test": "multi-field-d3-tricubic-on",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "a6d96b3b3b2f45adbc497f1d60f3cf49de7a6c06e0a84340508851d510d8b4e7",
+      "approvedUtc": "2026-05-06T01:46:18Z"
+    },
+    {
+      "test": "multi-field-emissive",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "4adfbd5bb5c947a77814d2cc56bbb48df2f04d1e1f2d5400d81f8b56c6db8148",
+      "approvedUtc": "2026-04-25T22:11:22Z"
+    },
+    {
+      "test": "multi-field-emissive",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "fabf051591ec3089f5dcccc97d0491c12e24f1e97b9ab2953b597a89993bbbce",
+      "approvedUtc": "2026-04-25T22:11:23Z"
+    },
+    {
+      "test": "multi-field-fresnel",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "68eb06b2093a5bae2d5e93e2e52242db8c786b74372f273eaee177fa240b1e0b",
+      "approvedUtc": "2026-04-25T22:11:36Z"
+    },
+    {
+      "test": "multi-field-fresnel",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "4c8ae5e4906e2a9bd7db0d45d132b6609438f4959657c42a7efeaf0c226840ca",
+      "approvedUtc": "2026-04-25T22:11:36Z"
+    },
+    {
+      "test": "multi-field-orbit",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "2672be71f13946a76eade0cfbfa8a4723428679cf26e85b4b3869c66896e8f45",
+      "approvedUtc": "2026-05-06T01:42:17Z"
+    },
+    {
+      "test": "multi-field-orbit",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "bb10b0601245fac83b7e5dc0e4ecfd9a01f4cbb6b58941792463d18a4c8d289d",
+      "approvedUtc": "2026-05-06T01:42:18Z"
+    },
+    {
+      "test": "multi-field-orbit",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "a6d96b3b3b2f45adbc497f1d60f3cf49de7a6c06e0a84340508851d510d8b4e7",
+      "approvedUtc": "2026-05-06T01:42:19Z"
+    },
+    {
+      "test": "multi-field-orbit",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "d51c14d4ae783d8264e1096fe54adc488ad56289d4b0c38c0188a6922a22ebcc",
+      "approvedUtc": "2026-05-06T01:42:19Z"
+    },
+    {
+      "test": "stress-test-orbit",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "44109df039febad039fc339b372446785f640b57608fc54a30b6031ca9628c8c",
+      "approvedUtc": "2026-05-06T01:43:16Z"
+    },
+    {
+      "test": "stress-test-orbit",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "86218ed9d017742c113191a97da326f916ee784fae26c7b7ddb4ec1a35099330",
+      "approvedUtc": "2026-05-06T01:43:20Z"
+    },
+    {
+      "test": "stress-test-orbit",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "6b3b75610b437389cc47ff44a67966cbc884f7fceb58b8263fa29a202ef6f2c0",
+      "approvedUtc": "2026-05-06T01:43:24Z"
+    },
+    {
+      "test": "stress-test-orbit",
+      "checkpoint": "wide-angle",
+      "mode": "pixel-diff",
+      "sha256": "45c45b515cabdd7ef25b7fd8c8d5c698174ba4cc99b2c43662191cdf1fd2b23d",
+      "approvedUtc": "2026-05-06T01:43:27Z"
+    },
+    {
+      "test": "tape-csg-aces",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "e812536bda88525edbd95a84bc028b690ff1bd636cf06d99fc392f5a5303edb5",
+      "approvedUtc": "2026-04-25T22:10:56Z"
+    },
+    {
+      "test": "tape-csg-aces",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "76118e7a4a32194c45f8b90243e5f0b97aadd01fac4f4921f56894962ec99ded",
+      "approvedUtc": "2026-04-25T22:10:56Z"
+    },
+    {
+      "test": "tape-csg-bg-color",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "dfd16346ab0939dda4a7cdd72133b9f4c3f5f9d263ce4d28db671faa800d2f5e",
+      "approvedUtc": "2026-04-25T23:01:34Z"
+    },
+    {
+      "test": "tape-csg-bg-color",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "8a9a11f1b10229f9203f6544d22cd49b6381e1c8bf53f4b43398b2ede73e48cd",
+      "approvedUtc": "2026-04-25T23:01:35Z"
+    },
+    {
+      "test": "tape-csg-contours",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "a21a99dc3d7029f644299f999c23d99fae23c7d26bef1eeaa3c5b606b5376da1",
+      "approvedUtc": "2026-04-25T22:11:49Z"
+    },
+    {
+      "test": "tape-csg-contours",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "8e0d125876abc1ad0302081319d2224a9df8fba554060e9bfc0b5a1d58fae266",
+      "approvedUtc": "2026-04-25T22:11:50Z"
+    },
+    {
+      "test": "tape-csg-custom-lighting",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "8f229f1ddf958d17c9c644bd2e209ed541a0ec7df7e32d806823132b18d48b13",
+      "approvedUtc": "2026-04-25T23:01:21Z"
+    },
+    {
+      "test": "tape-csg-custom-lighting",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "3d308511658505f5d405282979eb7be946f9ab77df5696230f65ad0ec289fe00",
+      "approvedUtc": "2026-04-25T23:01:21Z"
+    },
+    {
+      "test": "tape-csg-exposure",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "f1c5c9c42a9adaaf7c9b265dbacf8e552d9f450ae5d573c8412a76343abd04bc",
+      "approvedUtc": "2026-04-25T22:11:09Z"
+    },
+    {
+      "test": "tape-csg-exposure",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "143ee92c74fd2e707ed9fcb6f0b499834fb66dba3ca452ca6d0dbb1ca7430b95",
+      "approvedUtc": "2026-04-25T22:11:10Z"
+    },
+    {
+      "test": "tape-csg-fog",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "2fb52970bb6acbac0cb8d3a78a19e1d24b6c36b74eb280ad974f06a8e2c66c05",
+      "approvedUtc": "2026-04-25T22:10:42Z"
+    },
+    {
+      "test": "tape-csg-fog",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "112718b1c23a4d2c8b6c5ba4cb1508fc4e0f388098ddb7a095cdf56898fb3e96",
+      "approvedUtc": "2026-04-25T22:10:43Z"
+    },
+    {
+      "test": "tape-csg-noise",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "e4dcb0412d929493340df5cd97e2700a974cf02fc7ba2b0a7575c9c56e8b5b94",
+      "approvedUtc": "2026-04-25T22:12:16Z"
+    },
+    {
+      "test": "tape-csg-noise",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "8b0f5eec731647cc777e7f4e4e1a4ef16a45d4abb003f383b117179ff1922715",
+      "approvedUtc": "2026-04-25T22:12:16Z"
+    },
+    {
+      "test": "tape-csg-onion",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "c0d8191a7d6b2d162b0cbb7b8bd9890b870fc28470b4cc0e440051b0ce880c0f",
+      "approvedUtc": "2026-04-25T22:12:02Z"
+    },
+    {
+      "test": "tape-csg-onion",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "573e594539c7758b90cff18db05762752acfc6dcb37ac7378a31a33cce18706f",
+      "approvedUtc": "2026-04-25T22:12:03Z"
+    },
+    {
+      "test": "tape-csg-orbit",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "c39c55a5487db39cd7e23a434c69f46f247fb13ebf33217a68472c94b48dac0b",
+      "approvedUtc": "2026-06-12T15:16:18Z"
+    },
+    {
+      "test": "tape-csg-orbit",
+      "checkpoint": "side",
+      "mode": "pixel-diff",
+      "sha256": "2db755dbd2e5de7f4db93a352c5bed4718145a0c038b0e890259f025d6d7dea1",
+      "approvedUtc": "2026-06-12T15:16:19Z"
+    },
+    {
+      "test": "tape-csg-orbit",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "105bd994c54869dd2a29f0abf4df24a28181228b1a8bb52d6018d08730219ce3",
+      "approvedUtc": "2026-06-12T15:16:20Z"
+    },
+    {
+      "test": "tape-csg-orbit",
+      "checkpoint": "top-down",
+      "mode": "pixel-diff",
+      "sha256": "3145913bd92041507aea3dc706cf4cd13fc0f685c0ef0f75f420eca6d88ea5c4",
+      "approvedUtc": "2026-06-12T15:16:20Z"
+    },
+    {
+      "test": "teapot-material-damascus",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "ffaacc37c9c2ea6a7709ef184e3a6fe7e0d4c19f29b6b204a61fa154bbe7c71b",
+      "approvedUtc": "2026-04-25T23:00:25Z"
+    },
+    {
+      "test": "teapot-material-damascus",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "d27a97b86151bef05e54406f356e0f00e0f35e3d028d630c29c467457ad6b89c",
+      "approvedUtc": "2026-04-25T23:00:25Z"
+    },
+    {
+      "test": "teapot-material-marble",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "181e6675a9a95b7574a6a07211addbb135324732e28f4f919f2465945dba3218",
+      "approvedUtc": "2026-04-25T23:00:18Z"
+    },
+    {
+      "test": "teapot-material-marble",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "7d5ec115b6fb7061bbcba3cefd40105862cbd54486eccee86f3ec729a5e49b5b",
+      "approvedUtc": "2026-04-25T23:00:18Z"
+    },
+    {
+      "test": "teapot-material-metal",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "547cdef96ed31550e31d13664e434c0fe95619e05ff072a736d3964151fa99d5",
+      "approvedUtc": "2026-04-25T23:00:03Z"
+    },
+    {
+      "test": "teapot-material-metal",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "c408f3f7dc6e415c5a8cfa838d81cc4abc76c9da9656c6353d83bc22bbdc1763",
+      "approvedUtc": "2026-04-25T23:00:03Z"
+    },
+    {
+      "test": "teapot-material-wood",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "dae881ed255ad54b221114789c240901b564685236435fae7d0fd540fc589b74",
+      "approvedUtc": "2026-04-25T23:00:14Z"
+    },
+    {
+      "test": "teapot-material-wood",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "d32672de6267bcf58ca851892efab1fcddea9f7fca2db18e4f9c4f8215942937",
+      "approvedUtc": "2026-04-25T23:00:15Z"
+    },
+    {
+      "test": "teapot-material-zebra",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "453430a0322823e1dfe04805edc83944c7bb3acd1f4d55d559217f03bcd747e2",
+      "approvedUtc": "2026-04-25T23:00:21Z"
+    },
+    {
+      "test": "teapot-material-zebra",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "e0061c0ed8849af9ebecad2db7b8aaa3de4601e8d920a07d84b6aba29a6fb207",
+      "approvedUtc": "2026-04-25T23:00:22Z"
+    },
+    {
+      "test": "threemf-dense-import",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "176f6a01eda0d3f7fc794d30bbc7896be0af2b8d4283b81159279a7ed31a5bdb",
+      "approvedUtc": "2026-06-12T16:00:48Z"
+    },
+    {
+      "test": "threemf-dense-import",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "03fae3bf9796134ec731a61b2873daecb568a82a483834934576803914414097",
+      "approvedUtc": "2026-06-12T16:00:49Z"
+    },
+    {
+      "test": "threemf-dense6-import",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "e0fad2b94cbb878459a9ea1d9af8fce81543229b144599ebd54a123b119797d1",
+      "approvedUtc": "2026-06-12T18:14:57Z"
+    },
+    {
+      "test": "threemf-dense6-import",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "c777c26f3a44a9a150aa40b99aed2c1e586da425e9fd07df0f8253b69bf3aab4",
+      "approvedUtc": "2026-06-12T18:14:59Z"
+    },
+    {
+      "test": "threemf-volumetric-import",
+      "checkpoint": "front",
+      "mode": "pixel-diff",
+      "sha256": "6ee168d5be2cb411702b9b33c122f2905903526fd235b5fb47b0b507178f0a96",
+      "approvedUtc": "2026-06-12T14:42:22Z"
+    },
+    {
+      "test": "threemf-volumetric-import",
+      "checkpoint": "three-quarter",
+      "mode": "pixel-diff",
+      "sha256": "eea55a26cfbbefc7df0cee5771e0923a031c268ef53ee8442c7517dcd6417bc2",
+      "approvedUtc": "2026-06-12T14:42:23Z"
+    }
+  ]
+}

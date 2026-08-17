@@ -1664,10 +1664,12 @@ public sealed class TestRunner
     /// True when a checkpoint opts out of comparison entirely (<c>mode = "capture"</c>,
     /// or the aliases "none"/"off"). Such checkpoints only save the candidate image.
     /// </summary>
+    /// <remarks>
+    /// Delegates to <see cref="CheckpointArming"/> so the rule has exactly one home:
+    /// the baseline ledger asks the same question, and a second copy would drift.
+    /// </remarks>
     private static bool IsCaptureOnly(TestCheckpoint checkpoint) =>
-        string.Equals(checkpoint.Mode, "capture", StringComparison.OrdinalIgnoreCase)
-        || string.Equals(checkpoint.Mode, "none", StringComparison.OrdinalIgnoreCase)
-        || string.Equals(checkpoint.Mode, "off", StringComparison.OrdinalIgnoreCase);
+        CheckpointArming.IsCaptureOnly(checkpoint);
 
     /// <summary>
     /// Roll the rolling test-level status forward based on a single
