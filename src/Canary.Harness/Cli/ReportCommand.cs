@@ -40,7 +40,18 @@ public static class ReportCommand
 
         if (workload != null)
         {
-            reportPath = Path.Combine(workloadsDir, workload, "results", "report.html");
+            // "Most recent report for this workload", not "the one at a fixed path". A
+            // suite run writes its rollup to results/<suite>/report.html, so the bare
+            // results/report.html this used to assume could not reach 56 of the 60
+            // report.html files on disk — `canary report --workload rhino` opened a stale
+            // whole-workload report, or nothing, while the suite report it should have
+            // shown sat one directory down.
+            var resultsRoot = Canary.Orchestration.ResultPaths.ResultsRoot(workloadsDir, workload);
+            reportPath = Directory.Exists(resultsRoot)
+                ? Directory.GetFiles(resultsRoot, "report.html", SearchOption.AllDirectories)
+                    .OrderByDescending(File.GetLastWriteTimeUtc)
+                    .FirstOrDefault()
+                : null;
         }
         else if (Directory.Exists(workloadsDir))
         {

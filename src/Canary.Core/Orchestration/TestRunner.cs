@@ -57,6 +57,7 @@ public sealed class TestRunner
     private readonly PixelDiffComparer _pixelDiff = new();
     private readonly SsimComparer _ssim = new();
     private IVlmProvider? _vlmProvider;
+    private readonly BaselineLedger _ledger;
     private Config.VlmConfig? _vlmConfig;
     private string? _currentVlmDescription;
 
@@ -91,11 +92,29 @@ public sealed class TestRunner
     /// </summary>
     public ITelemetrySink TelemetrySink { get; set; } = NullTelemetrySink.Instance;
 
-    public TestRunner(ProcessManager processManager, string workloadsDir, ITestLogger logger)
+    /// <summary>
+    /// Constructs a runner.
+    /// </summary>
+    /// <param name="processManager">Launches and tracks the target application.</param>
+    /// <param name="workloadsDir">Workloads root.</param>
+    /// <param name="logger">Where to report.</param>
+    /// <param name="ledger">
+    /// The workload's baseline ledger, which decides whether a missing baseline is a
+    /// genuine first run (<c>New</c>) or a broken install (<c>Failed</c>).
+    /// </param>
+    /// <remarks>
+    /// The ledger is a CONSTRUCTOR parameter rather than a settable property on purpose:
+    /// every construction site becomes a compile error until it supplies one, so the guard
+    /// cannot be forgotten the way <c>suiteName</c> was silently dropped by
+    /// <c>RunSharedSuiteAsync</c>.
+    /// </remarks>
+    public TestRunner(
+        ProcessManager processManager, string workloadsDir, ITestLogger logger, BaselineLedger ledger)
     {
         _processManager = processManager;
         _workloadsDir = workloadsDir;
         _logger = logger;
+        _ledger = ledger;
     }
 
     /// <summary>
@@ -104,8 +123,7 @@ public sealed class TestRunner
     public async Task<TestResult> RunTestAsync(
         TestDefinition testDef,
         WorkloadConfig workload,
-        CancellationToken cancellationToken,
-        string? suiteName = null)
+        CancellationToken cancellationToken)
     {
         var sw = Stopwatch.StartNew();
         var startedUtc = DateTime.UtcNow;
@@ -129,7 +147,7 @@ public sealed class TestRunner
         // GUID-warning phase route into <testDir>\manual-captures\ instead of falling
         // back to %APPDATA%\Canary\captures\. Phase 4.6.E.A.3.
         {
-            var earlyDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
+            var earlyDir = GetTestDirectory(workload.Name, testDef.Name);
             Directory.CreateDirectory(earlyDir);
             testDirSaved = earlyDir;
             Progress?.OnTestDirectoryReady(testDef.Name, earlyDir);
@@ -287,7 +305,7 @@ public sealed class TestRunner
                         _logger.Log($"Checkpoint '{checkpoint.Name}' at {timeMs}ms");
 
                         await DispatchClientCheckpointAsync(
-                            client!, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
+                            client!, checkpoint, testDef.Name, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -324,7 +342,7 @@ public sealed class TestRunner
                     }
 
                     await DispatchClientCheckpointAsync(
-                        client!, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
+                        client!, checkpoint, testDef.Name, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -482,8 +500,7 @@ public sealed class TestRunner
     public async Task<SuiteResult> RunSuiteAsync(
         WorkloadConfig workload,
         IReadOnlyList<TestDefinition> tests,
-        CancellationToken cancellationToken,
-        string? suiteName = null)
+        CancellationToken cancellationToken)
     {
         var suite = new SuiteResult();
 
@@ -491,7 +508,7 @@ public sealed class TestRunner
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await RunTestAsync(test, workload, cancellationToken, suiteName).ConfigureAwait(false);
+            var result = await RunTestAsync(test, workload, cancellationToken).ConfigureAwait(false);
             suite.TestResults.Add(result);
 
             var (symbol, level) = result.Status switch
@@ -614,6 +631,9 @@ public sealed class TestRunner
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var sw = Stopwatch.StartNew();
+                // Phase 2b F2: the shared path captured only a Stopwatch, so it had no
+                // instant to record. RunTestAsync has always taken both.
+                var startedUtc = DateTime.UtcNow;
                 var result = new TestResult
                 {
                     TestName = test.Name,
@@ -621,19 +641,26 @@ public sealed class TestRunner
                     Status = TestStatus.Passed
                 };
 
+                // The test directory is created BEFORE the appDead check, not after.
+                // Previously this early `continue` returned before the directory existed,
+                // so a test that crashed because the app had already died left NO RECORD
+                // AT ALL - the one case where a record matters most.
+                var sharedTestDir = GetTestDirectory(workload.Name, test.Name);
+                Directory.CreateDirectory(sharedTestDir);
+
                 if (appDead)
                 {
                     result.Status = TestStatus.Crashed;
                     result.ErrorMessage = "Application died earlier in shared session.";
                     suite.TestResults.Add(result);
                     LogTestStatus(result);
+                    await SavePerRunArtifactsAsync(result, workload, sharedTestDir, startedUtc, DateTime.UtcNow)
+                        .ConfigureAwait(false);
                     continue;
                 }
 
-                // Pre-create + emit testDir before per-test actions so manual
-                // captures during action execution route correctly. Phase 4.6.E.A.3.
-                var sharedTestDir = GetTestDirectory(workload.Name, test.Name);
-                Directory.CreateDirectory(sharedTestDir);
+                // Emit testDir before per-test actions so manual captures during action
+                // execution route correctly. Phase 4.6.E.A.3.
                 Progress?.OnTestDirectoryReady(test.Name, sharedTestDir);
 
                 try
@@ -675,7 +702,7 @@ public sealed class TestRunner
                             }
 
                             await DispatchClientCheckpointAsync(
-                                client!, checkpoint, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
+                                client!, checkpoint, test.Name, testDir, captureWidth, captureHeight, result, cancellationToken).ConfigureAwait(false);
                         }
 
                         if (test.Asserts.Count > 0 && !appDead)
@@ -723,6 +750,13 @@ public sealed class TestRunner
                 result.Duration = sw.Elapsed;
                 suite.TestResults.Add(result);
                 LogTestStatus(result);
+
+                // Phase 2b F2. Parity with RunTestAsync and RunAgentTestAsync, which have
+                // always written a run record here. The shared path is the DEFAULT for
+                // every test, so the most-used path was the one producing no run history
+                // at all - which is why provenance (Phase 4) could not be built on it.
+                await SavePerRunArtifactsAsync(result, workload, sharedTestDir, startedUtc, DateTime.UtcNow)
+                    .ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -777,8 +811,7 @@ public sealed class TestRunner
         TestDefinition testDef,
         WorkloadConfig workload,
         ICanaryAgent agent,
-        CancellationToken cancellationToken,
-        string? suiteName = null)
+        CancellationToken cancellationToken)
     {
         var sw = Stopwatch.StartNew();
         var startedUtc = DateTime.UtcNow;
@@ -795,7 +828,7 @@ public sealed class TestRunner
         // Pre-create + emit testDir before heartbeat/setup so manual captures
         // during the early test phase route correctly. Phase 4.6.E.A.3.
         {
-            var earlyDir = GetTestDirectory(workload.Name, testDef.Name, suiteName);
+            var earlyDir = GetTestDirectory(workload.Name, testDef.Name);
             Directory.CreateDirectory(earlyDir);
             testDirSaved = earlyDir;
             Progress?.OnTestDirectoryReady(testDef.Name, earlyDir);
@@ -940,8 +973,7 @@ public sealed class TestRunner
         WorkloadConfig workload,
         IReadOnlyList<TestDefinition> tests,
         ICanaryAgent agent,
-        CancellationToken cancellationToken,
-        string? suiteName = null)
+        CancellationToken cancellationToken)
     {
         var suite = new SuiteResult();
 
@@ -949,7 +981,7 @@ public sealed class TestRunner
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await RunAgentTestAsync(test, workload, agent, cancellationToken, suiteName).ConfigureAwait(false);
+            var result = await RunAgentTestAsync(test, workload, agent, cancellationToken).ConfigureAwait(false);
             suite.TestResults.Add(result);
 
             var (symbol, level) = result.Status switch
@@ -1129,7 +1161,7 @@ public sealed class TestRunner
 
         try
         {
-            var candidatePath = Path.Combine(testDir, "candidates", $"{checkpoint.Name}.png");
+            var candidatePath = ResultPaths.CandidateIn(testDir, checkpoint.Name);
             Directory.CreateDirectory(Path.GetDirectoryName(candidatePath)!);
 
             if (string.Equals(checkpoint.Source, "file", StringComparison.OrdinalIgnoreCase))
@@ -1267,7 +1299,7 @@ public sealed class TestRunner
             }
 
             // Default: pixel-diff mode
-            var baselinePath = Path.Combine(testDir, "baselines", $"{checkpoint.Name}.png");
+            var baselinePath = ResultPaths.BaselineIn(testDir, checkpoint.Name);
             cpResult.BaselinePath = baselinePath;
 
             if (!File.Exists(baselinePath))
@@ -1295,7 +1327,7 @@ public sealed class TestRunner
             // Save diff image
             if (compResult.DiffImage != null)
             {
-                var diffPath = Path.Combine(testDir, "diffs", $"{checkpoint.Name}.png");
+                var diffPath = ResultPaths.DiffIn(testDir, checkpoint.Name);
                 Directory.CreateDirectory(Path.GetDirectoryName(diffPath)!);
                 await compResult.DiffImage.SaveAsPngAsync(diffPath, ct).ConfigureAwait(false);
                 cpResult.DiffImagePath = diffPath;
@@ -1433,7 +1465,7 @@ public sealed class TestRunner
 
         try
         {
-            var candidatePath = Path.Combine(testDir, "candidates", $"{checkpoint.Name}.png");
+            var candidatePath = ResultPaths.CandidateIn(testDir, checkpoint.Name);
             Directory.CreateDirectory(Path.GetDirectoryName(candidatePath)!);
 
             if (string.Equals(checkpoint.Source, "file", StringComparison.OrdinalIgnoreCase))
@@ -1557,7 +1589,7 @@ public sealed class TestRunner
             }
 
             // Default: pixel-diff mode
-            var baselinePath = Path.Combine(testDir, "baselines", $"{checkpoint.Name}.png");
+            var baselinePath = ResultPaths.BaselineIn(testDir, checkpoint.Name);
             cpResult.BaselinePath = baselinePath;
 
             if (!File.Exists(baselinePath))
@@ -1585,7 +1617,7 @@ public sealed class TestRunner
             // Save diff image
             if (compResult.DiffImage != null)
             {
-                var diffPath = Path.Combine(testDir, "diffs", $"{checkpoint.Name}.png");
+                var diffPath = ResultPaths.DiffIn(testDir, checkpoint.Name);
                 Directory.CreateDirectory(Path.GetDirectoryName(diffPath)!);
                 await compResult.DiffImage.SaveAsPngAsync(diffPath, ct).ConfigureAwait(false);
                 cpResult.DiffImagePath = diffPath;
@@ -1692,10 +1724,89 @@ public sealed class TestRunner
     /// (1 or 2 invocations), append each result to <paramref name="result"/>,
     /// and roll the test-level status forward.
     /// </summary>
+    /// <summary>
+    /// Refuses a checkpoint that the ledger says must compare, but which cannot.
+    /// </summary>
+    /// <param name="checkpoint">Checkpoint about to run.</param>
+    /// <param name="testName">Owning test.</param>
+    /// <param name="testDir">The test's evidence directory.</param>
+    /// <returns>A <c>Failed</c> result to record instead of running, or null to proceed.</returns>
+    /// <remarks>
+    /// <para>
+    /// Deployment campaign Phase 2b, guard G1+G2. <b>Where this sits is the whole point.</b>
+    /// The obvious home — inside <c>if (!File.Exists(baselinePath))</c> in the checkpoint
+    /// processors — is UNREACHABLE for the case that matters: the
+    /// <c>effective == CheckpointMode.Capture</c> early-return sets <c>Passed</c> and
+    /// returns BEFORE <c>baselinePath</c> is ever computed. So a one-word JSON edit
+    /// (<c>"mode": "capture"</c>) would silently turn a ledgered comparison into a pass
+    /// with the approved image still sitting on disk, and no check written down there could
+    /// fire. This sits in the two dispatch funnels instead, above the mode loop, which are
+    /// the only routes to a checkpoint.
+    /// </para>
+    /// <para>
+    /// <b>Un-ledgered checkpoints are untouched</b> — a genuinely new test still reports
+    /// <c>New</c> at exit 0. And <c>Failed</c> is reused rather than adding a status,
+    /// because the exit code, the JUnit mapping and the report badges already handle it,
+    /// so nothing downstream has to learn a new word.
+    /// </para>
+    /// </remarks>
+    internal CheckpointResult? GateLedgeredCheckpoint(
+        TestCheckpoint checkpoint, string testName, string testDir)
+    {
+        var row = _ledger.Find(testName, checkpoint.Name);
+        if (row is null) return null;
+
+        CheckpointResult Fail(string why) => new()
+        {
+            Name = checkpoint.Name,
+            Status = TestStatus.Failed,
+            Tolerance = checkpoint.Tolerance,
+            ErrorMessage = why,
+        };
+
+        // 1. The DECLARATION must still be a pixel comparison. This looks only at the
+        //    checkpoint's own mode, never at ModeOverride: flipping a checkpoint to
+        //    capture/vlm in content disarms it permanently and silently, whereas
+        //    `--mode vlm` is one operator asking for one different run.
+        if (!CheckpointArming.IsArmedForPixelDiff(checkpoint))
+        {
+            return Fail(
+                $"ledgered {row.ApprovedUtc} as '{row.Mode}' but the checkpoint now declares " +
+                $"mode '{checkpoint.Mode}', which runs no comparison. A ledgered baseline cannot " +
+                "be disarmed silently - remove the ledger row deliberately if that is intended.");
+        }
+
+        // 2. The approved image must be where this run will read it - but only assert that
+        //    when this run is actually going to compare pixels. Failing a deliberate
+        //    `--mode vlm` sweep over a missing pixel baseline would be noise unrelated to
+        //    what that run is testing.
+        if (!ResolveEffectiveModes(checkpoint).Contains(CheckpointMode.PixelDiff))
+            return null;
+
+        var baseline = ResultPaths.BaselineIn(testDir, checkpoint.Name);
+        if (!File.Exists(baseline))
+        {
+            return Fail(
+                $"baseline ledgered {row.ApprovedUtc} but not found at {baseline}. " +
+                "This is a broken install, not a new test - reporting New here would print a pass " +
+                "while comparing nothing.");
+        }
+
+        return null;
+    }
+
     private async Task DispatchClientCheckpointAsync(
-        HarnessClient client, TestCheckpoint checkpoint, string testDir,
+        HarnessClient client, TestCheckpoint checkpoint, string testName, string testDir,
         int captureWidth, int captureHeight, TestResult result, CancellationToken ct)
     {
+        var gate = GateLedgeredCheckpoint(checkpoint, testName, testDir);
+        if (gate != null)
+        {
+            result.CheckpointResults.Add(gate);
+            EscalateStatus(result, gate);
+            return;
+        }
+
         foreach (var mode in ResolveEffectiveModes(checkpoint))
         {
             var cpResult = await ProcessCheckpointAsync(
@@ -1712,6 +1823,14 @@ public sealed class TestRunner
         ICanaryAgent agent, TestCheckpoint checkpoint, string testName, string testDir,
         int captureWidth, int captureHeight, TestResult result, CancellationToken ct)
     {
+        var gate = GateLedgeredCheckpoint(checkpoint, testName, testDir);
+        if (gate != null)
+        {
+            result.CheckpointResults.Add(gate);
+            EscalateStatus(result, gate);
+            return;
+        }
+
         foreach (var mode in ResolveEffectiveModes(checkpoint))
         {
             var cpResult = await ProcessAgentCheckpointAsync(
@@ -1820,7 +1939,7 @@ public sealed class TestRunner
             if (comparisons.Count == 0) return null;
 
             var compositeBuilder = new CompositeBuilder();
-            var compositePath = Path.Combine(testDir, "composite.png");
+            var compositePath = ResultPaths.CompositeIn(testDir);
             await compositeBuilder.SaveAsync(comparisons, compositePath).ConfigureAwait(false);
             return compositePath;
         }
@@ -1851,12 +1970,8 @@ public sealed class TestRunner
         return direct;
     }
 
-    private string GetTestDirectory(string workloadName, string testName, string? suiteName = null)
-    {
-        if (suiteName != null)
-            return Path.Combine(_workloadsDir, workloadName, "results", suiteName, testName);
-        return Path.Combine(_workloadsDir, workloadName, "results", testName);
-    }
+    private string GetTestDirectory(string workloadName, string testName)
+        => ResultPaths.TestDir(_workloadsDir, workloadName, testName);
 
     // Phase 3 / §C2 — per-run dir layout. Writes the run's result.json +
     // REPORT.md into `<testDir>/runs/<timestamp>/`. Baselines, candidates,
@@ -1876,7 +1991,7 @@ public sealed class TestRunner
         try
         {
             var runId = GenerateRunId(startedUtc);
-            var runDir = Path.Combine(testDir, "runs", runId);
+            var runDir = ResultPaths.RunIn(testDir, runId);
             Directory.CreateDirectory(runDir);
 
             await TestResultSerializer.SaveAsync(result, Path.Combine(runDir, "result.json")).ConfigureAwait(false);
@@ -1896,9 +2011,15 @@ public sealed class TestRunner
                     },
                     StartedUtc = startedUtc,
                     FinishedUtc = finishedUtc,
-                    // From <test>/runs/<timestamp>/REPORT.md, the per-suite
-                    // telemetry sink sits three levels up.
-                    TelemetryNdjsonRelativePath = "../../../telemetry.ndjson",
+                    // COMPUTED, not assumed. This was hard-coded to "../../../telemetry.ndjson",
+                    // which from results/<test>/runs/<ts>/ resolves to results/telemetry.ndjson
+                    // while a suite run writes results/<suite>/telemetry.ndjson - and BOTH files
+                    // exist on disk, so the wrong link silently opened a stale, unrelated run's
+                    // telemetry rather than failing visibly. Omitted entirely when the sink
+                    // writes no file (every UI run uses NullTelemetrySink).
+                    TelemetryNdjsonRelativePath = TelemetrySink is NdjsonFileSink ndjson
+                        ? Path.GetRelativePath(runDir, ndjson.FilePath).Replace('\\', '/')
+                        : null,
                 },
                 Path.Combine(runDir, "REPORT.md")).ConfigureAwait(false);
         }

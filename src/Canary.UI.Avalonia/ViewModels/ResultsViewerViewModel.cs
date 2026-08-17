@@ -138,11 +138,20 @@ public partial class ResultsViewerViewModel : ObservableObject
         StatusText = message;
     }
 
-    public void SetContext(string workloadsDir, string workloadName, string? suiteName)
+    /// <summary>Sets the workload context for approve / reject.</summary>
+    /// <param name="workloadsDir">Workloads root.</param>
+    /// <param name="workloadName">Workload name.</param>
+    /// <param name="runDir">
+    /// A run directory name (<c>runs/&lt;timestamp&gt;</c>) when the viewer is showing a
+    /// PAST run, else null. One field used to carry both this and a suite name; since
+    /// Phase 2b removed suite scoping from baseline paths, a run directory is all it ever
+    /// legitimately held.
+    /// </param>
+    public void SetContext(string workloadsDir, string workloadName, string? runDir)
     {
         _workloadsDir = workloadsDir;
         ActiveWorkloadName = workloadName;
-        ActiveSuiteName = suiteName;
+        ActiveSuiteName = runDir;
     }
 
     public void LoadResult(TestResult result)
@@ -204,7 +213,7 @@ public partial class ResultsViewerViewModel : ObservableObject
         if (card == null || _workloadsDir == null || ActiveWorkloadName == null) return;
         try
         {
-            BaselineManager.ApproveCheckpoint(_workloadsDir, ActiveWorkloadName, card.TestName, card.Name, ActiveSuiteName);
+            BaselineManager.ApproveCheckpoint(_workloadsDir, ActiveWorkloadName, card.TestName, card.Name);
             card.Resolved = true;
             card.ResolutionLabel = "✓ Approved";
             card.ResolutionColor = "#3CC850";
@@ -222,7 +231,7 @@ public partial class ResultsViewerViewModel : ObservableObject
         if (card == null || _workloadsDir == null || ActiveWorkloadName == null) return;
         try
         {
-            BaselineManager.RejectCheckpoint(_workloadsDir, ActiveWorkloadName, card.TestName, card.Name, ActiveSuiteName);
+            BaselineManager.RejectCheckpoint(_workloadsDir, ActiveWorkloadName, card.TestName, card.Name);
             card.Resolved = true;
             card.ResolutionLabel = "✗ Rejected";
             card.ResolutionColor = "#DC3C3C";
@@ -248,7 +257,7 @@ public partial class ResultsViewerViewModel : ObservableObject
         {
             try
             {
-                count += BaselineManager.ApproveTest(_workloadsDir, ActiveWorkloadName, byTest.Key, ActiveSuiteName);
+                count += BaselineManager.ApproveTest(_workloadsDir, ActiveWorkloadName, byTest.Key);
                 foreach (var c in byTest)
                 {
                     c.Resolved = true;
@@ -291,9 +300,9 @@ public partial class ResultsViewerViewModel : ObservableObject
         {
             foreach (var testName in Cards.Select(c => c.TestName).Distinct())
             {
-                var testDir = Path.Combine(_workloadsDir, ActiveWorkloadName, "results", testName);
+                var testDir = ResultPaths.TestDir(_workloadsDir, ActiveWorkloadName, testName);
                 if (!Directory.Exists(testDir)) continue;
-                var archiveRoot = Path.Combine(testDir, "archived", slot);
+                var archiveRoot = ResultPaths.SnapshotIn(testDir, slot);
                 if (@override && Directory.Exists(archiveRoot))
                 {
                     try { Directory.Delete(archiveRoot, recursive: true); }
@@ -305,7 +314,7 @@ public partial class ResultsViewerViewModel : ObservableObject
                 // (past-run view), pull from runs/<ts>/. Otherwise from the
                 // test's top-level state (fresh in-session run).
                 string sourceBase = LooksLikeTimestampDir(ActiveSuiteName)
-                    ? Path.Combine(testDir, "runs", ActiveSuiteName!)
+                    ? ResultPaths.RunIn(testDir, ActiveSuiteName!)
                     : testDir;
 
                 foreach (var sub in new[] { "candidates", "manual-captures", "logs" })
@@ -325,7 +334,7 @@ public partial class ResultsViewerViewModel : ObservableObject
                 // result.json sitting in sourceBase via the *.json copy above.
                 if (!LooksLikeTimestampDir(ActiveSuiteName))
                 {
-                    var runsDir = Path.Combine(testDir, "runs");
+                    var runsDir = ResultPaths.RunsIn(testDir);
                     if (Directory.Exists(runsDir))
                     {
                         var latestRun = Directory.GetDirectories(runsDir)

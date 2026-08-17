@@ -61,7 +61,7 @@ internal sealed class ListRecentRunsTool : McpTool
             if (workloadFilter != null && !string.Equals(workloadName, workloadFilter, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            var resultsDir = Path.Combine(workloadDir, "results");
+            var resultsDir = Path.Combine(workloadDir, "results");   // depth-tolerant scan, not a derivation
             if (!Directory.Exists(resultsDir)) continue;
 
             foreach (var reportPath in Directory.EnumerateFiles(resultsDir, "REPORT.md", SearchOption.AllDirectories))

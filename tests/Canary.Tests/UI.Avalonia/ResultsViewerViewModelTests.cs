@@ -74,7 +74,7 @@ public class ResultsViewerViewModelTests
             File.WriteAllBytes(pngPath, new byte[] { 0x89, 0x50 });
 
             var vm = new ResultsViewerViewModel();
-            vm.SetContext(root, "qualia", suiteName: null);
+            vm.SetContext(root, "qualia", runDir: null);
             vm.LoadResult(FakeTestResult("smoke", ("home", TestStatus.Failed)));
             var card = vm.Cards[0];
             vm.ApproveCheckpointCommand.Execute(card);
@@ -101,7 +101,7 @@ public class ResultsViewerViewModelTests
             File.WriteAllBytes(pngPath, new byte[] { 0x89, 0x50 });
 
             var vm = new ResultsViewerViewModel();
-            vm.SetContext(root, "qualia", suiteName: null);
+            vm.SetContext(root, "qualia", runDir: null);
             vm.LoadResult(FakeTestResult("smoke", ("home", TestStatus.Failed)));
             var card = vm.Cards[0];
             vm.RejectCheckpointCommand.Execute(card);

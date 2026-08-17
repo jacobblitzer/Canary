@@ -255,7 +255,7 @@ public partial class TestsViewModel : ObservableObject
             {
                 foreach (var name in sd.Tests)
                 {
-                    try { BaselineManager.ApproveTest(Tree.WorkloadsDir, node.OwningWorkload.Config.Name, name, sd.Name); }
+                    try { BaselineManager.ApproveTest(Tree.WorkloadsDir, node.OwningWorkload.Config.Name, name); }
                     catch { /* missing candidates for some tests — keep going */ }
                 }
             }

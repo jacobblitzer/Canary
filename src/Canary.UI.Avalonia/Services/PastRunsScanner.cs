@@ -58,11 +58,11 @@ public static class PastRunsScanner
         var rows = new List<PastRunRow>();
         if (string.IsNullOrEmpty(workloadsDir)) return rows;
 
-        var testDir = Path.Combine(workloadsDir, workloadName, "results", testName);
+        var testDir = Canary.Orchestration.ResultPaths.TestDir(workloadsDir, workloadName, testName);
         if (!Directory.Exists(testDir)) return rows;
 
-        await ScanKindAsync(rows, Path.Combine(testDir, "runs"), RowKind.Run).ConfigureAwait(false);
-        await ScanKindAsync(rows, Path.Combine(testDir, "archived"), RowKind.Snapshot).ConfigureAwait(false);
+        await ScanKindAsync(rows, Canary.Orchestration.ResultPaths.RunsIn(testDir), RowKind.Run).ConfigureAwait(false);
+        await ScanKindAsync(rows, Path.Combine(testDir, Canary.Orchestration.ResultPaths.ArchivedDir), RowKind.Snapshot).ConfigureAwait(false);
 
         // Newest first by timestamp prefix. Runs have an extra -<hex> suffix
         // that sorts after the bare hms in snapshots, so a same-timestamp

@@ -213,7 +213,7 @@ public static class RunCommand
 
         try
         {
-            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct, suiteName).ConfigureAwait(false);
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct).ConfigureAwait(false);
         }
         finally
         {
@@ -249,7 +249,7 @@ public static class RunCommand
 
         try
         {
-            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct, suiteName).ConfigureAwait(false);
+            return await runner.RunAgentSuiteAsync(workload, tests, agent, ct).ConfigureAwait(false);
         }
         finally
         {
@@ -301,7 +301,22 @@ public static class RunCommand
 
         try
         {
-            var runner = new TestRunner(pm, workloadsDir, logger)
+            // Phase 2b G3, and it runs BEFORE the application launches: an absent ledger is
+            // not an empty ledger. If a missing file meant "nothing is armed", deleting it -
+            // or shipping a payload that omits it - would disable the guard while every run
+            // still printed a pass.
+            BaselineLedger ledger;
+            try
+            {
+                ledger = BaselineLedger.LoadRequired(workloadsDir, workloadName);
+            }
+            catch (Exception lex) when (lex is FileNotFoundException or InvalidDataException)
+            {
+                logger.Log($"Error: {lex.Message}");
+                return 1;
+            }
+
+            var runner = new TestRunner(pm, workloadsDir, logger, ledger)
             {
                 ModeOverride = modeOverride
             };
@@ -311,9 +326,7 @@ public static class RunCommand
             // Phase 2 / §C1: per-suite telemetry sink. Writes to
             // results/[<suite>/]telemetry.ndjson alongside the existing
             // result.json. Phase 3 will move both into runs/<timestamp>/.
-            var telemetryDir = suiteName != null
-                ? Path.Combine(workloadsDir, workloadName, "results", suiteName)
-                : Path.Combine(workloadsDir, workloadName, "results");
+            var telemetryDir = ResultPaths.RollupDir(workloadsDir, workloadName, suiteName);
             Directory.CreateDirectory(telemetryDir);
             var telemetryPath = Path.Combine(telemetryDir, "telemetry.ndjson");
             using var telemetrySink = new NdjsonFileSink(telemetryPath);
@@ -394,7 +407,7 @@ public static class RunCommand
             }
             else
             {
-                suiteResult = await runner.RunSuiteAsync(workload, tests, ct, suiteName).ConfigureAwait(false);
+                suiteResult = await runner.RunSuiteAsync(workload, tests, ct).ConfigureAwait(false);
             }
 
             // Auto-enable keepOpen if any failed/crashed test requested it
@@ -407,8 +420,8 @@ public static class RunCommand
 
             // Generate reports — scoped under suite name when running a suite
             var resultsDir = suiteName != null
-                ? Path.Combine(workloadsDir, workloadName, "results", suiteName)
-                : Path.Combine(workloadsDir, workloadName, "results");
+                ? ResultPaths.RollupDir(workloadsDir, workloadName, suiteName)
+                : ResultPaths.RollupDir(workloadsDir, workloadName, null);
             Directory.CreateDirectory(resultsDir);
 
             var htmlPath = Path.Combine(resultsDir, "report.html");

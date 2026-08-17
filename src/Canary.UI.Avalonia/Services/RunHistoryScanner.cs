@@ -48,7 +48,7 @@ public static class RunHistoryScanner
         {
             // Same workload test as WorkloadExplorer — skip non-workload dirs.
             if (!File.Exists(Path.Combine(workloadDir, "workload.json"))) continue;
-            var resultsDir = Path.Combine(workloadDir, "results");
+            var resultsDir = Path.Combine(workloadDir, "results");   // depth-tolerant legacy scan, not a derivation
             if (!Directory.Exists(resultsDir)) continue;
             var workloadName = Path.GetFileName(workloadDir);
 

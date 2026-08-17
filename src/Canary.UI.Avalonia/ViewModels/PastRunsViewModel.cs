@@ -39,7 +39,7 @@ public sealed partial class PastRunsViewModel : ObservableObject
         _workloadsDir = workloadsDir;
         _workloadName = workloadName;
         _testName = testName;
-        Results.SetContext(workloadsDir, workloadName, suiteName: null);
+        Results.SetContext(workloadsDir, workloadName, runDir: null);
         await ReloadAsync().ConfigureAwait(true);
     }
 
@@ -70,13 +70,14 @@ public sealed partial class PastRunsViewModel : ObservableObject
     partial void OnSelectedRunChanged(PastRunsScanner.PastRunRow? value)
     {
         if (value == null) return;
-        // The orchestrator writes baselines under `runs/<ts>/baselines/`
-        // when BaselineManager is given suiteName=<timestamp>. Use the
-        // timestamp dir name as the suite-name override so Approve targets
-        // the right past-run directory rather than the test's top-level
-        // baselines folder.
+        // The comment that used to be here claimed the orchestrator writes baselines
+        // under `runs/<ts>/baselines/`. It does not, and never did: passing a timestamp as
+        // suiteName resolved to `results/<timestamp>/<test>/`, which nothing creates - so
+        // Approve from this panel could not have worked. A baseline has exactly one home,
+        // `results/<test>/baselines/`, and approving from a past run correctly updates it.
+        // The run directory is still passed so the viewer can source THAT run's images.
         if (_workloadsDir != null && _workloadName != null)
-            Results.SetContext(_workloadsDir, _workloadName, suiteName: value.TimestampDir);
+            Results.SetContext(_workloadsDir, _workloadName, runDir: value.TimestampDir);
         _ = Results.LoadFromPathAsync(value.ResultJsonPath);
     }
 }

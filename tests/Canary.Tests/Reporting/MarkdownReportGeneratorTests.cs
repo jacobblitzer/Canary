@@ -83,10 +83,25 @@ public class MarkdownReportGeneratorTests
         };
         var md = MarkdownReportGenerator.Generate(result, DefaultOptions());
 
-        // Relative to <test>/runs/<timestamp>/REPORT.md — images live one level up.
-        Assert.Contains("[baseline](../baselines/init.png)", md);
-        Assert.Contains("[candidate](../candidates/init.png)", md);
-        Assert.Contains("[diff](../diffs/init.png)", md);
+        // REPORT.md lives at <test>/runs/<timestamp>/, so the images at <test>/ are TWO
+        // levels up. This test asserted "../" for the life of the file and so PINNED the
+        // bug: 0 of 1,192 REPORT.md files on disk had a resolvable ../candidates, while
+        // 1,092 had a resolvable ../../candidates. RunsTools hands this Markdown to Claude
+        // verbatim, so the dead links were being read as well as written.
+        Assert.Contains("[baseline](../../baselines/init.png)", md);
+        Assert.Contains("[candidate](../../candidates/init.png)", md);
+        Assert.Contains("[diff](../../diffs/init.png)", md);
+
+        // And prove the depth against a real tree rather than a string, so a future edit
+        // cannot re-introduce the bug by changing both the emitter and the expectation.
+        var testDir = Path.Combine(Path.GetTempPath(), "canary-md-" + Guid.NewGuid().ToString("N")[..8]);
+        var runDir = Path.Combine(testDir, "runs", "20260817-120000-abcd1234");
+        Directory.CreateDirectory(runDir);
+        Directory.CreateDirectory(Path.Combine(testDir, "baselines"));
+        File.WriteAllText(Path.Combine(testDir, "baselines", "init.png"), "x");
+
+        var linked = Path.GetFullPath(Path.Combine(runDir, "../../baselines/init.png"));
+        Assert.True(File.Exists(linked), $"the emitted depth must resolve; got {linked}");
     }
 
     [Trait("Category", "Unit")]

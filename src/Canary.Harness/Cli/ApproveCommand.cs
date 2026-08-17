@@ -14,11 +14,11 @@ namespace Canary.Cli;
 ///   canary approve --workload rhino --suite cpig-display-matrix           (every test in the suite JSON)
 ///   canary approve --workload rhino --suite s --test t                    (one test, suite-scoped path)
 ///
-/// Path semantics: single-test and suite-scoped forms use BaselineManager's layout
-/// (results/[&lt;suite&gt;/]&lt;test&gt;/). Bulk-suite mode tries the suite-scoped path first and falls
-/// back to the SHARED layout (results/&lt;test&gt;/ with no suite dir) — shared-runMode suites
-/// (all rhino suites) write per-test artifacts there (TestRunner.RunSharedSuite passes no
-/// suiteName to GetTestDirectory).
+/// Path semantics (Phase 2b): there is ONE layout, results/&lt;test&gt;/, derived by
+/// <see cref="Canary.Orchestration.ResultPaths"/>. <c>--suite</c> selects WHICH tests to
+/// bless and never affects WHERE the images go. The previous nested-then-flat fallback is
+/// gone: it blessed at whichever layout it found and returned success, which would turn a
+/// half-applied migration into a silent pass.
 /// </summary>
 public static class ApproveCommand
 {
@@ -84,8 +84,10 @@ public static class ApproveCommand
 
     private static int ApproveSingle(string workloadsDir, string workload, string test, string? suite)
     {
-        var files = BaselineManager.ApproveTestFiles(workloadsDir, workload, test, suite);
-        var label = suite != null ? $"test '{test}' (suite '{suite}')" : $"test '{test}'";
+        var files = BaselineManager.ApproveTestFiles(workloadsDir, workload, test);
+        // The suite, when given, is a SELECTOR - it says which tests to bless, never where
+        // the images go. Phase 2b removed it from the path.
+        var label = suite != null ? $"test '{test}' (selected via suite '{suite}')" : $"test '{test}'";
         if (files.Length == 0)
         {
             Program.Log($"No candidates found for {label} — nothing to approve.");
@@ -123,19 +125,18 @@ public static class ApproveCommand
         int approvedTotal = 0, testsBlessed = 0, testsSkipped = 0;
         foreach (var test in tests)
         {
-            // Suite-scoped layout first (per-test-launch suites), then the SHARED layout
-            // (results/<test>/ — every shared-runMode rhino suite writes there).
+            // ONE layout, so no fallback. The nested-then-flat probe that used to live here
+            // was load-bearing only while two layouts existed - and it was dangerous: it
+            // blessed at whichever layout it happened to find and returned 0, which would
+            // convert a half-applied migration into a silent success. Exactly the failure
+            // this phase exists to make impossible.
             string[] files;
-            try { files = BaselineManager.ApproveTestFiles(workloadsDir, workload, test, suite); }
+            try { files = BaselineManager.ApproveTestFiles(workloadsDir, workload, test); }
             catch (DirectoryNotFoundException)
             {
-                try { files = BaselineManager.ApproveTestFiles(workloadsDir, workload, test, suiteName: null); }
-                catch (DirectoryNotFoundException)
-                {
-                    Program.Log($"  - {test}: no candidates (test not run?) — skipped.");
-                    testsSkipped++;
-                    continue;
-                }
+                Program.Log($"  - {test}: no candidates (test not run?) — skipped.");
+                testsSkipped++;
+                continue;
             }
             if (files.Length == 0)
             {

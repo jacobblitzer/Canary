@@ -124,8 +124,8 @@ public static class MarkdownReportGenerator
         sb.AppendLine("- `result.json` — typed verdict (input to UI / CI tooling)");
         if (!string.IsNullOrEmpty(options.TelemetryNdjsonRelativePath))
             sb.Append("- [`").Append(options.TelemetryNdjsonRelativePath).Append("`](").Append(options.TelemetryNdjsonRelativePath).AppendLine(") — full event stream (input to Claude / MCP server)");
-        sb.AppendLine("- `../composite.png` — baseline | candidate | diff strips (if generated; overwrites per run)");
-        sb.AppendLine("- `../candidates/`, `../diffs/`, `../baselines/` — per-checkpoint images at the test level (Phase 3 keeps these flat; rerun overwrites)");
+        sb.AppendLine("- `../../composite.png` — baseline | candidate | diff strips (if generated; overwrites per run)");
+        sb.AppendLine("- `../../candidates/`, `../../diffs/`, `../../baselines/` — per-checkpoint images at the test level (Phase 3 keeps these flat; rerun overwrites)");
         sb.AppendLine();
 
         return sb.ToString();
@@ -174,14 +174,18 @@ public static class MarkdownReportGenerator
     private static string RenderCheckpointLinks(CheckpointResult cp)
     {
         // Per Phase 3 layout: REPORT.md lives at runs/<timestamp>/; images
-        // are one level up at the test dir. Links use ../<dir>/.
+        // are TWO levels up at the test dir: REPORT.md lives at <test>/runs/<ts>/.
+        // These emitted ../ for the whole life of the file, contradicting the header
+        // comment above, so every image link in every REPORT.md ever generated was dead -
+        // 0 of 1,192 resolved ../candidates, 1,092 resolved ../../candidates. RunsTools
+        // hands this Markdown to Claude verbatim, so the dead links were being read too.
         var parts = new List<string>();
         if (!string.IsNullOrEmpty(cp.BaselinePath))
-            parts.Add($"[baseline](../baselines/{cp.Name}.png)");
+            parts.Add($"[baseline](../../baselines/{cp.Name}.png)");
         if (!string.IsNullOrEmpty(cp.CandidatePath))
-            parts.Add($"[candidate](../candidates/{cp.Name}.png)");
+            parts.Add($"[candidate](../../candidates/{cp.Name}.png)");
         if (!string.IsNullOrEmpty(cp.DiffImagePath))
-            parts.Add($"[diff](../diffs/{cp.Name}.png)");
+            parts.Add($"[diff](../../diffs/{cp.Name}.png)");
         return parts.Count == 0 ? "—" : string.Join(" · ", parts);
     }
 

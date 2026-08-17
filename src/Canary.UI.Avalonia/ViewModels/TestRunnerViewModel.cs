@@ -123,7 +123,21 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
 
         try
         {
-            var runner = new TestRunner(_pm, request.WorkloadsDir, logger)
+            // Phase 2b G3: fail closed before launching anything. Same rule as the CLI -
+            // an absent ledger is not an empty ledger.
+            BaselineLedger ledger;
+            try
+            {
+                ledger = BaselineLedger.LoadRequired(request.WorkloadsDir, request.Workload.Name);
+            }
+            catch (Exception lex) when (lex is FileNotFoundException or InvalidDataException)
+            {
+                Append($"ERROR {lex.Message}");
+                StatusText = "Refused: no usable baselines.lock.json";
+                return;
+            }
+
+            var runner = new TestRunner(_pm, request.WorkloadsDir, logger, ledger)
             {
                 Progress = this,
                 ModeOverride = ModeOverride,
@@ -141,7 +155,10 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             else
                 suite = await Task.Run(() => runner.RunSuiteAsync(request.Workload, request.Tests, _cts.Token), _cts.Token).ConfigureAwait(true);
 
-            StatusText = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed";
+            // New is REPORTED here. It was omitted, so an all-New suite - the exact shape of
+            // a broken install - read "Done: 0 passed, 0 failed, 0 crashed" on the canonical
+            // operator path and looked like a clean run that simply had nothing to do.
+            StatusText = $"Done: {suite.Passed} passed, {suite.Failed} failed, {suite.Crashed} crashed, {suite.New} new";
             ProgressValue = ProgressMax;
 
             // Operator's toolbar checkbox keeps the app open no matter the outcome.
@@ -157,7 +174,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
 
             try
             {
-                var resultsDir = Path.Combine(request.WorkloadsDir, request.Workload.Name, "results");
+                var resultsDir = ResultPaths.RollupDir(request.WorkloadsDir, request.Workload.Name, request.SuiteName);
                 Directory.CreateDirectory(resultsDir);
                 var htmlPath = Path.Combine(resultsDir, "report.html");
                 await HtmlReportGenerator.SaveAsync(suite, request.Workload.DisplayName, htmlPath).ConfigureAwait(true);
@@ -305,7 +322,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
             foreach (var testDir in _lastRunTestDirs)
             {
                 if (!Directory.Exists(testDir)) { skipped++; continue; }
-                var archiveRoot = Path.Combine(testDir, "archived", slot);
+                var archiveRoot = ResultPaths.SnapshotIn(testDir, slot);
                 if (@override && Directory.Exists(archiveRoot))
                 {
                     try { Directory.Delete(archiveRoot, recursive: true); }
@@ -345,7 +362,7 @@ public partial class TestRunnerViewModel : ObservableObject, ITestProgressEvents
 
     private static void CopyLatestRunResultJson(string testDir, string archiveRoot)
     {
-        var runsDir = Path.Combine(testDir, "runs");
+        var runsDir = ResultPaths.RunsIn(testDir);
         if (!Directory.Exists(runsDir)) return;
         var latestRun = Directory.GetDirectories(runsDir)
             .OrderByDescending(d => Path.GetFileName(d), StringComparer.Ordinal)

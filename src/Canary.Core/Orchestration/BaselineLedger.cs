@@ -221,21 +221,21 @@ public sealed class BaselineLedger
     /// <param name="layout">Which rule to apply.</param>
     /// <returns>The resolved path, or null when nothing is there.</returns>
     /// <remarks>
-    /// TODO(phase-2b-C3): when <c>ResultPaths</c> lands as the sole derivation, the
-    /// <see cref="LedgerLayout.Flat"/> branch must delegate to
-    /// <c>ResultPaths.BaselinePath</c> rather than composing a path here, and
-    /// <see cref="LedgerLayout.Dual"/> becomes legacy-read only. Leaving a second
-    /// composition site behind would be the very thing the single-derivation guard
-    /// exists to catch.
+    /// The <see cref="LedgerLayout.Flat"/> answer is <see cref="ResultPaths"/>'s and only
+    /// its — this class composes no path of its own (TODO(phase-2b-C3), redeemed).
+    /// <see cref="LedgerLayout.Dual"/> survives as a LEGACY-READ mode: it is what let the
+    /// ledger be locked green under the pre-cutover code, which is the only reason the
+    /// migration could be proven safe before it ran. It has no other use, and nothing on
+    /// the run path calls it.
     /// </remarks>
     public static string? ResolveBaseline(
         string workloadsDir, string workload, string test, string checkpoint, LedgerLayout layout)
     {
-        var results = Path.Combine(workloadsDir, workload, "results");
-
-        var flat = Path.Combine(results, test, "baselines", $"{checkpoint}.png");
+        var flat = ResultPaths.BaselinePath(workloadsDir, workload, test, checkpoint);
         if (File.Exists(flat)) return flat;
         if (layout == LedgerLayout.Flat) return null;
+
+        var results = ResultPaths.ResultsRoot(workloadsDir, workload);
 
         if (!Directory.Exists(results)) return null;
         foreach (var dir in Directory.EnumerateDirectories(results))
@@ -269,7 +269,7 @@ public sealed class BaselineLedger
         if (!Directory.Exists(testsDir))
             return new LedgerScan(rows, 0, 0, 0, 0, 0, 0, unparsable);
 
-        var resultsPrefix = Path.Combine(workloadsDir, workload, "results") + Path.DirectorySeparatorChar;
+        var resultsPrefix = ResultPaths.ResultsRoot(workloadsDir, workload) + Path.DirectorySeparatorChar;
 
         foreach (var file in Directory.GetFiles(testsDir, "*.json").OrderBy(f => f, StringComparer.Ordinal))
         {

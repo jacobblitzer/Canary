@@ -389,6 +389,38 @@ see it and `doctor` names it.
 - Installed-application paths under `Program Files` are exempt too: identical on every
   Windows machine that has the app, so tokenizing buys ceremony and no portability.
 
+### The result-path contract (Phase 2b C3)
+
+**A test's evidence directory is a pure function of (workload, test). It never contains a
+suite segment. A suite owns only its rollups.** One derivation, `ResultPaths`:
+
+| thing | path |
+|---|---|
+| test evidence | `results/<test>/` |
+| baselines / candidates / diffs | `results/<test>/{baselines,candidates,diffs}/<checkpoint>.png` |
+| per-run record | `results/<test>/runs/<stamp>/{result.json,REPORT.md}` |
+| snapshots | `results/<test>/archived/<slot>/` |
+| suite rollups | `results/<suite>/{report.html,junit.xml,telemetry.ndjson}` |
+| no-suite rollups | `results/{report.html,…}` |
+
+`--suite` is a **selector and a rollup name**. It never reaches a test's evidence path —
+including in `canary approve`, whose nested-then-flat fallback is deleted (it blessed at
+whichever layout it found and returned success, which would convert a half-applied
+migration into a silent pass). There is **no nullable suite parameter** anywhere in the
+chain: the old helpers keyed off `suiteName != null`, and because `Path.Combine` drops
+empty segments, `""` read as "a suite was supplied" and silently produced the unscoped
+path. `SingleResultDerivationTests` fails on any new `"results"` composition outside
+`ResultPaths.cs`; a genuinely depth-tolerant *scan* of an existing tree is exempt and must
+say `not a derivation` on the line.
+
+**The arming gate sits in the two dispatch funnels, above the mode loop — placement is the
+point.** The obvious home, inside `if (!File.Exists(baselinePath))`, is unreachable for the
+case that matters: the `mode == Capture` early-return sets `Passed` and returns *before*
+`baselinePath` is computed, so `"mode": "capture"` would silently disarm a ledgered
+comparison with the approved image still on disk. A ledgered checkpoint that is absent, or
+whose **content** now declares capture/vlm, is `Failed`. A `--mode` **flag** is not a
+disarm — one operator, one run — and does not trip it. Un-ledgered stays `New` at exit 0.
+
 ### The baseline ledger (Phase 2b)
 
 `workloads/<w>/baselines.lock.json` is the **git-tracked** record of which checkpoints
