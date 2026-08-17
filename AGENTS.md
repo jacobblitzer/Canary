@@ -2,12 +2,9 @@
 
 > **What this is.** Canary — cross-application visual regression testing harness
 > (pixel-diff + VLM modes, Rhino + web workloads, supervised sessions + flight
-> recorder). This file is the **front door**: the must-know rules
-> plus a map to the depth. It is kept **under the ~8,000-character auto-load limit
-> on purpose** so it always loads in full. Anything longer lives in [`spec/`](spec/)
-> and [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) — the map below tells you which file to
-> open for what you're doing. **Read the file the map points you to before doing
-> that kind of work.**
+> recorder). This file is the **front door**: must-know rules plus a map to the
+> depth in [`spec/`](spec/) and [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md). **Read the
+> file the map points you to before doing that kind of work.**
 > **Editing this file: keep it under 7,900 chars** — move depth to `AGENTS-DETAIL.md`; a size
 > guard alarms via `MultiVerse/GOVERNANCE-ALERTS.md` on breach.
 
@@ -41,6 +38,7 @@
 - **Build:** `dotnet build Canary.sln` — must be **0 errors, 0 warnings**.
 - **Drive payload:** only via `scripts/publish-payload.ps1` → `verify-payload.ps1` (§ Payload).
 - **Unit tests:** `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`.
+- **`canary doctor`** — run before trusting a run on a machine you did not set up: root, tokens, and **every** test a suite declares; exit 1 if not. Short suite = hard failure (§ Doctor).
 - **GUI:** kill→build→launch the built exe, NOT `dotnet run` (backgrounds wrong): `taskkill //IM Canary.UI.exe //F` → build Release → `start "" "src/Canary.UI.Avalonia/bin/Release/net8.0-windows/Canary.UI.exe"` (§ Repro).
 - **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8):** **when the operator says "run canary", do NOT pass `--headless`** — they mean the UI-visible default `canary run --workload <w> [--test <t> | --suite <s>]`. `--headless` is for CI and for your own agent-internal verification (the UI launch flakes from agent sessions); `--quiet` implies it. Full text → § UI-first runs.
 - **Keep-open:** runs close the app when done; `--test` without `--headless` now keeps it open automatically (inspection run); `--keep-open` forces it anywhere. Full semantics -> [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § Keep-open.

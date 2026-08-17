@@ -75,6 +75,7 @@ public static class Program
         rootCommand.AddCommand(Cli.ApproveCommand.Create());
         rootCommand.AddCommand(Cli.ReportCommand.Create());
         rootCommand.AddCommand(Cli.SessionCommand.Create());
+        rootCommand.AddCommand(Cli.DoctorCommand.Create());
 
         return rootCommand;
     }

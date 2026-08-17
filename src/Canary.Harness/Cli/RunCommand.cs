@@ -336,8 +336,22 @@ public static class RunCommand
                 // Run named suite
                 try
                 {
-                    var (suite, suiteTests) = await TestDiscovery.DiscoverTestsForSuiteAsync(
+                    var (suite, suiteTests, missingTests) = await TestDiscovery.DiscoverTestsForSuiteAsync(
                         workloadsDir, workloadName, suiteName, logger).ConfigureAwait(false);
+
+                    // Phase 3: a SHORT SUITE IS A HARD FAILURE. Running a subset and
+                    // reporting success on it is the single most expensive outcome
+                    // available - it retires the question without answering it. Better to
+                    // refuse and name what is absent.
+                    if (missingTests.Count > 0)
+                    {
+                        logger.Log($"Error: suite '{suiteName}' declares {suite.Tests.Count} tests but {missingTests.Count} could not be loaded:");
+                        foreach (var name in missingTests) logger.Log($"         missing or unparsable: {name}");
+                        logger.Log("       Refusing to run a partial suite - it would report on tests it never executed.");
+                        logger.Log("       Run 'canary doctor' for the full picture.  Press Ctrl+C to abort");
+                        return 1;
+                    }
+
                     tests = suiteTests;
                     if (suite.KeepOpen) keepOpen = true;
                     logger.Log($"Suite '{suiteName}': {suite.Description}");

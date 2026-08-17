@@ -39,6 +39,7 @@ public static class CanaryTokens
     private static readonly object Gate = new();
     private static Dictionary<string, string>? _cache;
     private static string? _cacheKey;
+    private static string? _parseError;
 
     /// <summary>
     /// Loads the token table for a workloads root, layering environment over file.
@@ -52,6 +53,7 @@ public static class CanaryTokens
             if (_cache != null && _cacheKey == workloadsRoot) return _cache;
 
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _parseError = null;
 
             var file = Path.Combine(workloadsRoot, TokensFileName);
             if (File.Exists(file))
@@ -62,14 +64,26 @@ public static class CanaryTokens
                     var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
                     if (parsed != null)
                         foreach (var kvp in parsed)
+                        {
+                            // A LEADING UNDERSCORE MEANS DOCUMENTATION, not a token. JSON
+                            // has no comments, so tokens.json carries "_comment_N" keys.
+                            // `canary doctor` found these being loaded as real tokens on
+                            // its very first run and reported six errors for prose that
+                            // "does not exist on this machine" - correct, and the reason
+                            // the convention now has to be enforced here rather than only
+                            // in the conversion script.
+                            if (kvp.Key.StartsWith("_", StringComparison.Ordinal)) continue;
                             map[kvp.Key] = kvp.Value;
+                        }
                 }
                 catch (JsonException)
                 {
-                    // A malformed tokens.json must not be swallowed into "no tokens" —
+                    // A malformed tokens.json must not be swallowed into "no tokens" -
                     // that would look identical to an absent file and every path would
-                    // fail far from the cause. Surfaced by the caller via TryDescribe.
-                    map["__PARSE_ERROR__"] = file;
+                    // fail far from the cause. Kept in a FIELD rather than in the map: a
+                    // sentinel key pollutes the token namespace and could collide with a
+                    // real token name.
+                    _parseError = file;
                 }
             }
 
@@ -90,7 +104,7 @@ public static class CanaryTokens
     /// <summary>Clears the cached table. For tests, and after a tokens.json edit.</summary>
     public static void Invalidate()
     {
-        lock (Gate) { _cache = null; _cacheKey = null; }
+        lock (Gate) { _cache = null; _cacheKey = null; _parseError = null; }
     }
 
     /// <summary>
@@ -107,10 +121,7 @@ public static class CanaryTokens
         var map = Load(workloadsRoot);
         var result = value;
         foreach (var kvp in map)
-        {
-            if (kvp.Key.StartsWith("__", StringComparison.Ordinal)) continue;
             result = result.Replace($"%{kvp.Key}%", kvp.Value, StringComparison.OrdinalIgnoreCase);
-        }
 
         // Environment variables still apply, so %LOCALAPPDATA% and friends keep working
         // exactly as they did before Phase 2.
@@ -164,9 +175,12 @@ public static class CanaryTokens
     /// <returns>A human-readable problem, or <c>null</c>.</returns>
     public static string? DescribeProblem(string workloadsRoot)
     {
-        var map = Load(workloadsRoot);
-        return map.TryGetValue("__PARSE_ERROR__", out var f)
-            ? $"{f} is not valid JSON; no tokens were loaded from it"
-            : null;
+        Load(workloadsRoot);            // populates _parseError as a side effect
+        lock (Gate)
+        {
+            return _parseError is null
+                ? null
+                : $"{_parseError} is not valid JSON; no tokens were loaded from it";
+        }
     }
 }

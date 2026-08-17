@@ -337,3 +337,54 @@ the net8.0 one never does — which is why the deps.json looked "wrong" and was 
 fact correct. **A .NET Framework assembly at the payload root is the corruption
 signature.** ShipToDrive is now opt-in (`-p:CanaryShipToDrive=true`) and lands in
 `agent\`.
+
+## § Doctor — readiness, and the silent-green defect it exists to stop
+
+`canary doctor [--workload <w>] [--suite <s>] [--workloads-dir <dir>]` answers **"can
+this machine run the content it has"**, and exits 1 when it cannot. Run it before
+trusting a run on any machine you did not personally set up — a QC box, a clean
+install, a payload someone else staged.
+
+**It checks:** the workloads root resolves and exists (and *which* rule resolved it);
+`workloads/tokens.json` parses; **every declared token resolves to a path that exists
+on this machine**; no content file references a token nothing declares; every suite
+can load **every** test it names; the workload's `appPath` (a bare command name is
+reported as PATH-resolved, not warned about — its absence here proves nothing).
+
+**Why it had to exist.** Three separately-reasonable behaviours composed into a
+harness that **reported a pass on a rig carrying 1 of 51 tests**: `TestDiscovery`
+warned-and-continued past a test file it could not find, so **a suite silently
+shrank**; a missing baseline yields `New`; and `New` is excluded from the exit code
+(`(Failed + Crashed) == 0 ? 0 : 1`). None of the three is a bug alone. A green harness
+that asserts nothing is worse than no harness, because it retires the question without
+answering it.
+
+**So a short suite is now a hard failure.** `DiscoverTestsForSuiteAsync` returns the
+names it could not load — **absent *or unparsable***; eleven qualia tests have been
+invalid JSON for months and the suite naming them was only ever *warned* about — and
+`RunCommand` refuses rather than quietly running less (`Refusing to run a partial
+suite`, exit 1). **Exit-code semantics are deliberately unchanged**: `New` is correct
+for a genuinely new test. What was missing was a *readiness* question.
+
+**This is the check `verify-payload.ps1` cannot do.** That script confirms bytes are
+present and identical, and **passes happily** on a payload whose tests point at roots
+this machine does not have. Byte integrity and readiness are different questions; run
+both.
+
+### Tokens — where absolute paths are allowed to live
+
+`workloads/tokens.json` is the **only** place an absolute path belongs. `CanaryTokens`
+layers **environment variables over the file, environment last so it wins** — that is
+how a QC machine repoints one root without editing content it did not author. An
+**unset token is left exactly as written**, never blanked, so it fails where you can
+see it and `doctor` names it.
+
+- **Leading-underscore keys are documentation, not tokens** (JSON has no comments).
+  `doctor` found six `_comment_*` keys being loaded as real tokens on its first ever
+  run and reported prose as missing paths.
+- **`qualia/sweeps/` is exempt and must stay exempt.** Its JSON is read by JavaScript
+  with no token expansion at all (`derive.mjs:34` reads `observationsDir` raw), and it
+  holds historical run records. **Content whose consumer cannot expand a token keeps
+  its literal.** The corpus guard (`TokenCorpusTests`) exempts it by name.
+- Installed-application paths under `Program Files` are exempt too: identical on every
+  Windows machine that has the app, so tokenizing buys ceremony and no portability.

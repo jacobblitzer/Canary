@@ -60,7 +60,17 @@ public static class TestDiscovery
     /// <summary>
     /// Load a suite by name and resolve each test name to its TestDefinition from the tests/ directory.
     /// </summary>
-    public static async Task<(SuiteDefinition Suite, List<TestDefinition> Tests)> DiscoverTestsForSuiteAsync(
+    /// <returns>
+    /// The suite, the tests that resolved, and <b>the names that did not</b>.
+    /// </returns>
+    /// <remarks>
+    /// Deployment campaign Phase 3. This used to warn-and-continue, which meant a suite
+    /// SILENTLY SHRANK: on a machine carrying 1 of 51 tests it would run that one, report
+    /// it, and exit 0. Combined with a missing baseline yielding <c>New</c> - which the exit
+    /// code excludes - a half-installed rig printed a pass. Returning the missing names
+    /// lets the caller refuse to run rather than quietly running less.
+    /// </remarks>
+    public static async Task<(SuiteDefinition Suite, List<TestDefinition> Tests, List<string> MissingTests)> DiscoverTestsForSuiteAsync(
         string workloadsDir, string workloadName, string suiteName, ITestLogger? logger = null)
     {
         var suitePath = Path.Combine(workloadsDir, workloadName, "suites", $"{suiteName}.json");
@@ -70,12 +80,14 @@ public static class TestDiscovery
         var suite = await SuiteDefinition.LoadAsync(suitePath).ConfigureAwait(false);
 
         var tests = new List<TestDefinition>();
+        var missing = new List<string>();
         foreach (var testName in suite.Tests)
         {
             var testPath = Path.Combine(workloadsDir, workloadName, "tests", $"{testName}.json");
             if (!File.Exists(testPath))
             {
-                logger?.Log($"Warning: Suite '{suiteName}' references test '{testName}' but {testPath} not found — skipping.");
+                logger?.Log($"Warning: Suite '{suiteName}' references test '{testName}' but {testPath} not found.");
+                missing.Add(testName);
                 continue;
             }
 
@@ -85,10 +97,13 @@ public static class TestDiscovery
             }
             catch (Exception ex)
             {
+                // An UNPARSABLE test is missing too. It was previously only warned about,
+                // which is how eleven qualia tests stayed broken without anyone noticing.
                 logger?.Log($"Warning: Failed to parse test '{testPath}': {ex.Message}");
+                missing.Add(testName);
             }
         }
 
-        return (suite, tests);
+        return (suite, tests, missing);
     }
 }
