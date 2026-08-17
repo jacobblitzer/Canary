@@ -109,6 +109,29 @@ public static class CanaryPaths
     }
 
     /// <summary>
+    /// Expands <c>%NAME%</c> tokens in test content.
+    /// </summary>
+    /// <param name="value">Raw text from a test definition.</param>
+    /// <returns>The text with known environment variables substituted.</returns>
+    /// <remarks>
+    /// <para>
+    /// The single seam through which test content becomes machine-specific. Phase 2 of
+    /// the deployment campaign retires absolute path literals by replacing them with
+    /// tokens; this is where those tokens resolve, so there is one behaviour to reason
+    /// about rather than one per call site.
+    /// </para>
+    /// <para>
+    /// Substitution happens <b>anywhere in the string</b>, not just at the start - that
+    /// is what lets a Rhino macro or a Grasshopper panel value carry a token mid-text.
+    /// An <b>unknown</b> token is left exactly as written, so ordinary text containing
+    /// percent signs passes through unharmed and a mistyped token is visible in the
+    /// failure rather than silently becoming an empty string.
+    /// </para>
+    /// </remarks>
+    public static string Expand(string? value)
+        => string.IsNullOrEmpty(value) ? string.Empty : Environment.ExpandEnvironmentVariables(value);
+
+    /// <summary>
     /// Human-readable explanation of a resolution, for diagnostics and error messages.
     /// </summary>
     /// <param name="r">The resolution to describe.</param>

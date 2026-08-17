@@ -191,4 +191,94 @@ public class CanaryPathsTests
             return 0;
         });
     }
+
+    // ---- Expand: the token seam Phase 2 will build on -----------------------
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public void Expand_SubstitutesAKnownVariable()
+    {
+        var expected = Environment.GetEnvironmentVariable("TEMP");
+        Assert.False(string.IsNullOrEmpty(expected), "TEMP must be set for this test to mean anything");
+
+        Assert.Equal(expected, CanaryPaths.Expand("%TEMP%"));
+    }
+
+    // The safety property the whole change rests on. Test content is full of ordinary
+    // text; if an unknown token collapsed to an empty string, a mistyped token would
+    // silently produce a valid-looking but wrong value instead of a visible failure.
+    [Trait("Category", "Unit")]
+    [Fact]
+    public void Expand_LeavesUnknownTokensExactlyAsWritten()
+    {
+        const string s = "%CANARY_NO_SUCH_VARIABLE_XYZ%";
+        Assert.Equal(s, CanaryPaths.Expand(s));
+    }
+
+    // Percent signs appear in ordinary prose and in Grasshopper panel values. Nothing
+    // that is not a real variable may be disturbed.
+    [Trait("Category", "Unit")]
+    [Theory]
+    [InlineData("scale to 50% then 75%")]
+    [InlineData("100%")]
+    [InlineData("a % b")]
+    [InlineData("_Zoom _Selected _Enter")]
+    public void Expand_DoesNotDisturbOrdinaryText(string text)
+    {
+        Assert.Equal(text, CanaryPaths.Expand(text));
+    }
+
+    // Mid-string substitution is what lets a Rhino macro or a panel value carry a token.
+    [Trait("Category", "Unit")]
+    [Fact]
+    public void Expand_SubstitutesMidString()
+    {
+        var temp = Environment.GetEnvironmentVariable("TEMP");
+        var result = CanaryPaths.Expand("prefix|%TEMP%|suffix");
+
+        Assert.Equal($"prefix|{temp}|suffix", result);
+    }
+
+    [Trait("Category", "Unit")]
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void Expand_HandlesNullAndEmpty(string? input)
+    {
+        Assert.Equal(string.Empty, CanaryPaths.Expand(input));
+    }
+
+    // ---- WIRING: proves AsParameters actually CALLS Expand -------------------
+    // Without these, everything above would pass while the seam sat unconnected -
+    // precisely the "guard that never fires" failure this campaign warns about.
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public void AsParameters_ExpandsTokensInActionValues()
+    {
+        var temp = Environment.GetEnvironmentVariable("TEMP");
+        var json = "{ \"type\": \"GrasshopperSetPanelText\", \"nickname\": \"JsonPath\", \"text\": \"%TEMP%/defs/x.json\" }";
+
+        var action = System.Text.Json.JsonSerializer.Deserialize<TestAction>(json);
+        Assert.NotNull(action);
+
+        var p = action!.AsParameters();
+
+        Assert.True(p.ContainsKey("text"), "extension-data capture must carry 'text'");
+        Assert.Equal(temp + "/defs/x.json", p["text"]);
+        Assert.DoesNotContain("%TEMP%", p["text"]);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public void AsParameters_LeavesNonTokenTextAlone()
+    {
+        var json = "{ \"type\": \"RunCommand\", \"text\": \"_Zoom _Selected _Enter\", \"ratio\": \"50% of it\" }";
+
+        var action = System.Text.Json.JsonSerializer.Deserialize<TestAction>(json);
+        var p = action!.AsParameters();
+
+        Assert.Equal("_Zoom _Selected _Enter", p["text"]);
+        Assert.Equal("50% of it", p["ratio"]);
+    }
 }

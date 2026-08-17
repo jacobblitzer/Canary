@@ -447,7 +447,11 @@ public sealed class TestAction
         {
             dict[kvp.Key] = kvp.Value.ValueKind switch
             {
-                JsonValueKind.String => kvp.Value.GetString() ?? string.Empty,
+                // Deployment campaign Phase 1: %TOKEN% expansion for every action
+                // parameter. This is ONE of two hook points, not a chokepoint - Rhino
+                // setup macros reach the agent without passing through here and are
+                // expanded at their own dispatch site in TestRunner.
+                JsonValueKind.String => CanaryPaths.Expand(kvp.Value.GetString()),
                 JsonValueKind.True => "true",
                 JsonValueKind.False => "false",
                 JsonValueKind.Null => string.Empty,

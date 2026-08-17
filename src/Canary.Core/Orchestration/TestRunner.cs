@@ -1091,10 +1091,13 @@ public sealed class TestRunner
         // Run setup commands
         foreach (var cmd in setup.Commands)
         {
-            _logger.Log($"Running: {cmd}");
+            // Second expansion hook point. setup.commands does NOT pass through
+            // TestAction.AsParameters, so a token here would otherwise reach Rhino raw.
+            var expandedCmd = Canary.Config.CanaryPaths.Expand(cmd);
+            _logger.Log($"Running: {expandedCmd}");
             var cmdResult = await agent.ExecuteAsync("RunCommand", new Dictionary<string, string>
             {
-                ["command"] = cmd
+                ["command"] = expandedCmd
             }).ConfigureAwait(false);
             _logger.Log($"  → {cmdResult.Message}");
         }
@@ -1148,7 +1151,7 @@ public sealed class TestRunner
                 }
                 else if (!string.IsNullOrWhiteSpace(checkpoint.FilePath))
                 {
-                    filePath = Environment.ExpandEnvironmentVariables(checkpoint.FilePath).Trim();
+                    filePath = Canary.Config.CanaryPaths.Expand(checkpoint.FilePath).Trim();
                 }
                 else
                 {
@@ -1393,10 +1396,13 @@ public sealed class TestRunner
         // Run setup commands
         foreach (var cmd in setup.Commands)
         {
-            _logger.Log($"Running: {cmd}");
+            // Second expansion hook point. setup.commands does NOT pass through
+            // TestAction.AsParameters, so a token here would otherwise reach Rhino raw.
+            var expandedCmd = Canary.Config.CanaryPaths.Expand(cmd);
+            _logger.Log($"Running: {expandedCmd}");
             await client.ExecuteAsync("RunCommand", new Dictionary<string, string>
             {
-                ["command"] = cmd
+                ["command"] = expandedCmd
             }, ct).ConfigureAwait(false);
         }
 
@@ -1449,7 +1455,7 @@ public sealed class TestRunner
                 }
                 else if (!string.IsNullOrWhiteSpace(checkpoint.FilePath))
                 {
-                    filePath = Environment.ExpandEnvironmentVariables(checkpoint.FilePath).Trim();
+                    filePath = Canary.Config.CanaryPaths.Expand(checkpoint.FilePath).Trim();
                 }
                 else
                 {
