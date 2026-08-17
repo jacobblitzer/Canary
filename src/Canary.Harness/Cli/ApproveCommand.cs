@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.Text.Json;
 using Canary.Orchestration;
+using Canary.Config;
 
 namespace Canary.Cli;
 
@@ -60,7 +61,7 @@ public static class ApproveCommand
 
     internal static int ApproveInner(string workload, string? test, string? suite)
     {
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        var workloadsDir = CanaryPaths.ResolveWorkloadsRoot();
 
         if (test == null && suite == null)
         {

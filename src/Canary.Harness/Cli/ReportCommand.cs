@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.Diagnostics;
+using Canary.Config;
 
 namespace Canary.Cli;
 
@@ -34,7 +35,7 @@ public static class ReportCommand
 
     internal static int ReportInner(string? workload)
     {
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        var workloadsDir = CanaryPaths.ResolveWorkloadsRoot();
         string? reportPath = null;
 
         if (workload != null)

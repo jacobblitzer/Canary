@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Canary.Harness.Session;
 using Canary.Session;
+using Canary.Config;
 
 namespace Canary.Cli;
 
@@ -48,7 +49,7 @@ public static class SessionCommand
 
     private static async Task<int> RunStartAsync(string workload, string? urlOverride, string? filePath, CancellationToken ct)
     {
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        var workloadsDir = CanaryPaths.ResolveWorkloadsRoot();
         var configPath = Path.Combine(workloadsDir, workload, "workload.json");
         if (!File.Exists(configPath))
         {
@@ -244,7 +245,7 @@ public static class SessionCommand
 
     private static int RunList(string? workloadFilter, int limit)
     {
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        var workloadsDir = CanaryPaths.ResolveWorkloadsRoot();
         if (!Directory.Exists(workloadsDir))
         {
             Console.Error.WriteLine($"Error: workloads dir not found: {workloadsDir}");
@@ -296,7 +297,7 @@ public static class SessionCommand
 
     private static int RunReport(string id, string? workloadFilter)
     {
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        var workloadsDir = CanaryPaths.ResolveWorkloadsRoot();
         if (!Directory.Exists(workloadsDir))
         {
             Console.Error.WriteLine($"Error: workloads dir not found: {workloadsDir}");

@@ -104,10 +104,17 @@ public class ApproveReportExitCodeTests
     [Fact]
     public void Report_NoWorkloadAndNoReport_ReturnsOne()
     {
+        // Isolation is via CANARY_WORKLOADS_DIR, not cwd. Deployment campaign Phase 1
+        // made workloads discovery deliberately independent of the working directory
+        // (it now walks up from the executable), so pointing cwd at an empty temp dir no
+        // longer isolates - the walk-up finds the repo's own workloads tree and the
+        // command succeeds. The test's INTENT is unchanged: no workload, no report -> 1.
         var prevCwd = Directory.GetCurrentDirectory();
+        var prevEnv = Environment.GetEnvironmentVariable(Canary.Config.CanaryPaths.WorkloadsDirEnvVar);
         var tmp = Path.Combine(Path.GetTempPath(), "canary-report-test-" + System.Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tmp);
         Directory.SetCurrentDirectory(tmp);
+        Environment.SetEnvironmentVariable(Canary.Config.CanaryPaths.WorkloadsDirEnvVar, tmp);
         try
         {
             var exit = ReportCommand.ReportInner(workload: null);
@@ -115,6 +122,7 @@ public class ApproveReportExitCodeTests
         }
         finally
         {
+            Environment.SetEnvironmentVariable(Canary.Config.CanaryPaths.WorkloadsDirEnvVar, prevEnv);
             Directory.SetCurrentDirectory(prevCwd);
             try { Directory.Delete(tmp, recursive: true); } catch { }
         }

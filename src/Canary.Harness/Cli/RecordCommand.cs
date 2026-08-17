@@ -55,7 +55,7 @@ public static class RecordCommand
         }
 
         // Load workload config
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        var workloadsDir = CanaryPaths.ResolveWorkloadsRoot();
         var configPath = Path.Combine(workloadsDir, app, "workload.json");
 
         if (!File.Exists(configPath))

@@ -48,6 +48,13 @@ public static class RunCommand
             description: "Comparison mode override: 'pixel-diff' (default — visual regression), 'vlm' (semantic correctness), or 'both' (run each checkpoint twice). Per-checkpoint mode='vlm' in test JSON still wins.",
             getDefaultValue: () => "pixel-diff");
 
+        // Deployment campaign Phase 1: lets a machine point at content it did not ship
+        // with, without depending on the working directory. CANARY_WORKLOADS_DIR does
+        // the same for an installer or a service that cannot pass a flag.
+        var workloadsDirOption = new Option<string?>(
+            "--workloads-dir",
+            $"Path to the workloads content root. Overrides discovery and the {Canary.Config.CanaryPaths.WorkloadsDirEnvVar} environment variable.");
+
         var headlessOption = new Option<bool>(
             "--headless",
             "Run without launching the Canary UI. Required for CI / scripted use. Default behavior launches Canary.UI.exe with auto-run args per STANDARD.md §16 rule 8. `--quiet` implies `--headless`.");
@@ -57,6 +64,7 @@ public static class RunCommand
             workloadOption,
             testOption,
             suiteOption,
+            workloadsDirOption,
             verboseOption,
             quietOption,
             keepOpenOption,
@@ -74,6 +82,7 @@ public static class RunCommand
             var keepOpen = ctx.ParseResult.GetValueForOption(keepOpenOption);
             var modeStr = ctx.ParseResult.GetValueForOption(modeOption) ?? "pixel-diff";
             var headless = ctx.ParseResult.GetValueForOption(headlessOption) || quiet;
+            var workloadsDir = ctx.ParseResult.GetValueForOption(workloadsDirOption);
 
             Program.Verbose = verbose;
             Program.Quiet = quiet;
@@ -101,7 +110,7 @@ public static class RunCommand
                 return;
             }
 
-            ctx.ExitCode = await RunAsync(workload, test, suite, logger, Program.CancellationToken, keepOpen, modeOverride).ConfigureAwait(false);
+            ctx.ExitCode = await RunAsync(workload, test, suite, logger, Program.CancellationToken, keepOpen, modeOverride, workloadsDir).ConfigureAwait(false);
         });
 
         return command;
@@ -248,9 +257,20 @@ public static class RunCommand
         }
     }
 
-    internal static async Task<int> RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct, bool keepOpen = false, ModeOverride modeOverride = ModeOverride.PixelDiff)
+    internal static async Task<int> RunAsync(string? workloadName, string? testName, string? suiteName, ConsoleTestLogger logger, CancellationToken ct, bool keepOpen = false, ModeOverride modeOverride = ModeOverride.PixelDiff, string? workloadsDirOverride = null)
     {
-        var workloadsDir = Path.Combine(Directory.GetCurrentDirectory(), "workloads");
+        // Report the resolution, not just the path: on a machine with several
+        // candidates, "which tree am I actually bound to" is the first question worth
+        // answering and it used to be unanswerable.
+        var resolution = CanaryPaths.ResolveWorkloadsRootDetailed(workloadsDirOverride);
+        var workloadsDir = resolution.Path;
+        if (!resolution.Exists)
+        {
+            logger.Log($"Error: no workloads directory at {CanaryPaths.Describe(resolution)}.  Press Ctrl+C to abort");
+            return 1;
+        }
+        if (Program.Verbose)
+            logger.Log($"Workloads root: {CanaryPaths.Describe(resolution)}");
 
         if (workloadName == null)
         {
