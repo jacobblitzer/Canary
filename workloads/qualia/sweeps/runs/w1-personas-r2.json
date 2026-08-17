@@ -297,5 +297,5 @@
     "perFamily": 52,
     "families": 3
   },
-  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w1-personas-r2"
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w1-personas-r2"
 }

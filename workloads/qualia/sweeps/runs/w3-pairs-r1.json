@@ -166,5 +166,5 @@
     "perFamily": 31,
     "families": 2
   },
-  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w3-pairs-r1"
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w3-pairs-r1"
 }

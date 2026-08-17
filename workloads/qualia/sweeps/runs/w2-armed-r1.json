@@ -71,5 +71,5 @@
     "perFamily": 6,
     "families": 3
   },
-  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w2-armed-r1"
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w2-armed-r1"
 }

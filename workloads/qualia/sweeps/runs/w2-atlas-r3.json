@@ -909,5 +909,5 @@
     "perFamily": 163,
     "families": 7
   },
-  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w2-atlas-r3"
+  "observationsDir": "C:/Repos/Qualia/debug-logs/w2-atlas-r3"
 }

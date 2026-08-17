@@ -64,7 +64,16 @@ public class TokenCorpusTests
         foreach (var f in Directory.EnumerateFiles(root, "*.json", SearchOption.AllDirectories))
         {
             var rel = Path.GetRelativePath(root, f).Replace('\\', '/');
+            // results/ and sessions/ are generated run output, not authored content.
+            //
+            // sweeps/ is BOTH, and it is exempt for a second, stronger reason: its JSON is
+            // consumed by JavaScript (derive.mjs, generate-sweep.mjs, drift-diff.mjs) that
+            // has no token expansion at all - derive.mjs:34 reads observationsDir raw. A
+            // first pass of Phase 2 tokenized 21 files here and would have broken those
+            // consumers with 19 unreadable tokens, while also rewriting historical run
+            // records. Content whose consumer cannot expand a token must keep its literal.
             if (rel.Contains("/results/") || rel.Contains("/sessions/")) continue;
+            if (rel.StartsWith("qualia/sweeps/", StringComparison.OrdinalIgnoreCase)) continue;
             if (rel.Equals("tokens.json", StringComparison.OrdinalIgnoreCase)) continue;
             yield return f;
         }

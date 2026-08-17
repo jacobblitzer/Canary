@@ -227,5 +227,5 @@
     "perFamily": 34,
     "families": 2
   },
-  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/desktop-mini-r1"
+  "observationsDir": "C:/Repos/Qualia/debug-logs/desktop-mini-r1"
 }
