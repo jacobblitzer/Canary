@@ -61,7 +61,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Bristle/tests/slop/13_bristle_stagec_ruling.json"
+      "text": "%CANARY_REPO_BRISTLE%/tests/slop/13_bristle_stagec_ruling.json"
     },
     {
       "type": "GrasshopperSetToggle",

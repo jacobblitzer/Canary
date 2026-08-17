@@ -10,9 +10,9 @@
   "viewportClass": "",
   "qualiaConfig": {
     "desktop": true,
-    "appExePath": "C:\\Repos\\Qualia\\src-tauri\\target\\release\\app.exe",
+    "appExePath": "%CANARY_REPO_QUALIA%\\src-tauri\\target\\release\\app.exe",
     "appStartupTimeoutMs": 45000,
-    "projectDir": "C:\\Repos\\Qualia",
+    "projectDir": "%CANARY_REPO_QUALIA%",
     "cdpPort": 9224,
     "defaultCanvasWidth": 1280,
     "defaultCanvasHeight": 720,

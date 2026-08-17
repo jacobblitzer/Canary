@@ -51,7 +51,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/KinematicBridge/out/_slop-side-by-side/ratchet-31-bind-sweep-animate.canary.slop.json"
+      "text": "%CANARY_REPO_KBRIDGE%/out/_slop-side-by-side/ratchet-31-bind-sweep-animate.canary.slop.json"
     },
     {
       "type": "GrasshopperSetToggle",

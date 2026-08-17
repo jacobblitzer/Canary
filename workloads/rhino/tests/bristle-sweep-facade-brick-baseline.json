@@ -22,7 +22,7 @@
   {
    "name": "preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/sweeps/facade-brick/baseline/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/sweeps/facade-brick/baseline/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: the reference: all defaults",
@@ -33,7 +33,7 @@
   {
    "name": "toolpath",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sweeps/facade-brick/baseline.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/sweeps/facade-brick/baseline.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: the reference: all defaults",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/sweeps/facade-brick-baseline.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/sweeps/facade-brick-baseline.json"
   },
   {
    "type": "GrasshopperSetToggle",

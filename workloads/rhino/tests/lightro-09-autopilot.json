@@ -19,7 +19,7 @@
     {
       "name": "auto-dof-A",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/dof_a-0.278_ap1.05.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/dof_a-0.278_ap1.05.png",
       "tolerance": 0.05,
       "description": "autopilot-prescribed DOF on IMG_0007",
       "mode": "capture"
@@ -27,7 +27,7 @@
     {
       "name": "auto-ana-A",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/anaglyph_s4.00.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/anaglyph_s4.00.png",
       "tolerance": 0.05,
       "description": "autopilot-prescribed anaglyph on IMG_0007",
       "mode": "capture"
@@ -35,7 +35,7 @@
     {
       "name": "auto-dof-B",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/dof_a-0.168_ap1.04.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/dof_a-0.168_ap1.04.png",
       "tolerance": 0.05,
       "description": "autopilot-prescribed DOF on IMG_0011",
       "mode": "capture"
@@ -43,7 +43,7 @@
     {
       "name": "auto-ana-B",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/anaglyph_s4.00.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/anaglyph_s4.00.png",
       "tolerance": 0.05,
       "description": "autopilot-prescribed anaglyph on IMG_0011",
       "mode": "capture"
@@ -87,7 +87,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Lightro/tests/slop/09_autopilot.json"
+      "text": "%CANARY_REPO_LIGHTRO%/tests/slop/09_autopilot.json"
     },
     {
       "type": "GrasshopperSetToggle",

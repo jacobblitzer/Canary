@@ -87,5 +87,5 @@
     "perFamily": 13,
     "families": 1
   },
-  "observationsDir": "C:/Repos/Qualia/debug-logs/w1-smoke-r2"
+  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w1-smoke-r2"
 }

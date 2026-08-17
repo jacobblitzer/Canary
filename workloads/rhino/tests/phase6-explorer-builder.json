@@ -55,7 +55,7 @@
     { "type": "RunCommand", "command": "_CPigDisplay" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 110000 },
     { "type": "RunCommand", "command": "-_Zoom _Extents" },
-    { "type": "SaveDocument", "path": "C:/Repos/Canary/workloads/rhino/fixtures/phase6-explorer.3dm" }
+    { "type": "SaveDocument", "path": "%CANARY_REPO_CANARY%/workloads/rhino/fixtures/phase6-explorer.3dm" }
   ],
   "checkpoints": [
     {

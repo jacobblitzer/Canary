@@ -190,7 +190,7 @@ public sealed class TestRunner
                 foreach (var action in testDef.Actions)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    var parameters = action.AsParameters();
+                    var parameters = action.AsParameters(_workloadsDir);
                     _logger.Log($"  action: {action.Type}");
                     var resp = await client!.ExecuteAsync(action.Type, parameters, cancellationToken).ConfigureAwait(false);
                     // Surface what an action REPORTED, not just whether it failed: a
@@ -644,7 +644,7 @@ public sealed class TestRunner
                         foreach (var action in test.Actions)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
-                            var parameters = action.AsParameters();
+                            var parameters = action.AsParameters(_workloadsDir);
                             _logger.Log($"  action: {action.Type}");
                             var resp = await client!.ExecuteAsync(action.Type, parameters, cancellationToken).ConfigureAwait(false);
                             if (!string.IsNullOrEmpty(resp.Message) && action.Type == "WaitForGrasshopperSolution")
@@ -832,7 +832,7 @@ public sealed class TestRunner
                 foreach (var action in testDef.Actions)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    var parameters = action.AsParameters();
+                    var parameters = action.AsParameters(_workloadsDir);
                     _logger.Log($"  action: {action.Type}");
                     var resp = await agent.ExecuteAsync(action.Type, parameters).ConfigureAwait(false);
                     if (!resp.Success)
@@ -1093,7 +1093,7 @@ public sealed class TestRunner
         {
             // Second expansion hook point. setup.commands does NOT pass through
             // TestAction.AsParameters, so a token here would otherwise reach Rhino raw.
-            var expandedCmd = Canary.Config.CanaryPaths.Expand(cmd);
+            var expandedCmd = Canary.Config.CanaryTokens.Expand(cmd, _workloadsDir);
             _logger.Log($"Running: {expandedCmd}");
             var cmdResult = await agent.ExecuteAsync("RunCommand", new Dictionary<string, string>
             {
@@ -1151,7 +1151,7 @@ public sealed class TestRunner
                 }
                 else if (!string.IsNullOrWhiteSpace(checkpoint.FilePath))
                 {
-                    filePath = Canary.Config.CanaryPaths.Expand(checkpoint.FilePath).Trim();
+                    filePath = Canary.Config.CanaryTokens.Expand(checkpoint.FilePath, _workloadsDir).Trim();
                 }
                 else
                 {
@@ -1398,7 +1398,7 @@ public sealed class TestRunner
         {
             // Second expansion hook point. setup.commands does NOT pass through
             // TestAction.AsParameters, so a token here would otherwise reach Rhino raw.
-            var expandedCmd = Canary.Config.CanaryPaths.Expand(cmd);
+            var expandedCmd = Canary.Config.CanaryTokens.Expand(cmd, _workloadsDir);
             _logger.Log($"Running: {expandedCmd}");
             await client.ExecuteAsync("RunCommand", new Dictionary<string, string>
             {
@@ -1455,7 +1455,7 @@ public sealed class TestRunner
                 }
                 else if (!string.IsNullOrWhiteSpace(checkpoint.FilePath))
                 {
-                    filePath = Canary.Config.CanaryPaths.Expand(checkpoint.FilePath).Trim();
+                    filePath = Canary.Config.CanaryTokens.Expand(checkpoint.FilePath, _workloadsDir).Trim();
                 }
                 else
                 {

@@ -22,7 +22,7 @@
   {
    "name": "preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/sweeps/facade-brick/flowing/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/sweeps/facade-brick/flowing/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: strokes run as long as the field allows",
@@ -33,7 +33,7 @@
   {
    "name": "toolpath",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sweeps/facade-brick/flowing.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/sweeps/facade-brick/flowing.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: strokes run as long as the field allows",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/sweeps/facade-brick-flowing.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/sweeps/facade-brick-flowing.json"
   },
   {
    "type": "GrasshopperSetToggle",

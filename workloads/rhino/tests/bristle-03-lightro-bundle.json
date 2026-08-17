@@ -1,7 +1,7 @@
 {
  "name": "bristle-03-lightro-bundle",
  "workload": "rhino",
- "description": "PRECONDITION (machine-2 feedback 2026-08-16): needs the decoded Lightro bundle at C:/Repos/Lightro/decoded/bundles/IMG_0007 - a dev-machine asset that does NOT ship in the Drive payload. On hosts without Lightro, skip this test; a red here on a clean install is a missing precondition, not a regression. Bristle 03 \u2014 analyze_v1 on a Lightro BUNDLE path (no upload; params.source): layer_confidence.png only exists when real light-field depth was passed through, so its presence IS the lightro-depth-wins proof. PREREQS: live engine + decoded bundle at C:/Repos/Lightro/decoded/bundles/IMG_0007.",
+ "description": "PRECONDITION (machine-2 feedback 2026-08-16): needs the decoded Lightro bundle at %CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007 - a dev-machine asset that does NOT ship in the Drive payload. On hosts without Lightro, skip this test; a red here on a clean install is a missing precondition, not a regression. Bristle 03 \u2014 analyze_v1 on a Lightro BUNDLE path (no upload; params.source): layer_confidence.png only exists when real light-field depth was passed through, so its presence IS the lightro-depth-wins proof. PREREQS: live engine + decoded bundle at %CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007.",
  "setup": {
   "file": "fixtures/bristle_slop_loader.gh",
   "viewport": {
@@ -61,7 +61,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/03_bristle_lightro_bundle.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/03_bristle_lightro_bundle.json"
   },
   {
    "type": "GrasshopperSetToggle",

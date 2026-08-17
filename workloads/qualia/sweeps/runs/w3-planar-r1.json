@@ -58,5 +58,5 @@
     "perFamily": 1,
     "families": 5
   },
-  "observationsDir": "C:/Repos/Qualia/debug-logs/w3-planar-r1"
+  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w3-planar-r1"
 }

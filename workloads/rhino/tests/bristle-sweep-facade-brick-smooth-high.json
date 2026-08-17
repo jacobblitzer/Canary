@@ -22,7 +22,7 @@
   {
    "name": "preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/sweeps/facade-brick/smooth-high/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/sweeps/facade-brick/smooth-high/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: calm uniform flow field",
@@ -33,7 +33,7 @@
   {
    "name": "toolpath",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sweeps/facade-brick/smooth-high.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/sweeps/facade-brick/smooth-high.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: calm uniform flow field",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/sweeps/facade-brick-smooth-high.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/sweeps/facade-brick-smooth-high.json"
   },
   {
    "type": "GrasshopperSetToggle",

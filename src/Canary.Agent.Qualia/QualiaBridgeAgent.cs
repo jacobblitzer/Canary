@@ -82,7 +82,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
 
         // 1. Start Vite (dev server, or `preview` serving dist/ for the
         //    deployed-web leg — driven by qualiaConfig.viteScript).
-        _vite = new ViteManager(_config.ProjectDir, _config.VitePort, _config.ViteScript);
+        _vite = new ViteManager(ExpandPath(_config.ProjectDir), _config.VitePort, _config.ViteScript);
         await _vite.StartAsync(TimeSpan.FromSeconds(30), ct).ConfigureAwait(false);
         _appUrl = _vite.Url;
 
@@ -167,7 +167,7 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
     /// </summary>
     private async Task InitializeDesktopAsync(CancellationToken ct)
     {
-        _tauri = new TauriAppManager(_config.AppExePath, _config.ProjectDir, _config.CdpPort);
+        _tauri = new TauriAppManager(ExpandPath(_config.AppExePath), ExpandPath(_config.ProjectDir), _config.CdpPort);
         await _tauri.StartAsync(TimeSpan.FromMilliseconds(_config.AppStartupTimeoutMs), ct).ConfigureAwait(false);
         _appUrl = _tauri.Url;
 
@@ -751,4 +751,10 @@ public sealed class QualiaBridgeAgent : ICanaryAgent, ITelemetryAware, IDisposab
         // to an operator instance is not a mode this agent has.
         _tauri?.Dispose();
     }
+
+    /// <summary>Expands %TOKEN% path values from workload config.</summary>
+    /// <param name="value">Raw configured path.</param>
+    /// <returns>The path with tokens resolved.</returns>
+    private static string ExpandPath(string value)
+        => Canary.Config.CanaryTokens.Expand(value);
 }

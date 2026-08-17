@@ -46,7 +46,7 @@
         {
             "type": "GrasshopperSetPanelText",
             "nickname": "JsonPath",
-            "text": "C:/Repos/CPig/research/slop_tests/75_field_hatching.json"
+            "text": "%CANARY_REPO_CPIG%/research/slop_tests/75_field_hatching.json"
         },
         {
             "type": "GrasshopperSetToggle",

@@ -17,7 +17,7 @@
     {
       "name": "rays-depth",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/rays_depth.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/rays_depth.png",
       "tolerance": 0.05,
       "description": "relative distance from parallax",
       "mode": "capture"
@@ -25,7 +25,7 @@
     {
       "name": "rays-view-dependence",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/rays_view-dependence.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/rays_view-dependence.png",
       "tolerance": 0.05,
       "description": "what still changes after depth alignment = view-dependent light",
       "mode": "capture"
@@ -33,7 +33,7 @@
     {
       "name": "rays-contact-sheet",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/rays_contact-sheet.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/rays_contact-sheet.png",
       "tolerance": 0.05,
       "description": "all 81 sub-aperture views tiled \u2014 the light field as itself",
       "mode": "capture"
@@ -41,7 +41,7 @@
     {
       "name": "rays-ray-fan",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/rays_ray-fan.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/rays_ray-fan.png",
       "tolerance": 0.05,
       "description": "the 81 rays arriving at one pixel",
       "mode": "capture"
@@ -78,7 +78,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Lightro/tests/slop/05_rays.json"
+      "text": "%CANARY_REPO_LIGHTRO%/tests/slop/05_rays.json"
     },
     {
       "type": "GrasshopperSetToggle",

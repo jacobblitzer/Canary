@@ -440,7 +440,9 @@ public sealed class TestAction
     [JsonExtensionData]
     public Dictionary<string, JsonElement> Extra { get; set; } = new();
 
-    public Dictionary<string, string> AsParameters()
+    /// <param name="workloadsRoot">Workloads root whose <c>tokens.json</c> applies. When
+    /// <c>null</c>, only environment variables are expanded.</param>
+    public Dictionary<string, string> AsParameters(string? workloadsRoot = null)
     {
         var dict = new Dictionary<string, string>();
         foreach (var kvp in Extra)
@@ -451,7 +453,10 @@ public sealed class TestAction
                 // parameter. This is ONE of two hook points, not a chokepoint - Rhino
                 // setup macros reach the agent without passing through here and are
                 // expanded at their own dispatch site in TestRunner.
-                JsonValueKind.String => CanaryPaths.Expand(kvp.Value.GetString()),
+                // Phase 2: %TOKEN% from tokens.json as well as environment variables.
+                JsonValueKind.String => workloadsRoot is null
+                    ? CanaryPaths.Expand(kvp.Value.GetString())
+                    : CanaryTokens.Expand(kvp.Value.GetString(), workloadsRoot),
                 JsonValueKind.True => "true",
                 JsonValueKind.False => "false",
                 JsonValueKind.Null => string.Empty,

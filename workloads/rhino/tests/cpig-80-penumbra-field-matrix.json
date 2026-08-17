@@ -48,7 +48,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/CPig/research/slop_tests/80_penumbra_field_matrix.json"
+   "text": "%CANARY_REPO_CPIG%/research/slop_tests/80_penumbra_field_matrix.json"
   },
   {
    "type": "RunCommand",

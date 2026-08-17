@@ -9,7 +9,7 @@
   "windowTitle": "Qualia",
   "viewportClass": "",
   "qualiaConfig": {
-    "projectDir": "C:\\Repos\\Qualia",
+    "projectDir": "%CANARY_REPO_QUALIA%",
     "chromePath": "",
     "cdpPort": 9223,
     "vitePort": 5173,

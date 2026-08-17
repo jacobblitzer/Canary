@@ -143,7 +143,20 @@ public class WorkloadEditorViewModelTests
         Assert.Equal("preview", qc.GetProperty("viteScript").GetString());
         Assert.Equal(4173, qc.GetProperty("vitePort").GetInt32());
         Assert.Equal(9225, qc.GetProperty("cdpPort").GetInt32());
-        Assert.Equal("C:\\Repos\\Qualia", qc.GetProperty("projectDir").GetString());
+
+        // Deployment campaign Phase 2: projectDir is now a %TOKEN%, not a literal.
+        // The token must survive the round trip UNEXPANDED - that is the actual
+        // regression risk here. Expanding on load would make the editor's re-serialise
+        // write the resolved literal back over the token and silently un-tokenize the
+        // file, which is why expansion happens at USE instead.
+        var projectDir = qc.GetProperty("projectDir").GetString();
+        Assert.Equal("%CANARY_REPO_QUALIA%", projectDir);
+
+        // ...and the token must still resolve to the real location, or the round trip
+        // would be preserving something meaningless.
+        var workloadsRoot = Path.Combine(dir.FullName, "workloads");
+        Canary.Config.CanaryTokens.Invalidate();
+        Assert.Equal("C:/Repos/Qualia", Canary.Config.CanaryTokens.Expand(projectDir, workloadsRoot));
     }
 
     [Fact]

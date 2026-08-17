@@ -10,7 +10,7 @@
   },
   "actions": [
     { "type": "RunCommand", "command": "_SelAll _Delete" },
-    { "type": "RunCommand", "command": "-_Import \"C:\\Repos\\3dLibrary\\speedboat.stl\" _Enter" },
+    { "type": "RunCommand", "command": "-_Import \"%CANARY_ASSETS_3DLIBRARY%\\speedboat.stl\" _Enter" },
     { "type": "RunCommand", "command": "_SelLast _CPigFromMesh" },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "timeoutMs": 180000 },
     { "type": "WaitForPenumbraFrame", "requireReal": true, "requireSteady": true, "quietMs": 3000, "timeoutMs": 120000 }

@@ -22,7 +22,7 @@
   {
    "name": "preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/sweeps/egg-gradient/fixed-45/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/sweeps/egg-gradient/fixed-45/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: mechanical single-angle hatch",
@@ -33,7 +33,7 @@
   {
    "name": "toolpath",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sweeps/egg-gradient/fixed-45.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/sweeps/egg-gradient/fixed-45.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: mechanical single-angle hatch",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/sweeps/egg-gradient-fixed-45.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/sweeps/egg-gradient-fixed-45.json"
   },
   {
    "type": "GrasshopperSetToggle",

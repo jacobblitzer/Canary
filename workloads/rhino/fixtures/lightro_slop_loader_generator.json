@@ -2,7 +2,7 @@
   "nodes": [
     {"id": "title", "type": "scribble", "name": "Lightro Slop Loader", "font_size": 24, "bold": true},
 
-    {"id": "json_path", "type": "panel", "name": "JsonPath", "content": "C:/Repos/Lightro/tests/slop/01_load_refocus.json"},
+    {"id": "json_path", "type": "panel", "name": "JsonPath", "content": "%CANARY_REPO_LIGHTRO%/tests/slop/01_load_refocus.json"},
 
     {"id": "build",   "type": "toggle", "name": "Build",   "value": 0},
     {"id": "cleanup", "type": "toggle", "name": "Cleanup", "value": 0},

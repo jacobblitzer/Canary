@@ -30,7 +30,7 @@
   {
    "name": "topo-3dm",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sunflower-topo.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/sunflower-topo.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "depth topo-bands as a plot file",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/07_bristle_harvest_showcase.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/07_bristle_harvest_showcase.json"
   },
   {
    "type": "GrasshopperSetToggle",

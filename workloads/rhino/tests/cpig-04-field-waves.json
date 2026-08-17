@@ -43,7 +43,7 @@
                     {
                         "type":  "GrasshopperSetPanelText",
                         "nickname":  "JsonPath",
-                        "text":  "C:/Repos/CPig/research/slop_tests/04_field_waves.json"
+                        "text":  "%CANARY_REPO_CPIG%/research/slop_tests/04_field_waves.json"
                     },
                     {
                         "type":  "GrasshopperSetToggle",

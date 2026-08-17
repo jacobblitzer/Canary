@@ -22,7 +22,7 @@
   {
    "name": "strokeset-artifact",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/tests/out/bristle-01/strokes.v0.json",
+   "filePath": "%CANARY_REPO_BRISTLE%/tests/out/bristle-01/strokes.v0.json",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "StrokeSet v0 JSON produced by the engine and exported by BR_FetchStrokes",
@@ -33,7 +33,7 @@
   {
    "name": "engine-preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/tests/out/bristle-01/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/tests/out/bristle-01/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.08,
    "description": "Engine-rendered 1-bit pen preview of the tiny fixture (blessable for pixel-diff later)",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/01_bristle_paint_roundtrip.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/01_bristle_paint_roundtrip.json"
   },
   {
    "type": "GrasshopperSetToggle",

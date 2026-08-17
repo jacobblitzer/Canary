@@ -45,7 +45,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Slop/research/slop_tests/01_graft_grid.json"
+      "text": "%CANARY_REPO_SLOP%/research/slop_tests/01_graft_grid.json"
     },
     {
       "type": "GrasshopperSetToggle",

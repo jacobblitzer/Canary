@@ -2,7 +2,7 @@
   "nodes": [
     {"id": "title", "type": "scribble", "name": "CPig Slop Loader", "font_size": 24, "bold": true},
 
-    {"id": "json_path", "type": "panel", "name": "JsonPath", "content": "C:/Repos/CPig/research/slop_tests/00_smoke_ping.json"},
+    {"id": "json_path", "type": "panel", "name": "JsonPath", "content": "%CANARY_REPO_CPIG%/research/slop_tests/00_smoke_ping.json"},
 
     {"id": "build",   "type": "toggle", "name": "Build",   "value": 0},
     {"id": "cleanup", "type": "toggle", "name": "Cleanup", "value": 0},

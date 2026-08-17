@@ -45,7 +45,9 @@ public static class AppLauncher
         var appliedEnv = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var startInfo = new ProcessStartInfo
         {
-            FileName = config.AppPath,
+            // Phase 2: expand at USE. Expanding at load would let the workload
+            // editor's re-serialise silently write the literal back over the token.
+            FileName = Canary.Config.CanaryTokens.Expand(config.AppPath),
             Arguments = config.AppArgs,
             UseShellExecute = false,
         };

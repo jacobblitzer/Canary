@@ -1,6 +1,6 @@
 {
   "sweepId": "desktop-mini-r2",
-  "dossier": "C:/Repos/Qualia/spec/PLATFORM-PARITY.md",
+  "dossier": "%CANARY_REPO_QUALIA%/spec/PLATFORM-PARITY.md",
   "stamped": "2026-07-22",
   "fingerprint": "v2 (sceneGraph + dom sections)",
   "workload": "qualia-desktop",

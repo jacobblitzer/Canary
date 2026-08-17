@@ -19,7 +19,7 @@
     {
       "name": "ev-refocus",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a-0.400.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/refocus_a-0.400.png",
       "tolerance": 0.05,
       "description": "refocus at the plant (alpha -0.400)",
       "mode": "capture"
@@ -27,7 +27,7 @@
     {
       "name": "ev-bokeh",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a-0.200.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/refocus_a-0.200.png",
       "tolerance": 0.05,
       "description": "authored circular bokeh at alpha -0.200",
       "mode": "capture"
@@ -35,7 +35,7 @@
     {
       "name": "ev-view",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/view_x+1.00_y+0.00.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/view_x+1.00_y+0.00.png",
       "tolerance": 0.05,
       "description": "rightmost viewpoint",
       "mode": "capture"
@@ -43,7 +43,7 @@
     {
       "name": "ev-rays-depth",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/rays_depth.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/rays_depth.png",
       "tolerance": 0.05,
       "description": "block-dominant depth display",
       "mode": "capture"
@@ -51,7 +51,7 @@
     {
       "name": "ev-dof",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/dof_a-0.170_ap1.50.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/dof_a-0.170_ap1.50.png",
       "tolerance": 0.05,
       "description": "synthetic depth of field",
       "mode": "capture"
@@ -59,7 +59,7 @@
     {
       "name": "ev-anaglyph",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0011/_gh/anaglyph_s2.00.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0011/_gh/anaglyph_s2.00.png",
       "tolerance": 0.05,
       "description": "red/cyan anaglyph",
       "mode": "capture"
@@ -103,7 +103,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Lightro/tests/slop/07_everything.json"
+      "text": "%CANARY_REPO_LIGHTRO%/tests/slop/07_everything.json"
     },
     {
       "type": "GrasshopperSetToggle",

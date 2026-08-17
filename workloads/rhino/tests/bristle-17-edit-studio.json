@@ -67,7 +67,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Bristle/tests/slop/17_bristle_edit_studio.json"
+      "text": "%CANARY_REPO_BRISTLE%/tests/slop/17_bristle_edit_studio.json"
     },
     {
       "type": "GrasshopperSetToggle",

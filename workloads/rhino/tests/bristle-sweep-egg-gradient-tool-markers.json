@@ -22,7 +22,7 @@
   {
    "name": "preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/sweeps/egg-gradient/tool-markers/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/sweeps/egg-gradient/tool-markers/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: chunky 2mm chisels, few strokes",
@@ -33,7 +33,7 @@
   {
    "name": "toolpath",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/sweeps/egg-gradient/tool-markers.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/sweeps/egg-gradient/tool-markers.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "sweep artifact: chunky 2mm chisels, few strokes",
@@ -73,7 +73,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/sweeps/egg-gradient-tool-markers.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/sweeps/egg-gradient-tool-markers.json"
   },
   {
    "type": "GrasshopperSetToggle",

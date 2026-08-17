@@ -46,7 +46,7 @@
         {
             "type": "GrasshopperSetPanelText",
             "nickname": "JsonPath",
-            "text": "C:/Repos/CPig/research/slop_tests/73_voronoi_foam.json"
+            "text": "%CANARY_REPO_CPIG%/research/slop_tests/73_voronoi_foam.json"
         },
         {
             "type": "GrasshopperSetToggle",

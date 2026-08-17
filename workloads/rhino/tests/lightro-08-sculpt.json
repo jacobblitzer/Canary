@@ -55,7 +55,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Lightro/tests/slop/08_sculpt.json"
+      "text": "%CANARY_REPO_LIGHTRO%/tests/slop/08_sculpt.json"
     },
     {
       "type": "GrasshopperSetToggle",

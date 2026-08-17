@@ -1,6 +1,6 @@
 {
  "name": "bristle-scenes",
- "description": "Scene gallery: full start-to-Plotline-export pipeline per scene (draft preview, full run, fetch, .3dm export). Exports land in G:/My Drive/Builds/Plotline/PlotFiles (the plot machine's Drive-synced pickup folder) - G: MUST be mounted. SEPARATE from the fast gate suite on purpose. PREREQ: live engine.",
+ "description": "Scene gallery: full start-to-Plotline-export pipeline per scene (draft preview, full run, fetch, .3dm export). Exports land in %CANARY_HANDOFF%/Plotline/PlotFiles (the plot machine's Drive-synced pickup folder) - G: MUST be mounted. SEPARATE from the fast gate suite on purpose. PREREQ: live engine.",
  "tests": [
   "bristle-scene-portrait-backlit",
   "bristle-scene-night-lowkey",

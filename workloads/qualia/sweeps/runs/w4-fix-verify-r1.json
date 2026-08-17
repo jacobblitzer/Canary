@@ -84,5 +84,5 @@
     "perFamily": 10,
     "families": 2
   },
-  "observationsDir": "C:/Repos/Qualia/debug-logs/w4-fix-verify-r1"
+  "observationsDir": "%CANARY_REPO_QUALIA%/debug-logs/w4-fix-verify-r1"
 }

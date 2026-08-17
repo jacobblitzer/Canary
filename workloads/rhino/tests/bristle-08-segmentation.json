@@ -61,7 +61,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/08_bristle_segmentation.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/08_bristle_segmentation.json"
   },
   {
    "type": "GrasshopperSetToggle",

@@ -17,7 +17,7 @@
     {
       "name": "combined-refocus-a020",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a+0.200.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/refocus_a+0.200.png",
       "tolerance": 0.05,
       "description": "refocus section output at alpha +0.20",
       "mode": "capture"
@@ -25,7 +25,7 @@
     {
       "name": "combined-view-neg",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/view_x-1.00_y-1.00.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/view_x-1.00_y-1.00.png",
       "tolerance": 0.05,
       "description": "viewpoint section output at (-1,-1)",
       "mode": "capture"
@@ -33,7 +33,7 @@
     {
       "name": "combined-aperture-a035",
       "source": "file",
-      "filePath": "C:/Repos/Lightro/decoded/bundles/IMG_0007/_gh/refocus_a+0.350.png",
+      "filePath": "%CANARY_REPO_LIGHTRO%/decoded/bundles/IMG_0007/_gh/refocus_a+0.350.png",
       "tolerance": 0.05,
       "description": "aperture section: circle-authored weights refocus at alpha +0.35",
       "mode": "capture"
@@ -85,7 +85,7 @@
     {
       "type": "GrasshopperSetPanelText",
       "nickname": "JsonPath",
-      "text": "C:/Repos/Lightro/tests/slop/04_combined.json"
+      "text": "%CANARY_REPO_LIGHTRO%/tests/slop/04_combined.json"
     },
     {
       "type": "GrasshopperSetToggle",

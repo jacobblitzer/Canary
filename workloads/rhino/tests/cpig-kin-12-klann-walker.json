@@ -49,7 +49,7 @@
         {
             "type": "GrasshopperSetPanelText",
             "nickname": "JsonPath",
-            "text": "C:/Repos/CPig/research/slop_tests/kin_12_klann_walker.json"
+            "text": "%CANARY_REPO_CPIG%/research/slop_tests/kin_12_klann_walker.json"
         },
         {
             "type": "GrasshopperSetToggle",

@@ -22,7 +22,7 @@
   {
    "name": "strokeset",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/scenes/market-color/strokes.v0.json",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/scenes/market-color/strokes.v0.json",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "scene-gallery artifact (save-only; blessable later)",
@@ -33,7 +33,7 @@
   {
    "name": "plotline-3dm",
    "source": "file",
-   "filePath": "G:/My Drive/Builds/Plotline/PlotFiles/market-color.3dm",
+   "filePath": "%CANARY_HANDOFF%/Plotline/PlotFiles/market-color.3dm",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "scene-gallery artifact (save-only; blessable later)",
@@ -44,7 +44,7 @@
   {
    "name": "engine-preview",
    "source": "file",
-   "filePath": "C:/Repos/Bristle/out/scenes/market-color/preview.png",
+   "filePath": "%CANARY_REPO_BRISTLE%/out/scenes/market-color/preview.png",
    "atTimeMs": 0,
    "tolerance": 0.0,
    "description": "scene-gallery artifact (save-only; blessable later)",
@@ -84,7 +84,7 @@
   {
    "type": "GrasshopperSetPanelText",
    "nickname": "JsonPath",
-   "text": "C:/Repos/Bristle/tests/slop/scenes/market-color.json"
+   "text": "%CANARY_REPO_BRISTLE%/tests/slop/scenes/market-color.json"
   },
   {
    "type": "GrasshopperSetToggle",

@@ -63,7 +63,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
             throw new InvalidOperationException("Bridge agent is already initialized.");
 
         // 1. Start Vite dev server
-        _vite = new ViteManager(_config.ProjectDir, _config.VitePort);
+        _vite = new ViteManager(ExpandPath(_config.ProjectDir), _config.VitePort);
         await _vite.StartAsync(TimeSpan.FromSeconds(30), ct).ConfigureAwait(false);
 
         // 2. Launch Chrome with CDP
@@ -697,4 +697,10 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
         public double Width { get; set; }
         public double Height { get; set; }
     }
+
+    /// <summary>Expands %TOKEN% path values from workload config.</summary>
+    /// <param name="value">Raw configured path.</param>
+    /// <returns>The path with tokens resolved.</returns>
+    private static string ExpandPath(string value)
+        => Canary.Config.CanaryTokens.Expand(value);
 }

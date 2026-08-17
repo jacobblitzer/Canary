@@ -43,7 +43,7 @@
                     {
                         "type":  "GrasshopperSetPanelText",
                         "nickname":  "JsonPath",
-                        "text":  "C:/Repos/CPig/research/slop_tests/05_tpms_lerp.json"
+                        "text":  "%CANARY_REPO_CPIG%/research/slop_tests/05_tpms_lerp.json"
                     },
                     {
                         "type":  "GrasshopperSetToggle",
