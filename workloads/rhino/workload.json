@@ -9,5 +9,12 @@
   "executeTimeoutMs": 300000,
   "windowTitle": "Rhinoceros",
   "viewportClass": "Eto.Wpf.Forms.Controls.WpfViewportHandler",
-  "setupCommands": []
+  "setupCommands": [],
+  "requires": [
+    {
+      "kind": "file",
+      "path": "C:\\Program Files\\Rhino 8\\System\\Rhino.exe",
+      "fix": "install Rhino 8"
+    }
+  ]
 }

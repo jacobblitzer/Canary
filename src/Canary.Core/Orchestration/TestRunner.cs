@@ -57,6 +57,15 @@ public sealed class TestRunner
     private readonly PixelDiffComparer _pixelDiff = new();
     private readonly SsimComparer _ssim = new();
     private IVlmProvider? _vlmProvider;
+    /// <summary>Seconds the host-state probe gets before the run continues unverified.</summary>
+    /// <remarks>
+    /// Short on purpose. Bringing Grasshopper up cold on a machine whose plug-ins load
+    /// from a cloud-synced folder has been measured past 30s, so this is generous for a
+    /// warm host and still an order of magnitude below the 300s execute deadline that
+    /// swallowed the first version of this check.
+    /// </remarks>
+    private const int HostStateProbeSeconds = 45;
+
     private readonly BaselineLedger _ledger;
     private Config.VlmConfig? _vlmConfig;
     private string? _currentVlmDescription;
@@ -195,6 +204,9 @@ public sealed class TestRunner
             if (testDef.Setup != null)
             {
                 _logger.Log("Sending setup commands...");
+                await EnsureHostPreconditionsAsync(
+                    () => client.ExecuteAsync(HostPreconditions.HostStateAction, new Dictionary<string, string>(), cancellationToken),
+                    workload, new[] { testDef }).ConfigureAwait(false);
                 await SendSetupCommandsAsync(client, testDef.Setup, workload, cancellationToken).ConfigureAwait(false);
                 _logger.Log("Setup commands complete.");
             }
@@ -609,6 +621,9 @@ public sealed class TestRunner
             if (firstSetup != null)
             {
                 _logger.Log("Sending setup commands (one-time)...");
+                await EnsureHostPreconditionsAsync(
+                    () => client.ExecuteAsync(HostPreconditions.HostStateAction, new Dictionary<string, string>(), cancellationToken),
+                    workload, tests).ConfigureAwait(false);
                 await SendSetupCommandsAsync(client, firstSetup, workload, cancellationToken).ConfigureAwait(false);
                 _logger.Log("Setup commands complete.");
             }
@@ -852,6 +867,9 @@ public sealed class TestRunner
             if (testDef.Setup != null)
             {
                 _logger.Log("Sending setup commands...");
+                await EnsureHostPreconditionsAsync(
+                    () => agent.ExecuteAsync(HostPreconditions.HostStateAction, new Dictionary<string, string>()),
+                    workload, new[] { testDef }).ConfigureAwait(false);
                 await SendAgentSetupAsync(agent, testDef.Setup, cancellationToken).ConfigureAwait(false);
                 _logger.Log("Setup commands complete.");
             }
@@ -1062,6 +1080,91 @@ public sealed class TestRunner
         _logger.Log($"  switching viewport for checkpoint '{checkpoint.Name}': {vparams["projection"]} / {vparams["displayMode"]}");
         await client.ExecuteAsync("SetViewport", vparams, ct).ConfigureAwait(false);
         await Task.Delay(250, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Asks the host what it has loaded and refuses the run if a declared plug-in is absent.
+    /// </summary>
+    /// <param name="ask">Invokes the host-state verb on whichever transport is in play.</param>
+    /// <param name="workload">Workload config, for its own requirements.</param>
+    /// <param name="tests">Tests about to run, for theirs.</param>
+    /// <exception cref="PreconditionFailedException">A declared plug-in is not loaded.</exception>
+    /// <remarks>
+    /// Called after the first heartbeat and BEFORE any setup command, so nothing has been
+    /// opened when it fires. This is the check whose absence cost 300 seconds of silence on
+    /// 2026-08-17: Grasshopper had not registered Slop, and the only symptom was a modal
+    /// nobody could see holding the UI thread until the RPC deadline expired.
+    /// </remarks>
+    private async Task EnsureHostPreconditionsAsync(
+        Func<Task<AgentResponse>> ask, WorkloadConfig workload, IReadOnlyList<TestDefinition> tests)
+    {
+        var declared = RequirementChecker.Collect(workload, tests, workload.Name);
+        var plugins = declared.Where(d =>
+            string.Equals(d.Requirement.Kind, Requirement.KindPlugin, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        // Nothing declared: ask anyway. Logging what the host HAS is the cheap half of the
+        // fix, and on its own it turns "logged nothing" into a usable record.
+        AgentResponse resp;
+        try
+        {
+            // BOUNDED, and this is not optional. The first version of this probe inherited
+            // the 300s execute deadline and deadlocked on it, so a check whose entire purpose
+            // is to prevent a five-minute silence produced one (measured 2026-08-18: 344s).
+            // A precondition probe that can cost more than a few seconds is worse than no
+            // probe, because it adds delay to the very failure it was meant to shorten.
+            var probe = ask();
+            var budget = Task.Delay(TimeSpan.FromSeconds(HostStateProbeSeconds));
+            if (await Task.WhenAny(probe, budget).ConfigureAwait(false) == budget)
+            {
+                _logger.Log($"Warning: host-state probe did not answer within {HostStateProbeSeconds}s; " +
+                            "preconditions not verified (continuing).");
+                return;
+            }
+            resp = await probe.ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.Log($"Warning: host-state probe failed ({ex.GetType().Name}: {ex.Message}); preconditions not verified.");
+            return;
+        }
+
+        if (!resp.Success)
+        {
+            _logger.Log($"Warning: host-state probe returned failure ({resp.Message}); preconditions not verified.");
+            return;
+        }
+
+        resp.Data.TryGetValue("loaded", out var loadedRaw);
+        resp.Data.TryGetValue("loadErrors", out var loadErrors);
+        var loaded = HostPreconditions.ParseLoaded(loadedRaw);
+        _logger.Log($"host: {loaded.Count} plug-in(s)/librar(ies) loaded"
+                  + (string.IsNullOrWhiteSpace(loadErrors) ? string.Empty : ", WITH LOAD ERRORS"));
+        if (!string.IsNullOrWhiteSpace(loadErrors))
+            foreach (var e in loadErrors.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                _logger.Log($"  host load error: {e.Trim()}");
+
+        if (plugins.Count == 0) return;
+
+        // ABSENCE OF EVIDENCE IS NOT EVIDENCE OF ABSENCE. If the host could not see its own
+        // plug-in table yet, "not in the list" means "I do not know", not "missing". The
+        // first version skipped this and produced a FALSE RED - it reported Slop and CPig
+        // Kinematics absent on a machine where both were loaded, which would block a healthy
+        // install. Failing a good machine is a different mistake from passing a bad one, and
+        // no more acceptable.
+        var needsGh = plugins.Any(p => p.Requirement.Id!.StartsWith("gh:", StringComparison.OrdinalIgnoreCase));
+        resp.Data.TryGetValue("grasshopperReady", out var ghReady);
+        if (needsGh && !string.Equals(ghReady, "true", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.Log("Warning: the host could not report its Grasshopper library table " +
+                        $"(grasshopperReady={ghReady ?? "absent"}); plug-in preconditions NOT verified (continuing).");
+            return;
+        }
+
+        var misses = HostPreconditions.Diff(plugins, loaded);
+        if (misses.Count > 0)
+            throw new PreconditionFailedException(misses, loadedRaw ?? string.Empty, loadErrors ?? string.Empty);
+
+        _logger.Log($"preconditions : {plugins.Count} declared plug-in(s) all present");
     }
 
     private async Task SendAgentSetupAsync(ICanaryAgent agent, TestSetup setup, CancellationToken ct)

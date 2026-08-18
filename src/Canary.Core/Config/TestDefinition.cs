@@ -36,6 +36,13 @@ public sealed class TestDefinition
     [JsonPropertyName("recording")]
     public string Recording { get; set; } = string.Empty;
 
+    /// <summary>
+    /// What this machine must already have for THIS test to run, on top of the workload's.
+    /// </summary>
+    /// <remarks>Deployment campaign Phase 5. See <see cref="Requirement"/>.</remarks>
+    [JsonPropertyName("requires")]
+    public List<Requirement> Requires { get; set; } = new();
+
     [JsonPropertyName("checkpoints")]
     public List<TestCheckpoint> Checkpoints { get; set; } = new();
 

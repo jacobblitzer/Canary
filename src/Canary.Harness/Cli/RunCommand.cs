@@ -164,6 +164,17 @@ public static class RunCommand
         => (result.Failed + result.Crashed) == 0 ? 0 : 1;
 
     /// <summary>
+    /// Exit code for "this machine is missing something the content needs".
+    /// </summary>
+    /// <remarks>
+    /// Distinct from 1 (a test failed) on purpose. 0 = everything ran and passed, 1 = the
+    /// software under test is wrong, 3 = the machine could not answer the question at all.
+    /// A caller that cannot tell 1 from 3 will chase a product bug that is actually a
+    /// missing install.
+    /// </remarks>
+    internal const int ExitPrecondition = 3;
+
+    /// <summary>
     /// Parse the <c>--mode</c> flag string into a <see cref="ModeOverride"/>.
     /// Logs and falls back to <see cref="ModeOverride.PixelDiff"/> on unknown values.
     /// </summary>
@@ -294,6 +305,7 @@ public static class RunCommand
         }
 
         var workload = await WorkloadConfig.LoadAsync(configPath).ConfigureAwait(false);
+        var testsDiscovered = 0;
         var pm = new ProcessManager();
 
         // Register Ctrl+C cleanup
@@ -333,6 +345,9 @@ public static class RunCommand
             runner.TelemetrySink = telemetrySink;
 
             List<TestDefinition> tests;
+            // Captured outside the try so the precondition handler can say how many tests
+            // never ran - "skipped", which is the honest word when the machine was unfit.
+            testsDiscovered = 0;
             if (testName != null)
             {
                 // Run single test
@@ -386,6 +401,8 @@ public static class RunCommand
                 return 1;
             }
 
+            testsDiscovered = tests.Count;
+
             var runLabel = suiteName != null
                 ? $"Running {tests.Count} test(s) for suite '{suiteName}' in workload '{workloadName}'"
                 : $"Running {tests.Count} test(s) for workload '{workloadName}'";
@@ -434,6 +451,21 @@ public static class RunCommand
                 logger.Log($"Reports saved: {htmlPath}");
 
             return ExitCodeFromSuiteResult(suiteResult);
+        }
+        catch (PreconditionFailedException pex)
+        {
+            // Phase 5. A precondition failure is NOT a test failure and gets its own exit
+            // code, because the two demand opposite responses: a failing test means look at
+            // the software, an unmet precondition means look at the machine. Reporting one
+            // as the other sends whoever reads it to the wrong place.
+            //
+            // Nothing has been opened at this point - the check runs after the first
+            // heartbeat and before any setup command - so there is nothing to tear down and
+            // no partial results to explain.
+            var skipped = testsDiscovered;
+            foreach (var line in HostPreconditions.Format(pex, workloadName, skipped))
+                logger.Log(line);
+            return ExitPrecondition;
         }
         finally
         {

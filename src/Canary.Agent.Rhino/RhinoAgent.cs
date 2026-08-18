@@ -38,6 +38,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     "GrasshopperGetPanelText" => HandleGrasshopperGetPanelText(parameters),
                     "WaitForGrasshopperPanel" => HandleWaitForGrasshopperPanel(parameters),
                     "GrasshopperGetDiagnosticDump" => HandleGrasshopperGetDiagnosticDump(parameters),
+                    "GetHostState" => HandleGetHostState(parameters),
                     "GrasshopperCanvasImage" => HandleGrasshopperCanvasImage(parameters),
                     "WaitForPenumbraFrame" => HandleWaitForPenumbraFrame(parameters),
                     "GetPenumbraFrameState" => HandleGetPenumbraFrameState(parameters),
@@ -2026,6 +2027,205 @@ public sealed class RhinoAgent : ICanaryAgent
     /// component/param already produced, so the agent can read the root cause
     /// without a human screenshot. See Canary/docs/bugs/0018 (pending).
     /// </summary>
+    /// <summary>
+    /// Reports what this Rhino host actually HAS, so a missing dependency is a named red
+    /// rather than a five-minute silence.
+    /// </summary>
+    /// <param name="parameters">
+    /// <c>loadGrasshopper</c> (default true) — force the Grasshopper plug-in to load first.
+    /// Plug-in libraries do not register until it does, so asking before it loads reports
+    /// an empty machine and would be worse than not asking.
+    /// </param>
+    /// <returns>Host facts in <see cref="AgentResponse.Data"/>.</returns>
+    /// <remarks>
+    /// <para>
+    /// Deployment campaign Phase 5. Deliberately requires NO open document — unlike
+    /// <c>GrasshopperGetDiagnosticDump</c>, which reports on the ACTIVE DEFINITION and
+    /// therefore cannot answer anything before a fixture opens. The whole point here is to
+    /// answer before opening, because "the fixture would not open" is the failure being
+    /// diagnosed.
+    /// </para>
+    /// <para>
+    /// This is the verb the operator's 2026-08-17 session needed and did not have.
+    /// Grasshopper had silently not registered <c>Slop.gha</c>; the fixture depends only on
+    /// Grasshopper and Slop; so opening it raised an "Unrecognized Objects" modal that held
+    /// the UI thread until the harness gave up after 300s having logged nothing. Every fact
+    /// needed to say "Slop is not loaded" was available in-process the whole time.
+    /// </para>
+    /// <para>
+    /// Every section is wrapped independently: a probe that dies halfway tells you less than
+    /// one that reports what it managed to collect.
+    /// </para>
+    /// </remarks>
+    private static AgentResponse HandleGetHostState(Dictionary<string, string> parameters)
+    {
+        var data = new Dictionary<string, string>();
+        var notes = new List<string>();
+
+        // THE field the harness compares requirements against: newline-delimited
+        // "id=detail", where id is in the SAME namespace a requirement is written in
+        // (gh:Name, rhino:Name). One namespace on both sides is the whole point - the first
+        // version of this handler emitted a richer "ghLibraries" JSON blob and the harness
+        // parsed a "loaded" field that did not exist, so it saw nothing and declared every
+        // plug-in missing on a machine where they were all present. Two halves built to two
+        // contracts, which is the same defect shape this campaign exists to remove.
+        var loaded = new List<string>();
+
+        static string J(string s) => s == null
+            ? string.Empty
+            : s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", " ").Replace("\n", " ");
+
+        try { data["rhinoVersion"] = RhinoApp.Version.ToString(); }
+        catch (Exception ex) { notes.Add("rhinoVersion: " + ex.Message); }
+
+        try
+        {
+            // Rhino 8 runs on either .NET Framework or CoreCLR, and which one decides what
+            // a plug-in can bind to. Worth reporting rather than inferring.
+            data["framework"] = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+        }
+        catch (Exception ex) { notes.Add("framework: " + ex.Message); }
+
+        // --- Rhino plug-ins, with their LOADED state (installed != loaded) -------
+        try
+        {
+            var sb = new System.Text.StringBuilder("[");
+            var first = true;
+            foreach (var kv in global::Rhino.PlugIns.PlugIn.GetInstalledPlugIns())
+            {
+                var isLoaded = false;
+                try { isLoaded = global::Rhino.PlugIns.PlugIn.GetPlugInInfo(kv.Key).IsLoaded; } catch { }
+                if (!first) sb.Append(',');
+                first = false;
+                sb.Append("{\"name\":\"").Append(J(kv.Value))
+                  .Append("\",\"id\":\"").Append(kv.Key)
+                  .Append("\",\"loaded\":").Append(isLoaded ? "true" : "false").Append('}');
+                if (isLoaded) loaded.Add("rhino:" + kv.Value + "=loaded");
+            }
+            data["rhinoPlugins"] = sb.Append(']').ToString();
+        }
+        catch (Exception ex) { notes.Add("rhinoPlugins: " + ex.Message); }
+
+        // --- Grasshopper: load it, then report what registered ------------------
+        var wantGh = !parameters.TryGetValue("loadGrasshopper", out var lg)
+                     || !string.Equals(lg, "false", StringComparison.OrdinalIgnoreCase);
+        if (wantGh)
+        {
+            try
+            {
+                // NOT PlugIn.LoadPlugIn. Every handler here runs inside InvokeOnUi, and
+                // LoadPlugIn needs the message pump to finish bringing Grasshopper up - the
+                // pump this very call is occupying. Measured 2026-08-18: it deadlocked until
+                // the 300s RPC deadline, so the probe meant to prevent a five-minute silence
+                // caused one.
+                //
+                // RunScript is the route the agent already uses at :598 and is proven on this
+                // machine, because it returns to the pump while GH initialises.
+                var ghId = new Guid("b45a29b1-4343-4035-989e-044e8580d9cf");
+                var already = false;
+                try { already = global::Rhino.PlugIns.PlugIn.GetPlugInInfo(ghId).IsLoaded; } catch { }
+                if (!already)
+                    RhinoApp.RunScript("_-Grasshopper _W _T ENTER", echo: false);
+                try { already = global::Rhino.PlugIns.PlugIn.GetPlugInInfo(ghId).IsLoaded; } catch { }
+                data["grasshopperLoaded"] = already ? "true" : "false";
+
+                // READY is not the same as LOADED, and conflating them produced a FALSE RED:
+                // measured 2026-08-18, the probe enumerated immediately after RunScript,
+                // found ComponentServer.Libraries empty, and reported Slop and CPig
+                // Kinematics missing when both were in fact loaded. Blocking a healthy
+                // machine is a different failure from passing a broken one, and no better.
+                //
+                // So wait for the library table to become non-empty, and report readiness
+                // separately so the harness can distinguish "this plug-in is absent" from
+                // "I could not see yet".
+                var ready = false;
+                for (var i = 0; i < 60; i++)   // ~15s, pumping so GH can finish
+                {
+                    try
+                    {
+                        if (Grasshopper.Instances.ComponentServer.Libraries.Count > 0) { ready = true; break; }
+                    }
+                    catch { }
+                    System.Windows.Forms.Application.DoEvents();
+                    System.Threading.Thread.Sleep(250);
+                }
+                data["grasshopperReady"] = ready ? "true" : "false";
+            }
+            catch (Exception ex) { notes.Add("loadGrasshopper: " + ex.Message); }
+
+            try
+            {
+                var srv = Grasshopper.Instances.ComponentServer;
+                var sb = new System.Text.StringBuilder("[");
+                var first = true;
+                var count = 0;
+                foreach (var lib in srv.Libraries)
+                {
+                    // Core GH libraries are noise for a precondition check - every install
+                    // has them, and nobody declares a requirement on them.
+                    bool core;
+                    try { core = lib.IsCoreLibrary; } catch { core = false; }
+                    if (core) continue;
+
+                    string name = string.Empty, ver = string.Empty, loc = string.Empty;
+                    try { name = lib.Name ?? string.Empty; } catch { }
+                    try { ver = lib.Version ?? string.Empty; } catch { }
+                    try { loc = lib.Location ?? string.Empty; } catch { }
+
+                    if (!first) sb.Append(',');
+                    first = false;
+                    count++;
+                    loaded.Add("gh:" + name + "=" + (string.IsNullOrEmpty(ver) ? "?" : ver) + "@" + loc);
+                    sb.Append("{\"name\":\"").Append(J(name))
+                      .Append("\",\"version\":\"").Append(J(ver))
+                      .Append("\",\"location\":\"").Append(J(loc)).Append("\"}");
+                }
+                data["ghLibraries"] = sb.Append(']').ToString();
+                data["ghLibraryCount"] = count.ToString();
+            }
+            catch (Exception ex) { notes.Add("ghLibraries: " + ex.Message); }
+
+            // A library that FAILED to load is the most diagnostic thing here, and it is
+            // invisible from the loaded list by definition.
+            try
+            {
+                var sb = new System.Text.StringBuilder("[");
+                var first = true;
+                var n = 0;
+                foreach (var e in Grasshopper.Instances.ComponentServer.LoadingExceptions)
+                {
+                    string msg = string.Empty, nm = string.Empty;
+                    try { msg = e.Message ?? string.Empty; } catch { }
+                    try { nm = e.Name ?? string.Empty; } catch { }
+                    if (!first) sb.Append(',');
+                    first = false;
+                    n++;
+                    sb.Append("{\"name\":\"").Append(J(nm)).Append("\",\"message\":\"").Append(J(msg)).Append("\"}");
+                }
+                data["ghLoadingExceptions"] = sb.Append(']').ToString();
+                data["ghLoadingExceptionCount"] = n.ToString();
+            }
+            catch (Exception ex) { notes.Add("ghLoadingExceptions: " + ex.Message); }
+        }
+
+        data["loaded"] = string.Join(Environment.NewLine, loaded.ToArray());
+        // loadErrors mirrors ghLoadingExceptions in a flat, printable form. A library that
+        // FAILED to load is invisible from the loaded list by definition, so this is often
+        // the only place the real reason appears.
+        if (data.TryGetValue("ghLoadingExceptions", out var ghEx) && ghEx != "[]")
+            data["loadErrors"] = ghEx;
+
+        if (notes.Count > 0) data["partialFailures"] = string.Join(" | ", notes.ToArray());
+
+        return new AgentResponse
+        {
+            Success = true,
+            Message = $"host state: {data.Count} field(s)"
+                    + (notes.Count > 0 ? $", {notes.Count} section(s) failed" : string.Empty),
+            Data = data,
+        };
+    }
+
     private static AgentResponse HandleGrasshopperGetDiagnosticDump(Dictionary<string, string> parameters)
     {
         var doc = Grasshopper.Instances.ActiveCanvas?.Document;

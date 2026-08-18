@@ -155,7 +155,13 @@ public static class DoctorCommand
                     if (appPath.Contains(Path.DirectorySeparatorChar) || appPath.Contains('/'))
                     {
                         if (!File.Exists(appPath))
-                            f.Warnings.Add($"workload appPath '{appPath}' does not exist");
+                        {
+                            // Phase 5: an ERROR, not a warning. Doctor exiting 0 on a machine
+                            // with no target application installed is indefensible - it is
+                            // the most basic form of "this install is not complete", and it
+                            // is exactly the question doctor now exists to answer.
+                            f.Errors.Add($"workload appPath '{appPath}' does not exist — the target application is not installed here");
+                        }
                     }
                     else
                     {
@@ -193,6 +199,64 @@ public static class DoctorCommand
             catch (Exception ex) when (ex is FileNotFoundException or InvalidDataException)
             {
                 f.Errors.Add(ex.Message);
+            }
+        }
+
+        // --- 6b. declared preconditions, offline half -----------------------
+        // Phase 5, and the reason this whole check exists: on 2026-08-17 a workload whose
+        // Grasshopper plug-in had silently not registered cost a 300-second timeout that
+        // logged nothing, while doctor exited 0 the entire time. Checks 1-6 verify Canary's
+        // OWN content; nothing verified what that content DEPENDS ON.
+        //
+        // Only the offline half runs here - `file` and `service`, a syscall and one HTTP GET
+        // - so this costs nothing and needs no app launch. `plugin` cannot be answered from
+        // out here at all: Grasshopper's library table and Rhino's plug-in table exist only
+        // inside the running app, and a file check on the .gha is NOT a substitute, because
+        // Slop.gha was present on a scanned path and still did not register. Presence is not
+        // loaded.
+        if (!string.IsNullOrWhiteSpace(workloadName))
+        {
+            try
+            {
+                var wlPath = Path.Combine(root, workloadName!, "workload.json");
+                WorkloadConfig? cfg = File.Exists(wlPath)
+                    ? await WorkloadConfig.LoadAsync(wlPath).ConfigureAwait(false)
+                    : null;
+
+                // Scope: the named suite's tests when given, else every test in the workload.
+                List<TestDefinition> scope;
+                if (!string.IsNullOrWhiteSpace(suiteName))
+                {
+                    var (_, tests, _) = await TestDiscovery
+                        .DiscoverTestsForSuiteAsync(root, workloadName!, suiteName!, null).ConfigureAwait(false);
+                    scope = tests;
+                }
+                else
+                {
+                    scope = await TestDiscovery.DiscoverTestsAsync(root, workloadName!, null).ConfigureAwait(false);
+                }
+
+                var reqs = RequirementChecker.Collect(cfg, scope, workloadName!);
+                var offline = reqs.Count(d => d.Requirement.IsOfflineCheckable);
+                var inApp = reqs.Count - offline;
+                logger.Log($"preconditions : {reqs.Count} declared ({offline} checkable here, {inApp} need the app running)");
+
+                foreach (var miss in await RequirementChecker.CheckOfflineAsync(reqs, root).ConfigureAwait(false))
+                    f.Errors.Add("PRECONDITION  " + miss.Format());
+
+                if (inApp > 0)
+                {
+                    f.Notes.Add($"{inApp} plugin requirement(s) are NOT verified by doctor — they can only be " +
+                                "checked from inside the running app, and are gated at run time via GetHostState");
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                f.Errors.Add(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                f.Errors.Add($"precondition check failed: {ex.Message}");
             }
         }
 

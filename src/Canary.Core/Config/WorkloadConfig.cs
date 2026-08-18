@@ -14,6 +14,16 @@ public sealed class WorkloadConfig
     [JsonPropertyName("displayName")]
     public string DisplayName { get; set; } = string.Empty;
 
+    /// <summary>
+    /// What this machine must already have for ANY test in this workload to run.
+    /// </summary>
+    /// <remarks>
+    /// Deployment campaign Phase 5. Inheritance is union and additive only - a test may add
+    /// requirements, never drop one declared here.
+    /// </remarks>
+    [JsonPropertyName("requires")]
+    public List<Requirement> Requires { get; set; } = new();
+
     [JsonPropertyName("appPath")]
     public string AppPath { get; set; } = string.Empty;
 
