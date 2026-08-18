@@ -132,3 +132,24 @@
 - **Why:** "the PNG is on disk" and "this run compared it" are different claims, and only the second one is a test. Presence proves nothing about reachability, `New` hides the gap, and `doctor` cannot see it either — `DoctorCommand.cs` skips any path containing `/results/` by design. Check the ledger (`canary baselines verify`), and when you change a derivation, confirm the row count BEFORE and AFTER: a short ledger verifies green.
 - **Resolved 2026-08-17 (Phase 2b C3):** there is now ONE derivation (`ResultPaths`), `suiteName` is gone from every evidence path, and the arming gate sits in the two dispatch funnels ABOVE the mode loop so a `capture` flip cannot slip under it. `canary baselines verify` is the check; `SingleResultDerivationTests` stops a second derivation appearing. What to re-check when touching this: the row COUNT before and after, because a short ledger verifies green.
 - **Last bit:** 2026-08-17
+
+## Non-zero defaults make "omitted" indistinguishable from "explicit"
+
+- **Touching:** any config field whose checker reads `if (x > 0)` / `if (x != null)`, and any per-checkpoint override that REPLACES rather than merges a parent block
+- **Trace:** `ViewportSetup.Width`/`Height` default to **800/600**, so `BuildViewportParams`' `if (viewport.Width > 0)` guard cannot distinguish a size the author wrote from one they omitted. Every per-checkpoint `viewport` override therefore requested 800x600 and discarded whatever the test declared — the 13 cpig-kin tests asked for 800x600, 1200x600, 1000x700 and 900x900, and all of them captured at the pane size, with baselines uniformly 960x600. Those declared sizes were never honoured, from the day the tests were written. Same shape one layer up: the old `GetTestDirectory` keyed off `suiteName != null`, and because `Path.Combine` drops empty segments, `""` read as "a suite was supplied" and silently produced the UNSCOPED path — so normalising "no suite" to `""` would have looked applied and behaved as before.
+- **Why:** a sentinel that is also a legal value erases the distinction the guard exists to make. Default to 0/null so the guard means what it says, and when a checkpoint-level block overrides a test-level one, decide explicitly whether it MERGES or REPLACES — silent replacement throws away the parent's declaration.
+- **Last bit:** 2026-08-17
+
+## Two halves of one contract, written at two times
+
+- **Touching:** adding a field to an agent response and a reader for it in the harness; anything where a producer and consumer are edited in separate passes
+- **Trace:** 2026-08-18. `GetHostState` emitted a rich `ghLibraries` JSON blob; the harness parsed a field called `loaded` in `id=detail` form. Both halves were correct in isolation, and the agent was written before the design that named the field. The harness saw an empty map and reported `gh:Slop` and `gh:CPig Kinematics` **absent on a machine where both were loaded** — a FALSE RED that would have blocked a healthy install. This is the same defect as the dual `GetTestDirectory`: two things that must agree, with nothing forcing them to.
+- **Why:** blocking a good machine is a different mistake from passing a bad one, and no more acceptable. When a producer and a consumer are added in separate passes, run the pair end-to-end before believing either — and prefer ONE namespace shared by both sides (requirement ids and reported ids in the same vocabulary) so a mismatch is a compile-or-diff away rather than an empty-dictionary away. Also: distinguish "absent" from "could not see yet" (`grasshopperReady`), because absence of evidence is not evidence of absence.
+- **Last bit:** 2026-08-18
+
+## Rhino agent: the UI thread you are on is the pump the SDK needs
+
+- **Touching:** any new `RhinoAgent` handler that loads a plug-in, opens a document, or waits on app initialisation
+- **Trace:** every handler runs inside `InvokeOnUi`. `PlugIn.LoadPlugIn(grasshopperGuid)` needs the message pump to finish bringing GH up — the pump the handler is already occupying — so it **deadlocked to the 300s RPC deadline**. A probe written to prevent a five-minute silence caused one (measured 344s). `RhinoApp.RunScript("_-Grasshopper _W _T ENTER")` works, because it returns to the pump; `Application.DoEvents()` + sleep is what lets a readiness poll progress. Also, `Canary.Agent.Rhino` **shadows the root `Rhino` namespace** — `Rhino.PlugIns` resolves to `Canary.Agent.Rhino.PlugIns` and needs `global::`.
+- **Why:** a synchronous invoke cannot wait on anything that needs the thread it is holding. And any probe on the launch path must carry its OWN short timeout rather than inheriting the execute deadline — a precondition check that can cost minutes adds delay to the very failure it exists to shorten.
+- **Last bit:** 2026-08-18
