@@ -164,12 +164,12 @@
     {
       "kind": "plugin",
       "id": "gh:Slop",
-      "fix": "build C:/Repos/Slop (build IS deploy) or install the Slop yak package"
+      "fix": "install the Slop yak package, or on a dev machine build %CANARY_REPO_SLOP% (build IS deploy; GH loads bin/Release/net48)"
     },
     {
       "kind": "plugin",
       "id": "gh:CPig Kinematics",
-      "fix": "build CPig.Kinematics.Grasshopper (net48)"
+      "fix": "install the CPig yak package, or on a dev machine build %CANARY_REPO_CPIG% CPig.Kinematics.Grasshopper (net48)"
     }
   ]
 }
