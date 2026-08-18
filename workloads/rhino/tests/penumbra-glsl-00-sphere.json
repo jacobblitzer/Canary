@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "penumbra-glsl-00-sphere",
   "workload": "rhino",
   "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C) â€” the STRUCTURAL (tape) render path + a shape POSITIVE CONTROL. Loads 54_penumbra_sphere.json via the Slop loader (a single Field Primitive sphere â†’ CPig Penumbra Preview), sets the preview backend to GLSL, Build â†’ CPig pushes a .3mf whose libfive primitive exports STRUCTURALLY (a compiled tape, not a voxel-bake) and renders in the in-process GLSL conduit. Pairs with penumbra-glsl-01-cpig-gyroid as a discrimination test: this one FAILS if the render is a lattice/blank (it must be a smooth sphere); the gyroid one FAILS if the render is a sphere (bug 0054). Together they prove the GLSL conduit renders the actual field shape on BOTH paths (tape here, dense grid there). PREVIEW DISCIPLINE: the Slop fixture sets preview:false on all field nodes so ONLY the Penumbra render appears in the viewport. ASSERTS: deterministic panel asserts (SlopSuccess / Connected / Status=Pushed / no FATAL). VISUAL: mode:capture â€” saves the candidate for manual review. VLM regression is wired but dormant (setup.vlm = ollama qwen2.5vl:7b + a sphere-vs-lattice vlmDescription) â€” re-enable by flipping the checkpoint mode back to vlm. Requires the Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID â€¦BA200).",
@@ -48,5 +48,22 @@
     { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
     { "type": "PanelContains", "nickname": "Status", "text": "Pushed" },
     { "type": "PanelEquals", "nickname": "Connected", "text": "True" }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "gh:Slop",
+      "fix": "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+    },
+    {
+      "kind": "plugin",
+      "id": "gh:CPig",
+      "fix": "install the CPig yak package, or on a dev machine build %CANARY_REPO_CPIG% CPig.Grasshopper (net48) and register its output folder in Grasshopper Developer Settings"
+    },
+    {
+      "kind": "file",
+      "path": "%CANARY_REPO_CPIG%/research/slop_tests/54_penumbra_sphere.json",
+      "fix": "this test loads a Slop definition from the CANARY_REPO_CPIG repo; check that repo out and point %CANARY_REPO_CPIG% at it (see workloads/tokens.json)"
+    }
   ]
 }

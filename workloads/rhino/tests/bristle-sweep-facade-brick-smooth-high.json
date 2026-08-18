@@ -152,5 +152,22 @@
    "description": ""
   }
  ],
- "keepOpenOnFailure": false
+ "keepOpenOnFailure": false,
+ "requires": [
+  {
+   "kind": "plugin",
+   "id": "gh:Slop",
+   "fix": "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+  },
+  {
+   "kind": "plugin",
+   "id": "gh:Bristle",
+   "fix": "install the Bristle yak package, or on a dev machine build %CANARY_REPO_BRISTLE% Bristle.GH (net48) and register its output folder in Grasshopper Developer Settings"
+  },
+  {
+   "kind": "file",
+   "path": "%CANARY_REPO_BRISTLE%/tests/slop/sweeps/facade-brick-smooth-high.json",
+   "fix": "this test loads a Slop definition from the CANARY_REPO_BRISTLE repo; check that repo out and point %CANARY_REPO_BRISTLE% at it (see workloads/tokens.json)"
+  }
+ ]
 }

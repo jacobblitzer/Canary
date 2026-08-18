@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "penumbra-glsl-01-cpig-gyroid",
   "workload": "rhino",
   "description": "CPig live preview through the IN-PROCESS GLSL studio (Swath C) â€” the DENSE (voxel-bake) render path. Loads 53_penumbra_preview.json via the Slop loader (unified Field TPMS gyroid âˆ© sphere â†’ CPig Penumbra Preview), sets the preview backend to GLSL (PenumbraPreviewBackend Glsl), then Build â†’ CPig pushes its .3mf which routes to a device-free node compile and renders in the in-process GLSL conduit (native depth, camera-tracked) â€” NOT the out-of-process image-blit overlay. The unified Field TPMS is PROCEDURAL â†’ it voxel-bakes to a 3MF functionfromimage3d image stack; Penumbra decodes that to a dense SDF grid (bug 0054) and renders it via u_sdfGrid. PREVIEW DISCIPLINE: the Slop fixture sets preview:false on all field nodes so ONLY the Penumbra render appears in the viewport (a visible GH field preview clutters/occludes the SDF + masks whether Penumbra rendered). ASSERTS: deterministic panel asserts (SlopSuccess / Connected / Status=Pushed / no FATAL) prove the CPigâ†’Penumbra push + connection regardless of framing. VISUAL: mode:capture â€” saves the candidate for manual review (inspect it + gl.scene.loaded telemetry; no image pass/fail). VLM regression is wired but dormant (setup.vlm = ollama qwen2.5vl:7b + a gyroid-vs-sphere vlmDescription) â€” re-enable by flipping the checkpoint mode back to vlm. DIAGNOSTIC: empty viewport â‡’ the SDF likely rendered unframed/tiny (roadmap A2 auto-fit) or the node host is stale (restart Rhino). Requires: Penumbra.Rhino plug-in auto-loaded + the CPig .gha (Penumbra Preview, GUID â€¦BA200).",
@@ -48,5 +48,22 @@
     { "type": "PanelDoesNotContain", "nickname": "SlopLog", "text": "FATAL" },
     { "type": "PanelContains", "nickname": "Status", "text": "Pushed" },
     { "type": "PanelEquals", "nickname": "Connected", "text": "True" }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "gh:Slop",
+      "fix": "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+    },
+    {
+      "kind": "plugin",
+      "id": "gh:CPig",
+      "fix": "install the CPig yak package, or on a dev machine build %CANARY_REPO_CPIG% CPig.Grasshopper (net48) and register its output folder in Grasshopper Developer Settings"
+    },
+    {
+      "kind": "file",
+      "path": "%CANARY_REPO_CPIG%/research/slop_tests/53_penumbra_preview.json",
+      "fix": "this test loads a Slop definition from the CANARY_REPO_CPIG repo; check that repo out and point %CANARY_REPO_CPIG% at it (see workloads/tokens.json)"
+    }
   ]
 }

@@ -109,5 +109,17 @@
       "text": "Fatal error",
       "description": "the build callback did not crash"
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "gh:Slop",
+      "fix": "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+    },
+    {
+      "kind": "file",
+      "path": "%CANARY_REPO_SLOP%/research/slop_tests/02_within_radius.json",
+      "fix": "this test loads a Slop definition from the CANARY_REPO_SLOP repo; check that repo out and point %CANARY_REPO_SLOP% at it (see workloads/tokens.json)"
+    }
   ]
 }

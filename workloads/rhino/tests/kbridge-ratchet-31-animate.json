@@ -113,5 +113,22 @@
       "nickname": "BindReport",
       "text": "file not found"
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "gh:Slop",
+      "fix": "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+    },
+    {
+      "kind": "plugin",
+      "id": "gh:CPig Kinematics",
+      "fix": "install the CPig yak package, or on a dev machine build %CANARY_REPO_CPIG% CPig.Kinematics.Grasshopper (net48)"
+    },
+    {
+      "kind": "file",
+      "path": "%CANARY_REPO_KBRIDGE%/out/_slop-side-by-side/ratchet-31-bind-sweep-animate.canary.slop.json",
+      "fix": "this test loads a Slop definition from the CANARY_REPO_KBRIDGE repo; check that repo out and point %CANARY_REPO_KBRIDGE% at it (see workloads/tokens.json)"
+    }
   ]
 }

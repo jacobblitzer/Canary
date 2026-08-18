@@ -23,5 +23,12 @@
       "--hide-scrollbars",
       "--disable-smooth-scrolling"
     ]
-  }
+  },
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "js:__canaryWaitForReady",
+      "fix": "the Qualia page did not install its Canary hooks (packages/ui/src/canary-hooks.ts) - check the app actually built and is being served, not a stale dist"
+    }
+  ]
 }

@@ -162,5 +162,17 @@
       "description": "canvas render written"
     }
   ],
-  "keepOpenOnFailure": true
+  "keepOpenOnFailure": true,
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "gh:Slop",
+      "fix": "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+    },
+    {
+      "kind": "file",
+      "path": "%CANARY_REPO_LIGHTRO%/tests/slop/04_combined.json",
+      "fix": "this test loads a Slop definition from the CANARY_REPO_LIGHTRO repo; check that repo out and point %CANARY_REPO_LIGHTRO% at it (see workloads/tokens.json)"
+    }
+  ]
 }

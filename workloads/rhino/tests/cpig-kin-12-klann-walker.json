@@ -149,6 +149,11 @@
       "kind": "plugin",
       "id": "gh:CPig Kinematics",
       "fix": "install the CPig yak package, or on a dev machine build %CANARY_REPO_CPIG% CPig.Kinematics.Grasshopper (net48)"
+    },
+    {
+      "kind": "file",
+      "path": "%CANARY_REPO_CPIG%/research/slop_tests/kin_12_klann_walker.json",
+      "fix": "this test loads a Slop definition from the CANARY_REPO_CPIG repo; check that repo out and point %CANARY_REPO_CPIG% at it (see workloads/tokens.json)"
     }
-  ]
+]
 }

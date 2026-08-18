@@ -1,4 +1,4 @@
-﻿{
+{
     "name":  "cpig-04-field-waves",
     "workload":  "rhino",
     "description":  "04 Field Waves (auto-generated from 04_field_waves.json)",
@@ -78,5 +78,22 @@
                         "nickname":  "SlopLog",
                         "text":  "!!!"
                     }
-                ]
+                ],
+    "requires":  [
+        {
+            "kind":  "plugin",
+            "id":  "gh:Slop",
+            "fix":  "install the Slop yak package; on a dev machine a Release net48 build ships it to the Drive folder GH loads from - check `canary doctor` output for the location actually in use"
+        },
+        {
+            "kind":  "plugin",
+            "id":  "gh:CPig",
+            "fix":  "install the CPig yak package, or on a dev machine build %CANARY_REPO_CPIG% CPig.Grasshopper (net48) and register its output folder in Grasshopper Developer Settings"
+        },
+        {
+            "kind":  "file",
+            "path":  "%CANARY_REPO_CPIG%/research/slop_tests/04_field_waves.json",
+            "fix":  "this test loads a Slop definition from the CANARY_REPO_CPIG repo; check that repo out and point %CANARY_REPO_CPIG% at it (see workloads/tokens.json)"
+        }
+    ]
 }
