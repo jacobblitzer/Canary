@@ -22,6 +22,50 @@ public sealed class ProcessManager
     }
 
     /// <summary>
+    /// Kill ONE tracked process and its tree, leaving any others alone.
+    /// </summary>
+    /// <param name="process">The process to kill; ignored if not tracked.</param>
+    /// <remarks>
+    /// For callers that own a single app for a bounded task — <c>canary env</c> launches one
+    /// application, asks it one question and closes it. <see cref="KillAll"/> would be wrong
+    /// there the moment the same <see cref="ProcessManager"/> is shared with anything else, and
+    /// re-implementing the teardown at the call site would lose the orphan-child sweep and the
+    /// stubborn-process retry that were both added here for a reason.
+    /// </remarks>
+    public void KillTracked(Process process)
+    {
+        lock (_lock)
+        {
+            if (!_tracked.Remove(process)) return;
+        }
+
+        // Children first, so they die with their parent rather than becoming orphans.
+        try { if (!process.HasExited) OrphanNodeCleaner.KillChildrenOf(process.Id, "pre-killTracked"); } catch { }
+
+        try
+        {
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+                process.WaitForExit(5000);
+            }
+        }
+        catch (InvalidOperationException) { /* exited between check and kill */ }
+        catch (System.ComponentModel.Win32Exception) { /* access denied or already gone */ }
+
+        // One retry for a stubborn process, mirroring KillAll.
+        try
+        {
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+                process.WaitForExit(3000);
+            }
+        }
+        catch { }
+    }
+
+    /// <summary>
     /// Kill all tracked processes that are still running.
     /// </summary>
     public void KillAll()

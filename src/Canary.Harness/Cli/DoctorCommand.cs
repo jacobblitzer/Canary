@@ -284,6 +284,64 @@ public static class DoctorCommand
             }
         }
 
+        // --- 8. the environment capture, and the clashes in it ---------------
+        // Phase 5b. Checks 1-7 all answer from files on disk; this one reports what the
+        // target APPLICATION said about itself the last time anyone asked. Doctor still
+        // launches nothing - it reads the capture `canary run` and `canary env` write - so a
+        // machine that has never been probed is a WARNING pointing at `canary env`, not an
+        // error. Doctor's whole job is to run BEFORE anything is trusted, and a gate that
+        // cannot pass until a run has happened would be useless on a fresh QC install.
+        //
+        // A hard clash IS an error. The capture's Error tier means a dependency the content
+        // needs is not usable - a library loaded twice from two places, for instance - which
+        // no amount of correct content on disk can compensate for.
+        if (!string.IsNullOrWhiteSpace(workloadName))
+        {
+            var capturePath = EnvironmentCapture.PathFor(root, workloadName!);
+            if (!File.Exists(capturePath))
+            {
+                f.Warnings.Add($"no environment capture for '{workloadName}' — nothing has asked the " +
+                               $"application what it has loaded. Run `canary env --workload {workloadName}`");
+            }
+            else
+            {
+                try
+                {
+                    var capture = EnvironmentCapture.Load(capturePath);
+                    var errors = capture.Findings.Count(c => c.Severity == ClashSeverity.Error);
+                    var warnings = capture.Findings.Count(c => c.Severity == ClashSeverity.Warning);
+                    logger.Log($"environment    : {MachineIdentity.Format(capture.Machine)}, captured {capture.CapturedUtc} — " +
+                               $"{errors} error, {warnings} warning, {capture.Findings.Count - errors - warnings} note");
+
+                    // A capture from somewhere else is the QC trap this exists to catch: copy a
+                    // results tree between machines and the target appears to have been verified
+                    // when nothing on it was ever probed.
+                    if (!capture.IsFromThisMachine())
+                    {
+                        f.Errors.Add($"the environment capture is from another machine " +
+                                     $"({MachineIdentity.Format(capture.Machine)}); this is {Environment.MachineName}. " +
+                                     $"It says nothing about THIS machine — re-run `canary env --workload {workloadName}`");
+                    }
+                    else if (capture.Age() is { } age && age > TimeSpan.FromDays(7))
+                    {
+                        f.Warnings.Add($"the environment capture is {(int)age.TotalDays} days old; " +
+                                       "plug-ins may have moved since");
+                    }
+
+                    foreach (var c in capture.Findings.Where(c => c.Severity == ClashSeverity.Error))
+                        f.Errors.Add($"environment [{c.Kind}] {c.Detail}");
+                    foreach (var c in capture.Findings.Where(c => c.Severity == ClashSeverity.Warning))
+                        f.Warnings.Add($"environment [{c.Kind}] {c.Detail}");
+                }
+                catch (InvalidDataException ex)
+                {
+                    // A corrupt capture is an error, not a missing one: it read as SOMETHING,
+                    // and silently degrading it to "not captured yet" would hide a real fault.
+                    f.Errors.Add(ex.Message);
+                }
+            }
+        }
+
         return Report(f, logger);
     }
 

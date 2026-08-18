@@ -131,6 +131,92 @@ public sealed class TestRunner
     }
 
     /// <summary>
+    /// Launch the workload, ask it what it has loaded, write the capture, and close it —
+    /// running no test at all.
+    /// </summary>
+    /// <param name="workload">Workload whose application to probe.</param>
+    /// <param name="tests">
+    /// The workload's tests, for their declared requirements. Pass an empty list to probe
+    /// without judging origin against any expectation.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation.</param>
+    /// <returns>The capture.</returns>
+    /// <remarks>
+    /// <para>
+    /// Deployment campaign Phase 5b, backing <c>canary env</c>. Until this existed the ONLY way
+    /// to capture an environment was to run a test suite — and the machine you most need to
+    /// interrogate is a fresh QC install, which is precisely where a suite cannot run yet. A
+    /// capture that requires a working install to tell you whether the install works is no use.
+    /// </para>
+    /// <para>
+    /// Reuses <c>LaunchWorkloadApp</c> and the same connect/heartbeat sequence as a real run
+    /// rather than opening a second, simpler path to the app. A probe that launched differently
+    /// from a run would answer for a machine state no run ever sees, which is worse than not
+    /// probing — and the modal-dialog and pipe-naming subtleties on that path were expensive to
+    /// get right once.
+    /// </para>
+    /// </remarks>
+    public async Task<EnvironmentCapture> CaptureEnvironmentAsync(
+        WorkloadConfig workload,
+        IReadOnlyList<TestDefinition> tests,
+        CancellationToken cancellationToken = default)
+    {
+        Process? appProcess = null;
+        HarnessClient? client = null;
+        PenumbraPreviewTelemetryTail? penumbraTail = null;
+
+        try
+        {
+            _logger.Log($"Launching {workload.DisplayName} to probe its environment (no test will run)...");
+            appProcess = LaunchWorkloadApp(workload, out penumbraTail);
+            _processManager.Track(appProcess);
+
+            var pipeName = $"{workload.PipeName}-{appProcess.Id}";
+            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs))
+            {
+                TargetProcessId = appProcess.Id,
+            };
+            await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
+
+            var hb = await client.HeartbeatAsync(cancellationToken).ConfigureAwait(false);
+            if (!hb.Ok) throw new InvalidOperationException("Agent heartbeat returned ok=false.");
+
+            // Bounded exactly as the run-path probe is, and for the same reason: the first
+            // version of that probe inherited the 300s execute deadline and deadlocked on it.
+            var probe = client.ExecuteAsync(
+                HostPreconditions.HostStateAction, new Dictionary<string, string>(), cancellationToken);
+            var budget = Task.Delay(TimeSpan.FromSeconds(HostStateProbeSeconds), cancellationToken);
+            if (await Task.WhenAny(probe, budget).ConfigureAwait(false) == budget)
+            {
+                throw new TimeoutException(
+                    $"the host did not answer {HostPreconditions.HostStateAction} within {HostStateProbeSeconds}s");
+            }
+
+            var resp = await probe.ConfigureAwait(false);
+            if (!resp.Success)
+            {
+                throw new InvalidOperationException(
+                    $"the host refused {HostPreconditions.HostStateAction}: " +
+                    (string.IsNullOrWhiteSpace(resp.Message) ? "no reason given" : resp.Message));
+            }
+
+            var declared = RequirementChecker.Collect(workload, tests, workload.Name);
+            var clashes = EnvironmentReport.Analyse(resp.Data, RequirementChecker.ExpectedOrigins(declared));
+            var capture = EnvironmentCapture.Create(workload.Name, resp.Data, clashes);
+            capture.Save(EnvironmentCapture.PathFor(_workloadsDir, workload.Name));
+            return capture;
+        }
+        finally
+        {
+            client?.Dispose();
+            penumbraTail?.Dispose();
+            // The app was launched purely to answer one question; leaving it up would surprise
+            // anyone who ran a read-only-sounding command.
+            if (appProcess != null) _processManager.KillTracked(appProcess);
+        }
+    }
+
+    /// <summary>
     /// Run a single test definition against the target workload.
     /// </summary>
     public async Task<TestResult> RunTestAsync(
@@ -1178,23 +1264,12 @@ public sealed class TestRunner
                 foreach (var c in clashes.Where(c => c.Severity != ClashSeverity.Note))
                     _logger.Log($"  [{c.Kind}] {c.Detail}");
 
-                var dir = ResultPaths.RollupDir(_workloadsDir, workload.Name, null);
-                Directory.CreateDirectory(dir);
-                var payload = new Dictionary<string, object>
-                {
-                    ["capturedUtc"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                    ["workload"] = workload.Name,
-                    ["host"] = resp.Data,
-                    ["findings"] = clashes.Select(c => new Dictionary<string, string>
-                    {
-                        ["severity"] = c.Severity.ToString(),
-                        ["kind"] = c.Kind,
-                        ["detail"] = c.Detail,
-                    }).ToList(),
-                };
-                File.WriteAllText(Path.Combine(dir, "environment.json"),
-                    System.Text.Json.JsonSerializer.Serialize(payload,
-                        new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                // Through EnvironmentCapture, not a hand-rolled anonymous object: four parties
+                // read or write this file now, and the last time a writer and its reader each
+                // spelled a field for themselves it cost bug 0022.
+                EnvironmentCapture
+                    .Create(workload.Name, resp.Data, clashes)
+                    .Save(EnvironmentCapture.PathFor(_workloadsDir, workload.Name));
             }
         }
         catch (Exception ex)
