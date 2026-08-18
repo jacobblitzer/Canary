@@ -54,6 +54,27 @@ public static class HostStateFields
     /// <summary>Sections of the probe that could not be read, so a partial answer is honest.</summary>
     public const string PartialFailures = "partialFailures";
 
+    /// <summary>
+    /// Newline-delimited <c>path|exists</c> — the folders the host was told to scan.
+    /// </summary>
+    /// <remarks>
+    /// A configured folder that does not exist is a finding on its own, and it is invisible
+    /// from anywhere else.
+    /// </remarks>
+    public const string ScanFolders = "scanFolders";
+
+    /// <summary>
+    /// Newline-delimited full paths of loadable artifacts FOUND on the scan folders.
+    /// </summary>
+    /// <remarks>
+    /// Paired with <see cref="Loaded"/> this yields <b>present-but-not-loaded</b>, the single
+    /// comparison that cost 2026-08-17 an afternoon: <c>Slop.gha</c> sat on a configured
+    /// folder, unblocked, right framework, raising no load exception, and Grasshopper had not
+    /// registered it. The loaded list cannot reveal that by construction — the thing is
+    /// missing from it. Only discovered-minus-loaded shows the gap.
+    /// </remarks>
+    public const string Discovered = "discovered";
+
     /// <summary>Id prefix for a Grasshopper library.</summary>
     public const string GrasshopperPrefix = "gh:";
 

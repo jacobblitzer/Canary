@@ -68,6 +68,7 @@ public sealed class TestRunner
 
     private string? _lastHostSignature;
     private bool _preconditionsReported;
+    private bool _environmentReported;
 
     private readonly BaselineLedger _ledger;
     private Config.VlmConfig? _vlmConfig;
@@ -1156,6 +1157,51 @@ public sealed class TestRunner
         if (!string.IsNullOrWhiteSpace(loadErrors))
             foreach (var e in loadErrors.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
                 _logger.Log($"  host load error: {e.Trim()}");
+
+        // --- Phase 5b: the environment report, on every run, for free ---------------
+        // The probe has already happened, so analysing it costs nothing, and the operator
+        // asked to see "the plugins that grasshopper loads. all of them" as standing output
+        // rather than something re-derived per incident. Written as JSON beside the results
+        // so two machines can be DIFFED - which is what QC verification actually is.
+        try
+        {
+            var clashes = EnvironmentReport.Analyse(resp.Data);
+            if (!_environmentReported)
+            {
+                _environmentReported = true;
+                var hard = clashes.Count(c => c.Severity == ClashSeverity.Error);
+                var warn = clashes.Count(c => c.Severity == ClashSeverity.Warning);
+                if (clashes.Count > 0)
+                    _logger.Log($"environment    : {clashes.Count} finding(s) - {hard} error, {warn} warning; see environment.json");
+                // Only the loud ones inline: a note per developer-origin library would be
+                // dozens of lines on a dev machine, where that is the normal condition.
+                foreach (var c in clashes.Where(c => c.Severity != ClashSeverity.Note))
+                    _logger.Log($"  [{c.Kind}] {c.Detail}");
+
+                var dir = ResultPaths.RollupDir(_workloadsDir, workload.Name, null);
+                Directory.CreateDirectory(dir);
+                var payload = new Dictionary<string, object>
+                {
+                    ["capturedUtc"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    ["workload"] = workload.Name,
+                    ["host"] = resp.Data,
+                    ["findings"] = clashes.Select(c => new Dictionary<string, string>
+                    {
+                        ["severity"] = c.Severity.ToString(),
+                        ["kind"] = c.Kind,
+                        ["detail"] = c.Detail,
+                    }).ToList(),
+                };
+                File.WriteAllText(Path.Combine(dir, "environment.json"),
+                    System.Text.Json.JsonSerializer.Serialize(payload,
+                        new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+            }
+        }
+        catch (Exception ex)
+        {
+            // Never let reporting break a run: this is observability, not a gate.
+            _logger.Log($"Warning: environment report failed ({ex.GetType().Name}: {ex.Message}).");
+        }
 
         if (plugins.Count == 0) return;
 

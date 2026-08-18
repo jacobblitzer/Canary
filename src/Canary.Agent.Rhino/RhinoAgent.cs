@@ -2160,13 +2160,19 @@ public sealed class RhinoAgent : ICanaryAgent
                 var sb = new System.Text.StringBuilder("[");
                 var first = true;
                 var count = 0;
+                var coreCount = 0;
                 foreach (var lib in srv.Libraries)
                 {
-                    // Core GH libraries are noise for a precondition check - every install
-                    // has them, and nobody declares a requirement on them.
+                    // CORE LIBRARIES ARE INCLUDED. They were filtered out as "noise for a
+                    // precondition check", which was true of preconditions and false of the
+                    // environment report: discovered-minus-loaded then flagged all 13 of
+                    // Rhino's own bundled .gha files as present-but-not-loaded, so 13 of 14
+                    // findings were fiction and the one real finding was buried. A report
+                    // that is mostly noise is a report nobody reads. The operator asked for
+                    // "all of them" - so all of them, tagged, and the consumer filters.
                     bool core;
                     try { core = lib.IsCoreLibrary; } catch { core = false; }
-                    if (core) continue;
+                    if (core) coreCount++;
 
                     string name = string.Empty, ver = string.Empty, loc = string.Empty;
                     try { name = lib.Name ?? string.Empty; } catch { }
@@ -2183,6 +2189,7 @@ public sealed class RhinoAgent : ICanaryAgent
                 }
                 data["ghLibraries"] = sb.Append(']').ToString();
                 data["ghLibraryCount"] = count.ToString();
+                data["ghCoreLibraryCount"] = coreCount.ToString();
             }
             catch (Exception ex) { notes.Add("ghLibraries: " + ex.Message); }
 
@@ -2207,6 +2214,53 @@ public sealed class RhinoAgent : ICanaryAgent
                 data["ghLoadingExceptionCount"] = n.ToString();
             }
             catch (Exception ex) { notes.Add("ghLoadingExceptions: " + ex.Message); }
+
+            // --- the SCAN SURFACE: which folders GH was told to look in, and what is
+            // --- actually sitting on them.
+            //
+            // Phase 5b. This is the half that makes PRESENT-BUT-NOT-LOADED computable, and
+            // that single comparison is what cost 2026-08-17 an entire afternoon: Slop.gha
+            // was on a configured folder, unblocked, correct framework, raising no load
+            // exception - and Grasshopper had simply not registered it. The loaded list
+            // cannot show that by construction, because the thing is missing FROM it. Only
+            // "here is what I was told to scan, here is what is there, here is what I
+            // loaded" makes the gap visible.
+            try
+            {
+                var folders = new List<string>();
+                var found = new List<string>();
+                foreach (var fo in Grasshopper.Folders.AssemblyFolders)
+                {
+                    string dir;
+                    try { dir = fo.Folder ?? string.Empty; } catch { continue; }
+                    if (dir.Length == 0) continue;
+
+                    var exists = System.IO.Directory.Exists(dir);
+                    folders.Add(dir + "|" + (exists ? "exists" : "MISSING"));
+                    if (!exists) continue;   // a dead scan folder is itself a finding
+
+                    try
+                    {
+                        // SearchOption honoured: GH records per-folder whether it recurses,
+                        // and scanning the wrong depth would invent or miss files.
+                        var opt = System.IO.SearchOption.TopDirectoryOnly;
+                        try
+                        {
+                            if (fo.SearchOption == System.IO.SearchOption.AllDirectories)
+                                opt = System.IO.SearchOption.AllDirectories;
+                        }
+                        catch { }
+
+                        foreach (var pattern in new[] { "*.gha", "*.ghpy" })
+                            foreach (var file in System.IO.Directory.GetFiles(dir, pattern, opt))
+                                found.Add(file);
+                    }
+                    catch (Exception ex) { notes.Add("scan " + dir + ": " + ex.Message); }
+                }
+                data[HostStateFields.ScanFolders] = string.Join(Environment.NewLine, folders.ToArray());
+                data[HostStateFields.Discovered] = string.Join(Environment.NewLine, found.ToArray());
+            }
+            catch (Exception ex) { notes.Add("scanSurface: " + ex.Message); }
         }
 
         data[HostStateFields.Loaded] = string.Join(Environment.NewLine, loaded.ToArray());
