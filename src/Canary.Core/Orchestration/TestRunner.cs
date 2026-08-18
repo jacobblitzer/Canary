@@ -66,6 +66,9 @@ public sealed class TestRunner
     /// </remarks>
     private const int HostStateProbeSeconds = 45;
 
+    private string? _lastHostSignature;
+    private bool _preconditionsReported;
+
     private readonly BaselineLedger _ledger;
     private Config.VlmConfig? _vlmConfig;
     private string? _currentVlmDescription;
@@ -1134,11 +1137,22 @@ public sealed class TestRunner
             return;
         }
 
-        resp.Data.TryGetValue("loaded", out var loadedRaw);
-        resp.Data.TryGetValue("loadErrors", out var loadErrors);
+        resp.Data.TryGetValue(Canary.Agent.HostStateFields.Loaded, out var loadedRaw);
+        resp.Data.TryGetValue(Canary.Agent.HostStateFields.LoadErrors, out var loadErrors);
         var loaded = HostPreconditions.ParseLoaded(loadedRaw);
-        _logger.Log($"host: {loaded.Count} plug-in(s)/librar(ies) loaded"
-                  + (string.IsNullOrWhiteSpace(loadErrors) ? string.Empty : ", WITH LOAD ERRORS"));
+
+        // NOT cached across the run, deliberately - the design suggested one probe per run,
+        // but a per-test-launch suite gets a FRESH application each time, and a fresh app can
+        // genuinely be missing what the previous one had. Caching would report the first
+        // launch's health for every later one. So probe per launch and quieten the LOG
+        // instead: the interesting event is the first answer, or a change in it.
+        var signature = $"{loaded.Count}|{loadErrors}";
+        if (signature != _lastHostSignature)
+        {
+            _lastHostSignature = signature;
+            _logger.Log($"host: {loaded.Count} plug-in(s)/librar(ies) loaded"
+                      + (string.IsNullOrWhiteSpace(loadErrors) ? string.Empty : ", WITH LOAD ERRORS"));
+        }
         if (!string.IsNullOrWhiteSpace(loadErrors))
             foreach (var e in loadErrors.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
                 _logger.Log($"  host load error: {e.Trim()}");
@@ -1151,12 +1165,16 @@ public sealed class TestRunner
         // Kinematics absent on a machine where both were loaded, which would block a healthy
         // install. Failing a good machine is a different mistake from passing a bad one, and
         // no more acceptable.
-        var needsGh = plugins.Any(p => p.Requirement.Id!.StartsWith("gh:", StringComparison.OrdinalIgnoreCase));
-        resp.Data.TryGetValue("grasshopperReady", out var ghReady);
-        if (needsGh && !string.Equals(ghReady, "true", StringComparison.OrdinalIgnoreCase))
+        // Applies to EVERY id namespace, not just gh: - a CDP page that has not finished
+        // installing its hooks is in exactly the same position as a Grasshopper that has not
+        // finished loading its libraries, and the first version of this guard only covered
+        // the one host it had been debugged against.
+        resp.Data.TryGetValue(Canary.Agent.HostStateFields.HostReady, out var hostReady);
+        if (!string.Equals(hostReady, "true", StringComparison.OrdinalIgnoreCase))
         {
-            _logger.Log("Warning: the host could not report its Grasshopper library table " +
-                        $"(grasshopperReady={ghReady ?? "absent"}); plug-in preconditions NOT verified (continuing).");
+            _logger.Log("Warning: the host could not report what it has loaded yet " +
+                        $"({Canary.Agent.HostStateFields.HostReady}={hostReady ?? "absent"}); " +
+                        "plug-in preconditions NOT verified (continuing).");
             return;
         }
 
@@ -1164,7 +1182,11 @@ public sealed class TestRunner
         if (misses.Count > 0)
             throw new PreconditionFailedException(misses, loadedRaw ?? string.Empty, loadErrors ?? string.Empty);
 
-        _logger.Log($"preconditions : {plugins.Count} declared plug-in(s) all present");
+        if (!_preconditionsReported)
+        {
+            _preconditionsReported = true;
+            _logger.Log($"preconditions : {plugins.Count} declared plug-in(s) all present");
+        }
     }
 
     private async Task SendAgentSetupAsync(ICanaryAgent agent, TestSetup setup, CancellationToken ct)

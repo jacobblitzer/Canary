@@ -2075,7 +2075,8 @@ public sealed class RhinoAgent : ICanaryAgent
             ? string.Empty
             : s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", " ").Replace("\n", " ");
 
-        try { data["rhinoVersion"] = RhinoApp.Version.ToString(); }
+        data[HostStateFields.Host] = "rhino";
+        try { data[HostStateFields.HostVersion] = RhinoApp.Version.ToString(); }
         catch (Exception ex) { notes.Add("rhinoVersion: " + ex.Message); }
 
         try
@@ -2100,7 +2101,7 @@ public sealed class RhinoAgent : ICanaryAgent
                 sb.Append("{\"name\":\"").Append(J(kv.Value))
                   .Append("\",\"id\":\"").Append(kv.Key)
                   .Append("\",\"loaded\":").Append(isLoaded ? "true" : "false").Append('}');
-                if (isLoaded) loaded.Add("rhino:" + kv.Value + "=loaded");
+                if (isLoaded) loaded.Add(HostStateFields.RhinoPrefix + kv.Value + "=loaded");
             }
             data["rhinoPlugins"] = sb.Append(']').ToString();
         }
@@ -2175,7 +2176,7 @@ public sealed class RhinoAgent : ICanaryAgent
                     if (!first) sb.Append(',');
                     first = false;
                     count++;
-                    loaded.Add("gh:" + name + "=" + (string.IsNullOrEmpty(ver) ? "?" : ver) + "@" + loc);
+                    loaded.Add(HostStateFields.GrasshopperPrefix + name + "=" + (string.IsNullOrEmpty(ver) ? "?" : ver) + "@" + loc);
                     sb.Append("{\"name\":\"").Append(J(name))
                       .Append("\",\"version\":\"").Append(J(ver))
                       .Append("\",\"location\":\"").Append(J(loc)).Append("\"}");
@@ -2208,14 +2209,14 @@ public sealed class RhinoAgent : ICanaryAgent
             catch (Exception ex) { notes.Add("ghLoadingExceptions: " + ex.Message); }
         }
 
-        data["loaded"] = string.Join(Environment.NewLine, loaded.ToArray());
+        data[HostStateFields.Loaded] = string.Join(Environment.NewLine, loaded.ToArray());
         // loadErrors mirrors ghLoadingExceptions in a flat, printable form. A library that
         // FAILED to load is invisible from the loaded list by definition, so this is often
         // the only place the real reason appears.
         if (data.TryGetValue("ghLoadingExceptions", out var ghEx) && ghEx != "[]")
-            data["loadErrors"] = ghEx;
+            data[HostStateFields.LoadErrors] = ghEx;
 
-        if (notes.Count > 0) data["partialFailures"] = string.Join(" | ", notes.ToArray());
+        if (notes.Count > 0) data[HostStateFields.PartialFailures] = string.Join(" | ", notes.ToArray());
 
         return new AgentResponse
         {

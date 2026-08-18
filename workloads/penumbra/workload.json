@@ -23,5 +23,12 @@
       "--hide-scrollbars",
       "--disable-smooth-scrolling"
     ]
-  }
+  },
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "js:__canaryGetRendererInfo",
+      "fix": "the Penumbra page did not install its Canary hooks - check the dev server is serving the built app"
+    }
+  ]
 }

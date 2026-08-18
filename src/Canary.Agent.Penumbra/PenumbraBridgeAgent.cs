@@ -218,6 +218,7 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
 
         return action switch
         {
+            "GetHostState" => await GetHostStateAsync().ConfigureAwait(false),
             "LoadScene" => await LoadSceneAsync(parameters).ConfigureAwait(false),
             "LoadSceneByName" => await LoadSceneByNameAsync(parameters).ConfigureAwait(false),
             "SetCamera" => await SetCameraAsync(parameters).ConfigureAwait(false),
@@ -235,6 +236,88 @@ public sealed class PenumbraBridgeAgent : ICanaryAgent, ITelemetryAware, IDispos
     }
 
     /// <inheritdoc />
+
+    /// <summary>
+    /// Reports which page-level Canary hooks this host actually installed.
+    /// </summary>
+    /// <returns>Host facts in <see cref="AgentResponse.Data"/>.</returns>
+    /// <remarks>
+    /// <para>
+    /// Deployment campaign Phase 5. Same contract as the Rhino agent's - see
+    /// <see cref="HostStateFields"/> - with a different filler: for a CDP host the equivalent
+    /// of "is the plug-in loaded" is "did the page install the hook", so ids are reported
+    /// under <see cref="HostStateFields.JsPrefix"/> and a requirement reads
+    /// <c>js:__canaryWaitForReady</c>.
+    /// </para>
+    /// <para>
+    /// <see cref="HostStateFields.HostReady"/> is the load-bearing field. A page part-way
+    /// through installing its hooks is in exactly the position Grasshopper is in part-way
+    /// through loading its libraries, and reporting "not present" there would fail a healthy
+    /// machine. Readiness is therefore reported separately, and the harness only judges a
+    /// requirement when it is true.
+    /// </para>
+    /// </remarks>
+    private async Task<AgentResponse> GetHostStateAsync()
+    {
+        var data = new Dictionary<string, string> { [HostStateFields.Host] = "chrome" };
+        var notes = new List<string>();
+        var loaded = new List<string>();
+
+        // ONE evaluate for every hook: a hook-by-hook round trip would be dozens of CDP calls
+        // on the launch path, which is precisely where the time budget is tightest.
+        const string probe = @"(() => {
+  const out = {};
+  for (const k of Object.getOwnPropertyNames(window)) {
+    if (k.indexOf('__canary') === 0) { try { out[k] = typeof window[k]; } catch (e) { out[k] = 'unknown'; } }
+  }
+  return JSON.stringify(out);
+})()";
+
+        try
+        {
+            var json = await _cdp!.EvaluateAsync<string>(probe).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(json!);
+                foreach (var prop in doc.RootElement.EnumerateObject())
+                    loaded.Add(HostStateFields.JsPrefix + prop.Name + "=" + prop.Value.GetString());
+            }
+            // READY means the probe ran AND the page had installed something. An empty hook set
+            // on a page that answered is indistinguishable from a page still booting, so it is
+            // reported as NOT ready rather than as an empty machine.
+            data[HostStateFields.HostReady] = loaded.Count > 0 ? "true" : "false";
+        }
+        catch (Exception ex)
+        {
+            notes.Add("hook probe: " + ex.Message);
+            data[HostStateFields.HostReady] = "false";
+        }
+
+        try
+        {
+            var ver = await _cdp!.EvaluateAsync<string>("navigator.userAgent").ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(ver)) data[HostStateFields.HostVersion] = ver!;
+        }
+        catch (Exception ex) { notes.Add("userAgent: " + ex.Message); }
+
+        try
+        {
+            var url = await _cdp!.EvaluateAsync<string>("location.href").ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(url)) data["url"] = url!;
+        }
+        catch (Exception ex) { notes.Add("location: " + ex.Message); }
+
+        data[HostStateFields.Loaded] = string.Join(Environment.NewLine, loaded.ToArray());
+        if (notes.Count > 0) data[HostStateFields.PartialFailures] = string.Join(" | ", notes.ToArray());
+
+        return new AgentResponse
+        {
+            Success = true,
+            Message = $"host state: {loaded.Count} hook(s) installed",
+            Data = data,
+        };
+    }
+
     public async Task<ScreenshotResult> CaptureScreenshotAsync(CaptureSettings settings)
     {
         EnsureInitialized();
