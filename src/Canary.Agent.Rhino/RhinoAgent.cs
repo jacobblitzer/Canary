@@ -715,7 +715,20 @@ public sealed class RhinoAgent : ICanaryAgent
         //   the one blocking bristle runs (duplicate document names from the
         //   harness's temp copies) - it must be REPORTED and fixed at the
         //   copy strategy, never clicked.
-        var neverDismiss = new[] { "File Conflict", "Component ID", "ID conflict" };
+        // ONLY dialogs where NO button can be clicked safely belong here. "Component ID"
+        // and "ID conflict" were in this list from 2026-08-16 (b97640f) to 2026-08-17 and
+        // that was a REGRESSION: they had been deliberately removed on 2026-06-02 - see the
+        // comment on the title-keyword list below, which survived and says exactly this.
+        // The distinction the 2026-08-16 version lost: the "Component ID conflict" modal has
+        // a destructive DEFAULT button (Replace All), but a safe one (Skip All) that the
+        // body-text path further down clicks by name. Blocking the whole dialog here
+        // returned before that path ever ran, so a benign, handled modal became a hard
+        // 300s stall - which is what it did to cpig-kinematics.
+        //
+        // If you are about to add a title here, the test is not "is the default button
+        // destructive" - it is "is EVERY button destructive". If a safe button exists, teach
+        // the body-text handler to click it instead.
+        var neverDismiss = new[] { "File Conflict" };
 
         // Title keywords that strongly imply a dismissable warning/error.
         // Order: most specific first. Avoid generic words like "Rhino" or
@@ -829,6 +842,8 @@ public sealed class RhinoAgent : ICanaryAgent
                     IntPtr closeBtn   = IntPtr.Zero; // "Grasshopper breakpoint" → Close
                     bool hasConflictText = false;    // 2026-06-01 GH GUID-conflict modal
                     bool hasGhIoText     = false;    // 2026-06-02 GH "IO generated N messages" modal
+                    bool hasUnrecognizedText = false; // 2026-08-17 GH "Unrecognized Objects" modal
+                    string unrecognizedBody = string.Empty;
                     EnumChildWindows(hWnd, (child, _) =>
                     {
                         var ct = new System.Text.StringBuilder(256);
@@ -869,6 +884,12 @@ public sealed class RhinoAgent : ICanaryAgent
                         {
                             hasGhIoText = true;
                         }
+                        else if (childText.IndexOf("unknown objects", StringComparison.OrdinalIgnoreCase) >= 0
+                              || childText.IndexOf("relies on one or more plug-ins", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            hasUnrecognizedText = true;
+                            if (childText.Length > unrecognizedBody.Length) unrecognizedBody = childText;
+                        }
                         return true;
                     }, IntPtr.Zero);
 
@@ -906,6 +927,44 @@ public sealed class RhinoAgent : ICanaryAgent
                             const int VK_ESCAPE = 0x1B;
                             PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_ESCAPE, IntPtr.Zero);
                             PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_ESCAPE, IntPtr.Zero);
+                        }
+                    }
+                    else if (hasUnrecognizedText)
+                    {
+                        // GH "Unrecognized Objects" - the definition needs a plug-in that is
+                        // NOT installed on this machine. Confirmed live 2026-08-17: it
+                        // stalled cpig-kinematics for the full 300s because no title or body
+                        // marker here matched it, so the dismisser walked straight past a
+                        // modal holding the UI thread. This is the GENERIC missing-plug-in
+                        // dialog, so every clean install, QC box and payload target hits it -
+                        // which makes being blind to it far more expensive than one suite.
+                        //
+                        // Click CLOSE, never "Download and Install": that button goes to the
+                        // package server, and a test run must not install software. Note the
+                        // button matchers above are exact-match on "Close"/"No"/"Skip All",
+                        // so "Download and Install" is unreachable by construction.
+                        //
+                        // Dismissing UNBLOCKS but does not fix: the definition still lacks
+                        // its components, so the test will fail on its asserts. That is the
+                        // correct outcome - it fails saying what is missing, instead of
+                        // hanging for five minutes saying nothing.
+                        dismissed.Add(hWnd);
+                        // Split on whitespace and rejoin: the body is multi-line, and a log
+                        // line carrying raw newlines is unreadable in the Rhino command pane.
+                        var detail = string.Join(" ", unrecognizedBody.Split(
+                            new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+                        RhinoApp.WriteLine(
+                            "[canary] 'Unrecognized Objects' dismissed via Close - THIS DEFINITION IS " +
+                            "MISSING A PLUG-IN on this machine. " + detail +
+                            " Install the plug-in (or add its build folder in Grasshopper Developer " +
+                            "Settings) - the run will continue but its components cannot solve.");
+                        if (closeBtn != IntPtr.Zero)
+                            PostMessage(closeBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+                        else
+                        {
+                            const int VK_ESC = 0x1B;
+                            PostMessage(hWnd, WM_KEYDOWN, (IntPtr)VK_ESC, IntPtr.Zero);
+                            PostMessage(hWnd, WM_KEYUP,   (IntPtr)VK_ESC, IntPtr.Zero);
                         }
                     }
                     else if (isBreakpointDialog)
