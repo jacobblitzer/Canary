@@ -31,6 +31,8 @@ public partial class MainWindowViewModel : ObservableObject
     public LocalhostViewModel Localhost { get; }
     public FeedbackViewModel Feedback { get; }
     public TelemetryViewModel Telemetry { get; }
+    // Deployment campaign Phase 5b — what the target apps actually loaded, and from where.
+    public EnvironmentViewModel Environment { get; }
     public SettingsViewModel Settings { get; }
     // Docked Run History pane (feedback 2026-06-10-run-history-log-window) —
     // lives below the NavigationView so it stays visible in every tab.
@@ -49,12 +51,17 @@ public partial class MainWindowViewModel : ObservableObject
         Localhost = new LocalhostViewModel();
         Feedback = new FeedbackViewModel();
         Telemetry = new TelemetryViewModel();
+        Environment = new EnvironmentViewModel();
         Settings = new SettingsViewModel();
         RunHistory = new RunHistoryViewModel();
         // Keep the log current: every in-UI run appends a runs/<stamp>/ dir,
         // so re-scan when the runner finishes. CLI runs land on the next
         // manual Refresh / workloads-dir load.
         Tests.Runner.RunCompleted += () => _ = RunHistory.RefreshAsync();
+        // A run is the ONLY thing that rewrites environment.json — the host is the only
+        // party that can say what it registered — so a finished run is exactly when the
+        // Environment tab has something new to show.
+        Tests.Runner.RunCompleted += () => Environment.RefreshCommand.Execute(null);
 
         // Phase 2 full nav set. Tests is the operator's primary work
         // surface so it leads the rail.
@@ -63,6 +70,9 @@ public partial class MainWindowViewModel : ObservableObject
         NavItems.Add(new NavItem { Title = "Localhost", IconGlyph = "", ViewModel = Localhost });
         NavItems.Add(new NavItem { Title = "Feedback",  IconGlyph = "", ViewModel = Feedback });
         NavItems.Add(new NavItem { Title = "Telemetry", IconGlyph = "", ViewModel = Telemetry });
+        // Sits beside Settings, not beside Tests: it answers "is this machine set up",
+        // which is the question you ask BEFORE a result is worth believing.
+        NavItems.Add(new NavItem { Title = "Environment", IconGlyph = "", ViewModel = Environment });
         NavItems.Add(new NavItem { Title = "Settings",  IconGlyph = "", ViewModel = Settings });
         SelectedNavItem = NavItems[0];
 
@@ -101,6 +111,7 @@ public partial class MainWindowViewModel : ObservableObject
         _ = Tests.LoadWorkloadsAsync(dir);
         Telemetry.SetWorkloadsDir(dir);
         RunHistory.SetWorkloadsDir(dir);
+        Environment.SetWorkloadsDir(dir);
     }
 
     public async Task HandleAutoRunAsync(AutoRunArgs args)

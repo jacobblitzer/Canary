@@ -1,0 +1,122 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="Canary.UI.Avalonia.Views.EnvironmentView"
+             x:DataType="vm:EnvironmentViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+    <!-- Toolbar -->
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,6">
+      <WrapPanel Orientation="Horizontal">
+        <TextBlock Text="Workload" VerticalAlignment="Center" Margin="0,0,6,0" Opacity="0.8" />
+        <ComboBox ItemsSource="{Binding Workloads}"
+                  SelectedItem="{Binding SelectedWorkload, Mode=TwoWay}"
+                  MinWidth="170" Margin="0,0,12,0" />
+        <Button Content="Reload capture" Command="{Binding RefreshCommand}" Margin="0,0,8,0"
+                ToolTip.Tip="Re-read results/environment.json from disk. Does not launch anything." />
+        <Button Content="Check requirements" Command="{Binding CheckCommand}" Margin="0,0,8,0"
+                ToolTip.Tip="Check the file and service requirements on this machine right now, with no application launch. Plug-in requirements can only be judged from inside the running host." />
+        <Button Content="Show environment.json…" Command="{Binding OpenReportCommand}" Margin="0,0,12,0" />
+        <TextBlock Text="{Binding CapturedAt, StringFormat='captured {0}'}"
+                   VerticalAlignment="Center" Opacity="0.7" />
+      </WrapPanel>
+    </Border>
+
+    <!-- Host + machine identity -->
+    <Border Grid.Row="1" Background="#252526" Padding="8,6">
+      <StackPanel>
+        <TextBlock Text="{Binding HostSummary}" FontWeight="SemiBold" Foreground="#96C8FF" />
+        <TextBlock Text="{Binding MachineSummary}" Opacity="0.8" Margin="0,2,0,0" />
+        <TextBlock Opacity="0.65" TextWrapping="Wrap" Margin="0,2,0,0"
+                   Text="The plug-in list is what the host reported when it was last asked — only the application itself can say what it registered. Refresh it with `canary env --workload &lt;w&gt;`, or by running any test. Requirement checks are live and need no launch. Diff this file against a second machine to verify an install." />
+      </StackPanel>
+    </Border>
+
+    <!-- Caveat banner: a capture from another machine, or a stale one, must not read as
+         authoritative just because it rendered. Collapses entirely when there is nothing
+         to say. -->
+    <Border Grid.Row="2" Background="#4A3B12" BorderBrush="#E8C547" BorderThickness="0,0,0,2"
+            Padding="8,6" IsVisible="{Binding HasCaptureWarning}">
+      <TextBlock Text="{Binding CaptureWarning}" Foreground="#F0DFA0" TextWrapping="Wrap" />
+    </Border>
+
+    <TabControl Grid.Row="3">
+
+      <!-- Clashes lead: this is the reason the tab exists. -->
+      <TabItem Header="Clashes">
+        <DataGrid ItemsSource="{Binding Findings}" AutoGenerateColumns="False" IsReadOnly="True"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                  CanUserResizeColumns="True" CanUserSortColumns="True">
+          <DataGrid.Columns>
+            <!-- Coloured, not just spelled: yellow for a deviation, red for a hard clash.
+                 A severity you have to read the word for is one nobody triages. -->
+            <DataGridTemplateColumn Header="Severity" Width="95">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:EnvironmentFindingRow">
+                  <TextBlock Text="{Binding Severity}" Foreground="{Binding SeverityBrush}"
+                             FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="200" />
+            <DataGridTextColumn Header="Detail" Binding="{Binding Detail}" Width="*" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </TabItem>
+
+      <TabItem Header="Loaded plug-ins">
+        <DataGrid ItemsSource="{Binding Plugins}" AutoGenerateColumns="False" IsReadOnly="True"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                  CanUserResizeColumns="True" CanUserSortColumns="True">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="230" />
+            <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="110" />
+            <DataGridTextColumn Header="Origin" Binding="{Binding Origin}" Width="110" />
+            <DataGridTextColumn Header="Loaded from" Binding="{Binding Location}" Width="*" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </TabItem>
+
+      <TabItem Header="Requirements">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Grid.Row="0" Margin="8,6" Opacity="0.7" TextWrapping="Wrap"
+                     Text="What this workload's content declares the machine must already have. Press Check requirements to test the file and service ones now — plug-in requirements stay 'in-app only' rather than being quietly dropped, so a half-checked machine does not read as a clean one." />
+          <DataGrid Grid.Row="1" ItemsSource="{Binding Requirements}" AutoGenerateColumns="False" IsReadOnly="True"
+                    GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                    CanUserResizeColumns="True" CanUserSortColumns="True">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="110" />
+              <DataGridTextColumn Header="Requirement" Binding="{Binding Requirement}" Width="380" />
+              <DataGridTextColumn Header="Declared by" Binding="{Binding DeclaredBy}" Width="170" />
+              <DataGridTextColumn Header="Detail" Binding="{Binding Detail}" Width="*" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Scan folders">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Grid.Row="0" Margin="8,6" Opacity="0.7" TextWrapping="Wrap"
+                     Text="Every folder the host was told to load plug-ins from, including anything added by hand in Grasshopper's Developer Settings. A folder listed MISSING is configured but absent; a build-output folder here shadows a deployed install, so install and update can report success while old code runs." />
+          <DataGrid Grid.Row="1" ItemsSource="{Binding ScanFolders}" AutoGenerateColumns="False" IsReadOnly="True"
+                    GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                    CanUserResizeColumns="True" CanUserSortColumns="True">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Exists" Binding="{Binding Exists}" Width="90" />
+              <DataGridTextColumn Header="Folder" Binding="{Binding Path}" Width="*" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+    </TabControl>
+
+    <Border Grid.Row="4" Background="#2D2D30" Padding="8,4">
+      <TextBlock Text="{Binding StatusText}" Opacity="0.85" TextWrapping="Wrap" />
+    </Border>
+  </Grid>
+</UserControl>

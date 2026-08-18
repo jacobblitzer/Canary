@@ -56,6 +56,40 @@ Driving artifacts:
 
 Operator review at every phase boundary; no push until Phase 6.
 
+## Environment tab (added 2026-08-18, deployment campaign Phase 5b)
+
+A 7th nav item — `EnvironmentViewModel` + `EnvironmentView` — answering "is this machine set up",
+which is the question you ask **before** a test result is worth believing. Placed beside Settings
+rather than beside Tests for that reason.
+
+| Grid | Shows |
+|---|---|
+| **Clashes** | The `EnvironmentReport.Analyse` findings, severity first. Leads, because it is why the tab exists. |
+| **Loaded plug-ins** | Every library the host registered, with `Origin` (package / libraries / bundled / developer) and the full path it loaded from. The origin column is the shadowing signal: a developer folder beats a deployed install, so install and update can both report success while old code runs. |
+| **Requirements** | What the workload's content declares. `Check requirements` resolves the file and service ones live, with no launch. |
+| **Scan folders** | Every folder the host was told to scan, with existence — including anything added by hand in Grasshopper's Developer Settings. |
+
+**It reads `results/environment.json`; it launches nothing.** Every run already writes that file,
+and a tab that silently started Rhino to populate itself would be a surprising thing for a click
+to do. `CapturedAt` is displayed so a stale report *looks* stale rather than authoritative, and
+`Refresh` is wired to `TestRunnerViewModel.RunCompleted` because a finished run is the only thing
+that can change the data. (That event is raised on the UI thread — the raise site follows
+`ConfigureAwait(true)` and the sibling `RunHistory` handler mutates UI-bound rows from it.)
+
+Two deliberate honesty properties, both tested in
+`tests/Canary.Tests/UI.Avalonia/EnvironmentViewModelTests.cs`:
+
+- **No capture is not a clean capture.** An empty grid is ambiguous, so the status line resolves
+  it — `No environment.json …` versus `0 loaded`. A corrupt report reports the read failure
+  rather than rendering as empty.
+- **Unjudgeable is not OK.** `RequirementChecker.CheckOfflineAsync` returns only *misses*, so a
+  `plugin` requirement it cannot decide is absent from that list and indistinguishable from a
+  pass. Those rows render as `in-app only` instead of being dropped, so a half-checked machine
+  cannot read as a fully checked one. Before `Check` is pressed, rows read `not checked`.
+
+Also the QC comparison surface: the same JSON captured on two machines, diffed, is what
+"did this install correctly" reduces to in practice.
+
 ## Implementation pointers (Phase 0)
 
 - `src/Canary.UI.Avalonia/Canary.UI.Avalonia.csproj` — net8.0-windows + WinExe + Avalonia 11.2.5 + FluentAvaloniaUI 2.2.0 + CommunityToolkit.Mvvm 8.3.2.

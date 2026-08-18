@@ -81,6 +81,9 @@
           <DataTemplate x:DataType="vm:TelemetryViewModel">
             <views:TelemetryView />
           </DataTemplate>
+          <DataTemplate x:DataType="vm:EnvironmentViewModel">
+            <views:EnvironmentView />
+          </DataTemplate>
           <DataTemplate x:DataType="vm:SettingsViewModel">
             <views:SettingsView />
           </DataTemplate>

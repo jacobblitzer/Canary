@@ -1,6 +1,15 @@
 ## Unreleased
 
+### Added
+- **`canary env --workload <w>`** — launches the target application, asks what it has loaded, writes `results/environment.json`, and closes it, **running no test**. Until now a run was the only way to produce a capture, and the machine that most needs interrogating is a fresh QC install, which is exactly where a suite cannot run yet. `--show` prints the last capture without launching anything.
+- **Machine identity in the capture** — name, OS, user, architecture, runtime. The capture's job is to be diffed between two machines, and two files that do not say where they came from cannot be compared.
+- **`canary doctor` check 8** — reports the last capture's host, machine and finding counts; **errors** on a hard clash or on a capture that came from a different machine, warns when there is no capture at all or it is over a week old. Doctor still launches nothing.
+- **Environment tab** in the Canary UI — every plug-in each target application actually loaded, with its origin (package / libraries / bundled / developer), the clash findings, the host's scan folders, and a live offline check of the workload's declared requirements. Reads the `results/environment.json` that every run already writes; launches nothing. The same file captured on two machines is what QC verification reduces to.
+
 ### Fixed
+- Origin is now judged **only against a declared expectation**, and a deviation is a **Warning** rather than every developer-origin library raising a Note (operator ruling). On this machine that was 21 notes per run about the operator's own repos — none actionable. Every library's origin is still reported as a column in the loaded list.
+- The plug-in precondition gate **never ran on Rhino**: the agent emitted `grasshopperReady` while the harness gated on `hostReady`, so the field was always absent and the check excused itself on every run (bug 0022). An absent readiness field is now a hard failure — a gate that disables itself is worse than one that fails loudly — while an honest `hostReady=false` still warns and continues.
+- Libraries shipped inside the host application (Rhino's own bundled Grasshopper components) are classified `bundled` rather than `developer`. On a real capture this cut developer-origin notes from 21 to 7, leaving only the rows that are genuinely shadowing a deployed install.
 - GH fixtures open as TEMP COPIES (`%TEMP%/canary-fixtures/`) so saving from an exploration session can never poison the repo fixture (bug 0021 recurrence).
 - `GrasshopperGetPanelText` fails loudly on ambiguous (duplicate) panel nicknames instead of silently reading the first match (bug 0021).
 
