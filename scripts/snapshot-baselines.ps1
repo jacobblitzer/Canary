@@ -86,7 +86,12 @@ $rows = foreach ($d in $dirs) {
         '{0}  {1}' -f $h, (Join-Path $rel $f.Name)
     }
 }
-$rows | Set-Content -Path $manifest -Encoding utf8
+# NO BOM. PowerShell 5.1's -Encoding utf8 writes one, which puts an invisible ﻿ in
+# front of the first hash - and the second-copy verifier below matches each line against
+# ^([0-9A-Fa-f]{64})\s\s(.+)$ and `continue`s on anything else. The BOM therefore made row 1
+# silently unverifiable: 321 of 322 checked, reported as a clean pass. A recovery check that
+# skips a file without saying so is the same defect class this whole campaign is about.
+[IO.File]::WriteAllLines($manifest, [string[]]$rows, [Text.UTF8Encoding]::new($false))
 
 # --- 4. verify the copy against the SOURCE, file by file ----------------------
 $mismatch = @()
@@ -127,16 +132,20 @@ if ($AlsoCopyTo) {
     # Verify by re-reading the manifest at the destination, not by trusting robocopy.
     $secondManifest = Join-Path $second 'MANIFEST.sha256.txt'
     if (-not (Test-Path $secondManifest)) { throw "second copy has no manifest" }
+    # Count what we SKIP as well as what fails. A verifier that silently ignores lines it
+    # cannot parse reports a clean pass over a file it never looked at.
     $bad = 0
+    $skipped = 0
     foreach ($line in Get-Content $secondManifest) {
-        if ($line -notmatch '^([0-9A-Fa-f]{64})\s\s(.+)$') { continue }
+        if ($line -notmatch '^([0-9A-Fa-f]{64})\s\s(.+)$') { $skipped++; continue }
         $want, $relPath = $Matches[1], $Matches[2]
         $p = Join-Path $second $relPath
         if (-not (Test-Path $p)) { $bad++; continue }
         if ((Get-FileHash -Path $p -Algorithm SHA256).Hash -ne $want) { $bad++ }
     }
     if ($bad -gt 0) { throw "$bad file(s) in the second copy do not match the manifest." }
-    Write-Host ("  VERIFIED: second copy matches its manifest ({0} files)." -f @($rows).Count)
+    if ($skipped -gt 0) { throw "$skipped manifest line(s) were unparseable and therefore UNVERIFIED. Refusing to call this copy checked." }
+    Write-Host ("  VERIFIED: second copy matches its manifest ({0} files, 0 skipped)." -f @($rows).Count)
 }
 
 Write-Host ""

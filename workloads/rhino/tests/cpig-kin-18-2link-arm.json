@@ -7,7 +7,7 @@
         "file": "fixtures/cpig_slop_loader.gh",
         "viewport": {
             "projection": "Parallel",
-            "displayMode": "Shaded",
+            "displayMode": "Shaded", "floating": true,
             "width": 900,
             "height": 900
         },
@@ -69,7 +69,7 @@
             "viewport": {
                 "projection": "Front",
                 "displayMode": "Shaded"
-            }
+            , "floating": true, "width": 900, "height": 900}
         },
         {
             "name": "top",
@@ -78,7 +78,7 @@
             "viewport": {
                 "projection": "Top",
                 "displayMode": "Shaded"
-            }
+            , "floating": true, "width": 900, "height": 900}
         },
         {
             "name": "right",
@@ -87,7 +87,7 @@
             "viewport": {
                 "projection": "Right",
                 "displayMode": "Shaded"
-            }
+            , "floating": true, "width": 900, "height": 900}
         },
         {
             "name": "persp",
@@ -96,7 +96,7 @@
             "viewport": {
                 "projection": "Perspective",
                 "displayMode": "Shaded"
-            },
+            , "floating": true, "width": 900, "height": 900},
             "capture": {
                 "gif": true,
                 "intervalMs": 150,
