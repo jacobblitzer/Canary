@@ -68,6 +68,24 @@ public sealed class Requirement
     public string? Id { get; set; }
 
     /// <summary>
+    /// For <c>plugin</c>: optionally pin WHERE it must have loaded from —
+    /// <c>package</c>, <c>libraries</c>, <c>deployed</c> (either), or <c>any</c> (default).
+    /// </summary>
+    /// <remarks>
+    /// Grasshopper loads from developer-settings folders as readily as from a package
+    /// directory, and a developer folder SHADOWS an installed copy. So "install the package"
+    /// and "update the package" can both report success while Grasshopper carries on running
+    /// a build output — the installer did its job, and nothing it can see is wrong.
+    /// <para>
+    /// Leave this unset on DEV, where loading from a build output is the point. Pin it to
+    /// <c>deployed</c> for QC and USER content, where a developer-folder load means the thing
+    /// being tested is not the thing that was shipped.
+    /// </para>
+    /// </remarks>
+    [JsonPropertyName("origin")]
+    public string? Origin { get; set; }
+
+    /// <summary>
     /// One imperative sentence, printed verbatim when this requirement is not met.
     /// </summary>
     /// <remarks>

@@ -42,6 +42,67 @@ public sealed class PreconditionFailedException : Exception
     }
 }
 
+/// <summary>Where a loaded plug-in actually came from.</summary>
+/// <remarks>
+/// This distinction is what makes "install" and "update" honest. Grasshopper loads from
+/// developer-settings folders as happily as from a package directory, and a dev folder
+/// SHADOWS the installed copy: you install or update the yak package, Grasshopper keeps
+/// loading the build output, and the operation appears to have worked while the old code is
+/// still running. Nothing in the install reports that, because from the installer's point of
+/// view it succeeded.
+/// </remarks>
+public enum PluginOrigin
+{
+    /// <summary>Could not be determined from the reported location.</summary>
+    Unknown,
+
+    /// <summary>A yak package directory — the deployed, versioned install.</summary>
+    Package,
+
+    /// <summary>Grasshopper's Libraries folder — a manual but conventional install.</summary>
+    Libraries,
+
+    /// <summary>
+    /// A build output or hand-added developer folder. Expected on DEV; on QC or USER it means
+    /// the deployed package is NOT what is running.
+    /// </summary>
+    Developer,
+}
+
+/// <summary>Classifies where a plug-in loaded from.</summary>
+public static class PluginOrigins
+{
+    /// <summary>Classifies a reported location.</summary>
+    /// <param name="location">Full path the host reported.</param>
+    /// <returns>The origin.</returns>
+    public static PluginOrigin Classify(string? location)
+    {
+        if (string.IsNullOrWhiteSpace(location)) return PluginOrigin.Unknown;
+        // Normalised through Path.DirectorySeparatorChar so this file contains no escaped
+        // separators at all - the paths being matched are full of them and every hand-written
+        // escape here is a chance to get one wrong silently.
+        var p = location.Replace(Path.DirectorySeparatorChar, '/');
+
+        // Yak installs land under <roaming>/McNeel/Rhinoceros/packages/<rhino>/<name>/<ver>/
+        if (p.IndexOf("/McNeel/Rhinoceros/packages/", StringComparison.OrdinalIgnoreCase) >= 0)
+            return PluginOrigin.Package;
+
+        if (p.IndexOf("/Grasshopper/Libraries", StringComparison.OrdinalIgnoreCase) >= 0)
+            return PluginOrigin.Libraries;
+
+        // Everything else is a build output or a hand-added developer folder. Deliberately the
+        // DEFAULT rather than a pattern match on bin/ or Repos/ - an unrecognised location is
+        // not a deployed one, and assuming otherwise is exactly how a shadowed install passes.
+        return PluginOrigin.Developer;
+    }
+
+    /// <summary>True when this origin is a deployed install rather than a build output.</summary>
+    /// <param name="origin">Origin to test.</param>
+    /// <returns>True for package or Libraries installs.</returns>
+    public static bool IsDeployed(PluginOrigin origin)
+        => origin is PluginOrigin.Package or PluginOrigin.Libraries;
+}
+
 /// <summary>
 /// Asks a running host what it actually has loaded, and refuses the run when the content's
 /// declared <c>plugin</c> requirements are not met.
@@ -105,8 +166,36 @@ public static class HostPreconditions
                 misses.Add(new RequirementMiss(req, "declares kind 'plugin' with no 'id'", who));
                 continue;
             }
-            if (!loaded.ContainsKey(req.Id))
+            if (!loaded.TryGetValue(req.Id, out var detail))
+            {
                 misses.Add(new RequirementMiss(req, "not loaded in the running application", who));
+                continue;
+            }
+
+            // Loaded, but from where? An install or update that a developer folder shadows
+            // reports success while the old code keeps running, so a pinned origin is the
+            // only way that becomes visible.
+            if (string.IsNullOrWhiteSpace(req.Origin)
+                || string.Equals(req.Origin, "any", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var at = detail.LastIndexOf('@');
+            var location = at >= 0 ? detail.Substring(at + 1) : detail;
+            var origin = PluginOrigins.Classify(location);
+            var ok = req.Origin.ToLowerInvariant() switch
+            {
+                "package" => origin == PluginOrigin.Package,
+                "libraries" => origin == PluginOrigin.Libraries,
+                "deployed" => PluginOrigins.IsDeployed(origin),
+                _ => true,
+            };
+            if (!ok)
+            {
+                misses.Add(new RequirementMiss(req,
+                    $"loaded from a {origin.ToString().ToLowerInvariant()} location, not '{req.Origin}' — " +
+                    $"at {location}. An install or update here would appear to succeed while this copy keeps running",
+                    who));
+            }
         }
         return misses;
     }
