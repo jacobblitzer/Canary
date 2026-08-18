@@ -1215,11 +1215,31 @@ public sealed class TestRunner
         // installing its hooks is in exactly the same position as a Grasshopper that has not
         // finished loading its libraries, and the first version of this guard only covered
         // the one host it had been debugged against.
-        resp.Data.TryGetValue(Canary.Agent.HostStateFields.HostReady, out var hostReady);
+        // ABSENT IS NOT THE SAME AS FALSE, and conflating them cost this gate its entire life.
+        //   false   = the host answered honestly: "I cannot see my plug-in table yet." A real,
+        //             expected state. Warn and continue - see above.
+        //   absent  = the agent answered GetHostState without the field at all, i.e. it does
+        //             not implement the contract. Treating that as "cannot tell yet" makes the
+        //             gate disable ITSELF and pass every machine, forever, with one warning
+        //             line in a long log. That is the failure mode this campaign exists to
+        //             kill, and it is exactly what happened: the Rhino agent emitted
+        //             "grasshopperReady" while this read "hostReady", so no Rhino run ever
+        //             reached the Diff below. Fail closed instead - an absent field is a broken
+        //             agent, and a broken agent cannot vouch for a machine.
+        var hasReady = resp.Data.TryGetValue(Canary.Agent.HostStateFields.HostReady, out var hostReady);
+        if (!hasReady)
+        {
+            throw new PreconditionFailedException(
+                $"the host agent answered {Canary.Agent.HostStateFields.Action} without a " +
+                $"'{Canary.Agent.HostStateFields.HostReady}' field, so it cannot say whether " +
+                $"its plug-in table was readable. {plugins.Count} declared plug-in requirement(s) " +
+                "therefore cannot be verified. This is an agent contract defect, not a machine " +
+                "problem - the agent must set it from HostStateFields.HostReady.");
+        }
         if (!string.Equals(hostReady, "true", StringComparison.OrdinalIgnoreCase))
         {
             _logger.Log("Warning: the host could not report what it has loaded yet " +
-                        $"({Canary.Agent.HostStateFields.HostReady}={hostReady ?? "absent"}); " +
+                        $"({Canary.Agent.HostStateFields.HostReady}={hostReady}); " +
                         "plug-in preconditions NOT verified (continuing).");
             return;
         }

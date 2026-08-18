@@ -40,6 +40,26 @@ public sealed class PreconditionFailedException : Exception
         LoadedSummary = loadedSummary;
         LoadErrors = loadErrors;
     }
+
+    /// <summary>
+    /// Constructs a failure that is not about any individual requirement — the check itself
+    /// could not be performed.
+    /// </summary>
+    /// <param name="message">What made the check impossible.</param>
+    /// <remarks>
+    /// A check that cannot run must be as loud as a check that fails. The alternative, which
+    /// this codebase actually shipped, is a guard that logs one warning line and passes
+    /// everything: the Rhino agent never emitted the readiness field the gate reads, so the
+    /// gate excused itself on every run. <see cref="Misses"/> is empty here because there is
+    /// nothing machine-specific to list — the fault is in the agent, not the machine.
+    /// </remarks>
+    public PreconditionFailedException(string message)
+        : base(message)
+    {
+        Misses = Array.Empty<RequirementMiss>();
+        LoadedSummary = string.Empty;
+        LoadErrors = string.Empty;
+    }
 }
 
 /// <summary>Where a loaded plug-in actually came from.</summary>
@@ -216,6 +236,13 @@ public static class HostPreconditions
         PreconditionFailedException ex, string workloadName, int skippedTests)
     {
         var lines = new List<string>();
+
+        // No per-requirement rows means the check could not be performed at all (an agent
+        // that does not implement the contract). Print the reason, or this renders as a bare
+        // "aborted" with nothing to act on.
+        if (ex.Misses.Count == 0)
+            lines.Add($"PRECONDITION CHECK FAILED  workload={workloadName}  {ex.Message}");
+
         foreach (var m in ex.Misses)
         {
             lines.Add($"PRECONDITION FAILED  workload={workloadName}  {m.Requirement.Describe()} — {m.Reason}");

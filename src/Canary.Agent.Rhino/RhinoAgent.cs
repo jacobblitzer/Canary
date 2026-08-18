@@ -2083,7 +2083,11 @@ public sealed class RhinoAgent : ICanaryAgent
         {
             // Rhino 8 runs on either .NET Framework or CoreCLR, and which one decides what
             // a plug-in can bind to. Worth reporting rather than inferring.
-            data["framework"] = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+            // Also a contract field: same spelling as the constant today, so it happened to
+            // work, but it is one typo from the bug above. The remaining literals in this
+            // method (rhinoPlugins, ghLibraries, gh*Count, grasshopperLoaded) are Rhino-only
+            // diagnostics with no constant and no cross-assembly reader - those stay literals.
+            data[HostStateFields.Framework] = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
         }
         catch (Exception ex) { notes.Add("framework: " + ex.Message); }
 
@@ -2150,7 +2154,18 @@ public sealed class RhinoAgent : ICanaryAgent
                     System.Windows.Forms.Application.DoEvents();
                     System.Threading.Thread.Sleep(250);
                 }
-                data["grasshopperReady"] = ready ? "true" : "false";
+                // MUST be the shared constant, not a literal. This was `data["grasshopperReady"]`
+                // for its whole life while the harness gated on HostStateFields.HostReady
+                // ("hostReady"), so the field was ALWAYS absent on Rhino, and
+                // EnsureHostPreconditionsAsync took its "I cannot tell yet" early-return on
+                // every single Rhino run - the plug-in precondition gate never once compared a
+                // declared plug-in against the loaded set. It logged a warning and continued,
+                // which is precisely the silent-green shape this campaign exists to kill: a
+                // guard that reports nothing wrong because it never ran.
+                // Same defect as the ghLibraries/loaded mismatch, in the readiness half; that
+                // fix introduced HostStateFields but only converted the fields it was looking
+                // at. Every contract field goes through the constant - no exceptions.
+                data[HostStateFields.HostReady] = ready ? "true" : "false";
             }
             catch (Exception ex) { notes.Add("loadGrasshopper: " + ex.Message); }
 
