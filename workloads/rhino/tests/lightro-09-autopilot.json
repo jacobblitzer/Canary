@@ -170,6 +170,11 @@
       "kind": "file",
       "path": "%CANARY_REPO_LIGHTRO%/tests/slop/09_autopilot.json",
       "fix": "this test loads a Slop definition from the CANARY_REPO_LIGHTRO repo; check that repo out and point %CANARY_REPO_LIGHTRO% at it (see workloads/tokens.json)"
+    },
+    {
+      "kind": "plugin",
+      "id": "gh:Lightro.Components",
+      "fix": "install the Lightro Grasshopper components (Lightro.Components.gha) into the Grasshopper Libraries folder; on a dev machine build the rhproj in %CANARY_REPO_LIGHTRO%"
     }
-  ]
+]
 }

@@ -46,6 +46,11 @@
       "kind": "file",
       "path": "%CANARY_REPO_KBRIDGE%/out/_slop-side-by-side/four-bar-importer.canary.slop.json",
       "fix": "this test loads a Slop definition from the CANARY_REPO_KBRIDGE repo; check that repo out and point %CANARY_REPO_KBRIDGE% at it (see workloads/tokens.json)"
+    },
+    {
+      "kind": "plugin",
+      "id": "gh:KinematicImporter",
+      "fix": "install the KinematicImporter Grasshopper plug-in - it registers the Mechanism and Animate components this definition uses"
     }
-  ]
+]
 }
