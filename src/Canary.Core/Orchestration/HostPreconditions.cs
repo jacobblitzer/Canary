@@ -87,6 +87,20 @@ public enum PluginOrigin
     /// the deployed package is NOT what is running.
     /// </summary>
     Developer,
+
+    /// <summary>
+    /// Shipped inside the host application's own installation, under a machine-wide program
+    /// directory — Rhino's bundled Grasshopper components, for instance.
+    /// </summary>
+    /// <remarks>
+    /// Deployed, and never the operator's doing. Without this case the <c>Developer</c> default
+    /// swallowed all of it: a real capture of this machine classified <b>21</b> of Rhino's own
+    /// bundled component libraries as developer-origin, producing 21 notes that buried the one
+    /// row that mattered. A report nobody can read is not observability, and the same
+    /// false-positive storm already cost this campaign one pass over the present-but-not-loaded
+    /// class.
+    /// </remarks>
+    Bundled,
 }
 
 /// <summary>Classifies where a plug-in loaded from.</summary>
@@ -110,17 +124,70 @@ public static class PluginOrigins
         if (p.IndexOf("/Grasshopper/Libraries", StringComparison.OrdinalIgnoreCase) >= 0)
             return PluginOrigin.Libraries;
 
+        // The host's own installation. Narrow on purpose: a machine-wide program directory is
+        // not somewhere the operator builds to, so this cannot absorb a shadowing developer
+        // folder under C:/Repos or a Drive-synced payload folder - those stay Developer below.
+        foreach (var programs in ProgramRoots())
+        {
+            if (p.StartsWith(programs, StringComparison.OrdinalIgnoreCase))
+                return PluginOrigin.Bundled;
+        }
+
         // Everything else is a build output or a hand-added developer folder. Deliberately the
         // DEFAULT rather than a pattern match on bin/ or Repos/ - an unrecognised location is
         // not a deployed one, and assuming otherwise is exactly how a shadowed install passes.
         return PluginOrigin.Developer;
     }
 
+    // Empty entries are dropped: a zero-length prefix makes StartsWith true for EVERY path,
+    // which would silently classify the whole machine as Bundled and disable the shadowing
+    // signal entirely.
+    private static IEnumerable<string> ProgramRoots()
+    {
+        foreach (var folder in new[] { Environment.SpecialFolder.ProgramFiles, Environment.SpecialFolder.ProgramFilesX86 })
+        {
+            var path = Environment.GetFolderPath(folder);
+            if (string.IsNullOrWhiteSpace(path)) continue;
+            yield return path.Replace(Path.DirectorySeparatorChar, '/').TrimEnd('/') + "/";
+        }
+    }
+
     /// <summary>True when this origin is a deployed install rather than a build output.</summary>
     /// <param name="origin">Origin to test.</param>
-    /// <returns>True for package or Libraries installs.</returns>
+    /// <returns>True for package, Libraries, and host-bundled installs.</returns>
+    /// <remarks>
+    /// <see cref="PluginOrigin.Bundled"/> counts as deployed: a library shipped inside the host
+    /// application is as installed as anything can be, so an <c>origin: "deployed"</c> pin must
+    /// accept it rather than reporting the application's own components as unsatisfied.
+    /// </remarks>
     public static bool IsDeployed(PluginOrigin origin)
-        => origin is PluginOrigin.Package or PluginOrigin.Libraries;
+        => origin is PluginOrigin.Package or PluginOrigin.Libraries or PluginOrigin.Bundled;
+
+    /// <summary>Whether an actual origin satisfies a declared <c>origin</c> pin.</summary>
+    /// <param name="pin">The requirement's pin: package / libraries / deployed / any.</param>
+    /// <param name="actual">Where the library actually loaded from.</param>
+    /// <returns>True when the pin is absent, <c>any</c>, unrecognised, or satisfied.</returns>
+    /// <remarks>
+    /// <para>
+    /// Extracted so the run-path gate and the environment report cannot form different opinions
+    /// about the same pin. They had a copy each for about an hour, which is exactly how bug 0022
+    /// started.
+    /// </para>
+    /// <para>
+    /// An UNRECOGNISED pin returns true. A typo in content must not silently fail every machine
+    /// — <c>canary doctor</c> is where a bad declaration is reported, and a gate that rejects
+    /// what it cannot parse produces false reds, which block healthy installs.
+    /// </para>
+    /// </remarks>
+    public static bool Satisfies(string? pin, PluginOrigin actual)
+        => (pin ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "" or "any" => true,
+            "package" => actual == PluginOrigin.Package,
+            "libraries" => actual == PluginOrigin.Libraries,
+            "deployed" => IsDeployed(actual),
+            _ => true,
+        };
 }
 
 /// <summary>
@@ -202,14 +269,7 @@ public static class HostPreconditions
             var at = detail.LastIndexOf('@');
             var location = at >= 0 ? detail.Substring(at + 1) : detail;
             var origin = PluginOrigins.Classify(location);
-            var ok = req.Origin.ToLowerInvariant() switch
-            {
-                "package" => origin == PluginOrigin.Package,
-                "libraries" => origin == PluginOrigin.Libraries,
-                "deployed" => PluginOrigins.IsDeployed(origin),
-                _ => true,
-            };
-            if (!ok)
+            if (!PluginOrigins.Satisfies(req.Origin, origin))
             {
                 misses.Add(new RequirementMiss(req,
                     $"loaded from a {origin.ToString().ToLowerInvariant()} location, not '{req.Origin}' — " +

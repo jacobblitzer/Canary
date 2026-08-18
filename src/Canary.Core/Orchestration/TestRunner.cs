@@ -1165,7 +1165,7 @@ public sealed class TestRunner
         // so two machines can be DIFFED - which is what QC verification actually is.
         try
         {
-            var clashes = EnvironmentReport.Analyse(resp.Data);
+            var clashes = EnvironmentReport.Analyse(resp.Data, RequirementChecker.ExpectedOrigins(declared));
             if (!_environmentReported)
             {
                 _environmentReported = true;

@@ -126,6 +126,31 @@ public static class RequirementChecker
     /// remove one the workload declared. Subtraction is how a machine talks itself into
     /// running something it cannot.
     /// </remarks>
+    /// <summary>
+    /// The declared <c>origin</c> expectations, keyed by plug-in id.
+    /// </summary>
+    /// <param name="declared">Result of <see cref="Collect"/>.</param>
+    /// <returns>Id → pin, for plug-in requirements that actually pin one.</returns>
+    /// <remarks>
+    /// Requirements with no pin, or pinned to <c>any</c>, are omitted rather than included as
+    /// "any": the environment report judges origin ONLY where an expectation exists, and an
+    /// entry meaning "no expectation" would be indistinguishable from one meaning "expected and
+    /// satisfied" to anyone counting the map.
+    /// </remarks>
+    public static IReadOnlyDictionary<string, string> ExpectedOrigins(
+        IEnumerable<(Requirement Requirement, string DeclaredBy)> declared)
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (req, _) in declared)
+        {
+            if (!string.Equals(req.Kind, Requirement.KindPlugin, StringComparison.OrdinalIgnoreCase)) continue;
+            if (string.IsNullOrWhiteSpace(req.Id) || string.IsNullOrWhiteSpace(req.Origin)) continue;
+            if (string.Equals(req.Origin.Trim(), "any", StringComparison.OrdinalIgnoreCase)) continue;
+            map[req.Id.Trim()] = req.Origin.Trim();
+        }
+        return map;
+    }
+
     public static IReadOnlyList<(Requirement Requirement, string DeclaredBy)> Collect(
         WorkloadConfig? workload, IEnumerable<TestDefinition> tests, string workloadName)
     {

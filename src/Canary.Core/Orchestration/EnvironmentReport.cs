@@ -80,6 +80,39 @@ public static class EnvironmentReport
     /// <param name="data">The <c>GetHostState</c> payload.</param>
     /// <returns>Findings, most severe first.</returns>
     public static IReadOnlyList<EnvironmentClash> Analyse(IReadOnlyDictionary<string, string> data)
+        => Analyse(data, expectedOrigins: null);
+
+    /// <summary>
+    /// Finds the clashes in a host-state answer, judging origin against what was declared.
+    /// </summary>
+    /// <param name="data">The <c>GetHostState</c> payload.</param>
+    /// <param name="expectedOrigins">
+    /// Plug-in id → declared <c>origin</c> pin (package / libraries / deployed / any). Ids with
+    /// no entry are not judged on origin at all.
+    /// </param>
+    /// <returns>Findings, most severe first.</returns>
+    /// <remarks>
+    /// <para>
+    /// Operator ruling 2026-08-18: <i>"dont worry about the developer origin rows.. mark as
+    /// 'yellow' if they deviate from whats expected."</i>
+    /// </para>
+    /// <para>
+    /// So origin is reported <b>only against an expectation</b>. The previous behaviour raised a
+    /// Note for every developer-origin library, which on a development machine is the normal
+    /// condition — 7 notes about the operator's own repos, every run, saying nothing actionable.
+    /// A report is only read if everything in it means something. Where the content DOES declare
+    /// an expected origin and the machine disagrees, that is a Warning: an install or update
+    /// there reports success while a different copy keeps running.
+    /// </para>
+    /// <para>
+    /// The origin of every library is still reported — it is a column in the loaded list, which
+    /// is where a fact that is usually unremarkable belongs. Findings are for things that need a
+    /// decision.
+    /// </para>
+    /// </remarks>
+    public static IReadOnlyList<EnvironmentClash> Analyse(
+        IReadOnlyDictionary<string, string> data,
+        IReadOnlyDictionary<string, string>? expectedOrigins)
     {
         var findings = new List<EnvironmentClash>();
 
@@ -139,13 +172,23 @@ public static class EnvironmentReport
                     $"{row.Substring(0, bar)} is configured as a plug-in folder but does not exist"));
         }
 
-        // --- 6. Loaded from a developer folder ------------------------------------
-        // A NOTE on a dev machine, where it is the point. It becomes an error only when a
-        // requirement pins origin - which is how QC and USER content says so.
-        foreach (var l in loaded.Where(x => x.Origin == PluginOrigin.Developer && x.Location.Length > 0))
+        // --- 6. Origin DEVIATES FROM WHAT WAS DECLARED ----------------------------
+        // Only against an expectation. An unpinned library's origin is a column in the loaded
+        // list, not a finding: on a dev machine every one of the operator's own repos loads
+        // from a build output, and a report that says so seven times per run is one nobody
+        // reads. Where content pins an origin and the machine disagrees, that is yellow.
+        if (expectedOrigins != null && expectedOrigins.Count > 0)
         {
-            findings.Add(new EnvironmentClash(ClashSeverity.Note, "developer-origin",
-                $"{l.Id} loaded from {l.Location} - a build output or hand-added folder, not a deployed install"));
+            foreach (var l in loaded.Where(x => x.Location.Length > 0))
+            {
+                if (!expectedOrigins.TryGetValue(l.Id, out var pin)) continue;
+                if (PluginOrigins.Satisfies(pin, l.Origin)) continue;
+
+                findings.Add(new EnvironmentClash(ClashSeverity.Warning, "origin-deviates",
+                    $"{l.Id} is declared as '{pin}' but loaded from a " +
+                    $"{l.Origin.ToString().ToLowerInvariant()} location - {l.Location}. " +
+                    "An install or update would report success while this copy keeps running"));
+            }
         }
 
         return findings
