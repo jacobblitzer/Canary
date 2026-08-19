@@ -1,4 +1,4 @@
-# Publish the Canary Drive payload (campaign clean-install-hardening Phase 2).
+﻿# Publish the Canary Drive payload (campaign clean-install-hardening Phase 2).
 #
 # WHY THIS EXISTS: there was no publish script. The payload accreted by hand,
 # except for one MSBuild target on the net48 Rhino agent that fired on every
@@ -180,8 +180,49 @@ Copy-Item (Join-Path $srcReferences "*.png") (Join-Path $dstCommissioning "refer
 # stays literal, and doctor reds out on preconditions that have nothing to do with the
 # plug-in under test - the second signal impersonating the third. plugin-packages.json is
 # what machine-setup.ps1 reads to know which yak packages a QC machine still needs.
-Copy-Item (Join-Path $srcWorkloads "tokens.json") $dstWorkloads -Force
+# tokens.json is FILTERED to the names the shipped content actually uses, the same way the
+# baselines ledger above is filtered to the shipped tests, and for the same reason in reverse.
+# The dev table declares ten %CANARY_REPO_*% roots pointing into C:\Repos. Shipping it whole
+# would have doctor on the QC machine report ten errors for roots that do not exist there and
+# that nothing in this payload references - a doctor red meaning "install incomplete" produced
+# by content the payload does not carry. That is the second signal impersonating the third,
+# which is the failure this whole campaign is built to prevent.
+#
+# A name the content uses and the table does not declare is NOT invented here: doctor's
+# check 3 reports it as undeclared, which is the correct and loud outcome.
+# plugin-packages.json is copied BEFORE the scan below, not after: it declares
+# %CANARY_HANDOFF% for the yak source, and scanning a tree that did not yet contain it
+# dropped that token from the filtered table - so doctor reported content using a token
+# nothing declared. The scan has to see every file the payload will carry.
 Copy-Item (Join-Path $srcWorkloads "plugin-packages.json") $dstWorkloads -Force
+
+$usedTokens = New-Object System.Collections.Generic.HashSet[string]
+Get-ChildItem $dstWorkloads -Recurse -File -Include *.json |
+    ForEach-Object {
+        foreach ($m in [regex]::Matches((Get-Content $_.FullName -Raw), '%([A-Z0-9_]+)%')) {
+            [void]$usedTokens.Add($m.Groups[1].Value)
+        }
+    }
+$srcTokens = Get-Content (Join-Path $srcWorkloads "tokens.json") -Raw | ConvertFrom-Json
+$shippedTokens = [ordered]@{}
+$shippedTokens['_comment_1'] = (
+    'FILTERED FOR THIS PAYLOAD. Only the tokens this payload content actually uses are ' +
+    'declared here - the dev machine table also declares repo roots that do not exist on a ' +
+    'machine with no repos, and doctor validates every declared token, so shipping them ' +
+    'whole would report an incomplete install for content that is not here. ' +
+    'Override any entry with an environment variable of the same name.')
+foreach ($prop in $srcTokens.PSObject.Properties) {
+    if ($prop.Name.StartsWith('_')) { continue }
+    if ($usedTokens.Contains($prop.Name)) { $shippedTokens[$prop.Name] = $prop.Value }
+}
+$shippedTokens | ConvertTo-Json -Depth 4 |
+    Set-Content (Join-Path $dstWorkloads "tokens.json") -Encoding utf8
+$droppedCount = @($srcTokens.PSObject.Properties | Where-Object {
+    -not $_.Name.StartsWith('_') -and -not $usedTokens.Contains($_.Name) }).Count
+Write-Host ("  tokens: shipping {0} of {1} declared token(s); {2} not used by this payload" -f `
+    ($shippedTokens.Keys.Count - 1), @($srcTokens.PSObject.Properties | Where-Object { -not $_.Name.StartsWith('_') }).Count, $droppedCount)
+
+
 
 # ---- the operator's four scripts, at the payload ROOT beside canary.exe.
 # A QC machine gets this folder and nothing else - no repo clone, no scripts checkout - so

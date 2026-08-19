@@ -1,4 +1,4 @@
-# Verify a Canary payload before trusting it (campaign Phase 2).
+﻿# Verify a Canary payload before trusting it (campaign Phase 2).
 #
 # Checks FOUR things, in the order that would have caught machine 2's
 # incident soonest:
@@ -138,7 +138,25 @@ $canary = Join-Path $Root "canary.exe"
 if (Test-Path $canary) {
     Write-Host "`nreadiness check: canary doctor --workload rhino --suite smoke"
     & $canary doctor --workload rhino --suite smoke --workloads-dir (Join-Path $Root "workloads")
-    if ($LASTEXITCODE -ne 0) {
+    $doctorExit = $LASTEXITCODE
+
+    # EXIT 5 IS NOT PROVEN, AND AT PUBLISH TIME IT IS THE CORRECT ANSWER.
+    # This script asks whether the BYTES are intact and the CONTENT is complete. Doctor's
+    # other job - has anything measured this machine - is answered by an environment capture
+    # and a commissioning report, and a payload that was assembled thirty seconds ago has
+    # neither by definition. Treating 5 as a failure made the gate unpassable: a freshly
+    # staged payload can never have been commissioned, so it could never be published.
+    #
+    # 1 still fails hard. That means doctor found something it could check and it was wrong,
+    # which is precisely what this gate is for.
+    if ($doctorExit -eq 5) {
+        Write-Host ""
+        Write-Host "doctor: NOT PROVEN (exit 5) - expected here. The content checks passed; the" -ForegroundColor Yellow
+        Write-Host "  checks that could not run need a machine that has been commissioned and" -ForegroundColor Yellow
+        Write-Host "  captured, which a payload folder is not. Run them on the TARGET machine:" -ForegroundColor Yellow
+        Write-Host "    canary commission --workload rhino" -ForegroundColor Yellow
+        Write-Host "    canary env        --workload rhino" -ForegroundColor Yellow
+    } elseif ($doctorExit -ne 0) {
         Write-Host "FAILED: the bytes are intact but this machine cannot be trusted to report on these tests." -ForegroundColor Red
         exit 1
     }
