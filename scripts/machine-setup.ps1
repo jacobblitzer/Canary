@@ -68,6 +68,22 @@ if (-not (Test-Path $mapFile)) { throw "missing $mapFile - it maps requirement i
 $map = Get-Content $mapFile -Raw | ConvertFrom-Json
 if (-not $Source) { $Source = $map.source }
 
+# Expand %TOKEN% from workloads/tokens.json, with an environment variable of the same name
+# winning - that is how a QC machine repoints a root without editing content it did not
+# author. The yak source is declared as %CANARY_HANDOFF%/_yak rather than a drive letter
+# precisely so a machine that mounts the Drive elsewhere still works; a corpus guard in
+# this repo rejects absolute drive paths in content for the same reason.
+$tokensFile = Join-Path $workloadsRoot 'tokens.json'
+if (Test-Path $tokensFile) {
+    $tokens = Get-Content $tokensFile -Raw | ConvertFrom-Json
+    foreach ($prop in $tokens.PSObject.Properties) {
+        if ($prop.Name -like '_comment*') { continue }
+        $val = [Environment]::GetEnvironmentVariable($prop.Name)
+        if (-not $val) { $val = $prop.Value }
+        $Source = $Source -replace [regex]::Escape("%$($prop.Name)%"), $val
+    }
+}
+
 $canary = @($CanaryExe,
     (Join-Path $repo 'src\Canary.Harness\bin\Debug\net8.0-windows\canary.exe'),
     (Join-Path $repo 'src\Canary.Harness\bin\Release\net8.0-windows\canary.exe'),

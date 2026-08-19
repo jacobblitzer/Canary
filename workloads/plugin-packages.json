@@ -11,10 +11,11 @@
     "against a real capture before anything depends on it: a requirement whose id never",
     "matches is a guard that can never fire, which is how bug 0022 happened.",
     "",
-    "Package files live in the yak source folder (default G:/My Drive/Builds/_yak). Names",
-    "here are the package NAME, not the filename - yak resolves the version itself."
+    "Package files live in the yak source folder, declared as %CANARY_HANDOFF%/_yak so a",
+    "machine with the Drive mounted elsewhere can repoint it by setting CANARY_HANDOFF.",
+    "Names here are the package NAME, not the filename - yak resolves the version itself."
   ],
-  "source": "G:/My Drive/Builds/_yak",
+  "source": "%CANARY_HANDOFF%/_yak",
   "packages": [
     { "package": "slop",         "ids": ["gh:Slop"],                              "grounded": "capture" },
     { "package": "cpig",         "ids": ["gh:CPig", "gh:CPig Kinematics", "rhino:CPig.Rhino"], "grounded": "capture" },
