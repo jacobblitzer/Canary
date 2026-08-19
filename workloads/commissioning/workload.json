@@ -1,0 +1,13 @@
+{
+  "name": "commissioning",
+  "displayName": "Commissioning (harness self-check)",
+  "_comment": [
+    "Ruling 7A. This workload carries no tests - it is the content that answers",
+    "'can this machine test at all?', and it is the ONLY workload a USER-tier",
+    "machine gets. It launches nothing itself; `canary commission --workload <w>`",
+    "borrows another workload's app for layers 2 and 3.",
+    "MachineTier treats this name as NOT part of the operator's corpus, because a",
+    "USER machine carries exactly this and counting it would make every USER",
+    "machine look like a QC one."
+  ]
+}

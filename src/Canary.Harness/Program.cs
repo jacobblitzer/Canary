@@ -1,4 +1,4 @@
-using System.CommandLine;
+﻿using System.CommandLine;
 
 namespace Canary;
 
@@ -77,6 +77,7 @@ public static class Program
         rootCommand.AddCommand(Cli.SessionCommand.Create());
         rootCommand.AddCommand(Cli.DoctorCommand.Create());
         rootCommand.AddCommand(Cli.EnvCommand.Create());
+        rootCommand.AddCommand(Cli.CommissionCommand.Create());
         rootCommand.AddCommand(Cli.BaselinesCommand.Create());
 
         return rootCommand;

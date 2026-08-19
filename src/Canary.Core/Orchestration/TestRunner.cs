@@ -218,6 +218,92 @@ public sealed class TestRunner
     }
 
     /// <summary>
+    /// Launch the workload, take two screenshots back-to-back, and close it — running no test.
+    /// </summary>
+    /// <param name="workload">Workload whose application to capture from.</param>
+    /// <param name="firstPng">Where to write the first capture.</param>
+    /// <param name="secondPng">Where to write the second.</param>
+    /// <param name="width">Capture width.</param>
+    /// <param name="height">Capture height.</param>
+    /// <param name="cancellationToken">Cancellation.</param>
+    /// <returns>True when both captures were written.</returns>
+    /// <remarks>
+    /// <para>
+    /// Deployment campaign Stage C2, backing layers 2 and 3 of <c>canary commission</c>. Layer
+    /// 2 asks whether this machine can reproduce its own frame seconds apart; answering it
+    /// needs two captures of an unchanged scene and nothing else — no test, no checkpoint, no
+    /// baseline.
+    /// </para>
+    /// <para>
+    /// It reuses <c>LaunchWorkloadApp</c> and the same connect/heartbeat sequence as a real run
+    /// rather than opening a second, simpler path to the app, for the reason
+    /// <see cref="CaptureEnvironmentAsync"/> already documents: a probe that launched
+    /// differently would answer for a machine state no run ever sees. Nothing about the
+    /// existing test-run path changes — this is a sibling probe, not a run mode.
+    /// </para>
+    /// <para>
+    /// The two captures are taken from one session deliberately. Relaunching between them
+    /// would fold app-startup variation into the answer and turn a question about capture
+    /// determinism into a question about cold starts.
+    /// </para>
+    /// </remarks>
+    public async Task<bool> CaptureCommissioningFramesAsync(
+        WorkloadConfig workload,
+        string firstPng,
+        string secondPng,
+        int width,
+        int height,
+        CancellationToken cancellationToken = default)
+    {
+        Process? appProcess = null;
+        HarnessClient? client = null;
+        PenumbraPreviewTelemetryTail? penumbraTail = null;
+
+        try
+        {
+            _logger.Log($"Launching {workload.DisplayName} to take two commissioning captures (no test will run)...");
+            appProcess = LaunchWorkloadApp(workload, out penumbraTail);
+            _processManager.Track(appProcess);
+
+            var pipeName = $"{workload.PipeName}-{appProcess.Id}";
+            client = new HarnessClient(pipeName, TimeSpan.FromMilliseconds(workload.ExecuteTimeoutMs))
+            {
+                TargetProcessId = appProcess.Id,
+            };
+            await client.ConnectAsync(workload.StartupTimeoutMs, cancellationToken).ConfigureAwait(false);
+
+            var hb = await client.HeartbeatAsync(cancellationToken).ConfigureAwait(false);
+            if (!hb.Ok) throw new InvalidOperationException("Agent heartbeat returned ok=false.");
+
+            foreach (var target in new[] { firstPng, secondPng })
+            {
+                var dir = Path.GetDirectoryName(target);
+                if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+
+                var shot = await client.CaptureScreenshotAsync(
+                    new CaptureSettings { Width = width, Height = height, OutputPath = target },
+                    cancellationToken).ConfigureAwait(false);
+
+                // ScreenshotResult has no success flag - it reports the path it wrote. So the
+                // file on disk is the evidence, not a boolean the agent could set optimistically.
+                if (string.IsNullOrWhiteSpace(shot.FilePath) || !File.Exists(target))
+                {
+                    _logger.Log($"Warning: commissioning capture produced no file at {target}.");
+                    return false;
+                }
+            }
+
+            return File.Exists(firstPng) && File.Exists(secondPng);
+        }
+        finally
+        {
+            client?.Dispose();
+            penumbraTail?.Dispose();
+            if (appProcess != null) _processManager.KillTracked(appProcess);
+        }
+    }
+
+    /// <summary>
     /// Run a single test definition against the target workload.
     /// </summary>
     public async Task<TestResult> RunTestAsync(
