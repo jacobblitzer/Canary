@@ -1,12 +1,9 @@
 {
   "name": "main-cinematic-curl-noise",
   "workload": "qualia",
-  "description": "[STALE 2026-08-18] This test calls __canarySetPersonaEnabled with module id(s) render.penumbra-backdrop, which no longer exist in Qualia's module registry (packages/core/src). The call is a SILENT NO-OP: the test still runs and still captures, but the toggle it is named for does nothing, so the frame is indistinguishable from the un-toggled one. Repair by mapping to a live module id, or retire the arm. Main viewport (not playground) under Cinematic profile — curl-noise field + bloom + Penumbra. Used as a visual oracle for Wave 2 atmospheric particles. The main app's ModuleRegistry is what Cinematic acts on; the playground overlay's own registry would default to Workshop (no curl-noise).",
+  "description": "Main viewport (not playground) under Cinematic profile — curl-noise field + bloom + Penumbra. Used as a visual oracle for Wave 2 atmospheric particles. The main app's ModuleRegistry is what Cinematic acts on; the playground overlay's own registry would default to Workshop (no curl-noise).",
   "setup": {
-    "canvas": {
-      "width": 1280,
-      "height": 800
-    },
+    "canvas": { "width": 1280, "height": 800 },
     "vlm": {
       "provider": "ollama",
       "model": "gemma4:e4b"
@@ -23,8 +20,7 @@
     {
       "name": "main-cinematic",
       "stabilizeMs": 3000,
-      "tolerance": 0.3,
-      "mode": "capture"
+      "tolerance": 0.3
     }
   ]
 }

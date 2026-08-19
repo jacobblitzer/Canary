@@ -22,33 +22,56 @@ Qualia's live source, not inferred from test names.
 
 So age is not the defect. Two narrower things are.
 
-## 1. Dead module ids — 14 tests, marked in-file
+## 1. Dead module ids — 4 tests (CORRECTED 2026-08-18)
 
-Qualia's module registry (`packages/core/src`) has 14 ids today. These tests call
-`__canarySetPersonaEnabled` with ids that are no longer among them. The call is a **silent
-no-op**: the test runs, captures a frame, and the toggle it is named for does nothing — so
-the image is indistinguishable from the un-toggled one.
+> **This section was wrong when first written, and the error disarmed ten working tests.**
+> It claimed Qualia's registry held **14** ids and that **8** were dead. The registry
+> (`packages/core/src/modules/builtin.ts`) holds **51**, and only **3** are dead.
+>
+> Cause: the live-id list was built with the regex `id:\s*'[a-z]+\.[a-zA-Z.]+'`. That
+> character class cannot match a **hyphen**, so every hyphenated id — `fx.pencil-toon`,
+> `fx.laser-rat`, `compute.rag.eager-l3`, `fx.debug-layer-colors`,
+> `render.penumbra-backdrop` — failed to match and fell silently out of the "live" set. The
+> 14 found were exactly the 14 hyphen-free ids. Absence was then read off that filtered view.
+>
+> Ten tests were consequently marked stale and forced to `mode: "capture"` — save-only,
+> never failing — while their toggles were live. That is a fresh instance of the
+> silent-green defect this campaign exists to remove. All ten have been restored from
+> `d950c02^`. Found by adversarial review, not by the author.
 
-| Dead module id | Tests |
+Three module ids are genuinely gone, removed 2026-07-19 and now referenced only in comments:
+**`render.nodes`**, **`render.edges`**, **`render.labels`**.
+
+Four tests call them via `__canarySetPersonaEnabled`, where the call is a **silent no-op** —
+the test runs, captures a frame, and the toggle it is named for does nothing, so the image is
+indistinguishable from the un-toggled one:
+
+| Test | Dead id(s) |
 |---|---|
-| `compute.rag.eager-l3` | `eager-l3-cold-launch`, `-warm-launch`, `-progress-badge`, `-provider-swap` |
-| `fx.debug-layer-colors` | `diag-pencil-debug-colors`, `-only-debug-colors`, `-standard-debug-colors` |
-| `render.nodes` / `render.edges` / `render.labels` | `diag-pencil-no-nodes`, `-no-edges`, `-no-labels`, `-only-background` |
-| `fx.pencil-toon` | `diag-pencil-no-pencil-toon`, `-only-debug-colors` |
-| `fx.laser-rat` | `resolver-c1-laser-rat-round-trip` |
-| `render.penumbra-backdrop` | `main-cinematic-curl-noise` |
+| `diag-pencil-no-nodes` | `render.nodes` |
+| `diag-pencil-no-edges` | `render.edges` |
+| `diag-pencil-no-labels` | `render.labels` |
+| `diag-pencil-only-background` | all three |
 
-Live ids for reference: `compute.metrics`, `compute.simulation`, `debug.playground`,
-`fx.constellations`, `fx.outline`, `fx.sounds`, `fx.vignette`, `render.grid`,
-`render.gumball`, `render.junction.{bubble,center,surface,voronoi}`, `render.paper`.
+These four carry a `[STALE 2026-08-18]` note naming the dead id and are set to
+`mode: "capture"`. A known no-op must not sit in a suite asserting what it cannot test.
 
-**Action taken:** each carries a `[STALE 2026-08-18]` note at the head of its description
-naming the dead id, and its checkpoints are set to `mode: "capture"` — save-only, never
-FAILs. A known no-op must not sit in the suite asserting something it cannot test.
+**Action still needed (operator):** map each to a live module id, or retire the arm.
 
-**Action still needed (operator):** map each to a live module id, or retire the arm. Note
-that `render.grid` *does* still exist, so `diag-pencil-no-grid` is genuinely testing
-something and was left armed.
+**Live ids — all 51**, for anyone tempted to re-derive this with a pattern:
+`compute.metrics`, `compute.rag.eager-l3`, `compute.simulation`, `debug.api-tick-log`,
+`debug.fps-hud`, `debug.junction-markers`, `debug.playground`, `fx.audio-reactive`,
+`fx.chromatic-aberration`, `fx.color-grade`, `fx.connection-sweep`, `fx.constellations`,
+`fx.crystal-material`, `fx.cursor-trail`, `fx.debug-layer-colors`, `fx.echo-trails`,
+`fx.edge-flow`, `fx.film-grain`, `fx.force-field`, `fx.group-atmosphere`, `fx.heat-map`,
+`fx.hover-lift`, `fx.label-bloom`, `fx.laser-rat`, `fx.magnetic-snap`, `fx.node-pulse`,
+`fx.outline`, `fx.pencil-toon`, `fx.post-process`, `fx.selection-halo`, `fx.sounds`,
+`fx.time-lapse`, `fx.vignette`, `render.context-jewel-hud`, `render.context-jewel-scene`,
+`render.context-navigator`, `render.cross-context.portal`, `render.cross-context.qnode`,
+`render.curl-noise-field`, `render.graph-scene`, `render.grid`, `render.gumball`,
+`render.junction.bubble`, `render.junction.center`, `render.junction.pull-back`,
+`render.junction.surface`, `render.junction.voronoi`, `render.paper`,
+`render.penumbra-backdrop`, `render.penumbra-fallback`, `render.qverse-graph-nav`.
 
 ## 2. `display-modes` and `pencil-diff` now run VLM, not pixel-diff
 
@@ -62,9 +85,13 @@ description** — asserting nothing while looking armed. Twelve checkpoints now 
 specified to do:
 
 - `display-modes` (9 of 10): standard, wireframe, shaded, pencil, blueprint, artistic,
-  rendered, neon, aurora. The tenth (`main-cinematic-curl-noise`) is stale per §1.
-- `pencil-diff` (3 of 11): `baseline`, `mount-trace`, `no-grid` — the only arms whose toggle
-  still does anything. The other eight are stale per §1.
+  rendered, neon, aurora. **The tenth (`main-cinematic-curl-noise`) was wrongly excluded by
+  the §1 error — `render.penumbra-backdrop` is live.** Restored; still needs a criterion.
+- `pencil-diff` (3 of 11): `baseline`, `mount-trace`, `no-grid`. **Four more arms
+  (`debug-colors`, `no-pencil-toon`, `only-debug-colors`, `standard-debug-colors`) were
+  wrongly excluded here by the §1 error — their toggles are live.** They have been restored
+  to their original mode and still need VLM criteria; those were deliberately NOT authored
+  in the same pass, because the method that produced them is itself under review (§6).
 
 ## 3. Never-run: the 11 `rh2-*` tests
 
@@ -87,7 +114,10 @@ cross-repo protocol; `Qualia/spec/CANARY.md` names RH-2).
 ## 4. Regenerable scaffolding, safe to delete — 13 tests + 5 suites
 
 All machine-generated by `workloads/qualia/sweeps/generate-sweep.mjs`, all reproducible from
-the 8 retained specs. **Not deleted** — awaiting the operator.
+the 8 retained specs. **DELETED 2026-08-18** (commit `bdda672`, pushed) at the operator's
+instruction. Each retained spec now carries a `_retired` field, because regenerating one
+would faithfully re-create the deleted tests — deleting output while leaving the thing that
+reproduces it is a delay, not a deletion.
 
 | Tests | Why dead |
 |---|---|
@@ -99,9 +129,12 @@ the 8 retained specs. **Not deleted** — awaiting the operator.
 No live consumer runs them: the display-sweep skill invokes only `w2-atlas`, `desktop-mini`,
 `display-invariants`, `platform-parity`.
 
-`sweep-w2-atlas` is **not** redundant and must not be pruned — measured over 1,022 states,
-139 of 146 state ids produce a different effect-path set per family, and an exhaustive search
-over all 127 subsets found none reproducing the 376 distinct (state, signature) pairs.
+`sweep-w2-atlas` is **not** redundant and must not be pruned. The conclusion holds — it
+carries several hundred distinct (state, signature) pairs against 12–99 for every other
+sweep — but **the figure "376" originally quoted here is wrong**: it came from a subagent
+and was never grounded. Real per-run counts are being recomputed; treat the specific number
+as unverified until this line names its source. The supporting shape (an exhaustive search
+over all 2⁷−1 = 127 subsets of the other specs) is arithmetically right.
 
 ## 5. Other drift worth knowing
 

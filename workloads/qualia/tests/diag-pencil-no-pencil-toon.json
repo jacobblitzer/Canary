@@ -1,12 +1,9 @@
 {
   "name": "diag-pencil-no-pencil-toon",
   "workload": "qualia",
-  "description": "[STALE 2026-08-18] This test calls __canarySetPersonaEnabled with module id(s) fx.pencil-toon, which no longer exist in Qualia's module registry (packages/core/src). The call is a SILENT NO-OP: the test still runs and still captures, but the toggle it is named for does nothing, so the frame is indistinguishable from the un-toggled one. Repair by mapping to a live module id, or retire the arm. Pencil profile MINUS fx.pencil-toon — inside Papers qverse so sphere atoms are visible. Diagnostic overlay confirms fx.pencil-toon is actually disabled in the registry.",
+  "description": "Pencil profile MINUS fx.pencil-toon — inside Papers qverse so sphere atoms are visible. Diagnostic overlay confirms fx.pencil-toon is actually disabled in the registry.",
   "setup": {
-    "canvas": {
-      "width": 1280,
-      "height": 800
-    },
+    "canvas": { "width": 1280, "height": 800 },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
@@ -19,11 +16,6 @@
     ]
   },
   "checkpoints": [
-    {
-      "name": "diag-pencil-no-pencil-toon",
-      "stabilizeMs": 3500,
-      "tolerance": 0.3,
-      "mode": "capture"
-    }
+    { "name": "diag-pencil-no-pencil-toon", "stabilizeMs": 3500, "tolerance": 0.3 }
   ]
 }

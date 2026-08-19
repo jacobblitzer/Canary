@@ -1,12 +1,9 @@
 {
   "name": "eager-l3-progress-badge",
   "workload": "qualia",
-  "description": "[STALE 2026-08-18] This test calls __canarySetPersonaEnabled with module id(s) compute.rag.eager-l3, which no longer exist in Qualia's module registry (packages/core/src). The call is a SILENT NO-OP: the test still runs and still captures, but the toggle it is named for does nothing, so the frame is indistinguishable from the un-toggled one. Repair by mapping to a live module id, or retire the arm. Move 3 (eager-L3 Phase 3, 2026-05-27) — asserts the EagerExtractionProgressBadge becomes visible during an active sweep. Seeds provider + enables `compute.rag.eager-l3` persona, triggers `Reload` to retrigger GRAPH_LOAD, waits 5s for the sweep to populate the BehaviorExtractor queue, then reads `__canaryGetProgressBadgeState()` and asserts visible=true with inFlight+queueDepth > 0. Pixel-diff checkpoint freezes the union of the bottom-right L3 progress badge + the green top-center PASS badge so a regression in either (badge styling, hook contract, sweep-not-firing) shows up. Wait window deliberately small (~10s end-to-end) — we're verifying the badge surfaces during an active sweep, not waiting for completion.",
+  "description": "Move 3 (eager-L3 Phase 3, 2026-05-27) — asserts the EagerExtractionProgressBadge becomes visible during an active sweep. Seeds provider + enables `compute.rag.eager-l3` persona, triggers `Reload` to retrigger GRAPH_LOAD, waits 5s for the sweep to populate the BehaviorExtractor queue, then reads `__canaryGetProgressBadgeState()` and asserts visible=true with inFlight+queueDepth > 0. Pixel-diff checkpoint freezes the union of the bottom-right L3 progress badge + the green top-center PASS badge so a regression in either (badge styling, hook contract, sweep-not-firing) shows up. Wait window deliberately small (~10s end-to-end) — we're verifying the badge surfaces during an active sweep, not waiting for completion.",
   "setup": {
-    "canvas": {
-      "width": 1280,
-      "height": 720
-    },
+    "canvas": { "width": 1280, "height": 720 },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
@@ -15,28 +12,16 @@
     ]
   },
   "actions": [
-    {
-      "type": "Reload"
-    },
-    {
-      "type": "WaitForStable",
-      "ms": "5000"
-    },
-    {
-      "type": "RunCommand",
-      "command": "(() => { const r = window.__canaryGetProgressBadgeState(); if (!r || r.ok !== true) throw new Error('hook envelope not ok: ' + JSON.stringify(r)); const s = r.value; if (!s.visible) throw new Error('progress badge not visible during active sweep — got ' + JSON.stringify(s)); const total = (s.inFlight || 0) + (s.queueDepth || 0); if (total === 0) throw new Error('badge visible but inFlight+queueDepth === 0 (idle); got ' + JSON.stringify(s)); return 'badge active: ' + JSON.stringify(s); })()"
-    },
-    {
-      "type": "RunCommand",
-      "command": "(() => { const b = document.createElement('div'); b.id = 'canary-eager-l3-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS progress badge visible during sweep'; document.body.appendChild(b); return true; })()"
-    }
+    { "type": "Reload" },
+    { "type": "WaitForStable", "ms": "5000" },
+    { "type": "RunCommand", "command": "(() => { const r = window.__canaryGetProgressBadgeState(); if (!r || r.ok !== true) throw new Error('hook envelope not ok: ' + JSON.stringify(r)); const s = r.value; if (!s.visible) throw new Error('progress badge not visible during active sweep — got ' + JSON.stringify(s)); const total = (s.inFlight || 0) + (s.queueDepth || 0); if (total === 0) throw new Error('badge visible but inFlight+queueDepth === 0 (idle); got ' + JSON.stringify(s)); return 'badge active: ' + JSON.stringify(s); })()" },
+    { "type": "RunCommand", "command": "(() => { const b = document.createElement('div'); b.id = 'canary-eager-l3-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS progress badge visible during sweep'; document.body.appendChild(b); return true; })()" }
   ],
   "checkpoints": [
     {
       "name": "progress-badge-visible",
       "stabilizeMs": 500,
-      "tolerance": 0.02,
-      "mode": "capture"
+      "tolerance": 0.02
     }
   ]
 }
