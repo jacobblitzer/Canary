@@ -1,0 +1,46 @@
+{
+  "_comment": [
+    "Maps a requirement id (as the HOST reports it in GetHostState) to the yak package that",
+    "installs it. This is the missing link between 'what is declared' and 'what to actually",
+    "run': the 210 requirements say what a machine needs, and this says how to get it.",
+    "",
+    "GROUNDED column: 'capture' means the id was read from a live GetHostState on the dev",
+    "machine (workloads/rhino/results/environment.json) - it is what the host really calls",
+    "the thing. 'inferred' means the id has NOT been observed loaded anywhere, and the",
+    "package name is a reasonable guess from the filename. An inferred id must be confirmed",
+    "against a real capture before anything depends on it: a requirement whose id never",
+    "matches is a guard that can never fire, which is how bug 0022 happened.",
+    "",
+    "Package files live in the yak source folder (default G:/My Drive/Builds/_yak). Names",
+    "here are the package NAME, not the filename - yak resolves the version itself."
+  ],
+  "source": "G:/My Drive/Builds/_yak",
+  "packages": [
+    { "package": "slop",         "ids": ["gh:Slop"],                              "grounded": "capture" },
+    { "package": "cpig",         "ids": ["gh:CPig", "gh:CPig Kinematics", "rhino:CPig.Rhino"], "grounded": "capture" },
+    { "package": "bristle",      "ids": ["gh:Bristle"],                           "grounded": "capture" },
+    { "package": "pigture",      "ids": ["gh:GrasshopperRender"],                 "grounded": "capture" },
+    { "package": "lightro",      "ids": ["gh:Lightro.Components"],                "grounded": "capture" },
+    { "package": "pigment",      "ids": ["rhino:Pigment"],                        "grounded": "capture" },
+    { "package": "tagurit",      "ids": ["rhino:Tagurit"],                        "grounded": "capture" },
+    { "package": "plotline",     "ids": ["gh:Plotline"],                          "grounded": "capture" },
+    { "package": "trotter",      "ids": ["gh:Trotter"],                           "grounded": "capture" },
+    { "package": "pigletto",     "ids": ["gh:Pigletto"],                          "grounded": "capture" },
+    { "package": "canary-agent", "ids": ["rhino:Canary.Agent.Rhino"],             "grounded": "capture" },
+
+    {
+      "package": "penumbra",
+      "ids": ["rhino:Penumbra.Rhino"],
+      "grounded": "inferred",
+      "note": [
+        "NOT OBSERVED LOADED ANYWHERE. The dev machine's capture contains zero occurrences",
+        "of 'penumbra' in its loaded list - no rhino: id and no gh: id - yet 62 rhino tests",
+        "hard-depend on the Penumbra Rhino plug-in through the WaitForPenumbraFrame action.",
+        "So either those tests do not pass today, or the plug-in reaches Rhino by a route",
+        "PlugIn.GetInstalledPlugIns() does not report. The id below is a GUESS from the",
+        "assembly name and MUST be replaced with whatever a real capture shows before any",
+        "test declares it. Installing this package is still safe; declaring the id is not."
+      ]
+    }
+  ]
+}
