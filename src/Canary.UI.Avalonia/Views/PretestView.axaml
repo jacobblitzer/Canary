@@ -1,0 +1,144 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Canary.UI.Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1150" d:DesignHeight="760"
+             x:Class="Canary.UI.Avalonia.Views.PretestView"
+             x:DataType="vm:PretestViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+    <!-- Toolbar. Every action here either reads the machine or measures it.
+         Nothing on this tab installs, unblocks, or edits Developer Settings. -->
+    <Border Grid.Row="0" Background="#2D2D30" Padding="8,6">
+      <WrapPanel Orientation="Horizontal">
+        <TextBlock Text="App workload" VerticalAlignment="Center" Margin="0,0,6,0" Opacity="0.8" />
+        <ComboBox ItemsSource="{Binding Workloads}"
+                  SelectedItem="{Binding SelectedWorkload, Mode=TwoWay}"
+                  MinWidth="150" Margin="0,0,12,0" />
+        <Button Content="Read this machine" Command="{Binding SurveyCommand}" Margin="0,0,8,0"
+                ToolTip.Tip="Reads the filesystem and registry only. Launches no application and changes nothing." />
+        <Button Content="Commission" Command="{Binding CommissionCommand}" Margin="0,0,8,0"
+                ToolTip.Tip="Starts the selected application, measures whether capture is repeatable here, and closes it. Installs nothing." />
+        <Button Content="Reload from disk" Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
+        <Button Content="Stop" Command="{Binding StopCommand}" Margin="0,0,12,0" />
+        <TextBlock Text="{Binding State}" VerticalAlignment="Center" Opacity="0.7" />
+      </WrapPanel>
+    </Border>
+
+    <!-- The verdict. This is the whole point of the tab: one sentence saying whether
+         anything else on this machine can be believed. -->
+    <Border Grid.Row="1" Background="#252526" Padding="10,8">
+      <StackPanel>
+        <TextBlock Text="{Binding Verdict}" FontWeight="SemiBold" TextWrapping="Wrap"
+                   Foreground="{Binding VerdictBrush}" />
+        <TextBlock Text="{Binding Identity}" Opacity="0.85" Margin="0,4,0,0" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding TierEvidence}" Opacity="0.6" FontSize="11" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+
+    <!-- The install plan: rendered, never executed. -->
+    <Border Grid.Row="2" Background="#3A2E12" BorderBrush="#E8C547" BorderThickness="0,0,0,2"
+            Padding="10,8" IsVisible="{Binding HasInstallPlan}">
+      <StackPanel>
+        <TextBlock Text="Something declared by this content is not installed here."
+                   FontWeight="SemiBold" Foreground="#F0DFA0" />
+        <TextBlock Opacity="0.8" TextWrapping="Wrap" Margin="0,2,0,4" Foreground="#F0DFA0"
+                   Text="This tab does not install anything — deliberately. A machine repaired before it was measured has destroyed the evidence it existed to provide. Copy the command and run it when you have read the plan below." />
+        <StackPanel Orientation="Horizontal">
+          <SelectableTextBlock Text="{Binding InstallCommand}" FontFamily="Consolas,monospace"
+                               VerticalAlignment="Center" Foreground="#FFF3C4" />
+          <Button Content="Copy" Command="{Binding CopyInstallCommandCommand}" Margin="12,0,0,0" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <TabControl Grid.Row="3">
+
+      <TabItem Header="Commissioning">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Grid.Row="0" Margin="8,6" Opacity="0.7" TextWrapping="Wrap"
+                     Text="Can this machine test at all? Layer 1 needs no application and must pass anywhere. Layer 2 asks whether two captures of an unchanged scene are identical here — if they are not, no baseline from anywhere can ever match. Layer 3 is informational: it asks whether a baseline made elsewhere matches here, and failing it means baselines do not travel, not that the harness is broken." />
+          <DataGrid Grid.Row="1" ItemsSource="{Binding Layers}" AutoGenerateColumns="False" IsReadOnly="True"
+                    GridLinesVisibility="Horizontal" HeadersVisibility="Column" CanUserResizeColumns="True">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="#" Binding="{Binding Number}" Width="40" />
+              <DataGridTemplateColumn Header="Outcome" Width="100">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:PretestLayerRow">
+                    <TextBlock Text="{Binding Outcome}" Foreground="{Binding OutcomeBrush}"
+                               FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTextColumn Header="Layer" Binding="{Binding Name}" Width="110" />
+              <DataGridCheckBoxColumn Header="Fatal" Binding="{Binding Fatal}" Width="60" />
+              <DataGridTextColumn Header="What was measured" Binding="{Binding Detail}" Width="*" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Installed vs declared">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Grid.Row="0" Margin="8,6" Opacity="0.7" TextWrapping="Wrap"
+                     Text="What this workload's content says the machine needs, against what the host actually reported loading. 'Unknown' means no capture has been taken — it is not the same as missing, and treating it as missing would send a setup pass installing things this machine already has." />
+          <DataGrid Grid.Row="1" ItemsSource="{Binding Readiness}" AutoGenerateColumns="False" IsReadOnly="True"
+                    GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                    CanUserResizeColumns="True" CanUserSortColumns="True">
+            <DataGrid.Columns>
+              <DataGridTemplateColumn Header="State" Width="90">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:ReadinessRowVm">
+                    <TextBlock Text="{Binding State}" Foreground="{Binding StateBrush}"
+                               FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTextColumn Header="Requirement" Binding="{Binding Id}" Width="200" />
+              <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="110" />
+              <DataGridTextColumn Header="Origin" Binding="{Binding Origin}" Width="100" />
+              <DataGridTextColumn Header="Provided by" Binding="{Binding Package}" Width="150" />
+              <DataGridTextColumn Header="Id grounded" Binding="{Binding Grounded}" Width="100" />
+              <DataGridTextColumn Header="Declared by" Binding="{Binding NeededBy}" Width="*" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="This machine">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Grid.Row="0" Margin="8,6" Opacity="0.7" TextWrapping="Wrap"
+                     Text="Read from the filesystem and registry — no application is started. Press 'Read this machine' to refresh. This is the layer that still works when nothing else on the machine does." />
+          <DataGrid Grid.Row="1" ItemsSource="{Binding MachineFacts}" AutoGenerateColumns="False" IsReadOnly="True"
+                    GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                    CanUserResizeColumns="True" CanUserSortColumns="True">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Group" Binding="{Binding Group}" Width="170" />
+              <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="220" />
+              <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Log">
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding Log}" Margin="8">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <SelectableTextBlock Text="{Binding}" FontFamily="Consolas,monospace" FontSize="12" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </TabItem>
+
+    </TabControl>
+
+    <Border Grid.Row="4" Background="#2D2D30" Padding="8,4">
+      <TextBlock Text="{Binding StatusText}" Opacity="0.85" TextWrapping="Wrap" />
+    </Border>
+  </Grid>
+</UserControl>

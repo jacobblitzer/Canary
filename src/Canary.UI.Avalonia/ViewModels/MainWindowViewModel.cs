@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,6 +33,8 @@ public partial class MainWindowViewModel : ObservableObject
     public TelemetryViewModel Telemetry { get; }
     // Deployment campaign Phase 5b — what the target apps actually loaded, and from where.
     public EnvironmentViewModel Environment { get; }
+    // Stage C4 — is this machine ready to be believed, BEFORE any test runs.
+    public PretestViewModel Pretest { get; }
     public SettingsViewModel Settings { get; }
     // Docked Run History pane (feedback 2026-06-10-run-history-log-window) —
     // lives below the NavigationView so it stays visible in every tab.
@@ -52,6 +54,7 @@ public partial class MainWindowViewModel : ObservableObject
         Feedback = new FeedbackViewModel();
         Telemetry = new TelemetryViewModel();
         Environment = new EnvironmentViewModel();
+        Pretest = new PretestViewModel();
         Settings = new SettingsViewModel();
         RunHistory = new RunHistoryViewModel();
         // Keep the log current: every in-UI run appends a runs/<stamp>/ dir,
@@ -73,6 +76,7 @@ public partial class MainWindowViewModel : ObservableObject
         // Sits beside Settings, not beside Tests: it answers "is this machine set up",
         // which is the question you ask BEFORE a result is worth believing.
         NavItems.Add(new NavItem { Title = "Environment", IconGlyph = "", ViewModel = Environment });
+        NavItems.Add(new NavItem { Title = "Pretest",     IconGlyph = "", ViewModel = Pretest });
         NavItems.Add(new NavItem { Title = "Settings",  IconGlyph = "", ViewModel = Settings });
         SelectedNavItem = NavItems[0];
 
@@ -110,6 +114,7 @@ public partial class MainWindowViewModel : ObservableObject
         _ = Sessions.LoadWorkloadsAsync(dir);
         _ = Tests.LoadWorkloadsAsync(dir);
         Telemetry.SetWorkloadsDir(dir);
+        Pretest.SetWorkloadsDir(dir);
         RunHistory.SetWorkloadsDir(dir);
         Environment.SetWorkloadsDir(dir);
     }
