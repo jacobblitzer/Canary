@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Canary.Commissioning;
 using Canary.Config;
 using Canary.Orchestration;
 
@@ -33,6 +34,28 @@ public static class DoctorCommand
         public List<string> Errors { get; } = new();
         public List<string> Warnings { get; } = new();
         public List<string> Notes { get; } = new();
+
+        /// <summary>
+        /// Faults in the HARNESS, kept apart from faults in the install.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The campaign requires a three-way distinction, and collapsing it is how a day gets
+        /// wasted: <c>doctor</c> red means the install is incomplete and is <b>not</b> a defect
+        /// in the plug-in; commissioning red means the harness is broken and <b>every</b>
+        /// result from this machine is unreadable, whatever the install looks like. Those are
+        /// different problems with different owners and different fixes.
+        /// </para>
+        /// <para>
+        /// So a harness fault does not go in <see cref="Errors"/> — it would be reported as an
+        /// install problem and send someone to fix the wrong thing. It still makes doctor exit
+        /// non-zero, because a machine whose comparer is unproven must not be allowed to
+        /// proceed quietly; the distinction lives in the verdict, and
+        /// <c>canary commission</c>'s own exit code (4) is what a script tests to tell them
+        /// apart.
+        /// </para>
+        /// </remarks>
+        public List<string> HarnessFaults { get; } = new();
     }
 
     /// <summary>Creates the <c>doctor</c> subcommand.</summary>
@@ -385,6 +408,66 @@ public static class DoctorCommand
             }
         }
 
+        // --- 9. has the HARNESS itself been proven on this machine? ------------
+        // Stage C2/C3, ruling 7A. Checks 1-8 all ask "is the content complete and does it
+        // resolve here". None of them asks whether Canary's own comparer and capture path
+        // work at all - and if they do not, every answer above is beside the point.
+        //
+        // Deliberately NOT scoped to --workload: commissioning is about the machine, not
+        // about one workload's content, and its report lives under the commissioning workload
+        // wherever the caller happened to point doctor.
+        {
+            var reportPath = CommissioningReport.PathFor(root);
+            if (!File.Exists(reportPath))
+            {
+                // A warning, not an error, and for the same reason check 8's absent capture is:
+                // doctor has to be runnable on a machine where nothing has happened yet. It is
+                // the FIRST thing you run on a fresh QC box, so it cannot require that
+                // something already ran.
+                f.Warnings.Add("the harness has not been commissioned on this machine — run " +
+                               "`canary commission --workload <w>`. Until it passes, no test result " +
+                               "from this machine can be read, whatever the checks above say");
+            }
+            else
+            {
+                try
+                {
+                    var commissioning = CommissioningReport.Load(reportPath);
+                    var summary = string.Join(", ", commissioning.Layers
+                        .OrderBy(l => l.Number)
+                        .Select(l => $"{l.Name}={l.Outcome.ToString().ToLowerInvariant()}"));
+                    logger.Log($"commissioning  : {MachineIdentity.Format(commissioning.Machine)}, " +
+                               $"{commissioning.CapturedUtc} — {summary}");
+
+                    // A report from somewhere else is an integrity problem in doctor's own
+                    // domain - the state on THIS machine is not what it appears - so it is a
+                    // genuine error rather than a harness fault.
+                    if (!MachineIdentity.IsThisMachine(commissioning.Machine))
+                    {
+                        f.Errors.Add($"the commissioning report is from another machine " +
+                                     $"({MachineIdentity.Format(commissioning.Machine)}); this is " +
+                                     $"{Environment.MachineName}. It says nothing about THIS harness — " +
+                                     "re-run `canary commission`");
+                    }
+                    else if (!commissioning.HarnessUsable)
+                    {
+                        foreach (var l in commissioning.Layers.Where(l => l.Fatal && l.Outcome != LayerOutcome.Passed))
+                            f.HarnessFaults.Add($"layer {l.Number} {l.Name}: {l.Detail}");
+                    }
+
+                    // A non-fatal layer that failed is worth saying out loud: it means pixel
+                    // baselines do not travel to this machine, which changes how its results
+                    // must be read without making it unusable.
+                    foreach (var l in commissioning.Layers.Where(l => !l.Fatal && l.Outcome == LayerOutcome.Failed))
+                        f.Warnings.Add($"commissioning layer {l.Number} {l.Name}: {l.Detail}");
+                }
+                catch (InvalidDataException ex)
+                {
+                    f.Errors.Add(ex.Message);
+                }
+            }
+        }
+
         return Report(f, logger);
     }
 
@@ -424,6 +507,22 @@ public static class DoctorCommand
         foreach (var n in f.Notes) logger.Log($"  note    {n}");
         foreach (var w in f.Warnings) logger.Log($"  WARN    {w}");
         foreach (var e in f.Errors) logger.Log($"  ERROR   {e}");
+        foreach (var h in f.HarnessFaults) logger.Log($"  HARNESS {h}");
+
+        // The verdict names WHICH of the two problems this is, because they have different
+        // owners: an install fault is content that did not arrive or does not resolve; a
+        // harness fault is Canary's own comparer or capture path not working here, and no
+        // amount of correct content compensates for it.
+        if (f.HarnessFaults.Count > 0)
+        {
+            logger.Log(string.Empty);
+            logger.Log($"doctor: THE HARNESS ITSELF IS NOT PROVEN on this machine " +
+                       $"({f.HarnessFaults.Count} failing layer(s))." +
+                       (f.Errors.Count > 0 ? $" There are also {f.Errors.Count} install error(s)." : string.Empty));
+            logger.Log("        This is NOT an install problem. Fix it with `canary commission` first —");
+            logger.Log("        until it passes, no test result from this machine is readable.");
+            return 1;
+        }
 
         if (f.Errors.Count == 0)
         {

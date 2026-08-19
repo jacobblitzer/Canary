@@ -1,4 +1,5 @@
-using Canary.Cli;
+﻿using Canary.Cli;
+using Canary.Commissioning;
 using Canary.Orchestration;
 using Xunit;
 
@@ -129,6 +130,131 @@ public class DoctorAndShortSuiteTests
             new ConsoleTestLogger(verbose: false, quiet: true));
 
         Assert.Equal(0, exit);
+    }
+
+    // --- check 9: the harness itself -------------------------------------------
+    //
+    // Doctor answers "is the install complete". Commissioning answers "does the harness
+    // work". Collapsing those wastes days, because they have different owners and different
+    // fixes - so a harness fault must never be reported as an install error, and must still
+    // stop the machine being treated as ready.
+
+    /// <summary>An uncommissioned machine is warned about, not failed.</summary>
+    /// <remarks>
+    /// Doctor is the FIRST thing run on a fresh QC box, so it cannot require that something
+    /// already ran. Same reasoning as an absent environment capture in check 8.
+    /// </remarks>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WithNoCommissioningReport_Warns_ButStillPasses()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(0, exit);
+    }
+
+    /// <summary>A failing fatal layer stops the machine being called ready.</summary>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WhenTheHarnessIsUnproven_ExitsNonZero()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+        WriteCommissioning(root, repeatable: LayerOutcome.Failed);
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(1, exit);
+    }
+
+    /// <summary>
+    /// A layer that was never ATTEMPTED is not a pass either.
+    /// </summary>
+    /// <remarks>
+    /// The campaign exists because a missing baseline yielded New and New was excluded from
+    /// the exit code. A machine whose repeatability is unknown has not shown it can test.
+    /// </remarks>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WhenAFatalLayerWasNeverRun_ExitsNonZero()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+        WriteCommissioning(root, repeatable: LayerOutcome.NotRun);
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(1, exit);
+    }
+
+    /// <summary>A non-fatal layer failing does not stop the machine being usable.</summary>
+    /// <remarks>
+    /// Layer 3 asks whether baselines TRAVEL here. A machine that fails it tests perfectly
+    /// well by approving locally or using VLM, and grounding it would report on a question
+    /// the run never asked.
+    /// </remarks>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WhenOnlyTheNonFatalLayerFails_StillPasses()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+        WriteCommissioning(root, reference: LayerOutcome.Failed);
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(0, exit);
+    }
+
+    /// <summary>A report from another machine is an integrity error, not a harness fault.</summary>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WhenTheCommissioningReportIsFromAnotherMachine_ExitsNonZero()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+        WriteCommissioning(root, machineName: Environment.MachineName + "-ELSEWHERE");
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(1, exit);
+    }
+
+    private static void WriteCommissioning(
+        string root,
+        LayerOutcome comparer = LayerOutcome.Passed,
+        LayerOutcome repeatable = LayerOutcome.Passed,
+        LayerOutcome reference = LayerOutcome.Passed,
+        string? machineName = null)
+    {
+        new CommissioningReport
+        {
+            CapturedUtc = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            Workload = "w",
+            Machine = new Dictionary<string, string>
+            {
+                [MachineIdentity.MachineName] = machineName ?? Environment.MachineName,
+            },
+            Layers = new[]
+            {
+                new CommissioningLayer(1, "comparer", comparer, "", true),
+                new CommissioningLayer(2, "repeatable", repeatable, "", true),
+                new CommissioningLayer(3, "reference", reference, "", false),
+            },
+        }.Save(CommissioningReport.PathFor(root));
     }
 
     [Trait("Category", "Unit")]
