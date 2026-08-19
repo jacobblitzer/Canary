@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Threading;
@@ -23,6 +23,9 @@ public enum PretestState
 
     /// <summary>Running commissioning, which launches the target application.</summary>
     Commissioning,
+
+    /// <summary>Running doctor — reads content and captures, launches nothing.</summary>
+    Checking,
 }
 
 /// <summary>One line of the machine survey.</summary>
@@ -179,6 +182,22 @@ public partial class PretestViewModel : ObservableObject
     /// <summary>Whether there is anything to install.</summary>
     [ObservableProperty]
     private bool _hasInstallPlan;
+
+    /// <summary>Doctor's own verdict — the install signal, distinct from the harness one.</summary>
+    [ObservableProperty]
+    private string _doctorVerdict = "Not run.";
+
+    /// <summary>Doctor's exit code, or null when it has not run here.</summary>
+    [ObservableProperty]
+    private int? _doctorExit;
+
+    /// <summary>Green on 0, red on anything else, dim when it has not run.</summary>
+    public string DoctorBrush => DoctorExit switch { 0 => "#4EC94E", null => "#9A9A9A", _ => "#FF6B68" };
+
+    partial void OnDoctorExitChanged(int? value) => OnPropertyChanged(nameof(DoctorBrush));
+
+    /// <summary>Every line doctor printed, verbatim.</summary>
+    public ObservableCollection<string> DoctorLines { get; } = new();
 
     [ObservableProperty]
     private string _statusText = "Open a workloads folder to begin.";
@@ -351,6 +370,74 @@ public partial class PretestViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Runs <c>doctor</c> in-process. <b>Reads content and captures; launches nothing.</b>
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// In-process rather than shelling out to canary.exe, because the answer wanted here is
+    /// the exit CODE as much as the text, and scraping a verdict back out of stdout is how a
+    /// distinction gets collapsed. The three signals stay separate only if each is read from
+    /// its own producer.
+    /// </para>
+    /// <para>
+    /// The first version of the Pretest report carried commissioning and the machine survey
+    /// but no doctor verdict, so a reader who saw a green harness and a green survey had no
+    /// way to tell whether the INSTALL was complete - and the campaign's whole point is that
+    /// "harness broken", "install incomplete" and "plug-in defective" are three different
+    /// findings with three different owners.
+    /// </para>
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanWork))]
+    private async Task RunDoctorAsync()
+    {
+        if (_workloadsDir == null) return;
+
+        State = PretestState.Checking;
+        _cts = new CancellationTokenSource();
+        DoctorLines.Clear();
+        var workloadsDir = _workloadsDir;
+        var workloadName = SelectedWorkload;
+        Append($"Checking the install with doctor ({workloadName ?? "all workloads"}) - nothing is launched...");
+
+        try
+        {
+            var logger = new Services.AvaloniaTestLogger(verbose: false);
+            void Capture(string line) { DoctorLines.Add(line); Append(line); }
+            logger.MessageLogged += Capture;
+            logger.SummaryLogged += Capture;
+
+            var exit = await Canary.Cli.DoctorCommand
+                .RunAsync(workloadName, null, workloadsDir, logger)
+                .ConfigureAwait(true);
+
+            logger.MessageLogged -= Capture;
+            logger.SummaryLogged -= Capture;
+
+            DoctorExit = exit;
+            DoctorVerdict = exit == 0
+                ? "Install complete for what this content declares."
+                : "INSTALL INCOMPLETE - doctor found something this content needs and this machine does not have. "
+                  + "This is not a defect in any plug-in.";
+            StatusText = $"doctor exited {exit}. {DoctorVerdict}";
+        }
+        catch (OperationCanceledException) { Append("Cancelled."); }
+        catch (Exception ex)
+        {
+            // An exception is not a pass. Leaving DoctorExit null would render as "not run",
+            // which is the one reading that must never follow from a failure.
+            DoctorExit = -1;
+            DoctorVerdict = $"doctor could not complete: {ex.GetType().Name}: {ex.Message}";
+            Append(DoctorVerdict);
+        }
+        finally
+        {
+            _cts?.Dispose();
+            _cts = null;
+            State = PretestState.Idle;
+        }
+    }
+
     /// <summary>Cancels whatever is running and closes anything it launched.</summary>
     [RelayCommand(CanExecute = nameof(CanStop))]
     private void Stop()
@@ -373,6 +460,157 @@ public partial class PretestViewModel : ObservableObject
 
     /// <summary>Set by the view so the VM stays testable without a real clipboard.</summary>
     public Action<string>? CopyToClipboard { get; set; }
+
+    /// <summary>Copies the whole tab as one pasteable report.</summary>
+    [RelayCommand]
+    private void CopyReport()
+    {
+        CopyToClipboard?.Invoke(BuildReport());
+        StatusText = "Full report copied — paste it to an agent, or into the QC write-up.";
+    }
+
+    /// <summary>
+    /// Renders everything on this tab as one block of Markdown.
+    /// </summary>
+    /// <returns>The report.</returns>
+    /// <remarks>
+    /// <para>
+    /// Operator feedback, 2026-08-19: every panel here was readable and none of it was
+    /// copyable in one go — and the actual workflow on the QC machine is pasting state back
+    /// and forth with an agent. A surface whose findings have to be retyped is one whose
+    /// findings get summarised from memory, and a summarised-from-memory machine state is
+    /// exactly what this campaign exists to replace.
+    /// </para>
+    /// <para>
+    /// Markdown rather than JSON: the audience is a person pasting into a chat, and the
+    /// machine-readable form already exists on disk as <c>commissioning-report.json</c> and
+    /// <c>environment.json</c>. This says where those are, so a reader who wants the raw
+    /// article can go and get it.
+    /// </para>
+    /// <para>
+    /// It states the exit-code semantics inline, because the three-way distinction between a
+    /// broken harness, an incomplete install and a broken plug-in is the thing most likely to
+    /// be collapsed by whoever reads this out of context.
+    /// </para>
+    /// </remarks>
+    public string BuildReport()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"# Canary pretest — {DateTime.Now:yyyy-MM-dd HH:mm}");
+        sb.AppendLine();
+        sb.AppendLine($"**{Verdict}**");
+        sb.AppendLine();
+        sb.AppendLine($"- machine: `{Identity}`");
+        if (!string.IsNullOrWhiteSpace(TierEvidence)) sb.AppendLine($"- tier evidence: `{TierEvidence}`");
+        sb.AppendLine($"- app workload: `{SelectedWorkload ?? "(none selected)"}`");
+        sb.AppendLine();
+
+        sb.AppendLine("## Commissioning — can this machine test at all?");
+        sb.AppendLine();
+        if (Layers.Count == 0)
+        {
+            sb.AppendLine("_Not commissioned. Nothing below has been proven._");
+        }
+        else
+        {
+            sb.AppendLine("| # | layer | outcome | fatal | detail |");
+            sb.AppendLine("|---|---|---|---|---|");
+            foreach (var l in Layers)
+                sb.AppendLine($"| {l.Number} | {l.Name} | **{l.Outcome}** | {(l.Fatal ? "yes" : "no")} | {l.Detail} |");
+            sb.AppendLine();
+            sb.AppendLine("_A fatal layer failing, or never running, means no result from this machine is readable._");
+            sb.AppendLine("_Layer 3 is not fatal: failing it means pixel baselines do not TRAVEL here, not that the harness is broken._");
+        }
+        sb.AppendLine();
+
+        sb.AppendLine("## Install — what doctor says");
+        sb.AppendLine();
+        if (DoctorExit == null)
+        {
+            sb.AppendLine("_doctor has not been run here. Press \"Check install\" — it launches nothing._");
+            sb.AppendLine("_This is not a pass: an unrun check and a passing check are different answers._");
+        }
+        else
+        {
+            sb.AppendLine($"**exit {DoctorExit}** — {DoctorVerdict}");
+            if (DoctorLines.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("```");
+                foreach (var line in DoctorLines) sb.AppendLine(line);
+                sb.AppendLine("```");
+            }
+        }
+        sb.AppendLine();
+
+        sb.AppendLine("## Installed vs declared");
+        sb.AppendLine();
+        if (Readiness.Count == 0)
+        {
+            sb.AppendLine("_No plug-in requirements declared for this workload._");
+        }
+        else
+        {
+            sb.AppendLine("| state | requirement | version | origin | provided by | id grounded |");
+            sb.AppendLine("|---|---|---|---|---|---|");
+            foreach (var r in Readiness)
+                sb.AppendLine($"| **{r.State}** | `{r.Id}` | {r.Version} | {r.Origin} | {r.Package} | {r.Grounded} |");
+            sb.AppendLine();
+            sb.AppendLine("_`Unknown` means no capture has been taken — it is NOT the same as missing._");
+            sb.AppendLine("_An `inferred` id has never been observed on a real machine; installing is safe, trusting the id is not._");
+            sb.AppendLine("_A `developer` origin shadows a deployed install, so an install can report success while old code runs._");
+        }
+        sb.AppendLine();
+
+        if (HasInstallPlan)
+        {
+            sb.AppendLine("## Install plan (NOT run from the UI)");
+            sb.AppendLine();
+            sb.AppendLine("```");
+            sb.AppendLine(InstallCommand);
+            sb.AppendLine("```");
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("## This machine");
+        sb.AppendLine();
+        if (MachineFacts.Count == 0)
+        {
+            sb.AppendLine("_Not surveyed. Press \"Read this machine\" — it launches nothing._");
+        }
+        else
+        {
+            foreach (var group in MachineFacts.GroupBy(f => f.Group))
+            {
+                sb.AppendLine($"**{group.Key}**");
+                foreach (var f in group) sb.AppendLine($"- {f.Name}: `{f.Value}`");
+                sb.AppendLine();
+            }
+        }
+
+        sb.AppendLine("## Exit codes, so these are not collapsed");
+        sb.AppendLine();
+        sb.AppendLine("- `canary commission` **4** — the harness is broken; every result here is unreadable");
+        sb.AppendLine("- `canary doctor` **1** — the install is incomplete; NOT a defect in the plug-in");
+        sb.AppendLine("- run path **3** — a declared precondition is missing");
+        sb.AppendLine();
+        sb.AppendLine("Machine-readable originals: `workloads/commissioning/results/commissioning-report.json`, " +
+                      "`workloads/<w>/results/environment.json`.");
+
+        if (Log.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("<details><summary>Log</summary>");
+            sb.AppendLine();
+            sb.AppendLine("```");
+            foreach (var line in Log.TakeLast(60)) sb.AppendLine(line);
+            sb.AppendLine("```");
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+        }
+
+        return sb.ToString();
+    }
 
     private void LoadCommissioning()
     {
@@ -436,7 +674,9 @@ public partial class PretestViewModel : ObservableObject
                 Version = r.Version,
                 Origin = r.Origin,
                 Package = string.IsNullOrWhiteSpace(r.Package) ? "(no package provides this)" : r.Package,
-                Grounded = r.Grounded,
+                // An id with no entry in plugin-packages.json has no grounding claim either
+                // way, and a blank cell reads as "grounded: no" rather than "nobody has said".
+                Grounded = string.IsNullOrWhiteSpace(r.Grounded) ? "(unmapped)" : r.Grounded,
                 NeededBy = r.NeededBy,
             });
         }
@@ -489,7 +729,15 @@ public partial class PretestViewModel : ObservableObject
         return !ct.IsCancellationRequested;
     }
 
-    private void LoadSurvey(string jsonPath)
+    /// <summary>Renders a survey JSON file into the machine-facts table.</summary>
+    /// <param name="jsonPath">The file <c>machine-survey.ps1 -OutFile</c> wrote.</param>
+    /// <remarks>
+    /// <b>internal</b> so its rendering can be tested against a fixture without running
+    /// PowerShell. Three of the four defects the operator found in the first pasted report
+    /// were in here rather than in what the survey measured - a blank row, a duplicated OS
+    /// string, ten empty repo lines - and every one of them was a rendering choice.
+    /// </remarks>
+    internal void LoadSurvey(string jsonPath)
     {
         MachineFacts.Clear();
         using var doc = JsonDocument.Parse(File.ReadAllText(jsonPath));
@@ -502,7 +750,14 @@ public partial class PretestViewModel : ObservableObject
 
         if (root.TryGetProperty("identity", out var id))
         {
-            foreach (var p in id.EnumerateObject()) Fact("Machine", p.Name, p.Value.ToString());
+            foreach (var p in id.EnumerateObject())
+            {
+                // Skip what the stamp above already carries. The survey reads the OS product
+                // name from CIM and the stamp reads RuntimeInformation.OSDescription, so
+                // showing both put two different-looking OS strings in one report.
+                if (p.Name is "machineName" or "user" or "os") continue;
+                Fact("Machine", p.Name, p.Value.ToString());
+            }
         }
         if (root.TryGetProperty("toolchain", out var tc))
         {
@@ -515,23 +770,39 @@ public partial class PretestViewModel : ObservableObject
         }
         if (root.TryGetProperty("rhino", out var rh) && rh.TryGetProperty("installs", out var installs))
         {
+            // The FOLDER is the identity and the VERSION is what may be missing - the first
+            // version of this had them the other way round, so a Rhino 9 WIP folder with no
+            // Rhino.exe rendered as a blank row. An install that cannot report a version is
+            // itself worth seeing: more than one Rhino on a machine raises "which one did the
+            // test actually use", which nothing else here answers.
             foreach (var i in installs.EnumerateArray())
             {
-                Fact("Rhino",
-                    i.TryGetProperty("version", out var v) ? v.ToString() : "(unknown version)",
-                    i.TryGetProperty("dir", out var d) ? d.ToString() : string.Empty);
+                var dir = i.TryGetProperty("dir", out var d) ? d.ToString() : "(unknown folder)";
+                var ver = i.TryGetProperty("version", out var v) ? v.ToString() : string.Empty;
+                var exe = i.TryGetProperty("exe", out var e) ? e.ToString() : string.Empty;
+                Fact("Rhino", dir, string.IsNullOrWhiteSpace(ver)
+                    ? (string.IsNullOrWhiteSpace(exe) ? "NO Rhino.exe found - cannot report a version" : "(no version reported)")
+                    : ver);
             }
         }
         if (root.TryGetProperty("repos", out var repos))
         {
-            foreach (var r in repos.EnumerateArray().Take(40))
+            // Only actual checkouts. The survey lists every directory under the root, so a
+            // scratch folder or a cache appears with an empty branch and head - and a blank
+            // row in a pasted table reads as "fine" rather than "not a repo".
+            var skipped = 0;
+            foreach (var r in repos.EnumerateArray())
             {
+                var isGit = r.TryGetProperty("isGit", out var g) && g.ValueKind == JsonValueKind.True;
+                if (!isGit) { skipped++; continue; }
                 var dirty = r.TryGetProperty("dirty", out var dy) && dy.ValueKind == JsonValueKind.True ? " (dirty)" : string.Empty;
                 Fact("Repos",
                     r.TryGetProperty("name", out var n) ? n.ToString() : "?",
                     $"{(r.TryGetProperty("branch", out var b) ? b.ToString() : "?")} @ " +
                     $"{(r.TryGetProperty("head", out var h) ? h.ToString() : "?")}{dirty}");
             }
+            if (skipped > 0)
+                Fact("Repos", "(not checkouts)", $"{skipped} director(ies) under the root are not git repos - omitted");
         }
         if (root.TryGetProperty("yakPackages", out var yaks))
         {

@@ -1,4 +1,4 @@
-using System.CommandLine;
+﻿using System.CommandLine;
 using Canary.Commissioning;
 using Canary.Config;
 using Canary.Orchestration;
@@ -91,10 +91,22 @@ public static class DoctorCommand
     /// <param name="workloadName">Optional workload to inspect.</param>
     /// <param name="suiteName">Optional suite to check for completeness.</param>
     /// <param name="workloadsDirOverride">Optional explicit workloads root.</param>
-    /// <param name="logger">Where to report.</param>
+    /// <param name="logger">
+    /// Where to report. Widened from <c>ConsoleTestLogger</c> to the interface for the same
+    /// reason this method is public: the UI has no console. Every line doctor emits goes
+    /// through <c>Log</c>, so the caller decides where it lands - and the UI therefore shows
+    /// the SAME text the CLI prints rather than a second rendering that can drift from it.
+    /// </param>
     /// <returns>0 when everything checked is usable; 1 when anything is not.</returns>
-    internal static async Task<int> RunAsync(
-        string? workloadName, string? suiteName, string? workloadsDirOverride, ConsoleTestLogger logger)
+    /// <remarks>
+    /// <b>Public</b> so the Pretest tab can ask doctor directly rather than shelling out to
+    /// canary.exe and scraping its text. The three signals a QC operator needs - harness,
+    /// install, plug-in - must stay distinguishable, and a report that carries only two of
+    /// them (as the first version of the Pretest report did) invites the reader to infer the
+    /// third.
+    /// </remarks>
+    public static async Task<int> RunAsync(
+        string? workloadName, string? suiteName, string? workloadsDirOverride, ITestLogger logger)
     {
         var f = new Findings();
 
@@ -501,7 +513,7 @@ public static class DoctorCommand
         }
     }
 
-    private static int Report(Findings f, ConsoleTestLogger logger)
+    private static int Report(Findings f, ITestLogger logger)
     {
         logger.Log(string.Empty);
         foreach (var n in f.Notes) logger.Log($"  note    {n}");

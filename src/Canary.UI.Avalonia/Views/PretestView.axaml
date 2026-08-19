@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -21,8 +21,12 @@
                 ToolTip.Tip="Reads the filesystem and registry only. Launches no application and changes nothing." />
         <Button Content="Commission" Command="{Binding CommissionCommand}" Margin="0,0,8,0"
                 ToolTip.Tip="Starts the selected application, measures whether capture is repeatable here, and closes it. Installs nothing." />
+        <Button Content="Check install" Command="{Binding RunDoctorCommand}" Margin="0,0,8,0"
+                ToolTip.Tip="Runs doctor: does this machine have what the content declares? Reads files only - launches nothing, installs nothing. Its exit code is a DIFFERENT signal from commissioning's." />
         <Button Content="Reload from disk" Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
         <Button Content="Stop" Command="{Binding StopCommand}" Margin="0,0,12,0" />
+        <Button Content="Copy report" Command="{Binding CopyReportCommand}" Margin="0,0,12,0"
+                ToolTip.Tip="Copies this whole tab as one block of Markdown — verdict, all three commissioning layers, installed-vs-declared, the machine survey and the log. Paste it to an agent or into the QC write-up." />
         <TextBlock Text="{Binding State}" VerticalAlignment="Center" Opacity="0.7" />
       </WrapPanel>
     </Border>
@@ -35,6 +39,8 @@
                    Foreground="{Binding VerdictBrush}" />
         <TextBlock Text="{Binding Identity}" Opacity="0.85" Margin="0,4,0,0" TextWrapping="Wrap" />
         <TextBlock Text="{Binding TierEvidence}" Opacity="0.6" FontSize="11" TextWrapping="Wrap" />
+        <TextBlock Margin="0,6,0,0" TextWrapping="Wrap" Foreground="{Binding DoctorBrush}"
+                   Text="{Binding DoctorVerdict, StringFormat='Install (doctor): {0}'}" />
       </StackPanel>
     </Border>
 
@@ -120,6 +126,22 @@
               <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*" />
             </DataGrid.Columns>
           </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Install (doctor)">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Grid.Row="0" Margin="8,6" Opacity="0.7" TextWrapping="Wrap"
+                     Text="A different question from commissioning. Commissioning asks whether the harness works here; doctor asks whether this machine has what the content declares. Doctor failing is not a defect in any plug-in - and neither of them failing is what a plug-in defect looks like." />
+          <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding DoctorLines}" Margin="8">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <SelectableTextBlock Text="{Binding}" FontFamily="Consolas,monospace" FontSize="12" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
         </Grid>
       </TabItem>
 
