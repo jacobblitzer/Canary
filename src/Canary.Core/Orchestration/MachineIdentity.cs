@@ -40,9 +40,27 @@ public static class MachineIdentity
     /// <summary>Field name for the harness runtime.</summary>
     public const string Runtime = "runtime";
 
+    /// <summary>Field name for the Canary build, as <c>version (commit)</c>.</summary>
+    public const string CanaryBuild = "canaryBuild";
+
+    /// <summary>Field name for the derived tier: DEV / QC / USER / UNKNOWN.</summary>
+    public const string MachineTierField = "tier";
+
+    /// <summary>Field name for the evidence the tier was derived from.</summary>
+    /// <remarks>
+    /// The tier is an inference, so the report carries what it was inferred FROM. A reader who
+    /// disagrees with the verdict can see why without re-running anything, and a wrong tier
+    /// becomes debuggable instead of merely wrong.
+    /// </remarks>
+    public const string TierEvidence = "tierEvidence";
+
     /// <summary>Describes the machine this process is running on.</summary>
+    /// <param name="workloadsDir">
+    /// Workloads root, used only to derive the tier. Pass null to omit the tier fields — an
+    /// absent tier is honest; a tier derived from a root we do not have is not.
+    /// </param>
     /// <returns>Flat string map, ordered for a stable diff.</returns>
-    public static IReadOnlyDictionary<string, string> Describe()
+    public static IReadOnlyDictionary<string, string> Describe(string? workloadsDir = null)
     {
         var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         Add(map, MachineName, () => Environment.MachineName);
@@ -50,6 +68,16 @@ public static class MachineIdentity
         Add(map, User, () => Environment.UserName);
         Add(map, Architecture, () => RuntimeInformation.ProcessArchitecture.ToString());
         Add(map, Runtime, () => RuntimeInformation.FrameworkDescription);
+
+        // Ruling 12: machine id, Canary version, tier. The first three fields are the id; these
+        // two complete the stamp, so a report can say WHICH machine, WHICH build, WHICH route.
+        Add(map, CanaryBuild, CanaryVersion.Describe);
+        if (workloadsDir != null)
+        {
+            var (tier, evidence) = MachineTier.Detect(workloadsDir);
+            Add(map, MachineTierField, () => tier.ToString().ToUpperInvariant());
+            Add(map, TierEvidence, () => MachineTier.Format(tier, evidence));
+        }
         return map;
     }
 
@@ -84,7 +112,18 @@ public static class MachineIdentity
         identity.TryGetValue(Os, out var os);
         var head = string.IsNullOrWhiteSpace(name) ? "(unnamed machine)" : name;
         if (!string.IsNullOrWhiteSpace(user)) head += $"\\{user}";
-        return string.IsNullOrWhiteSpace(os) ? head : $"{head}  ·  {os}";
+        if (!string.IsNullOrWhiteSpace(os)) head += $"  ·  {os}";
+
+        // Ruling 12's other two thirds. Shown here rather than at each call site so the CLI,
+        // doctor and the UI cannot end up displaying different amounts of the same stamp -
+        // the Caveat() sentence was written twice for exactly that reason and the copies
+        // immediately disagreed.
+        if (identity.TryGetValue(MachineTierField, out var tier) && !string.IsNullOrWhiteSpace(tier))
+            head += $"  ·  tier {tier}";
+        if (identity.TryGetValue(CanaryBuild, out var build) && !string.IsNullOrWhiteSpace(build))
+            head += $"  ·  canary {build}";
+
+        return head;
     }
 
     // A probe that throws must not cost the whole identity: a partial answer that names the

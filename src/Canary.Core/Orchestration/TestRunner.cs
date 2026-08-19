@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Canary.Agent;
 using Canary.Comparison;
 using Canary.Config;
@@ -202,7 +202,8 @@ public sealed class TestRunner
 
             var declared = RequirementChecker.Collect(workload, tests, workload.Name);
             var clashes = EnvironmentReport.Analyse(resp.Data, RequirementChecker.ExpectedOrigins(declared));
-            var capture = EnvironmentCapture.Create(workload.Name, resp.Data, clashes);
+            var capture = EnvironmentCapture.Create(
+                workload.Name, resp.Data, clashes, workloadsDir: _workloadsDir);
             capture.Save(EnvironmentCapture.PathFor(_workloadsDir, workload.Name));
             return capture;
         }
@@ -1268,7 +1269,7 @@ public sealed class TestRunner
                 // read or write this file now, and the last time a writer and its reader each
                 // spelled a field for themselves it cost bug 0022.
                 EnvironmentCapture
-                    .Create(workload.Name, resp.Data, clashes)
+                    .Create(workload.Name, resp.Data, clashes, workloadsDir: _workloadsDir)
                     .Save(EnvironmentCapture.PathFor(_workloadsDir, workload.Name));
             }
         }

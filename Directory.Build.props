@@ -1,0 +1,30 @@
+<Project>
+
+  <!--
+    Deployment campaign Stage C1 — one place that says what build this is.
+
+    Ruling 12 requires every commissioning report to be stamped with machine id, Canary
+    version and tier. Machine id shipped 2026-08-18. This file supplies the version, and it
+    exists because there was NO version anywhere: no <Version>, no AssemblyVersion, no
+    InformationalVersion in any csproj, and nothing in the CLI reporting one. A QC report
+    that cannot say which build produced it is the same identity gap that made environment
+    captures undiffable before machine identity was added.
+
+    The SDK already stamps AssemblyInformationalVersion as "<Version>+<git sha>" when
+    SourceLink or the default git integration is present, so declaring Version here yields
+    version AND the exact commit at runtime with no extra machinery. CanaryVersion reads it
+    back; see src/Canary.Core/CanaryVersion.cs.
+
+    Deliberately NOT set here: TargetFramework, Nullable, ImplicitUsings,
+    TreatWarningsAsErrors. Those differ per project on purpose - the Agent multi-targets
+    net8.0;net48 and the Rhino agent is net48 only - and hoisting them would silently change
+    what those projects compile against.
+  -->
+
+  <PropertyGroup>
+    <Version>0.9.0</Version>
+    <Product>Canary</Product>
+    <Company>Canary</Company>
+  </PropertyGroup>
+
+</Project>

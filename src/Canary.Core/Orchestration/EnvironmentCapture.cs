@@ -84,17 +84,22 @@ public sealed class EnvironmentCapture
     /// <param name="host">The host's <c>GetHostState</c> payload.</param>
     /// <param name="findings">Result of <see cref="EnvironmentReport.Analyse(IReadOnlyDictionary{string, string}, IReadOnlyDictionary{string, string}?)"/>.</param>
     /// <param name="capturedUtc">Capture time; defaults to now.</param>
+    /// <param name="workloadsDir">
+    /// Workloads root, so the capture can carry the derived tier (ruling 12). Optional: a
+    /// capture with no tier is honest, one with a tier derived from the wrong root is not.
+    /// </param>
     /// <returns>The capture.</returns>
     public static EnvironmentCapture Create(
         string workload,
         IReadOnlyDictionary<string, string> host,
         IReadOnlyList<EnvironmentClash> findings,
-        DateTime? capturedUtc = null)
+        DateTime? capturedUtc = null,
+        string? workloadsDir = null)
         => new()
         {
             CapturedUtc = (capturedUtc ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ssZ"),
             Workload = workload,
-            Machine = MachineIdentity.Describe(),
+            Machine = MachineIdentity.Describe(workloadsDir),
             Host = host,
             Findings = findings,
         };
