@@ -220,7 +220,22 @@ if (-not (Test-Path -LiteralPath $learningsDir)) {
     Write-Host "  no learnings folder in this bundle." -ForegroundColor Yellow
     $missing.Add('the learnings folder - a published QC bundle is expected to carry one, even empty')
 } else {
-    $items = @(Get-ChildItem -LiteralPath $learningsDir -Filter *.md -File -ErrorAction SilentlyContinue)
+    # The folder ships with a README explaining what goes in it, and the first run of this
+    # script duly filed that README as a finding. Anything that is not named for the
+    # convention is scaffolding, not a learning - and it is REPORTED as skipped rather
+    # than dropped, because a finding whose file name was typed wrong would otherwise
+    # vanish silently, which is the one outcome this whole round trip exists to prevent.
+    $all = @(Get-ChildItem -LiteralPath $learningsDir -Filter *.md -File -ErrorAction SilentlyContinue)
+    $items = @($all | Where-Object { $_.BaseName -match '^\d{4}-\d{2}-\d{2}-\d{3}-' })
+    $skipped = @($all | Where-Object { $_.BaseName -notmatch '^\d{4}-\d{2}-\d{2}-\d{3}-' })
+    foreach ($sk in $skipped) {
+        if ($sk.Name -eq 'README.md') {
+            Write-Host "  skipped   README.md - the folder's own instructions, not a finding" -ForegroundColor DarkGray
+        } else {
+            Write-Host "  SKIPPED   $($sk.Name) - not named YYYY-MM-DD-NNN-slug.md, so it was NOT imported" -ForegroundColor Yellow
+            $missing.Add("$($sk.Name) is in the learnings folder but is not named for the convention - if it is a finding, rename it and re-run")
+        }
+    }
     if ($items.Count -eq 0) {
         Write-Host "  the learnings folder is present and empty - that machine wrote nothing down." -ForegroundColor Yellow
     }
