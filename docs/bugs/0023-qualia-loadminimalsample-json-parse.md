@@ -1,8 +1,10 @@
 ---
 title: __canaryLoadMinimalSample fails to parse the sample; the 11 rh2 tests render the wrong scene
-status: open
+status: fixed
 severity: medium
 found: 2026-08-18
+fixed: 2026-08-18
+fix-commit: Qualia 188304d (bug 0060)
 area: qualia workload
 ---
 
@@ -43,7 +45,29 @@ images are real and the settings are real, but the scene is not the declared one
 - Blast radius is exactly these 11 tests — they are the only qualia tests that call
   `__canaryLoadMinimalSample`.
 
-## What has NOT been established
+## RESOLVED — the fallback chain, not the file
+
+`__canaryLoadMinimalSample` tries three sources in order, and the SECOND one poisons the
+attempt. Vite serves `/examples/minimal/.qualia` as a **JavaScript module** — it is a
+dotfile, so its whole name is `.qualia`, and it takes the JS transform path rather than the
+raw-asset path its sibling `demos/minimal.qualia` takes. Vite answers `text/javascript` with
+`//# sourceMappingURL=` and a base64 map appended: 7,673 characters of graph become 51,843
+that are not JSON. **Position 7673 is exactly where the real content ends.**
+
+That tier returned 200 with a body starting `{`, so the hook's `looksLikeGraph` sniff passed,
+`importGraph` threw, and the throw escaped to the outer `catch` — so the third tier
+(`/examples/demos/minimal.qualia`, which works and is what ships in `dist`) never ran.
+
+The general fault is the chain: **a candidate that looks plausible and then fails must fall
+through, not abort.** Fixed in Qualia `188304d` with a `tryLoad` helper that parses each
+candidate in its own `try`.
+
+**Verified end to end:** the hook returns `{"ok":true}` in all 11 tests, all 11 captured
+images changed, and distinct images went from **6 to 11** — on the correct minimal graph
+every perf setting is now visibly distinguishable, where the boot workspace had been masking
+several of them.
+
+## What had NOT been established, before the browser session
 
 Why the browser's parse fails at 7673 when both candidate files parse and the server serves
 valid JSON. The remaining possibilities need devtools rather than inference:
