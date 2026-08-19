@@ -29,11 +29,56 @@ namespace Canary.Cli;
 /// </remarks>
 public static class DoctorCommand
 {
+    /// <summary>Exit code when checks could not run. NOT the same as a failing check.</summary>
+    /// <remarks>
+    /// <para>
+    /// Its own code rather than reusing 1, because 1 already means "the install is
+    /// incomplete" and that has an owner and a fix. "Nothing has asked this machine yet" has
+    /// neither. Collapsing the two into one number is the same mistake, one layer down, as
+    /// collapsing a broken harness into a broken plug-in.
+    /// </para>
+    /// <para>
+    /// The reason this needed a code at all: <c>qc-capture.ps1</c> judges doctor by its exit
+    /// code and never by scraping its text - deliberately, and correctly. So two checks that
+    /// on a fresh payload have NEVER RUN (no environment capture, no commissioning report)
+    /// were warnings, which means they were structurally invisible to the bundle that comes
+    /// back from the QC machine. A bundle could report a green install for a machine nothing
+    /// had ever looked at.
+    /// </para>
+    /// </remarks>
+    public const int ExitNotProven = 5;
+
     private sealed class Findings
     {
         public List<string> Errors { get; } = new();
         public List<string> Warnings { get; } = new();
         public List<string> Notes { get; } = new();
+
+        /// <summary>Checks that could not run here. An unrun check is not a passing check.</summary>
+        /// <remarks>
+        /// Separate from <see cref="Errors"/> so install-vs-harness stays separable, and
+        /// separate from <see cref="Warnings"/> because a warning does not move the exit code
+        /// and this must. The campaign's rule, enforced in the one place a script reads.
+        /// </remarks>
+        public List<string> Unproven { get; } = new();
+
+        /// <summary>Requirements only the running app can answer.</summary>
+        /// <remarks>
+        /// Recorded rather than reported immediately: whether these being unchecked matters
+        /// depends on whether a same-machine capture exists, and that is not known until
+        /// check 8 has run. Evaluated once at the end.
+        /// </remarks>
+        public int InAppRequirements { get; set; }
+
+        /// <summary>Whether a capture taken on THIS machine was found and read.</summary>
+        public bool HaveLocalCapture { get; set; }
+
+        /// <summary>Whether any workload here declares a plug-in requirement.</summary>
+        /// <remarks>
+        /// Decides whether an absent package map is merely untidy or actively disables the
+        /// only route to a fix.
+        /// </remarks>
+        public bool DeclaresPlugins { get; set; }
 
         /// <summary>
         /// Faults in the HARNESS, kept apart from faults in the install.
@@ -125,6 +170,9 @@ public static class DoctorCommand
         var problem = CanaryTokens.DescribeProblem(root);
         if (problem != null) f.Errors.Add(problem);
 
+        var tokensFile = Path.Combine(root, CanaryTokens.TokensFileName);
+        var tokensFilePresent = File.Exists(tokensFile);
+
         var tokens = CanaryTokens.Load(root);
         var declared = tokens.Keys.Where(k => !k.StartsWith("__", StringComparison.Ordinal)).ToList();
         logger.Log($"tokens         : {declared.Count} declared in {CanaryTokens.TokensFileName}");
@@ -134,8 +182,20 @@ public static class DoctorCommand
         foreach (var name in declared.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
         {
             var value = CanaryTokens.Expand($"%{name}%", root);
-            if (Directory.Exists(value) || File.Exists(value)) continue;
-            f.Errors.Add($"token %{name}% resolves to '{value}', which does not exist on this machine");
+
+            // Naming the OVERRIDE matters on a QC machine: tokens.json documents that any
+            // entry can be repointed by an environment variable of the same name, and a
+            // reader comparing two machines' doctor output otherwise cannot tell a shipped
+            // default from a local repoint that happens to resolve.
+            var fromEnv = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name));
+            var how = fromEnv ? " (from the environment, overriding the table)" : string.Empty;
+
+            if (Directory.Exists(value) || File.Exists(value))
+            {
+                if (fromEnv) f.Notes.Add($"token %{name}% is overridden by an environment variable to '{value}'");
+                continue;
+            }
+            f.Errors.Add($"token %{name}% resolves to '{value}'{how}, which does not exist on this machine");
         }
 
         // --- 3. tokens the content uses but nothing declares ---------------
@@ -150,6 +210,30 @@ public static class DoctorCommand
         logger.Log($"content        : {contentFiles} test/suite files scanned");
         foreach (var name in unresolved)
             f.Errors.Add($"content uses %{name}% but nothing declares it (not in {CanaryTokens.TokensFileName}, not an environment variable)");
+
+        // An ABSENT table is not an empty one. Nothing said so: the loader has no else branch
+        // for a missing file, its parse-error field is only set by a JsonException, and doctor
+        // then printed "0 declared in tokens.json" - a line naming a file it never found. The
+        // Drive payload shipped without one for weeks and that line read as a clean zero.
+        //
+        // Reported HERE rather than at check 2 because severity depends on what the content
+        // needs. A root whose content uses no token at all is fine without a table, and
+        // calling that an error is how a check earns its way onto someone's ignore list. When
+        // content DOES use tokens the per-token errors above have already fired; this names
+        // the single cause behind all of them, which is the part a reader acts on.
+        if (!tokensFilePresent)
+        {
+            var where = $"{CanaryTokens.TokensFileName} not found at {root}";
+            if (unresolved.Count > 0)
+            {
+                f.Errors.Add($"{where} - an absent token table is not an empty one, and it is why the " +
+                             $"{unresolved.Count} unresolved token(s) above have nothing to resolve against");
+            }
+            else
+            {
+                f.Notes.Add($"{where} - no content here uses a token, so nothing is broken by its absence");
+            }
+        }
 
         // --- 4. suite completeness -----------------------------------------
         // EVERY suite in the workload, not only one the caller thought to name.
@@ -172,6 +256,22 @@ public static class DoctorCommand
             var suites = string.IsNullOrWhiteSpace(suiteName)
                 ? EnumerateSuiteNames(root, workloadName!)
                 : new[] { suiteName! };
+
+            // A workload with no suites made this loop run ZERO times and print nothing, so a
+            // doctor report that had LOST its suites folder was simply shorter than one that
+            // had not, and otherwise identical - still ending "doctor: OK". Detecting it
+            // required noticing a line that was not there, the same shape as bug 0022.
+            //
+            // The count is the fix. The severity is deliberately only a warning: a workload
+            // can legitimately have no suite and be driven test by test, and a check that
+            // cannot be satisfied is a check someone switches off.
+            logger.Log($"suites         : {suites.Count} declared for '{workloadName}'");
+            if (suites.Count == 0)
+            {
+                f.Warnings.Add($"workload '{workloadName}' declares no suites under " +
+                               $"{Path.Combine(root, workloadName!, "suites")} - nothing can be run as a set. " +
+                               "On a payload this means the suite did not travel");
+            }
 
             foreach (var name in suites)
             {
@@ -199,7 +299,15 @@ public static class DoctorCommand
         if (!string.IsNullOrWhiteSpace(workloadName))
         {
             var testsDir = Path.Combine(root, workloadName!, "tests");
-            if (Directory.Exists(testsDir))
+            if (!Directory.Exists(testsDir))
+            {
+                // The guard used to wrap the summary line too, so an absent tests directory
+                // produced silence. Absence is now stated, and it is an error: a workload with
+                // no tests cannot be the thing anyone meant to ship.
+                f.Errors.Add($"no tests directory at {testsDir} - this workload's content did not arrive");
+                logger.Log($"test files     : NONE - {testsDir} does not exist");
+            }
+            else
             {
                 var files = Directory.GetFiles(testsDir, "*.json");
                 var unreadable = 0;
@@ -317,6 +425,7 @@ public static class DoctorCommand
                 var reqs = RequirementChecker.Collect(cfg, scope, workloadName!);
                 var offline = reqs.Count(d => d.Requirement.IsOfflineCheckable);
                 var inApp = reqs.Count - offline;
+                if (reqs.Any(d => string.Equals(d.Requirement.Kind, Requirement.KindPlugin, StringComparison.OrdinalIgnoreCase))) f.DeclaresPlugins = true;
                 logger.Log($"preconditions : {reqs.Count} declared ({offline} checkable here, {inApp} need the app running)");
 
                 foreach (var miss in await RequirementChecker.CheckOfflineAsync(reqs, root).ConfigureAwait(false))
@@ -326,6 +435,12 @@ public static class DoctorCommand
                 {
                     f.Notes.Add($"{inApp} plugin requirement(s) are NOT verified by doctor — they can only be " +
                                 "checked from inside the running app, and are gated at run time via GetHostState");
+
+                    // Whether that note is benign depends on something not known yet: if a
+                    // capture from THIS machine exists, the app has already answered for them.
+                    // If it does not, this many requirements have never been checked by
+                    // anything at all, and a note does not move the exit code. Decided at the end.
+                    f.InAppRequirements = inApp;
                 }
             }
             catch (FileNotFoundException ex)
@@ -378,7 +493,7 @@ public static class DoctorCommand
             var capturePath = EnvironmentCapture.PathFor(root, workloadName!);
             if (!File.Exists(capturePath))
             {
-                f.Warnings.Add($"no environment capture for '{workloadName}' — nothing has asked the " +
+                f.Unproven.Add($"no environment capture for '{workloadName}' — nothing has asked the " +
                                $"application what it has loaded. Run `canary env --workload {workloadName}`");
             }
             else
@@ -394,6 +509,8 @@ public static class DoctorCommand
                     // A capture from somewhere else is the QC trap this exists to catch: copy a
                     // results tree between machines and the target appears to have been verified
                     // when nothing on it was ever probed.
+                    f.HaveLocalCapture = capture.IsFromThisMachine();
+
                     if (!capture.IsFromThisMachine())
                     {
                         f.Errors.Add($"the environment capture is from another machine " +
@@ -436,7 +553,7 @@ public static class DoctorCommand
                 // doctor has to be runnable on a machine where nothing has happened yet. It is
                 // the FIRST thing you run on a fresh QC box, so it cannot require that
                 // something already ran.
-                f.Warnings.Add("the harness has not been commissioned on this machine — run " +
+                f.Unproven.Add("the harness has not been commissioned on this machine — run " +
                                "`canary commission --workload <w>`. Until it passes, no test result " +
                                "from this machine can be read, whatever the checks above say");
             }
@@ -463,8 +580,23 @@ public static class DoctorCommand
                     }
                     else if (!commissioning.HarnessUsable)
                     {
-                        foreach (var l in commissioning.Layers.Where(l => l.Fatal && l.Outcome != LayerOutcome.Passed))
+                        // A layer that RAN and disagreed is a harness fault. A layer that could
+                        // not start because its inputs never arrived is not - and routing both
+                        // into HarnessFaults made doctor print "This is NOT an install problem"
+                        // over the two failures a payload machine actually produces: the
+                        // commissioning content did not travel, and the agent is not registered.
+                        // That sentence asserted the opposite of the truth, and its advice was
+                        // a dead end.
+                        foreach (var l in commissioning.Layers.Where(l => l.Fatal && l.Outcome == LayerOutcome.Failed))
                             f.HarnessFaults.Add($"layer {l.Number} {l.Name}: {l.Detail}");
+
+                        foreach (var l in commissioning.Layers.Where(l => l.Fatal && l.Outcome == LayerOutcome.NotRun))
+                        {
+                            var kind = l.ContentFault
+                                ? "could not run because something is not installed or did not ship"
+                                : "did not run";
+                            f.Unproven.Add($"commissioning layer {l.Number} {l.Name} {kind}: {l.Detail}");
+                        }
                     }
 
                     // A non-fatal layer that failed is worth saying out loud: it means pixel
@@ -479,6 +611,12 @@ public static class DoctorCommand
                 }
             }
         }
+
+        // --- 10. the runtime the payload does not carry --------------------
+        CheckDesktopRuntime(f, logger);
+
+        // --- 11. the map from requirement ids to installable packages -------
+        CheckPackageMap(f, root, f.DeclaresPlugins);
 
         return Report(f, logger);
     }
@@ -513,11 +651,109 @@ public static class DoctorCommand
         }
     }
 
+    /// <summary>
+    /// Check 10 - the runtime the payload does not carry.
+    /// </summary>
+    /// <param name="f">Findings to add to.</param>
+    /// <param name="logger">Where to report.</param>
+    /// <remarks>
+    /// Both shipped projects are <c>net8.0-windows</c> and the payload is published
+    /// framework-dependent - no <c>--self-contained</c>, no RuntimeIdentifier anywhere. So it
+    /// REQUIRES the .NET 8 Windows Desktop Runtime on the target, ships nothing that provides
+    /// it, and until now asserted nothing that checks it. When it is absent, canary.exe dies
+    /// with the apphost's own "You must install .NET" message before a single line of Canary
+    /// code runs - which reads as a corrupt payload, and sends someone to re-copy files that
+    /// were never the problem.
+    /// </remarks>
+    private static void CheckDesktopRuntime(Findings f, ITestLogger logger)
+    {
+        try
+        {
+            using var proc = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = "--list-runtimes",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            });
+            if (proc == null)
+            {
+                f.Unproven.Add("could not run `dotnet --list-runtimes` - cannot tell whether the .NET 8 " +
+                               "Windows Desktop Runtime is present");
+                return;
+            }
+
+            var stdout = proc.StandardOutput.ReadToEnd();
+            proc.WaitForExit(15000);
+
+            var desktop = stdout.Split('\n')
+                .Select(l => l.Trim())
+                .Where(l => l.StartsWith("Microsoft.WindowsDesktop.App 8.", StringComparison.Ordinal))
+                .ToList();
+
+            if (desktop.Count > 0)
+            {
+                logger.Log($"runtime        : {desktop.Count} .NET 8 Windows Desktop runtime(s) present");
+            }
+            else
+            {
+                f.Errors.Add("the .NET 8 Windows Desktop Runtime is not installed. This payload is published " +
+                             "framework-dependent and carries no runtime, so canary.exe cannot start at all - " +
+                             "install it from https://dotnet.microsoft.com/download/dotnet/8.0 " +
+                             "(Desktop Runtime, x64)");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Not an error: `dotnet` being absent from PATH does not prove the runtime is
+            // absent, because the apphost finds it without the CLI. Unproven is the honest
+            // answer, and it is the tier that exists precisely for this.
+            f.Unproven.Add($"could not determine whether the .NET 8 Windows Desktop Runtime is present " +
+                           $"({ex.GetType().Name}). The apphost does not need `dotnet` on PATH, so this is " +
+                           "not evidence either way");
+        }
+    }
+
+    /// <summary>
+    /// Check 11 - the map from requirement ids to installable packages.
+    /// </summary>
+    /// <param name="f">Findings to add to.</param>
+    /// <param name="root">Workloads root.</param>
+    /// <param name="declaresPlugins">Whether any workload here declares a plug-in.</param>
+    /// <remarks>
+    /// <see cref="InstallReadiness"/> returns an empty map when this file is absent, with a
+    /// comment handing the reporting job to doctor - and doctor never took it. Nobody
+    /// reported it anywhere. The visible effect is in the UI: every requirement renders as
+    /// "no package provides this", and the install plan, which is gated on a package name
+    /// being present, can never appear. The tab's only remediation surface is dead and
+    /// nothing on screen says why.
+    /// </remarks>
+    private static void CheckPackageMap(Findings f, string root, bool declaresPlugins)
+    {
+        var mapPath = Path.Combine(root, InstallReadiness.PackageMapFileName);
+        if (File.Exists(mapPath)) return;
+
+        var msg = $"{InstallReadiness.PackageMapFileName} not found at {root} - plug-in requirements " +
+                  "cannot be mapped to packages, so no fix can be named and the install plan cannot be built";
+        if (declaresPlugins) f.Unproven.Add(msg); else f.Warnings.Add(msg);
+    }
+
     private static int Report(Findings f, ITestLogger logger)
     {
+        // An in-app requirement is only unchecked if nothing on this machine ever asked the
+        // app. With a same-machine capture, the app has already answered for all of them.
+        if (f.InAppRequirements > 0 && !f.HaveLocalCapture)
+        {
+            f.Unproven.Add($"{f.InAppRequirements} plug-in requirement(s) can only be answered by the running " +
+                           "app, and no capture from this machine exists - so nothing has checked them");
+        }
+
         logger.Log(string.Empty);
         foreach (var n in f.Notes) logger.Log($"  note    {n}");
         foreach (var w in f.Warnings) logger.Log($"  WARN    {w}");
+        foreach (var u in f.Unproven) logger.Log($"  UNPROVEN {u}");
         foreach (var e in f.Errors) logger.Log($"  ERROR   {e}");
         foreach (var h in f.HarnessFaults) logger.Log($"  HARNESS {h}");
 
@@ -536,15 +772,26 @@ public static class DoctorCommand
             return 1;
         }
 
-        if (f.Errors.Count == 0)
+        if (f.Errors.Count > 0)
         {
-            logger.Log(f.Warnings.Count == 0
-                ? "doctor: OK — this machine can run the content it has."
-                : $"doctor: OK with {f.Warnings.Count} warning(s).");
-            return 0;
+            logger.Log($"doctor: {f.Errors.Count} error(s). This machine cannot be trusted to report on these tests.");
+            return 1;
         }
 
-        logger.Log($"doctor: {f.Errors.Count} error(s). This machine cannot be trusted to report on these tests.");
-        return 1;
+        // Definite failures outrank unknowns, so this is tested after Errors and after
+        // HarnessFaults - but BEFORE OK, because the whole point is that it is not one.
+        if (f.Unproven.Count > 0)
+        {
+            logger.Log(string.Empty);
+            logger.Log($"doctor: NOT PROVEN — {f.Unproven.Count} check(s) could not run on this machine.");
+            logger.Log("        This is NOT a pass and NOT an install failure. Nothing above has been");
+            logger.Log("        contradicted; some of it has simply never been asked.");
+            return ExitNotProven;
+        }
+
+        logger.Log(f.Warnings.Count == 0
+            ? "doctor: OK — this machine can run the content it has."
+            : $"doctor: OK with {f.Warnings.Count} warning(s).");
+        return 0;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Canary.Cli;
+﻿using Canary.Agent;
+using Canary.Cli;
 using Canary.Commissioning;
 using Canary.Orchestration;
 using Xunit;
@@ -48,6 +49,31 @@ public class DoctorAndShortSuiteTests
         File.WriteAllText(Path.Combine(root, "w", Canary.Orchestration.BaselineLedger.FileName),
             "{ \"version\": 1, \"workload\": \"w\", \"rows\": [] }");
         return root;
+    }
+
+    /// <summary>Gives a rig the two artefacts that prove something has looked at it.</summary>
+    /// <param name="root">Workloads root from <c>NewRig</c>.</param>
+    /// <remarks>
+    /// <para>
+    /// Doctor now separates "a check failed" (exit 1) from "a check never ran"
+    /// (<see cref="DoctorCommand.ExitNotProven"/>), so a rig with no commissioning report and
+    /// no environment capture no longer reaches 0 - correctly, because nothing has asked that
+    /// machine anything.
+    /// </para>
+    /// <para>
+    /// Tests whose subject is a DIFFERENT check therefore have to establish that baseline
+    /// first, or they assert on an exit code driven by something they are not testing.
+    /// </para>
+    /// </remarks>
+    private static void MarkAsMeasured(string root)
+    {
+        WriteCommissioning(root);
+        EnvironmentCapture.Create(
+                "w",
+                new Dictionary<string, string> { [HostStateFields.Loaded] = string.Empty },
+                Array.Empty<EnvironmentClash>(),
+                workloadsDir: root)
+            .Save(EnvironmentCapture.PathFor(root, "w"));
     }
 
     // 'workload' is required by TestDefinition.Parse, and omitting it is indistinguishable
@@ -124,6 +150,7 @@ public class DoctorAndShortSuiteTests
         var root = NewRig();
         WriteTest(root, "a");
         WriteSuite(root, "s", "a");
+        MarkAsMeasured(root);
         File.WriteAllText(Path.Combine(root, "tokens.json"), "{ \"_note\": \"comments are skipped\" }");
 
         var exit = await DoctorCommand.RunAsync("w", "s", root,
@@ -139,14 +166,25 @@ public class DoctorAndShortSuiteTests
     // fixes - so a harness fault must never be reported as an install error, and must still
     // stop the machine being treated as ready.
 
-    /// <summary>An uncommissioned machine is warned about, not failed.</summary>
+    /// <summary>An uncommissioned machine reports NOT PROVEN. It is not an install failure, and it is not a pass.</summary>
     /// <remarks>
-    /// Doctor is the FIRST thing run on a fresh QC box, so it cannot require that something
-    /// already ran. Same reasoning as an absent environment capture in check 8.
+    /// <para>
+    /// Doctor is still the FIRST thing run on a fresh QC box and still must not require that
+    /// something already ran - which is why this is neither an error nor an exception. It is
+    /// its own exit code.
+    /// </para>
+    /// <para>
+    /// It used to be a warning, and that made it invisible where it mattered:
+    /// <c>qc-capture.ps1</c> judges doctor by its exit code and never by scraping its text,
+    /// so a bundle coming back from the QC machine could report a green install for a machine
+    /// nothing had ever commissioned. The campaign's rule is that an unrun check and a
+    /// passing check are different answers; a warning does not move the exit code, so a
+    /// warning could not carry that rule.
+    /// </para>
     /// </remarks>
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task Doctor_WithNoCommissioningReport_Warns_ButStillPasses()
+    public async Task Doctor_WithNoCommissioningReport_ReportsNotProven_NotAPassAndNotAnError()
     {
         var root = NewRig();
         WriteTest(root, "a");
@@ -155,7 +193,56 @@ public class DoctorAndShortSuiteTests
         var exit = await DoctorCommand.RunAsync("w", "s", root,
             new ConsoleTestLogger(verbose: false, quiet: true));
 
-        Assert.Equal(0, exit);
+        Assert.Equal(DoctorCommand.ExitNotProven, exit);
+        Assert.NotEqual(0, exit);
+        Assert.NotEqual(1, exit);   // an install failure is a different finding with a different owner
+    }
+
+    /// <summary>A fatal layer that could not START is unproven, not a harness fault.</summary>
+    /// <remarks>
+    /// On a payload machine both fatal layers come back NotRun for install and packaging
+    /// reasons - the commissioning content did not travel, and the agent is not registered.
+    /// Routing those into HarnessFaults made doctor print "This is NOT an install problem"
+    /// over precisely the two failures that ARE install problems, and its advice - run
+    /// commission - was a dead end.
+    /// </remarks>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WhenAFatalLayerNeverRan_ReportsNotProven_RatherThanAHarnessFault()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+        EnvironmentCapture.Create(
+                "w",
+                new Dictionary<string, string> { [HostStateFields.Loaded] = string.Empty },
+                Array.Empty<EnvironmentClash>(),
+                workloadsDir: root)
+            .Save(EnvironmentCapture.PathFor(root, "w"));
+        WriteCommissioning(root, repeatable: LayerOutcome.NotRun);
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(DoctorCommand.ExitNotProven, exit);
+    }
+
+    /// <summary>A fatal layer that RAN and disagreed is still a harness fault.</summary>
+    /// <remarks>The other half of the discriminator: this one must not soften.</remarks>
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task Doctor_WhenAFatalLayerRanAndFailed_IsStillAHarnessFault()
+    {
+        var root = NewRig();
+        WriteTest(root, "a");
+        WriteSuite(root, "s", "a");
+        MarkAsMeasured(root);
+        WriteCommissioning(root, repeatable: LayerOutcome.Failed);
+
+        var exit = await DoctorCommand.RunAsync("w", "s", root,
+            new ConsoleTestLogger(verbose: false, quiet: true));
+
+        Assert.Equal(1, exit);
     }
 
     /// <summary>A failing fatal layer stops the machine being called ready.</summary>
@@ -178,8 +265,18 @@ public class DoctorAndShortSuiteTests
     /// A layer that was never ATTEMPTED is not a pass either.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The campaign exists because a missing baseline yielded New and New was excluded from
     /// the exit code. A machine whose repeatability is unknown has not shown it can test.
+    /// </para>
+    /// <para>
+    /// It used to exit 1, sharing a code with "the install is incomplete". It now exits
+    /// <see cref="DoctorCommand.ExitNotProven"/>: still non-zero, still stops the machine
+    /// being trusted, but no longer claims a failure nobody has observed. What made that
+    /// worth splitting is that doctor's harness-fault verdict prints "This is NOT an install
+    /// problem" - and on a payload machine, a fatal layer at NotRun is usually EXACTLY an
+    /// install problem: the content did not travel, or the agent is not registered.
+    /// </para>
     /// </remarks>
     [Trait("Category", "Unit")]
     [Fact]
@@ -188,12 +285,14 @@ public class DoctorAndShortSuiteTests
         var root = NewRig();
         WriteTest(root, "a");
         WriteSuite(root, "s", "a");
+        MarkAsMeasured(root);
         WriteCommissioning(root, repeatable: LayerOutcome.NotRun);
 
         var exit = await DoctorCommand.RunAsync("w", "s", root,
             new ConsoleTestLogger(verbose: false, quiet: true));
 
-        Assert.Equal(1, exit);
+        Assert.NotEqual(0, exit);
+        Assert.Equal(DoctorCommand.ExitNotProven, exit);
     }
 
     /// <summary>A non-fatal layer failing does not stop the machine being usable.</summary>
@@ -209,6 +308,7 @@ public class DoctorAndShortSuiteTests
         var root = NewRig();
         WriteTest(root, "a");
         WriteSuite(root, "s", "a");
+        MarkAsMeasured(root);
         WriteCommissioning(root, reference: LayerOutcome.Failed);
 
         var exit = await DoctorCommand.RunAsync("w", "s", root,
@@ -318,6 +418,7 @@ public class DoctorAndShortSuiteTests
     {
         var root = NewRig();
         WriteTest(root, "a");
+        MarkAsMeasured(root);
 
         var exit = await DoctorCommand.RunAsync("w", null, root,
             new ConsoleTestLogger(verbose: false, quiet: true));
@@ -344,6 +445,7 @@ public class DoctorAndShortSuiteTests
     {
         var root = NewRig();
         WriteTest(root, "a");
+        MarkAsMeasured(root);
         File.WriteAllText(Path.Combine(root, "tokens.json"),
             "{ \"_comment\": \"this is prose, not a path\", \"_c2\": \"also prose\" }");
         Canary.Config.CanaryTokens.Invalidate();

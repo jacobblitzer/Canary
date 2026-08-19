@@ -267,6 +267,19 @@ public class PretestViewModelTests
             Assert.Contains("machine-setup.ps1", vm.InstallCommand, StringComparison.Ordinal);
             Assert.Contains("-Only slop", vm.InstallCommand, StringComparison.Ordinal);
 
+            // The DRY RUN is the command; -Apply is the second line and it is labelled. The
+            // first version rendered -Apply alone, from a RELATIVE path - so the copy button
+            // handed over a mutation resolved against whatever directory it was pasted into,
+            // against this tab's own banner text and against the campaign rule that a machine
+            // repaired before it is measured has destroyed the evidence it existed to give.
+            var lines = vm.InstallCommand.Split('\n');
+            Assert.DoesNotContain("-Apply", lines[0], StringComparison.Ordinal);
+            Assert.Contains(lines, l => l.Contains("-Apply", StringComparison.Ordinal));
+            Assert.True(Path.IsPathRooted(
+                    lines[0].Split('"')[1]),
+                "the script path in the copied command must be absolute - a relative one resolves " +
+                "against whatever directory the operator happens to paste it into");
+
             vm.CopyInstallCommandCommand.Execute(null);
             Assert.Equal(vm.InstallCommand, copied);
             // Copying is the whole action. Nothing ran.

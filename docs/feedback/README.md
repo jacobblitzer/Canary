@@ -20,7 +20,7 @@ docs/feedback/
   README.md     ← this file
 ```
 
-Each item is a pair: a markdown file and a sidecar directory.
+An item is always a markdown file. Some items *also* have a sidecar directory:
 
 ```
 inbox/2026-05-24-007-pencil-toon-bg-too-bright.md
@@ -29,6 +29,17 @@ inbox/2026-05-24-007-pencil-toon-bg-too-bright/
   annotated.png       ← source + rendered annotation overlay
   annotations.json    ← vector data: rectangles, freehand strokes, text labels
 ```
+
+**The sidecar belongs to the Annotate flow, not to the item.**
+`FeedbackInboxWriter.Write` demands two PNGs and an `annotations.json` because it is the
+producer behind the Annotate button — that is one writer's contract, not the shape every
+item has to have. A **text-only item is a legal item**: no sidecar directory, no `imageRef`,
+nothing missing. `resolved/` already holds two of them — the 2026-06-10 pair, both operator
+asks logged verbally with no image anywhere — and every consumer reads them fine.
+
+Written down because the previous wording ("each item is a pair") read as a requirement, and
+an agent told to file a learning it has no screenshot for would have gone hunting for images
+to attach, or filed nothing.
 
 ## Slug format
 
@@ -47,10 +58,33 @@ inbox/2026-05-24-007-pencil-toon-bg-too-bright/
    "If `docs/feedback/inbox/` is non-empty, list new items before
    proceeding."
 3. **Triage:** Claude reads, edits frontmatter (`project`, `tags`,
-   `urgency`), moves the file pair to `triaged/`.
+   `urgency`), moves the item to `triaged/` (with its sidecar directory,
+   if it has one).
 4. **Resolve:** set `status: resolved`, append a `### Resolution`
-   section to the body, move the file pair to `resolved/`. The
+   section to the body, move the item to `resolved/`. The
    `runRef` path stays valid — resolved items are historical record.
+
+## The QC route — a learning from another machine
+
+A learning written on a QC or USER machine arrives here **already legal**. It is a feedback
+item, not something that becomes one after a conversion step. There is deliberately no second
+register: `inbox/` is what the session-start rule reads (`AGENTS.md` step 4) and what
+`list_feedback` serves, so a parallel one would be the register nobody opens.
+
+1. On that machine — `scripts/qc-capture.ps1 -Publish` writes the bundle and copies it to
+   `G:\My Drive\claude-share\qc-<COMPUTERNAME>-<yyyyMMdd>\`.
+2. Still on that machine — write each learning into the bundle's `learnings\` folder from
+   [`../templates/qc-learning-template.md`](../templates/qc-learning-template.md). Its
+   frontmatter is the shape below **plus** `machine`, `tier`, `canaryVersion`,
+   `commissionExit` and `doctorExit`: a finding that cannot say where it was seen cannot be
+   acted on here.
+3. Back on this machine — `powershell -File scripts/import-qc-bundle.ps1 <bundle>`. It copies
+   `learnings\*.md` into `inbox/`, refuses to overwrite anything already filed under the same
+   name, and prints the three signals out of `qc-summary.json` exit codes rather than out of
+   whatever the learnings say about them.
+4. From there it is an ordinary item — triage, resolve, and if it leaves a question open for
+   this machine, record it under *Found on another machine (QC)* in
+   [`../OPEN-ITEMS.md`](../OPEN-ITEMS.md).
 
 ## Item shape
 

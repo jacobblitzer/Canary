@@ -76,7 +76,8 @@ public static class Commissioner
                 if (!File.Exists(p))
                 {
                     return new CommissioningLayer(1, name, LayerOutcome.NotRun,
-                        $"reference image missing: {p} - the commissioning content did not travel with this install", true);
+                        $"reference image missing: {p} - the commissioning content did not travel with this install",
+                        true, ContentFault: true);
                 }
             }
 
@@ -138,7 +139,10 @@ public static class Commissioner
             if (!File.Exists(firstPng) || !File.Exists(secondPng))
             {
                 return new CommissioningLayer(2, name, LayerOutcome.NotRun,
-                    "the app did not produce two captures - layer not attempted", true);
+                    "the app did not produce two captures - layer not attempted. The usual cause is that " +
+                    "the Canary agent is not registered in the host, so the app starts and never connects: " +
+                    "check `canary doctor` for the agent package before reading this as a harness fault.",
+                    true, ContentFault: true);
             }
 
             using var first = Image.Load<Rgba32>(firstPng);
@@ -193,12 +197,13 @@ public static class Commissioner
             if (!File.Exists(shippedPng))
             {
                 return new CommissioningLayer(3, name, LayerOutcome.NotRun,
-                    "no shipped reference capture for this workload - nothing to compare against", false);
+                    $"no shipped reference capture at {shippedPng} - nothing to compare against",
+                    false, ContentFault: true);
             }
             if (!File.Exists(capturedPng))
             {
                 return new CommissioningLayer(3, name, LayerOutcome.NotRun,
-                    "the app did not produce a capture - layer not attempted", false);
+                    $"the app did not produce a capture at {capturedPng} - layer not attempted", false);
             }
 
             using var shipped = Image.Load<Rgba32>(shippedPng);

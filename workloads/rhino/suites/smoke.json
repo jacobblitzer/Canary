@@ -1,0 +1,7 @@
+{
+  "name": "smoke",
+  "description": "The one suite a machine with nothing but Rhino 8 and the Canary agent can run: one test, one sphere, one screenshot. It declares no plug-in and no repo root, so nothing in it can fail for want of an install - which is exactly why it is a PAYLOAD SMOKE TEST and NOT a coverage sample. Green here means the harness reached Rhino, drove it and got a picture back; it says nothing at all about whether any plug-in under test still works. Every other rhino suite needs repos, packages or a live service that a payload machine does not have.",
+  "tests": [
+    "smoke-test"
+  ]
+}

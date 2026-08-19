@@ -87,6 +87,31 @@ last-writer-wins semantics — changing Tier 3 in Settings does not update the L
 
 ---
 
+## Found on another machine (QC)
+
+Answers that came back from a machine this repo does not run on. This file already *asks* a
+QC machine two questions — the exact Penumbra id in §1, and the viewport size below — and
+until now there was nowhere to write the answer, so it would have landed in a session
+transcript and been asked again a month later.
+
+**How an entry gets here.** The learning is written on the QC machine from
+[`templates/qc-learning-template.md`](templates/qc-learning-template.md), travels in the
+bundle's `learnings\` folder, and is filed into `docs/feedback/inbox/` by
+`scripts/import-qc-bundle.ps1`. The feedback item stays the record of what was *seen*; a row
+here is added at triage, and says what it *costs this machine*.
+
+**Read every row against the three signals, and never collapse them:** commissioning red =
+the harness is broken and every result in that bundle is unreadable; `doctor` red = the
+install is incomplete and it is **not** a plug-in defect; commissioning green + doctor green +
+`smoke` red = the only combination that is a real finding. A layer or suite reported NotRun
+answered nothing, and NotRun is never a pass.
+
+| Date | Machine · tier · Canary | Signal | Finding | What it costs here |
+|---|---|---|---|---|
+| — | — | — | *(nothing yet — no QC bundle has come back)* | — |
+
+---
+
 ## Known and accepted, not defects
 
 ### The viewport ignores a declared capture size

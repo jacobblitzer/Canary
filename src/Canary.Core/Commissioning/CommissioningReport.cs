@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Canary.Orchestration;
 
 namespace Canary.Commissioning;
@@ -29,8 +29,28 @@ public enum LayerOutcome
 /// <param name="Fatal">
 /// Whether failing this layer means no test result on this machine is readable.
 /// </param>
+/// <param name="ContentFault">
+/// Whether this layer could not be attempted because something did not arrive on this
+/// machine - a reference image the payload never carried, an agent that was never installed
+/// - as opposed to the harness running and disagreeing.
+/// </param>
+/// <remarks>
+/// <para>
+/// <b>Why the discriminator exists.</b> Every non-Passed fatal layer used to be reported by
+/// doctor under one sentence: "This is NOT an install problem. Fix it with `canary commission`
+/// first." On a machine set up from a payload, both fatal layers come back NotRun for
+/// install and packaging reasons - the commissioning content did not travel, and the Rhino
+/// agent is not registered - so that sentence asserted the exact opposite of the truth, and
+/// its advice was a dead end.
+/// </para>
+/// <para>
+/// A layer that ran and disagreed is a harness fault. A layer that could not start because
+/// its inputs are absent is an install fault. They need different owners, so they need
+/// different words.
+/// </para>
+/// </remarks>
 public readonly record struct CommissioningLayer(
-    int Number, string Name, LayerOutcome Outcome, string Detail, bool Fatal);
+    int Number, string Name, LayerOutcome Outcome, string Detail, bool Fatal, bool ContentFault = false);
 
 /// <summary>
 /// The answer to "can this machine test at all?" — ruling 7A, three layers.
@@ -112,6 +132,7 @@ public sealed class CommissioningReport
                 ["name"] = l.Name,
                 ["outcome"] = l.Outcome.ToString(),
                 ["fatal"] = l.Fatal,
+                ["contentFault"] = l.ContentFault,
                 ["detail"] = l.Detail,
             }).ToList(),
         };
@@ -153,7 +174,11 @@ public sealed class CommissioningReport
                         Str(l, "name"),
                         outcome,
                         Str(l, "detail"),
-                        l.TryGetProperty("fatal", out var f) && f.ValueKind == JsonValueKind.True));
+                        l.TryGetProperty("fatal", out var f) && f.ValueKind == JsonValueKind.True,
+                        // Absent reads as false, so a report written by an older build is read
+                        // as "this was a harness fault" - the louder of the two, and the one
+                        // that stops a machine being trusted rather than the one that excuses it.
+                        l.TryGetProperty("contentFault", out var cf) && cf.ValueKind == JsonValueKind.True));
                 }
             }
 
@@ -189,6 +214,10 @@ public sealed class CommissioningReport
             {
                 LayerOutcome.Passed => "PASS",
                 LayerOutcome.Failed => l.Fatal ? "FAIL" : "warn",
+                // A reader skimming for FAIL saw three [----] rows and no failure, directly
+                // above "harness usable: NO". A fatal layer that never ran has to be as loud
+                // on the page as one that ran and lost - it is the same verdict.
+                LayerOutcome.NotRun => l.Fatal ? "STOP" : "----",
                 _ => "----",
             };
             lines.Add($"  [{mark}] layer {l.Number} {l.Name,-12} {l.Detail}");

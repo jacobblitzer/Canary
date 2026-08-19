@@ -266,10 +266,13 @@ public partial class PretestViewModel : ObservableObject
     private async Task SurveyAsync()
     {
         if (_workloadsDir == null) return;
-        var script = FindSurveyScript();
+        var script = FindOperatorScript("machine-survey.ps1", out var tried);
         if (script == null)
         {
-            Append("machine-survey.ps1 not found beside this install - cannot read the machine.");
+            Append("machine-survey.ps1 was not found. Looked in:");
+            foreach (var t in tried) Append($"    {t}");
+            Append("If this is a Drive payload, the publisher did not ship it - that is a payload " +
+                   "defect, not something to fix on this machine.");
             return;
         }
 
@@ -317,6 +320,7 @@ public partial class PretestViewModel : ObservableObject
         var workloadName = SelectedWorkload!;
         Append($"Commissioning against {workloadName} - the application will start, be measured, and close.");
 
+        var layersSoFar = new List<CommissioningLayer>();
         try
         {
             var referencesDir = Path.Combine(workloadsDir, MachineTier.CommissioningWorkload, Commissioner.ReferencesFolder);
@@ -324,8 +328,26 @@ public partial class PretestViewModel : ObservableObject
             var first = Path.Combine(outDir, "repeat-1.png");
             var second = Path.Combine(outDir, "repeat-2.png");
 
-            var layers = new List<CommissioningLayer> { Commissioner.CheckComparer(referencesDir) };
-            Append($"Layer 1 (comparer, no app): {layers[0].Outcome}.");
+            var layers = layersSoFar;
+            layers.Add(Commissioner.CheckComparer(referencesDir));
+            Append($"Layer 1 (comparer, no app): {layers[0].Outcome}. {layers[0].Detail}");
+
+            // Layer 1 needs no application, and it is the layer that says whether the comparer
+            // agrees with itself. If it did not pass, launching the app measures nothing: the
+            // instrument is already known not to work, or its content never arrived. Doing it
+            // anyway burned the 90s startup timeout and produced app-side symptoms that read as
+            // findings - an operator investigating Rhino because a PNG was missing.
+            if (layers[0].Outcome != LayerOutcome.Passed)
+            {
+                var why = $"layer 1 did not pass, so the application was NOT launched: {layers[0].Detail}";
+                layers.Add(new CommissioningLayer(2, "repeatable", LayerOutcome.NotRun, why, true,
+                    ContentFault: layers[0].ContentFault));
+                layers.Add(new CommissioningLayer(3, "reference", LayerOutcome.NotRun, why, false,
+                    ContentFault: layers[0].ContentFault));
+                SaveCommissioning(workloadsDir, workloadName, layers);
+                Append(why);
+                return;
+            }
 
             var cfgPath = Path.Combine(workloadsDir, workloadName, "workload.json");
             var cfg = await WorkloadConfig.LoadAsync(cfgPath).ConfigureAwait(true);
@@ -345,20 +367,37 @@ public partial class PretestViewModel : ObservableObject
             layers.Add(Commissioner.CheckShippedReference(
                 Path.Combine(referencesDir, $"{workloadName}-reference.png"), first));
 
-            var report = new CommissioningReport
-            {
-                CapturedUtc = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
-                Machine = MachineIdentity.Describe(workloadsDir),
-                Workload = workloadName,
-                Layers = layers,
-            };
-            report.Save(CommissioningReport.PathFor(workloadsDir));
+            var report = SaveCommissioning(workloadsDir, workloadName, layers);
             Append(report.HarnessUsable
                 ? "Commissioning passed - results from this machine can be read."
                 : "Commissioning FAILED - results from this machine are not readable.");
         }
         catch (OperationCanceledException) { Append("Cancelled."); }
-        catch (Exception ex) { Append($"Commissioning failed: {ex.GetType().Name}: {ex.Message}"); }
+        catch (Exception ex)
+        {
+            // A crash used to leave NO report, and the tab then rendered the grey "this
+            // machine has not been commissioned" - so an attempt that blew up was pixel
+            // identical to never having pressed the button. This throws in practice: the
+            // pipe connect throws rather than returning false when the agent is not
+            // registered, which is the single most likely state of a fresh QC machine.
+            Append($"Commissioning failed: {ex.GetType().Name}: {ex.Message}");
+            try
+            {
+                var partial = new List<CommissioningLayer>(layersSoFar);
+                for (var n = partial.Count + 1; n <= 3; n++)
+                {
+                    partial.Add(new CommissioningLayer(n, n == 2 ? "repeatable" : "reference",
+                        LayerOutcome.NotRun,
+                        $"commissioning threw before this layer ran: {ex.GetType().Name}: {ex.Message}",
+                        n == 2));
+                }
+                SaveCommissioning(workloadsDir, workloadName, partial);
+            }
+            catch (Exception saveEx)
+            {
+                Append($"...and the report could not be written either: {saveEx.Message}");
+            }
+        }
         finally
         {
             _pm?.KillAll();
@@ -436,6 +475,31 @@ public partial class PretestViewModel : ObservableObject
             _cts = null;
             State = PretestState.Idle;
         }
+    }
+
+    /// <summary>Writes the commissioning report for this machine.</summary>
+    /// <param name="workloadsDir">Workloads root.</param>
+    /// <param name="workloadName">App workload measured.</param>
+    /// <param name="layers">Layers, however far they got.</param>
+    /// <returns>The report that was written.</returns>
+    /// <remarks>
+    /// One writer, called on the success path AND the crash path, because the two used to
+    /// differ: the save sat inside the try, so any throw left no file at all and the tab
+    /// reported the machine as never commissioned. A failed attempt and an absent attempt
+    /// must never render the same.
+    /// </remarks>
+    private static CommissioningReport SaveCommissioning(
+        string workloadsDir, string workloadName, IReadOnlyList<CommissioningLayer> layers)
+    {
+        var report = new CommissioningReport
+        {
+            CapturedUtc = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            Machine = MachineIdentity.Describe(workloadsDir),
+            Workload = workloadName,
+            Layers = layers,
+        };
+        report.Save(CommissioningReport.PathFor(workloadsDir));
+        return report;
     }
 
     /// <summary>Cancels whatever is running and closes anything it launched.</summary>
@@ -665,6 +729,13 @@ public partial class PretestViewModel : ObservableObject
         if (_workloadsDir == null || string.IsNullOrWhiteSpace(SelectedWorkload)) return;
 
         var rows = InstallReadiness.ForWorkload(_workloadsDir, SelectedWorkload!);
+        var mapPresent = InstallReadiness.PackageMapExists(_workloadsDir);
+        if (!mapPresent && rows.Count > 0)
+        {
+            Append($"{InstallReadiness.PackageMapFileName} is not in this install, so no requirement can be " +
+                   "matched to a package and no install plan can be built. That is a payload defect.");
+        }
+
         foreach (var r in rows)
         {
             Readiness.Add(new ReadinessRowVm
@@ -673,7 +744,13 @@ public partial class PretestViewModel : ObservableObject
                 State = r.State.ToString(),
                 Version = r.Version,
                 Origin = r.Origin,
-                Package = string.IsNullOrWhiteSpace(r.Package) ? "(no package provides this)" : r.Package,
+                // Two different facts that used to render as one sentence. "No package
+                // provides this" is a claim about the map; it must not be made when the map
+                // never arrived, because then EVERY row says it and the install plan - which
+                // is gated on a package name - can never appear on the machine that needs it.
+                Package = !string.IsNullOrWhiteSpace(r.Package) ? r.Package
+                    : mapPresent ? "(no package provides this)"
+                    : "(package map not shipped)",
                 // An id with no entry in plugin-packages.json has no grounding claim either
                 // way, and a blank cell reads as "grounded: no" rather than "nobody has said".
                 Grounded = string.IsNullOrWhiteSpace(r.Grounded) ? "(unmapped)" : r.Grounded,
@@ -684,20 +761,83 @@ public partial class PretestViewModel : ObservableObject
         var missing = rows.Where(r => r.State == RequirementState.Missing && r.Package.Length > 0)
             .Select(r => r.Package).Distinct().OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
         HasInstallPlan = missing.Count > 0;
-        InstallCommand = missing.Count == 0
-            ? string.Empty
-            : $"powershell -File scripts\\machine-setup.ps1 -Apply -Only {string.Join(",", missing)}";
+
+        if (missing.Count == 0)
+        {
+            InstallCommand = string.Empty;
+            return;
+        }
+
+        // The command used to be a RELATIVE path with -Apply baked in. Relative meant it
+        // resolved against whatever directory the operator happened to paste it into, and
+        // -Apply meant the copy button handed over a mutation - against this tab's own banner,
+        // and against the campaign rule that a machine repaired before it was measured has
+        // destroyed the evidence it existed to provide. The dry run is the command now; the
+        // mutation is the second line, and it is labelled.
+        var setup = FindOperatorScript("machine-setup.ps1", out var setupTried);
+        var packages = string.Join(",", missing);
+
+        if (setup == null)
+        {
+            InstallCommand = "machine-setup.ps1 is not in this install - looked in " +
+                             $"{setupTried.Count} location(s). Needed packages: {packages}";
+            return;
+        }
+
+        InstallCommand = $"powershell -File \"{setup}\" -Only {packages}" +
+                         $"    # reads and prints the plan, changes nothing" + Environment.NewLine +
+                         $"powershell -File \"{setup}\" -Only {packages} -Apply" +
+                         $"    # only after you have read the plan above";
     }
 
-    private string? FindSurveyScript()
+    /// <summary>Finds one of the operator scripts, in a repo tree or in a payload.</summary>
+    /// <param name="fileName">Script file name, e.g. <c>machine-survey.ps1</c>.</param>
+    /// <param name="tried">Every path probed, in order, for reporting when none matched.</param>
+    /// <returns>The script, or null.</returns>
+    /// <remarks>
+    /// <para>
+    /// The first version probed only <c>&lt;dir&gt;\scripts\&lt;file&gt;</c>. In a repo that is
+    /// right; in a payload it can never match, because the publisher puts the operator
+    /// scripts at the payload ROOT beside canary.exe - the walk from the payload runs
+    /// Canary -> Builds -> "My Drive" -> the drive letter, and none of those has a scripts
+    /// folder. So on the one machine this tab exists for, "Read this machine" could not work.
+    /// </para>
+    /// <para>
+    /// It also reported that as "not found beside this install", which is unfalsifiable: a
+    /// reader cannot tell a missing file from a wrong search. The paths tried are now
+    /// returned so the message can name them.
+    /// </para>
+    /// </remarks>
+    private string? FindOperatorScript(string fileName, out IReadOnlyList<string> tried)
     {
+        var probed = new List<string>();
+        tried = probed;
+
         foreach (var root in new[] { _workloadsDir == null ? null : Path.GetDirectoryName(_workloadsDir), AppContext.BaseDirectory })
         {
-            var dir = root;
-            for (var i = 0; i < 6 && !string.IsNullOrEmpty(dir); i++)
+            // TRIM THE TRAILING SEPARATOR FIRST. AppContext.BaseDirectory ends with one, and
+            // GetDirectoryName of "...\net8.0-windows\" returns "...\net8.0-windows" - so the
+            // first step up went nowhere and the walk stopped one level short of the repo
+            // root. Found by a test that could not see machine-setup.ps1 in a tree that
+            // obviously had it.
+            var dir = string.IsNullOrEmpty(root) ? root : Path.TrimEndingDirectorySeparator(root!);
+
+            // Eight, not six: a dev tree reaches the repo root from a test binary's directory
+            // in six steps with nothing to spare, and the depth is not the expensive part.
+            for (var i = 0; i < 8 && !string.IsNullOrEmpty(dir); i++)
             {
-                var candidate = Path.Combine(dir!, "scripts", "machine-survey.ps1");
-                if (File.Exists(candidate)) return candidate;
+                // Repo layout first, then payload layout. Both, at every level - the tab has
+                // to work in a dev tree and in a payload without being told which it is in.
+                foreach (var candidate in new[]
+                         {
+                             Path.Combine(dir!, "scripts", fileName),
+                             Path.Combine(dir!, fileName),
+                         })
+                {
+                    if (probed.Contains(candidate)) continue;
+                    probed.Add(candidate);
+                    if (File.Exists(candidate)) return candidate;
+                }
                 dir = Path.GetDirectoryName(dir);
             }
         }

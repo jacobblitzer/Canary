@@ -1,7 +1,7 @@
 {
   "name": "rhino",
   "displayName": "Rhino 8",
-  "appPath": "C:\\Program Files\\Rhino 8\\System\\Rhino.exe",
+  "appPath": "%CANARY_RHINO8%/System/Rhino.exe",
   "appArgs": "/nosplash /runscript=\"_-SetView _World _Perspective _Enter _-MaxViewport\"",
   "agentType": "rhino",
   "pipeName": "canary-rhino",
@@ -13,8 +13,13 @@
   "requires": [
     {
       "kind": "file",
-      "path": "C:\\Program Files\\Rhino 8\\System\\Rhino.exe",
-      "fix": "install Rhino 8"
+      "path": "%CANARY_RHINO8%/System/Rhino.exe",
+      "fix": "install Rhino 8, or point the CANARY_RHINO8 token (or an environment variable of that name) at the install root on this machine"
+    },
+    {
+      "kind": "plugin",
+      "id": "rhino:Canary.Agent.Rhino",
+      "fix": "install the canary-agent yak package - without it Rhino launches, sits there and never connects to the harness, so every checkpoint times out and commissioning layer 2 comes back NotRun rather than telling you what is missing"
     }
   ]
 }

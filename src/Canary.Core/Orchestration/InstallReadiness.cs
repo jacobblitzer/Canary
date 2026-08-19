@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Canary.Agent;
 using Canary.Config;
 
@@ -66,6 +66,17 @@ public static class InstallReadiness
     /// Absent is tolerated rather than fatal: the join is still useful without it — it just
     /// cannot name a fix. A missing map must not stop a machine reporting what it has.
     /// </remarks>
+    /// <summary>Whether the id-to-package map is present at all.</summary>
+    /// <param name="workloadsDir">Workloads root.</param>
+    /// <returns>True when the file exists.</returns>
+    /// <remarks>
+    /// Asked separately because <see cref="LoadPackageMap"/> returns an empty map for an
+    /// absent file and for a file that lists nothing, and a caller that renders those the
+    /// same way tells a machine with no map that nothing can be installed on it.
+    /// </remarks>
+    public static bool PackageMapExists(string workloadsDir)
+        => File.Exists(Path.Combine(workloadsDir, PackageMapFileName));
+
     public static IReadOnlyDictionary<string, (string Package, string Grounded)> LoadPackageMap(string workloadsDir)
     {
         var map = new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase);
