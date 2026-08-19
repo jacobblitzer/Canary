@@ -18,7 +18,9 @@
     {
       "name": "main-pencil",
       "stabilizeMs": 2500,
-      "tolerance": 0.3
+      "tolerance": 0.3,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. PENCIL: a hand-drawn sketch on WARM PAPER - the background must read as off-white/cream paper, not black. Crosshatch shading and black ink edge strokes. If the background is dark, that is wrong."
     }
   ]
 }

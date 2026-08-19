@@ -18,7 +18,9 @@
     {
       "name": "main-artistic",
       "stabilizeMs": 2500,
-      "tolerance": 0.3
+      "tolerance": 0.3,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. ARTISTIC: painterly - warm bloom, saturated colour grade, smoothly curved (catmull-rom) edges rather than straight segments, and visible chromatic aberration / colour fringing at high-contrast borders."
     }
   ]
 }

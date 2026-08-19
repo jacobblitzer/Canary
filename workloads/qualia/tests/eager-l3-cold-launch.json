@@ -1,9 +1,12 @@
 {
   "name": "eager-l3-cold-launch",
   "workload": "qualia",
-  "description": "Phase M1 follow-up (post Move 2 — 2026-05-25). Seeds localStorage with the Ollama (gemma4:e4b) provider, triggers `Reload` action to retrigger GRAPH_LOAD, waits 60s for the eager sweep to fire + at least one extraction to land. Asserts the dev-test report contains '[RagOrchestrator] eager L3 sweep: enqueued N of M' with N > 0. Mirrors the puppeteer smoke at `Qualia/scripts/smoke-eager-l3.mjs`. Side effect (used by warm-launch which runs next): populates `examples/sample/.qualia.rag/behavior-cache.json` with at least 1 extraction entry.",
+  "description": "[STALE 2026-08-18] This test calls __canarySetPersonaEnabled with module id(s) compute.rag.eager-l3, which no longer exist in Qualia's module registry (packages/core/src). The call is a SILENT NO-OP: the test still runs and still captures, but the toggle it is named for does nothing, so the frame is indistinguishable from the un-toggled one. Repair by mapping to a live module id, or retire the arm. Phase M1 follow-up (post Move 2 — 2026-05-25). Seeds localStorage with the Ollama (gemma4:e4b) provider, triggers `Reload` action to retrigger GRAPH_LOAD, waits 60s for the eager sweep to fire + at least one extraction to land. Asserts the dev-test report contains '[RagOrchestrator] eager L3 sweep: enqueued N of M' with N > 0. Mirrors the puppeteer smoke at `Qualia/scripts/smoke-eager-l3.mjs`. Side effect (used by warm-launch which runs next): populates `examples/sample/.qualia.rag/behavior-cache.json` with at least 1 extraction entry.",
   "setup": {
-    "canvas": { "width": 1280, "height": 720 },
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
@@ -12,16 +15,28 @@
     ]
   },
   "actions": [
-    { "type": "Reload" },
-    { "type": "WaitForStable", "ms": "60000" },
-    { "type": "RunCommand", "command": "(async () => { const r = await window.__qualiaRunDevTests(); const m = r.match(/eager L3 sweep: enqueued (\\d+) of (\\d+)/); if (!m) { const excerpt = r.length > 800 ? r.slice(0, 800) + '...' : r; throw new Error('cold-launch sweep log not found. report excerpt: ' + excerpt); } if (Number(m[1]) === 0) throw new Error('sweep enqueued 0 nodes — expected N > 0 for cold-launch. log: ' + m[0]); return 'sweep verified: ' + m[0]; })()" },
-    { "type": "RunCommand", "command": "(() => { const b = document.createElement('div'); b.id = 'canary-eager-l3-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS cold-launch sweep fired'; document.body.appendChild(b); return true; })()" }
+    {
+      "type": "Reload"
+    },
+    {
+      "type": "WaitForStable",
+      "ms": "60000"
+    },
+    {
+      "type": "RunCommand",
+      "command": "(async () => { const r = await window.__qualiaRunDevTests(); const m = r.match(/eager L3 sweep: enqueued (\\d+) of (\\d+)/); if (!m) { const excerpt = r.length > 800 ? r.slice(0, 800) + '...' : r; throw new Error('cold-launch sweep log not found. report excerpt: ' + excerpt); } if (Number(m[1]) === 0) throw new Error('sweep enqueued 0 nodes — expected N > 0 for cold-launch. log: ' + m[0]); return 'sweep verified: ' + m[0]; })()"
+    },
+    {
+      "type": "RunCommand",
+      "command": "(() => { const b = document.createElement('div'); b.id = 'canary-eager-l3-badge'; b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);background:#2a7;color:#fff;padding:6px 14px;font-family:monospace;z-index:99999;font-size:14px;border-radius:4px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);'; b.textContent = 'PASS cold-launch sweep fired'; document.body.appendChild(b); return true; })()"
+    }
   ],
   "checkpoints": [
     {
       "name": "cold-launch-sweep-badge",
       "stabilizeMs": 500,
-      "tolerance": 0.02
+      "tolerance": 0.02,
+      "mode": "capture"
     }
   ]
 }

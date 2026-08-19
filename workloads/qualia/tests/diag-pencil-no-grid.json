@@ -3,7 +3,10 @@
   "workload": "qualia",
   "description": "Pencil minus floor grid — inside Papers qverse for sphere-atom visibility.",
   "setup": {
-    "canvas": { "width": 1280, "height": 800 },
+    "canvas": {
+      "width": 1280,
+      "height": 800
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
@@ -16,6 +19,12 @@
     ]
   },
   "checkpoints": [
-    { "name": "diag-pencil-no-grid", "stabilizeMs": 3500, "tolerance": 0.3 }
+    {
+      "name": "diag-pencil-no-grid",
+      "stabilizeMs": 3500,
+      "tolerance": 0.3,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. PENCIL profile with the GRID module disabled: warm paper, crosshatch shading and ink edges as usual, but NO ground grid / floor lines behind the graph. Nodes, edges and labels remain present."
+    }
   ]
 }

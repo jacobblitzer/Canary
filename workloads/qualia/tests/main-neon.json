@@ -18,7 +18,9 @@
     {
       "name": "main-neon",
       "stabilizeMs": 2500,
-      "tolerance": 0.3
+      "tolerance": 0.3,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. NEON synthwave: saturated CYAN and MAGENTA, with heavy bloom making bright elements glow and bleed. Colour should be dominated by cyan/magenta, not warm tones."
     }
   ]
 }

@@ -18,7 +18,9 @@
     {
       "name": "main-aurora",
       "stabilizeMs": 4000,
-      "tolerance": 0.4
+      "tolerance": 0.4,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. AURORA - cinematic dialled to maximum: Penumbra clouds, HEAVY bloom, dense particles and atmospheric halos around nodes. The most intense and glowing of all the modes."
     }
   ]
 }

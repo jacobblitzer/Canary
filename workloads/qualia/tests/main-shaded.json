@@ -18,7 +18,9 @@
     {
       "name": "main-shaded",
       "stabilizeMs": 2500,
-      "tolerance": 0.3
+      "tolerance": 0.3,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. SHADED: solid nodes and solid edges, no bloom, no glow, no film grain, no vignette. The clearest, flattest, most readable diagram of all the modes."
     }
   ]
 }

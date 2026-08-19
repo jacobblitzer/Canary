@@ -3,7 +3,10 @@
   "workload": "qualia",
   "description": "Pencil profile baseline INSIDE the Papers qverse (which has sphere atoms — Atlas only has signposts). Diagnostic overlay shows persona enable state + renderer toneMapping + scene background type + edge colors after FX overrides.",
   "setup": {
-    "canvas": { "width": 1280, "height": 800 },
+    "canvas": {
+      "width": 1280,
+      "height": 800
+    },
     "commands": [
       "window.__canaryWaitForReady(30000)",
       "window.__canaryCloseLandingScreen()",
@@ -15,6 +18,12 @@
     ]
   },
   "checkpoints": [
-    { "name": "diag-pencil-baseline", "stabilizeMs": 3500, "tolerance": 0.3 }
+    {
+      "name": "diag-pencil-baseline",
+      "stabilizeMs": 3500,
+      "tolerance": 0.3,
+      "mode": "vlm",
+      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. PENCIL profile reference frame: warm off-white paper background, crosshatch shading, black ink edge strokes, with nodes, edges and labels all present. This is the frame the other pencil arms are compared against."
+    }
   ]
 }
