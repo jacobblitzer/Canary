@@ -282,5 +282,6 @@
       "kind": "persona",
       "persona": "render.qverse-graph-nav"
     }
-  ]
+  ],
+  "_retired": "RETIRED 2026-08-18 - the tests generated from this spec were deleted (see docs/qualia-stale-2026-08-18.md). Regenerating it will recreate them, including 12 states for personas Qualia removed on 2026-07-19 that are now silent no-ops. w2-atlas covers 39 of this spec's 51 states. Delete this spec or repair its persona list before running the generator over it."
 }

@@ -1,14 +1,46 @@
 {
   "name": "w3-planar",
   "chunkSize": 4,
-  "disablePersonas": ["compute.layout"],
+  "disablePersonas": [
+    "compute.layout"
+  ],
   "planarWalk": true,
   "families": [
-    { "base": "minimal", "fixture": { "kind": "ddv" } },
-    { "base": "minimal", "fixture": { "kind": "demo", "slug": "qnode-junction-alignment-test" } },
-    { "base": "minimal", "fixture": { "kind": "demo", "slug": "workshop-palette" } },
-    { "base": "minimal", "fixture": { "kind": "demo", "slug": "implicit-geometry" } },
-    { "base": "standard", "fixture": { "kind": "demo", "slug": "qnode-junction-alignment-test" } }
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "ddv"
+      }
+    },
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      }
+    },
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "workshop-palette"
+      }
+    },
+    {
+      "base": "minimal",
+      "fixture": {
+        "kind": "demo",
+        "slug": "implicit-geometry"
+      }
+    },
+    {
+      "base": "standard",
+      "fixture": {
+        "kind": "demo",
+        "slug": "qnode-junction-alignment-test"
+      }
+    }
   ],
-  "mutations": []
+  "mutations": [],
+  "_retired": "RETIRED 2026-08-18 - tests generated from this spec were deleted as spent campaign scaffolding (see docs/qualia-stale-2026-08-18.md). The spec is kept so the phase can be reproduced on demand; regenerating re-creates the tests."
 }
