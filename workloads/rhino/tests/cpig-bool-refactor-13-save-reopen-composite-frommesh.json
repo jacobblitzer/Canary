@@ -34,5 +34,12 @@
       "tolerance": 0.05,
       "description": "Same composite as test 11 (union of CPigSphere(-10,0,0,8) + CPigFromMesh(meshsphere 10,0,0,8)) but SAVED + REOPENED from .3dm. Expected: SDF still renders as 2 distinct atoms (crisp libfive sphere tape + dense mesh atlas brick) at their original positions. FAILURE MODE the test catches: the composite collapses to a single dense VDB atom on reopen (pre-fix BUG-0021 behavior -- D5b whole-composite VDB restore took precedence over recipe rebuild). Promote from capture -> pixel-diff after operator approves the captured baseline."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

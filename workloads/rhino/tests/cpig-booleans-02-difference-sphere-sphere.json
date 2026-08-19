@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "cpig-booleans-02-difference-sphere-sphere",
   "workload": "rhino",
   "description": "Phase D4 boolean audit (B0) â€” SIGN CONVENTION CHECK. Difference of two CPig tape spheres. The CPig convention (research dive Â§1.2: field_binary_impl 'difference' is max(fa->tree, -(fb->tree))) keeps the FIRST-picked operand and subtracts the second. So _SelAll picks A then B (whichever order Rhino delivers); _CPigDifference keeps A, subtracts B. With A=sphere(0,0,0;r=10) and B=sphere(15,0,0;r=10), expect: a SINGLE sphere centered near origin with a CRESCENT BITE taken out of its +x side (B subtracted). If we see a sphere at +x with a bite from its -x side, the operand order was reversed â€” that's the surface to watch (research dive B3: prompt doesn't clarify which is minuend).",
@@ -40,6 +40,13 @@
       "stabilizeMs": 5000,
       "tolerance": 0.005,
       "description": "Difference(sphere_A, sphere_B) â€” one sphere with a curved bite taken out of one side. Operator should verify WHICH side has the bite to confirm sign convention."
+    }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
     }
   ]
 }

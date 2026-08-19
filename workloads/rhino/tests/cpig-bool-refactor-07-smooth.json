@@ -25,5 +25,12 @@
       "tolerance": 0.05,
       "description": "Sphere (r=10) gaussian-smoothed with radius=3 (3x3x3 sample kernel). Visible as a sphere with subtly larger effective radius. Phase 1 Kind::SMOOTH structured composite via evaluate() kernel-sample loop."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

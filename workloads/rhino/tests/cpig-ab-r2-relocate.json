@@ -34,5 +34,12 @@
       "tolerance": 0.05,
       "description": "Informational only - the A/B artifact of record is the archived display.3mf sequence, not this screenshot. Expected: ONE connected union blob - box (moved from authored x 30..50 to x 0..20) bridging the origin sphere (r=10) and its _CPigCopy relocated to +24 X. If the copy sits ON TOP of the source sphere, Relocate caller 1 (CPigCopyCommand.cs:71) regressed; if the box unions at the AUTHORED +30..+50 position (disconnected slab to the right), Relocate caller 2 (CPigModelingCommands.cs:212, the bool-refactor-08 BUG-0019/0020 class) regressed."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

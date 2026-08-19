@@ -18,9 +18,7 @@
     {
       "name": "main-rendered",
       "stabilizeMs": 2500,
-      "tolerance": 0.3,
-      "mode": "vlm",
-      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. RENDERED production look: moderate bloom, a soft dark vignette at the frame corners, and subtle particles. Restrained - noticeably less intense than aurora or neon."
+      "tolerance": 0.3
     }
   ]
 }

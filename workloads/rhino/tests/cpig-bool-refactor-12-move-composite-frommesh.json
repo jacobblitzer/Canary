@@ -31,5 +31,12 @@
       "tolerance": 0.05,
       "description": "Same union as test 11, but the composite wirebox is translated +50 in X via _Move BEFORE capture. The SDF should follow the wirebox to the moved position (sphere + mesh-distance lobes rendered ~around (40,0,0)..(60,0,0)). FAILURE MODE the test catches: the wirebox renders at the moved spot but the SDF stays at the authored origin (the operator-reported bug — CPigFieldWatcher.OnReplace silently failed for the composite)."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

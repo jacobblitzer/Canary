@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "cpig-booleans-03-smoothunion-sphere-sphere",
   "workload": "rhino",
   "description": "Phase D4 boolean audit (B0). SmoothUnion of two CPig tape spheres with a blend radius of 5. CPigSmoothUnion prompts for the blend radius FIRST, then the field picks â€” so the macro is `_SelAll _CPigSmoothUnion 5`. Expected: a peanut shape similar to cpig-booleans-00 but with a SMOOTHER, fillet-like join where the two spheres meet (vs the crisp circular crease of plain Union). Failure modes: looks identical to plain Union (smoothK=0 fallthrough), or one sphere disappears, or geometry blows up (smoothK passed to wrong arg).",
@@ -40,6 +40,13 @@
       "stabilizeMs": 5000,
       "tolerance": 0.005,
       "description": "SmoothUnion(sphere(0,0,0;r=10), sphere(15,0,0;r=10), k=5) â€” a peanut with a smooth fillet join (vs crisp crease of plain Union)."
+    }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
     }
   ]
 }

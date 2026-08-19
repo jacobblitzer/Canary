@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "cpig-booleans-04-union-sphere-gyroid",
   "workload": "rhino",
   "description": "Phase D4 boolean audit (B0) â€” CROSS-REP STRESS CASE (tape sphere + structural-clipped gyroid). Union of a tape sphere with a CPigGyroid (structural TPMS clipped to a box). Both operands are LIBFIVE -> Union stays structural per research Â§1.2 (LIBFIVE Ã— LIBFIVE -> LIBFIVE). Expected: the gyroid lattice with an extra sphere bulge added on one side. Failure modes: scale mismatch (one operand rendered at very different size), AABB scoped to one operand (the other clipped at the boundary), sign-related artifacts.",
@@ -40,6 +40,13 @@
       "stabilizeMs": 5000,
       "tolerance": 0.005,
       "description": "Union(gyroid_lattice([-25,25]^3, period=20), sphere(30,0,0;r=12)) â€” a gyroid with a sphere bulge attached on +x. Both should render at correct scale."
+    }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
     }
   ]
 }

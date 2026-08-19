@@ -47,5 +47,12 @@
       "tolerance": 0.05,
       "description": "Eight ray-marched CPig SDFs visible: 4 originals + 4 native-copied independent duplicates of each primitive type."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

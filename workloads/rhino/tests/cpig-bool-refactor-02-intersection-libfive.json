@@ -27,5 +27,12 @@
       "tolerance": 0.05,
       "description": "Sphere (r=15) intersected with box (24-unit cube). Result is a rounded cube (sphere clips box corners). Libfive ∩ libfive fast path; ONE tape atom."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

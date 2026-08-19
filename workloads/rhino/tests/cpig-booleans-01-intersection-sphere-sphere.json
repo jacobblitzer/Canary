@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "cpig-booleans-01-intersection-sphere-sphere",
   "workload": "rhino",
   "description": "Phase D4 boolean audit (B0). Intersection of two overlapping tape spheres -- expect ONLY the lens-shaped overlap region. Sequence: _CPigSphere 0,0,0 10 + _CPigSphere 15,0,0 10 (overlap roughly 5 units wide at x=7.5) -> _SelAll _CPigIntersection. Failure modes: empty viewport (Intersection failed or AABB scoping killed the result), full union (sign inverted), one of the source spheres (Intersection became a no-op).",
@@ -40,6 +40,13 @@
       "stabilizeMs": 5000,
       "tolerance": 0.005,
       "description": "Intersection(sphere(0,0,0;r=10), sphere(15,0,0;r=10)) -- a thin almond/lens centered around x=7.5."
+    }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
     }
   ]
 }

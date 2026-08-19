@@ -12,13 +12,16 @@ Qualia's live source, not inferred from test names.
 
 ## The headline: the corpus is not stale. It is unapproved.
 
-- **Hook coverage is 122/122 clean.** Of the distinct `window.__canary*` hooks the tests call,
-  all exist in Qualia today. The one apparent exception, `__canaryRetriggerEagerSweep`,
-  appears only inside a *description* paragraph and is never called.
-- **All 17 display profiles referenced by tests still exist.**
-- **115 of 122 tests have no approved baseline.** They render `New`, which is excluded from
-  the exit code. That is the real problem: most of this workload passes while comparing
-  nothing.
+- **Hook coverage is 109/109 clean.** 69 distinct `window.__canary*` hooks are called; 68
+  exist in Qualia today. The one apparent exception, `__canaryRetriggerEagerSweep`, appears
+  only inside a *description* paragraph and is never called — and was never *implemented*,
+  so it was never "removed" either.
+- **Every display profile referenced by a test still exists.** 12 of Qualia's 17 are
+  referenced; `mobile`, `laser-rat`, `circuit`, `x-ray` and `bioluminescent` are referenced
+  by nothing.
+- **102 of 109 tests have no approved baseline** (91 of the 98 that parse; 49 of 56
+  pixel-diff checkpoints). They render `New`, which is excluded from the exit code. That is
+  the real problem: most of this workload passes while comparing nothing.
 
 So age is not the defect. Two narrower things are.
 
@@ -73,7 +76,18 @@ These four carry a `[STALE 2026-08-18]` note naming the dead id and are set to
 `render.junction.surface`, `render.junction.voronoi`, `render.paper`,
 `render.penumbra-backdrop`, `render.penumbra-fallback`, `render.qverse-graph-nav`.
 
-## 2. `display-modes` and `pencil-diff` now run VLM, not pixel-diff
+## 2. `display-modes` and `pencil-diff` — VLM, but only where the criteria are verified
+
+> **CORRECTED 2026-08-18.** Nine `main-*` criteria were authored from each profile's one-line
+> `description:` string. An audit against the actual rendering found **only `main-shaded` and
+> `main-pencil` sound**. Seven asserted things the profile provably does not do and would
+> have failed on a *correct* image — `main-blueprint` claims a deep-blue background where the
+> measured modal pixel is literally `(0,0,0)`; `main-artistic` claims curved edges where
+> `CatmullRomCurve3` over two waypoints is a straight line; `main-wireframe` claims
+> point-cloud markers where the profile sets `nodeOpacity 0.0` on ordinary meshes;
+> `main-standard` claims a gumball that is absent with nothing selected. Those seven are
+> **reverted to no criteria**. Wrong criteria are worse than none: they teach the operator to
+> ignore red.
 
 Operator ruling: *"they should first pass vlm rather than visual regression. I think its fine
 if they arent approved yet."*
@@ -100,8 +114,10 @@ Not stale — **stillborn**. Commit `870cad9` (2026-05-14, "RH-2 multi-display s
 "dark" })` with unescaped inner quotes). They have never parsed, never run, and have zero
 result directories. Everything they target is alive today.
 
-They hid because `canary doctor`'s suite-completeness check is gated behind `--suite`:
-`doctor --workload qualia` checks no suite at all. Named explicitly,
+They hid because `canary doctor`'s suite-completeness check *was* gated behind `--suite`, so
+`doctor --workload qualia` checked no suite at all. **Fixed the same day in `47db29d`** — it
+now sweeps every suite and parses every test file, and `doctor --workload qualia` exits 1 as
+a result. Before that fix, only naming the suite explicitly worked:
 `doctor --workload qualia --suite multi-display` reports **"0 of 11 tests loadable"** and
 errors on each — the guard is correct and was simply never asked. Sweeping every suite in all
 five workloads, `multi-display` is the only incomplete one.
@@ -129,35 +145,41 @@ reproduces it is a delay, not a deletion.
 No live consumer runs them: the display-sweep skill invokes only `w2-atlas`, `desktop-mini`,
 `display-invariants`, `platform-parity`.
 
-`sweep-w2-atlas` is **not** redundant and must not be pruned. The conclusion holds — it
-carries several hundred distinct (state, signature) pairs against 12–99 for every other
-sweep — but **the figure "376" originally quoted here is wrong**: it came from a subagent
-and was never grounded. Real per-run counts are being recomputed; treat the specific number
-as unverified until this line names its source. The supporting shape (an exhaustive search
-over all 2⁷−1 = 127 subsets of the other specs) is arithmetically right.
+`sweep-w2-atlas` is **not** redundant and must not be pruned — measured over 1,022 states,
+139 of 146 state ids produce a different effect-path set per family, and an exhaustive search
+over all 2⁷−1 = 127 subsets of the other specs found none reproducing the **376** distinct
+(stateId, effect-path-set) pairs that `w2-atlas-r6` yields.
+
+> The 376 figure was challenged as fabricated, then **verified and reinstated**. It is
+> computed the way `sweeps/derive.mjs:112` defines a signature — a set of effect *paths*.
+> The competing figures (396/294/294/483/458) count `(path, before, after)` triples, which
+> is a different question that `derive.mjs` never asks.
 
 ## 5. Other drift worth knowing
 
-- **Sweep driver drift.** 23 `sweep-*` tests embed a frozen copy of `sweep-driver.js` in
-  **four vintages** (9,731 / 15,977 / 19,061 / 19,586 chars). The live driver is 20,563. None
-  match. The drift-watch skill regenerates before every run, so this is hygiene rather than
+- **Sweep driver drift.** After the §4 deletions, **10** `sweep-*` tests embed a frozen copy
+  of `sweep-driver.js` — now a **single vintage** at 19,586 chars against a live driver of
+  20,528. Still stale, but a narrower problem than the four vintages that existed before the
+  deletion. The drift-watch skill regenerates before every run, so this is hygiene rather than
   an active break.
 - **`qualia-v4-refresh-toolbar`.** Checkpoint `refresh-disabled-initially` asserts a disabled
   Refresh button, but `Toolbar.tsx:215` disables it only at `pointerCount === 0` and the boot
   workspace ships 79 pointers. A guaranteed VLM failure.
-- **`main-*` under-covers.** A one-test-per-profile catalog pinned at 12 of 17 profiles;
-  missing `bioluminescent`, `circuit`, `x-ray`, `laser-rat`, `mobile`.
+- **`main-*` under-covers.** A one-test-per-profile catalog pinned at **11** of 17 profiles;
+  missing `bioluminescent`, `circuit`, `x-ray`, `laser-rat`, `mobile` **and `minimal`**.
 - **`landing-*` prose is stale.** Narrates a 5-pill / "21 of 37" screen that is now 18 pills /
   51 modules. VLM criteria only — no structural break.
-- **`eager-l3-no-provider-noop`.** Its description still mentions `__canaryRetriggerEagerSweep`,
-  which was removed when the other unblock route was taken (Qualia `9b01603`). Prose only.
+- **`eager-l3-no-provider-noop`.** Its description mentions `__canaryRetriggerEagerSweep`,
+  which was **never implemented** (not removed — the other unblock route was taken instead,
+  Qualia `9b01603`). Prose only.
 
 ## What was checked and found clean
 
 `resolver-*` (13), `viewport-*` (5), `display-inv-*` (3), `playground-*` (7), `landing-*` (5),
 `qualia-v4-*` (11), `diag-md-editor`, and the entire `qualia-desktop` (14) and `qualia-web`
 (10) workloads. Hashing all 111 parseable tests on canvas + commands + actions + checkpoint
-params produced **zero** duplicate pairs.
+params produced **zero** duplicate pairs. (98 parseable tests, not 111 — the earlier figure
+predated the §4 deletions.)
 
 > One caveat on provenance: the duplication lens's verification agent died on a transport
 > error (Cloudflare 521), so the "zero duplicates" result carries one less layer of

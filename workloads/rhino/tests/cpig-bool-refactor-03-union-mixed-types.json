@@ -27,5 +27,12 @@
       "tolerance": 0.05,
       "description": "Sphere (libfive) unioned with unified Gyroid TPMS (procedural). Composes via Kind::UNION structured composite. Today's AUTO export voxel-bakes the whole composite (bug 0021 — the gyroid lattice fattens to a solid block; visible fix lands in Phase 8). Pass criterion for this test: boolean completes, a real frame presents."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

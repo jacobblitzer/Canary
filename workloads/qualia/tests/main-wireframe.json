@@ -18,9 +18,7 @@
     {
       "name": "main-wireframe",
       "stabilizeMs": 2500,
-      "tolerance": 0.3,
-      "mode": "vlm",
-      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. WIREFRAME: edges and labels dominate; nodes appear only as small point-cloud markers rather than solid bodies. Pure topology - if nodes look like solid shaded spheres, that is wrong."
+      "tolerance": 0.3
     }
   ]
 }

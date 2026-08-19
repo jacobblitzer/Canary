@@ -18,9 +18,7 @@
     {
       "name": "main-blueprint",
       "stabilizeMs": 2500,
-      "tolerance": 0.3,
-      "mode": "vlm",
-      "description": "A 3D node-and-edge knowledge graph rendered in Qualia, dark theme, viewed in a browser viewport. BLUEPRINT: WHITE wireframe lines on a DEEP-BLUE background, like a technical drawing. The dominant colour must be blue; strokes must be white/pale."
+      "tolerance": 0.3
     }
   ]
 }

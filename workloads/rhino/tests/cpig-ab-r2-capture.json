@@ -32,5 +32,12 @@
       "tolerance": 0.05,
       "description": "Informational only - the A/B artifact of record is the archived display.3mf sequence, not this screenshot. Expected: sphere at origin, box at +30..+50 X, gyroid lattice cube shifted +20 X from its authored [-25..0]^3 position (the _Move stanza puts a non-identity placement into the hashed ExportMany path). If the gyroid renders at the AUTHORED position while its wirebox moved, that is the cpig-bool-refactor-12 regression, not an A/B issue."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "cpig-booleans-05-difference-gyroid-sphere",
   "workload": "rhino",
   "description": "Phase D4 boolean audit (B0) â€” CROSS-REP STRESS CASE + SIGN CHECK. Difference of a CPigGyroid (kept) and a tape sphere (subtracted) â€” should look like a gyroid lattice with a spherical bite carved out of its center. Per research Â§1.2 the difference is max(gyroid_tree, -(sphere_tree)) â€” the first picked is the minuend. Failure modes: the sphere is kept and the gyroid is subtracted (sign inverted â€” known operator complaint per B3), gyroid lattice topology missing in the carved region (AABB or evaluator bug), full viewport blank.",
@@ -40,6 +40,13 @@
       "stabilizeMs": 5000,
       "tolerance": 0.005,
       "description": "Difference(gyroid_lattice([-25,25]^3), sphere(0,0,0;r=10)) â€” gyroid with a spherical cavity carved out of its center. Operator confirms sign convention is correct."
+    }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
     }
   ]
 }

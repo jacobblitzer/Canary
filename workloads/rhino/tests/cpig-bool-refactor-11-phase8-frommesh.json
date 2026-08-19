@@ -29,5 +29,12 @@
       "tolerance": 0.05,
       "description": "Union of libfive sphere (at -10,0,0) and BVH-procedural mesh sphere (at 10,0,0). Phase 8 should emit 2 atoms — tape sphere + atlasBaked mesh — not collapse to one dense bake."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

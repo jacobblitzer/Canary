@@ -29,5 +29,12 @@
       "tolerance": 0.05,
       "description": "Union of three spheres along the X axis (-18, 0, +18). Visible as a single connected SDF surface (peanut-of-three). Tests the N-ary fold inside RunBooleanFromPicks."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }

@@ -30,5 +30,12 @@
       "tolerance": 0.05,
       "description": "Union of a libfive sphere and a SMOOTH-wrapped sphere (Kind::SMOOTH procedural). The composite is mixed-type → Phase 8 N_LEVELSETS_PLUS_OPTREE → 2 atoms (tape + dense). Expected visual: a peanut-of-two-spheres where one half is crisp tape and the other slightly inflated/blurred from the smoothing."
     }
+  ],
+  "requires": [
+    {
+      "kind": "plugin",
+      "id": "rhino:CPig.Rhino",
+      "fix": "install the CPig Rhino plug-in (yak package), or on a dev machine build %CANARY_REPO_CPIG% CPig.Rhino and load the .rhp - these tests drive CPig through Rhino commands (_CPigSphere, _CPigUnion, ...), not through Grasshopper"
+    }
   ]
 }
