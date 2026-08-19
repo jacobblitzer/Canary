@@ -221,6 +221,100 @@ public sealed class EnvironmentCapture
             : string.Empty;
     }
 
+    /// <summary>One difference between two captures.</summary>
+    /// <param name="Kind">Short slug: <c>only-here</c>, <c>only-there</c>, <c>origin</c>, <c>version</c>, <c>host</c>, <c>scan-folder</c>.</param>
+    /// <param name="Detail">What differs, naming the item.</param>
+    public readonly record struct CaptureDifference(string Kind, string Detail);
+
+    /// <summary>
+    /// Compares this capture against another — "did this install correctly", mechanised.
+    /// </summary>
+    /// <param name="other">The capture to compare against, typically a known-good machine.</param>
+    /// <param name="thisLabel">Name for this side in the output.</param>
+    /// <param name="otherLabel">Name for the other side.</param>
+    /// <returns>Differences, most consequential first.</returns>
+    /// <remarks>
+    /// <para>
+    /// The whole point of writing this file was to diff two machines, and until now diffing
+    /// meant reading two JSON documents side by side and holding 96 loaded libraries in your
+    /// head. A comparison you have to perform by eye is one that gets skipped on the machine
+    /// where it matters.
+    /// </para>
+    /// <para>
+    /// Ordered so the answers that decide "is this install correct" come first: something
+    /// present on one machine and absent on the other, then the same library loading from a
+    /// different KIND of location — which is how an install silently loses to a build-output
+    /// folder — then version skew, then the host itself.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<CaptureDifference> DiffAgainst(
+        EnvironmentCapture other, string thisLabel = "this", string otherLabel = "other")
+    {
+        var diffs = new List<CaptureDifference>();
+
+        var mine = EnvironmentReport.ParseLoaded(Host.TryGetValue(Agent.HostStateFields.Loaded, out var a) ? a : null)
+            .ToDictionary(x => x.Id, x => x, StringComparer.OrdinalIgnoreCase);
+        var theirs = EnvironmentReport.ParseLoaded(other.Host.TryGetValue(Agent.HostStateFields.Loaded, out var b) ? b : null)
+            .ToDictionary(x => x.Id, x => x, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var id in mine.Keys.Where(k => !theirs.ContainsKey(k)).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+            diffs.Add(new CaptureDifference("only-here", $"{id} is loaded on {thisLabel} but not on {otherLabel}"));
+
+        foreach (var id in theirs.Keys.Where(k => !mine.ContainsKey(k)).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+            diffs.Add(new CaptureDifference("only-there", $"{id} is loaded on {otherLabel} but not on {thisLabel}"));
+
+        foreach (var id in mine.Keys.Where(theirs.ContainsKey).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+        {
+            var m = mine[id];
+            var t = theirs[id];
+            // Origin before version: a library loading from a developer folder on one machine
+            // and a package on the other is a DIFFERENT INSTALL, not a different build.
+            if (m.Origin != t.Origin)
+            {
+                diffs.Add(new CaptureDifference("origin",
+                    $"{id} loads from {m.Origin.ToString().ToLowerInvariant()} on {thisLabel} " +
+                    $"({m.Location}) but {t.Origin.ToString().ToLowerInvariant()} on {otherLabel} ({t.Location})"));
+            }
+            if (!string.Equals(m.Version, t.Version, StringComparison.OrdinalIgnoreCase))
+                diffs.Add(new CaptureDifference("version", $"{id} is {m.Version} on {thisLabel}, {t.Version} on {otherLabel}"));
+        }
+
+        foreach (var key in new[] { Agent.HostStateFields.Host, Agent.HostStateFields.HostVersion, Agent.HostStateFields.Framework })
+        {
+            Host.TryGetValue(key, out var mv);
+            other.Host.TryGetValue(key, out var tv);
+            if (!string.Equals(mv ?? string.Empty, tv ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+                diffs.Add(new CaptureDifference("host", $"{key}: '{mv}' on {thisLabel}, '{tv}' on {otherLabel}"));
+        }
+
+        var myFolders = Folders(this);
+        var theirFolders = Folders(other);
+        foreach (var p in myFolders.Except(theirFolders, StringComparer.OrdinalIgnoreCase).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+            diffs.Add(new CaptureDifference("scan-folder", $"{p} is scanned on {thisLabel} only"));
+        foreach (var p in theirFolders.Except(myFolders, StringComparer.OrdinalIgnoreCase).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+            diffs.Add(new CaptureDifference("scan-folder", $"{p} is scanned on {otherLabel} only"));
+
+        var rank = new Dictionary<string, int>
+        {
+            ["only-there"] = 0, ["only-here"] = 1, ["origin"] = 2,
+            ["version"] = 3, ["host"] = 4, ["scan-folder"] = 5,
+        };
+        return diffs.OrderBy(d => rank.TryGetValue(d.Kind, out var r) ? r : 9).ToList();
+    }
+
+    private static HashSet<string> Folders(EnvironmentCapture c)
+    {
+        var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (!c.Host.TryGetValue(Agent.HostStateFields.ScanFolders, out var raw) || string.IsNullOrWhiteSpace(raw))
+            return set;
+        foreach (var row in raw.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var bar = row.LastIndexOf('|');
+            set.Add((bar > 0 ? row.Substring(0, bar) : row).Trim());
+        }
+        return set;
+    }
+
     private static IReadOnlyList<EnvironmentClash> ReadFindings(JsonElement root)
     {
         var findings = new List<EnvironmentClash>();

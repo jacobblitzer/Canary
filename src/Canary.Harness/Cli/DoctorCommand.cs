@@ -117,24 +117,67 @@ public static class DoctorCommand
             f.Errors.Add($"content uses %{name}% but nothing declares it (not in {CanaryTokens.TokensFileName}, not an environment variable)");
 
         // --- 4. suite completeness -----------------------------------------
-        if (!string.IsNullOrWhiteSpace(suiteName))
+        // EVERY suite in the workload, not only one the caller thought to name.
+        //
+        // This check was opt-in for its whole life: gated behind --suite, so a doctor run
+        // that named no suite verified NO suite. It cost exactly one live defect, and that
+        // defect sat in the tree for three months. qualia's suites/multi-display.json names
+        // 11 rh2-* tests whose JSON has never parsed - the malformed quoting is present in
+        // the commit that created them (870cad9, 2026-05-14). Named explicitly the check
+        // reported "0 of 11 tests loadable" and errored on every one; nobody ever named it.
+        //
+        // A completeness check you have to ask for is not a completeness check. Same shape
+        // as bug 0022: the guard was correct and simply never ran.
+        if (!string.IsNullOrWhiteSpace(suiteName) && string.IsNullOrWhiteSpace(workloadName))
         {
-            if (string.IsNullOrWhiteSpace(workloadName))
-                f.Errors.Add("--suite requires --workload");
-            else
+            f.Errors.Add("--suite requires --workload");
+        }
+        else if (!string.IsNullOrWhiteSpace(workloadName))
+        {
+            var suites = string.IsNullOrWhiteSpace(suiteName)
+                ? EnumerateSuiteNames(root, workloadName!)
+                : new[] { suiteName! };
+
+            foreach (var name in suites)
             {
                 try
                 {
                     var (suite, tests, missing) = await TestDiscovery
-                        .DiscoverTestsForSuiteAsync(root, workloadName!, suiteName!, null).ConfigureAwait(false);
-                    logger.Log($"suite {suiteName,-14}: {tests.Count} of {suite.Tests.Count} tests loadable");
-                    foreach (var name in missing)
-                        f.Errors.Add($"suite '{suiteName}' declares '{name}' but it is missing or unparsable");
+                        .DiscoverTestsForSuiteAsync(root, workloadName!, name, null).ConfigureAwait(false);
+                    logger.Log($"suite {name,-22}: {tests.Count} of {suite.Tests.Count} tests loadable");
+                    foreach (var m in missing)
+                        f.Errors.Add($"suite '{name}' declares '{m}' but it is missing or unparsable");
                 }
                 catch (FileNotFoundException ex)
                 {
                     f.Errors.Add(ex.Message);
                 }
+            }
+        }
+
+        // --- 4b. every test file must parse, suite membership or not --------
+        // The other half of the same hole. A test no suite names is never opened by check 4
+        // even now, so an unparsable one is invisible: it is not "failing", it simply is not
+        // there. 18 of qualia's tests are in no suite. An unreadable test definition is a
+        // defect wherever it sits, and finding it should not depend on someone having wired
+        // it into a suite first.
+        if (!string.IsNullOrWhiteSpace(workloadName))
+        {
+            var testsDir = Path.Combine(root, workloadName!, "tests");
+            if (Directory.Exists(testsDir))
+            {
+                var files = Directory.GetFiles(testsDir, "*.json");
+                var unreadable = 0;
+                foreach (var file in files)
+                {
+                    try { TestDefinition.Parse(File.ReadAllText(file)); }
+                    catch (Exception ex)
+                    {
+                        unreadable++;
+                        f.Errors.Add($"test '{Path.GetFileNameWithoutExtension(file)}' does not parse: {ex.Message}");
+                    }
+                }
+                logger.Log($"test files     : {files.Length - unreadable} of {files.Length} parse");
             }
         }
 
@@ -343,6 +386,22 @@ public static class DoctorCommand
         }
 
         return Report(f, logger);
+    }
+
+    /// <summary>Every suite a workload declares, by name.</summary>
+    /// <param name="root">Workloads root.</param>
+    /// <param name="workload">Workload name.</param>
+    /// <returns>Suite names, ordered; empty when the workload has no suites directory.</returns>
+    private static IReadOnlyList<string> EnumerateSuiteNames(string root, string workload)
+    {
+        var dir = Path.Combine(root, workload, "suites");
+        if (!Directory.Exists(dir)) return Array.Empty<string>();
+        return Directory.GetFiles(dir, "*.json")
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(n => !string.IsNullOrEmpty(n))
+            .Select(n => n!)
+            .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     private static IEnumerable<string> EnumerateContent(string root)

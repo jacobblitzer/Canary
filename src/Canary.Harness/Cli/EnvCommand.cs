@@ -40,11 +40,13 @@ public static class EnvCommand
             "--workloads-dir", "Workloads root. Overrides discovery.");
         var showOption = new Option<bool>(
             "--show", "Print the LAST capture from disk instead of launching anything.");
+        var diffOption = new Option<string?>(
+            "--diff", "Compare this workload's capture against another machine's environment.json. Launches nothing.");
 
         var command = new Command("env",
             "Report what the target application actually has loaded on this machine, and write it as JSON for diffing against another machine.")
         {
-            workloadOption, workloadsDirOption, showOption,
+            workloadOption, workloadsDirOption, showOption, diffOption,
         };
 
         command.SetHandler(async (System.CommandLine.Invocation.InvocationContext ctx) =>
@@ -53,6 +55,7 @@ public static class EnvCommand
                 ctx.ParseResult.GetValueForOption(workloadOption)!,
                 ctx.ParseResult.GetValueForOption(workloadsDirOption),
                 ctx.ParseResult.GetValueForOption(showOption),
+                ctx.ParseResult.GetValueForOption(diffOption),
                 new ConsoleTestLogger(verbose: false, quiet: false),
                 ctx.GetCancellationToken()).ConfigureAwait(false);
         });
@@ -68,7 +71,7 @@ public static class EnvCommand
     /// <param name="ct">Cancellation.</param>
     /// <returns>0 on success; 1 when the environment could not be determined.</returns>
     internal static async Task<int> RunAsync(
-        string workloadName, string? workloadsDirOverride, bool showOnly,
+        string workloadName, string? workloadsDirOverride, bool showOnly, string? diffPath,
         ConsoleTestLogger logger, CancellationToken ct)
     {
         var res = CanaryPaths.ResolveWorkloadsRootDetailed(workloadsDirOverride);
@@ -81,6 +84,53 @@ public static class EnvCommand
 
         var workloadsDir = res.Path;
         var capturePath = EnvironmentCapture.PathFor(workloadsDir, workloadName);
+
+        if (!string.IsNullOrWhiteSpace(diffPath))
+        {
+            EnvironmentCapture here, there;
+            try
+            {
+                here = EnvironmentCapture.Load(capturePath);
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or InvalidDataException)
+            {
+                logger.Log($"ERROR: no usable capture for '{workloadName}' at {capturePath}. " +
+                           $"Run `canary env --workload {workloadName}` first. ({ex.Message})");
+                return 1;
+            }
+            try
+            {
+                there = EnvironmentCapture.Load(diffPath!);
+            }
+            catch (Exception ex) when (ex is FileNotFoundException or InvalidDataException)
+            {
+                logger.Log($"ERROR: could not read {diffPath}: {ex.Message}");
+                return 1;
+            }
+
+            var hereName = Name(here, "this machine");
+            var thereName = Name(there, "the other machine");
+            logger.Log($"comparing      : {hereName}  ({here.CapturedUtc})");
+            logger.Log($"           with: {thereName}  ({there.CapturedUtc})");
+            if (string.Equals(hereName, thereName, StringComparison.OrdinalIgnoreCase))
+                logger.Log("NOTE           : both captures name the SAME machine - this compares two points in time, not two machines.");
+            logger.Log(string.Empty);
+
+            var diffs = here.DiffAgainst(there, hereName, thereName);
+            if (diffs.Count == 0)
+            {
+                logger.Log("identical: same libraries, same origins, same versions, same host, same scan surface.");
+                return 0;
+            }
+            foreach (var g in diffs.GroupBy(d => d.Kind))
+            {
+                logger.Log($"{g.Key} ({g.Count()})");
+                foreach (var d in g) logger.Log($"  {d.Detail}");
+            }
+            logger.Log(string.Empty);
+            logger.Log($"{diffs.Count} difference(s). Exit code stays 0 - `env` reports, `doctor` gates.");
+            return 0;
+        }
 
         if (showOnly)
         {
@@ -158,6 +208,13 @@ public static class EnvCommand
             pm.KillAll();
         }
     }
+
+    // A capture that cannot name its machine still needs a label in the diff output, or every
+    // line reads "'' on , '' on " and the comparison is unreadable.
+    private static string Name(EnvironmentCapture c, string fallback)
+        => c.Machine.TryGetValue(MachineIdentity.MachineName, out var n) && !string.IsNullOrWhiteSpace(n)
+            ? n.Trim()
+            : fallback;
 
     private static void Print(
         EnvironmentCapture capture, string path, ConsoleTestLogger logger, bool live)
