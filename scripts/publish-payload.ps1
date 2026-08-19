@@ -130,7 +130,36 @@ foreach ($w in $workloads) {
         Copy-Item (Join-Path $swTests "bristle-*.json") $wdTests -Force
         Copy-Item (Join-Path $swSuites "bristle.json") $wdSuites -Force
     }
-    Copy-Item (Join-Path $swFix "*") $wdFix -Recurse -Force
+    # ---- FIXTURES, FILTERED to what the shipped tests actually name.
+    # They used to ship wholesale while tests, suites and the ledger were all filtered, and
+    # that inconsistency had a cost that took a QC dry run to see: three of the nine fixtures
+    # are generator JSONs carrying %CANARY_REPO_CPIG%, %CANARY_REPO_LIGHTRO% and
+    # %CANARY_REPO_PIGTURE%. Doctor validates every DECLARED token, the token table is
+    # filtered to what the CONTENT uses, and the content included those fixtures - so the
+    # payload declared three repo roots under C:\Repos and a machine with no repos reported
+    # three errors for content its one shipped test never touches.
+    #
+    # That is doctor red BY CONSTRUCTION again, which is the exact thing dropping the bristle
+    # corpus was supposed to end. Dropping bristle only took it from thirteen errors to three.
+    #
+    # A fixture is shipped when a shipped test or the workload names it. smoke-test names
+    # none, so today this ships nothing - and the payload declares two tokens instead of five.
+    $shippedText = (Get-ChildItem $wdTests -Filter *.json -File | ForEach-Object { Get-Content $_.FullName -Raw }) -join "`n"
+    $shippedText += (Get-Content (Join-Path $wd "workload.json") -Raw)
+    $fixturesTaken = 0
+    $fixturesSkipped = @()
+    foreach ($fx in Get-ChildItem $swFix -File) {
+        # Matched on file NAME, because that is how content refers to a fixture regardless of
+        # which token or folder prefix it is written with.
+        if ($shippedText -like ("*" + $fx.Name + "*")) {
+            Copy-Item $fx.FullName $wdFix -Force
+            $fixturesTaken++
+        } else {
+            $fixturesSkipped += $fx.Name
+        }
+    }
+    Write-Host ("  {0}: shipped {1} fixture(s); {2} not named by any shipped test" -f `
+        $w, $fixturesTaken, $fixturesSkipped.Count)
     # ---- baselines.lock.json, FILTERED to the tests this payload actually carries.
     # Phase 2b. Shipping the dev machine whole ledger would make `canary doctor` on the
     # target report missing baselines for tests that are not even in the payload - noise

@@ -338,6 +338,45 @@ fact correct. **A .NET Framework assembly at the payload root is the corruption
 signature.** ShipToDrive is now opt-in (`-p:CanaryShipToDrive=true`) and lands in
 `agent\`.
 
+## § QC round trip — a finding made on another machine, filed here
+
+Nothing in this repo has ever measured a second machine, so the round trip is the only route
+by which a QC box's evidence becomes a record instead of a chat transcript.
+
+**Outbound (on the QC machine, from the payload root — there is no repo there).**
+`qc-capture.ps1` writes a bundle and, with `-Publish` (the default when the Drive is
+present), copies it to `G:\My Drive\claude-share\qc-<COMPUTERNAME>-<yyyyMMdd>\`. The bundle
+carries `qc-summary.json`, the raw `commissioning.txt` / `<workload>.doctor.txt` /
+`<workload>.env.txt`, and a `learnings\` subfolder with its own README.
+
+**The learning format.** One markdown file per finding, named
+`YYYY-MM-DD-NNN-<3-to-5-word-slug>.md`, authored from
+[`docs/templates/qc-learning-template.md`](docs/templates/qc-learning-template.md). Its
+frontmatter demands provenance — `machine`, `tier`, `canaryVersion`, `commissionExit`,
+`doctorExit`, `workload` — copied out of the bundle, never from memory: a report that cannot
+say which machine and which Canary produced it is not evidence. **A QC machine has no repo,
+so a prompt sent to one must inline that template verbatim.**
+
+**Inbound (here).** `scripts/import-qc-bundle.ps1 <bundlePath>` copies the learnings into
+`docs/feedback/inbox/` — the register the session-start rule already reads (front door step
+4) and the MCP `list_feedback` tool already serves; there is no second register and no
+conversion step. It reconstructs the three signals **mechanically from `qc-summary.json`
+exit codes, never from the prose**, because the prose was written at an unfamiliar machine
+under time pressure and the codes are separate precisely so the verdict does not depend on
+how the day felt. It never overwrites an existing inbox item: a slug collision means two
+observations claiming one id, and it reports the collision and leaves both alone. It then
+prints the ready-to-run `canary env --diff` line per captured workload.
+
+**At triage**, a row is added to `docs/OPEN-ITEMS.md` § Found on another machine (QC) saying
+what the finding *costs this machine*; the feedback item stays the record of what was *seen*.
+
+**Never collapse the three signals.** commissioning red = the harness is broken and every
+result in that bundle is unreadable; `doctor` red = the install is incomplete and it is
+**not** a plug-in defect; `doctor` exit 5 = NOT PROVEN, the checks could not run at all.
+Commissioning green + doctor green + suite red is the only combination that is a real
+finding. NotRun is never a pass — and a fatal commissioning layer at NotRun renders `[STOP]`,
+not `FAIL`, so look for anything that is not PASS rather than for the word FAIL.
+
 ## § Doctor — readiness, and the silent-green defect it exists to stop
 
 `canary doctor [--workload <w>] [--suite <s>] [--workloads-dir <dir>]` answers **"can
