@@ -453,3 +453,13 @@ green while comparing nothing. That is what Phase 2b's cutover fixes.
 
 Snapshot before any baseline migration: `scripts/snapshot-baselines.ps1` (SHA256
 manifest, verifies the copy against source, optional second cold copy).
+
+## § Run suites
+
+### The full suite list, and why CPig is different
+
+`canary run --workload penumbra` (web) · rhino workload (from `C:\Repos\Canary`): `--suite cpig` · `pigture` · `slop` · `kbridge` · `lightro` · `bristle` · `penumbra` (deprecated OOP) · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **Run CPig tests via `--suite cpig`, never individual `--test`** — all are `runMode: shared` (ONE Rhino, sequential); `--test` respawns Rhino each time.
+
+Moved here 2026-08-19: the front door is capped at 8,000 characters head-only and
+everything past the cap is silently dropped, so the depth lives here and the front door
+carries a pointer.

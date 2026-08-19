@@ -36,17 +36,18 @@
 
 ## Build & run (quick reference)
 - **Build:** `dotnet build Canary.sln` — must be **0 errors, 0 warnings**.
-- **Drive payload:** only via `scripts/publish-payload.ps1` → `verify-payload.ps1` (§ Payload).
-- **Unit tests:** `dotnet test tests/Canary.Tests/Canary.Tests.csproj --filter "Category=Unit"`.
-- **`canary doctor`** — run before trusting a run on a machine you did not set up: root, tokens, and **every** test a suite declares; exit 1 if not. Short suite = hard failure (§ Doctor).
-- **GUI:** kill→build→launch the built exe, NOT `dotnet run` (backgrounds wrong) — exact commands in § Repro.
+- **Drive payload:** only via `scripts/publish-payload.ps1` → `verify-payload.ps1`.
+- **Unit tests:** `dotnet test tests/Canary.Tests --filter "Category=Unit"`.
+- **`canary commission`** — run FIRST on a machine you did not set up: can it test at all? **Exit 4** = harness unproven (≠ doctor's 1, ≠ run path's 3). Detail → `workloads/commissioning/README.md`; open items → `docs/OPEN-ITEMS.md`.
+- **`canary doctor`** — run before trusting a run on a machine you did not set up: root, tokens, and **every** test a suite declares; exit 1 if not. Short suite = hard failure (§ Doctor). Reads the commissioning report too, reporting a harness fault separately.
+- **GUI:** kill→build→launch the built exe, NOT `dotnet run` — § Repro.
 - **`canary baselines lock|verify`** — git-tracked ledger of which checkpoints have an approved baseline. Absent ledger = error; `rows: []` = legal (§ Doctor).
-- **UI-first runs (canonical, `MultiVerse/STANDARD.md` §16 locked rule 8):** **when the operator says "run canary", do NOT pass `--headless`** — they mean the UI-visible default `canary run --workload <w> [--test <t> | --suite <s>]`. `--headless` is for CI and for your own agent-internal verification (the UI launch flakes from agent sessions); `--quiet` implies it. Full text → § UI-first runs.
-- **Keep-open:** runs close the app when done; `--test` without `--headless` now keeps it open automatically (inspection run); `--keep-open` forces it anywhere. Full semantics -> [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § Keep-open.
-- **Run suites:** `canary run --workload penumbra` (web) · rhino workload (from `C:\Repos\Canary`): `--suite cpig` · `pigture` · `slop` · `kbridge` · `lightro` · `bristle` · `penumbra` (deprecated OOP) · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **Run CPig tests via `--suite cpig`, never individual `--test`** — all are `runMode: shared` (ONE Rhino, sequential); `--test` respawns Rhino each time.
+- **UI-first runs** (`MultiVerse/STANDARD.md` §16 rule 8): when the operator says "run canary", do **not** pass `--headless` — they mean the UI-visible default. `--headless` is for CI and agent-internal verification (the UI launch flakes from agent sessions). Full text → [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § UI-first runs.
+- **Keep-open:** runs close the app when done; `--test` without `--headless` keeps it open (inspection run); `--keep-open` forces it. → [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § Keep-open.
+- **Run suites:** `canary run --workload penumbra` (web) · rhino: `--suite cpig` · `pigture` · `slop` · `kbridge` · `lightro` · `bristle` · `penumbra-glsl` · `cpig-fieldops` · `cpig-display-matrix`. **CPig via `--suite cpig`, never `--test`** (all `runMode: shared`). Full list + why → [`AGENTS-DETAIL.md`](AGENTS-DETAIL.md) § Run suites.
 - **Modes:** `--mode pixel-diff` (default) | `vlm` | `both`; per-checkpoint `mode: "vlm"` wins over the flag; `mode: "capture"` = save-only, never FAILs, wins over `--mode` (§ Test modes).
-- **Supervised session:** `canary session start --workload {qualia|penumbra|rhino} [--file <abs>.3dm]` — capture REPL / Sessions UI tab; manifest + telemetry per § Sessions.
-- **Status:** `spec/PHASES.md` + tail of `BUILD_LOG.md`. Test counts move every commit — count them, don't trust stamped numbers.
+- **Supervised session:** `canary session start --workload {qualia|penumbra|rhino} [--file <abs>.3dm]` — § Sessions.
+- **Status:** `spec/PHASES.md` + tail of `BUILD_LOG.md`. Test counts move every commit — count them.
 
 ## Key rules (non-negotiable)
 - **Namespace:** `Canary` (core + harness), `Canary.Agent` (shared), `Canary.Agent.*` (per-app).
@@ -56,7 +57,7 @@
 - **Ctrl+C:** must always work. Display "Press Ctrl+C to abort" in status output.
 - **Tests:** `[Trait("Category", "Unit")]` headless, `[Trait("Category", "Integration")]` needs app.
 - **`runMode: shared` is the DEFAULT for ALL tests** — one `"runMode": "fresh"` test forces the whole suite to per-test launches; every shared test MUST begin its `actions` with a cleanup pulse (Build off → Cleanup on → Cleanup off). Full rules → § Rhino-workload suites.
-- **Rhino units-macro gotcha:** any `-_DocumentProperties` units macro MUST include `_UnitSystem` before the unit name and prefer `_EnterEnd` over hand-counted `_Enter`s — omitting either hangs the Rhino command line and blocks the whole test (agent pipe disconnects). Full macro reference → map row above.
+- **Rhino units-macro gotcha:** a `-_DocumentProperties` units macro MUST include `_UnitSystem` before the unit name and prefer `_EnterEnd` — omitting either hangs the command line and blocks the whole test. Reference → map row above.
 
 ## Cross-Repo Change Protocol (mandatory)
 When your session's changes affect other repos (new features they consume, contract/schema changes, corrected docs):

@@ -41,7 +41,8 @@ param(
     [string]   $OutDir,
     [switch]   $NoLaunch,
     [string]   $CanaryExe,
-    [string]   $WorkloadsRoot
+    [string]   $WorkloadsRoot,
+    [string]   $CommissionWith
 )
 
 # DELIBERATELY 'Continue', not 'Stop'.
@@ -97,9 +98,13 @@ if (-not $WorkloadsRoot) {
 if (-not $WorkloadsRoot) { throw "no workloads directory found; pass -WorkloadsRoot" }
 $workloadsRoot = $WorkloadsRoot
 if (-not $Workloads -or $Workloads.Count -eq 0) {
+    # 'commissioning' is excluded deliberately: it carries no tests and launches no
+    # application, so doctoring and env-probing it would add two guaranteed failures to every
+    # bundle. It is the subject of step 0.5 below, not one of the workloads under test.
     $Workloads = Get-ChildItem $workloadsRoot -Directory -ErrorAction SilentlyContinue |
         Where-Object { Test-Path (Join-Path $_.FullName 'workload.json') } |
-        Select-Object -ExpandProperty Name
+        Select-Object -ExpandProperty Name |
+        Where-Object { $_ -ne 'commissioning' }
 }
 if (-not $Workloads -or $Workloads.Count -eq 0) { throw "no workloads found under $workloadsRoot" }
 
@@ -131,6 +136,37 @@ if (Test-Path $surveyScript) {
     }
 } else {
     Write-Host "  survey   : machine-survey.ps1 not beside this script - skipped" -ForegroundColor Yellow
+}
+Write-Host ""
+
+# 0.5. COMMISSION FIRST. Ruling 7A: this answers "can this machine test at all", and it
+#      GATES everything below rather than merely preceding it. If layer 2 fails, no pixel
+#      result in this bundle is readable, and knowing that before reading them is the whole
+#      point. Layer 1 needs no application, so this produces an answer even on a machine
+#      where nothing else runs.
+$commissionWorkload = @($Workloads | Where-Object { $_ -eq 'rhino' })[0]
+if (-not $commissionWorkload) { $commissionWorkload = @($Workloads)[0] }
+if ($CommissionWith) { $commissionWorkload = $CommissionWith }
+if ($NoLaunch -or -not $commissionWorkload) {
+    Write-Host "  commission: skipped (no app) - layer 1 only" -ForegroundColor DarkGray
+    & $canary commission 2>&1 | Out-String | Set-Content -Path (Join-Path $OutDir 'commissioning.txt') -Encoding utf8
+} else {
+    & $canary commission --workload $commissionWorkload 2>&1 |
+        Out-String | Set-Content -Path (Join-Path $OutDir 'commissioning.txt') -Encoding utf8
+}
+$commissionExit = $LASTEXITCODE
+# Built from Join-Path segments rather than one quoted literal. A backslash inside a
+# generated string has been silently eaten several times in this campaign - the CR
+# escape in particular turns a folder separator into a line break, which is exactly
+# what happened when this very line was first written.
+$src = Join-Path (Join-Path $workloadsRoot 'commissioning') (Join-Path 'results' 'commissioning-report.json')
+if (Test-Path $src) { Copy-Item $src (Join-Path $OutDir 'commissioning-report.json') -Force }
+
+if ($commissionExit -eq 0) {
+    Write-Host "  commission: harness PROVEN on this machine" -ForegroundColor Green
+} else {
+    Write-Host "  commission: HARNESS NOT PROVEN (exit $commissionExit)" -ForegroundColor Red
+    Write-Host "              Every result below is unreadable until this passes." -ForegroundColor Red
 }
 Write-Host ""
 
@@ -177,6 +213,8 @@ foreach ($w in $Workloads) {
 
 $meta = [pscustomobject]@{
     machine     = $env:COMPUTERNAME
+    commissionExit = $commissionExit
+    harnessProven  = ($commissionExit -eq 0)
     user        = $env:USERNAME
     capturedUtc = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
     os          = [System.Environment]::OSVersion.VersionString
@@ -200,6 +238,9 @@ foreach ($s in $summary | Where-Object { $_.captured }) {
     Write-Host "  canary env --workload $($s.workload) --diff `"$OutDir\$($s.workload).environment.json`""
 }
 
-# Exit non-zero if any workload failed doctor, so this is usable as a gate.
+# Exit non-zero if the harness is unproven OR any workload failed doctor. Both mean the
+# bundle cannot be read at face value, and a caller using this as a gate needs one answer.
+# Which of the two happened is in commissioning.txt and the per-workload doctor files.
+if ($commissionExit -ne 0) { exit $commissionExit }
 if ($failed.Count -gt 0) { exit 1 }
 exit 0
